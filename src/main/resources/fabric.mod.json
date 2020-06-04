@@ -1,37 +1,35 @@
 {
   "schemaVersion": 1,
-  "id": "modid",
+  "id": "maelstrom",
   "version": "${version}",
 
-  "name": "Example Mod",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "name": "Into the Maelstrom: Invasions",
+  "description": "",
   "authors": [
-    "Me!"
+    "Barribob"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "homepage": "",
+    "sources": "",
+    "issues": ""
   },
 
-  "license": "CC0-1.0",
-  "icon": "assets/modid/icon.png",
+  "license": "",
+  "icon": "assets/maelstrom/icon.png",
 
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.fabricmc.example.ExampleModKt::init"
+      "net.barribob.maelstrom.MaelstromModKt::init"
     ]
   },
   "mixins": [
-    "modid.mixins.json"
+    "maelstrom.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.7.1",
     "fabric": "*",
     "fabric-language-kotlin": "*",
-    "minecraft": "1.15.x"
-  },
-  "suggests": {
-    "flamingo": "*"
+    "minecraft": "1.16.x"
   }
 }

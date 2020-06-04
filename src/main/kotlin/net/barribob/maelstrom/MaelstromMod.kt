@@ -1,4 +1,4 @@
-package net.fabricmc.example
+package net.barribob.maelstrom
 
 // For support join https://discord.gg/v6v4pMv
 
@@ -10,4 +10,3 @@ fun init() {
 
     println("Hello Fabric world!")
 }
-
