@@ -21,6 +21,9 @@
   "entrypoints": {
     "main": [
       "net.barribob.maelstrom.MaelstromModKt::init"
+    ],
+    "client": [
+      "net.barribob.maelstrom.MaelstromModKt::clientInit"
     ]
   },
   "mixins": [
