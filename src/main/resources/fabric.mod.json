@@ -22,6 +22,9 @@
     "main": [
       "net.barribob.maelstrom.MaelstromModKt::init"
     ],
+    "server": [
+      "net.barribob.maelstrom.MaelstromModKt::serverInit"
+    ],
     "client": [
       "net.barribob.maelstrom.MaelstromModKt::clientInit"
     ]
