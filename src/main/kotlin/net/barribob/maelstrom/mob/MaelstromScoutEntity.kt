@@ -37,7 +37,7 @@ class MaelstromScoutEntity(entityType: EntityType<out HostileEntity>, world: Wor
     private fun handleAttack(): Int {
         MobUtils.leapTowards(this, this.target!!.pos, 0.4, 0.3)
 
-        MaelstromMod.serverEventScheduler.addEvent( this, {
+        MaelstromMod.serverEventScheduler.addEvent( { this.target == null || !this.isAlive || this.health <= 0 }, {
             val pos: Vec3d = this.pos.yOffset(1.0).add(this.rotationVector)
             this.playSound(SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, 1.0F, 0.8F / (this.random.nextFloat() * 0.4F + 0.8F))
             MobUtils.handleAreaImpact(0.6, this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE).toFloat() , this, pos, DamageSource.mob(this), 0.20, damageDecay = false)
