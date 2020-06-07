@@ -23,12 +23,7 @@ object MaelstromMod {
 
 @Suppress("unused")
 fun init() {
-}
-
-@Environment(EnvType.SERVER)
-@Suppress("unused")
-fun serverInit() {
-    ServerTickCallback.EVENT.register(ServerTickCallback { server -> MaelstromMod.serverEventScheduler.updateEvents() })
+    ServerTickCallback.EVENT.register(ServerTickCallback { MaelstromMod.serverEventScheduler.updateEvents() })
 }
 
 @Environment(EnvType.CLIENT)

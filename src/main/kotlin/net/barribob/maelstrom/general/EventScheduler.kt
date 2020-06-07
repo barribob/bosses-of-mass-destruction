@@ -13,7 +13,7 @@ import java.util.*
 class EventScheduler {
     private val eventsMap = WeakHashMap<Any, PriorityQueue<TimedEvent>>()
     private val queuedEvents = WeakHashMap<Any, MutableList<TimedEvent>>()
-    var ticks = 0
+    private var ticks = 0
 
     fun updateEvents() {
         for (pair in queuedEvents) {
@@ -29,7 +29,7 @@ class EventScheduler {
         queuedEvents.clear()
 
         for (pair in eventsMap) {
-            var itr = pair.value.iterator()
+            val itr = pair.value.iterator()
 
             while (itr.hasNext()) {
                 val event = itr.next()
