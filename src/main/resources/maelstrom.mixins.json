@@ -5,7 +5,7 @@
   "mixins": [
   ],
   "client": [
-    "ExampleMixin"
+    "AnimationMixins"
   ],
   "injectors": {
     "defaultRequire": 1

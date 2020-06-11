@@ -71,4 +71,8 @@ object MobUtils {
             }
         }
     }
+
+    fun isEntityInWorld(entity: Entity): Boolean {
+        return entity.world.getEntityById(entity.entityId) == null
+    }
 }
