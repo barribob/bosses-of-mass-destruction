@@ -1,6 +1,7 @@
 package net.barribob.maelstrom.mob
 
 import net.barribob.maelstrom.MaelstromMod
+import net.barribob.maelstrom.adapters.GoalAdapter
 import net.barribob.maelstrom.general.yOffset
 import net.barribob.maelstrom.mob.server.ai.JumpToTargetGoal
 import net.barribob.maelstrom.mob.server.ai.TimedAttackGoal
@@ -29,8 +30,8 @@ class MaelstromScoutEntity(entityType: EntityType<out HostileEntity>, world: Wor
 
     override fun initGoals() {
         goalSelector.add(1, SwimGoal(this))
-        goalSelector.add(2, JumpToTargetGoal(this, 0.9))
-        goalSelector.add(3, TimedAttackGoal(this, 3F, 2.5F, 5, ::handleAttack))
+        goalSelector.add(2, GoalAdapter(JumpToTargetGoal(this, 0.9)))
+        goalSelector.add(3, GoalAdapter(TimedAttackGoal(this, 3F, 2.5F, 5, ::handleAttack)))
         goalSelector.add(4, WanderAroundFarGoal(this, 1.0))
         targetSelector.add(1, FollowTargetGoal(this, LivingEntity::class.java, true))
         targetSelector.add(2, RevengeGoal(this, LivingEntity::class.java))

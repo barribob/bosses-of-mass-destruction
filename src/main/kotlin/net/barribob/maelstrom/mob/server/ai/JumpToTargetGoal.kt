@@ -1,9 +1,9 @@
 package net.barribob.maelstrom.mob.server.ai
 
+import net.barribob.maelstrom.adapters.IGoal
 import net.barribob.maelstrom.general.*
 import net.barribob.maelstrom.mob.MobUtils
 import net.minecraft.entity.LivingEntity
-import net.minecraft.entity.ai.goal.Goal
 import net.minecraft.entity.ai.pathing.PathNodeType
 import net.minecraft.entity.mob.MobEntityWithAi
 import net.minecraft.util.math.BlockPos
@@ -24,7 +24,7 @@ import kotlin.math.pow
  *
  * Does not employ any actual path finding, so it's not a true jumping navigation ai
  */
-class JumpToTargetGoal(val entity: MobEntityWithAi, private val maxJumpVel: Double) : Goal() {
+class JumpToTargetGoal(val entity: MobEntityWithAi, private val maxJumpVel: Double) : IGoal {
 
     private val minGapSize = 2
     private val minEntityDistance = 2.5
@@ -33,8 +33,8 @@ class JumpToTargetGoal(val entity: MobEntityWithAi, private val maxJumpVel: Doub
     private val targetAquireDelay = 5
     private val failureValue = -1.0
 
-    init {
-        this.controls = EnumSet.of(Control.MOVE)
+    override fun getControls(): EnumSet<IGoal.Control>? {
+        return EnumSet.of(IGoal.Control.MOVE)
     }
 
     override fun canStart(): Boolean {
