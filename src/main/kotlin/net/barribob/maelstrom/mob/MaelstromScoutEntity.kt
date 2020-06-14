@@ -1,17 +1,13 @@
 package net.barribob.maelstrom.mob
 
 import net.barribob.maelstrom.MaelstromMod
-import net.barribob.maelstrom.adapters.GoalAdapter
+import net.barribob.maelstrom.adapters.HostileEntityAdapter
+import net.barribob.maelstrom.adapters.IGoal
 import net.barribob.maelstrom.general.yOffset
 import net.barribob.maelstrom.mob.server.ai.JumpToTargetGoal
 import net.barribob.maelstrom.mob.server.ai.TimedAttackGoal
 import net.minecraft.entity.EntityType
-import net.minecraft.entity.LivingEntity
-import net.minecraft.entity.ai.goal.FollowTargetGoal
-import net.minecraft.entity.ai.goal.RevengeGoal
-import net.minecraft.entity.ai.goal.SwimGoal
-import net.minecraft.entity.ai.goal.WanderAroundFarGoal
-import net.minecraft.entity.attribute.AttributeContainer
+import net.minecraft.entity.attribute.EntityAttribute
 import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.mob.HostileEntity
@@ -19,22 +15,21 @@ import net.minecraft.sound.SoundEvents
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 
-class MaelstromScoutEntity(entityType: EntityType<out HostileEntity>, world: World) : HostileEntity(entityType, world) {
+class MaelstromScoutEntity(entityType: EntityType<out HostileEntity>, world: World) : HostileEntityAdapter(entityType, world) {
 
-    override fun getAttributes(): AttributeContainer {
-        return AttributeContainer(createHostileAttributes()
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.26)
-                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 6.0)
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, 25.0).build())
+    override fun getAttributes(attributes: MutableList<Pair<EntityAttribute, Double>>) {
+        attributes.add(Pair(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.26))
+        attributes.add(Pair(EntityAttributes.GENERIC_ATTACK_DAMAGE, 6.0))
+        attributes.add(Pair(EntityAttributes.GENERIC_MAX_HEALTH, 25.0))
     }
 
-    override fun initGoals() {
-        goalSelector.add(1, SwimGoal(this))
-        goalSelector.add(2, GoalAdapter(JumpToTargetGoal(this, 0.9)))
-        goalSelector.add(3, GoalAdapter(TimedAttackGoal(this, 3F, 2.5F, 5, ::handleAttack)))
-        goalSelector.add(4, WanderAroundFarGoal(this, 1.0))
-        targetSelector.add(1, FollowTargetGoal(this, LivingEntity::class.java, true))
-        targetSelector.add(2, RevengeGoal(this, LivingEntity::class.java))
+    override fun getGoals(goals: MutableList<Pair<Int, IGoal>>, targetGoals: MutableList<Pair<Int, IGoal>>) {
+        goals.add(MobUtils.getSwimmingGoal(1, this))
+        goals.add(Pair(2, JumpToTargetGoal(this, 0.9)))
+        goals.add(Pair(3, TimedAttackGoal(this, 3F, 2.5F, 5, ::handleAttack)))
+        goals.add(MobUtils.getWanderingGoal(4, 1.0, this))
+        targetGoals.add(MobUtils.getTargetSelectGoal(1, this))
+        targetGoals.add(MobUtils.getRevengeGoal(2, this))
     }
 
     private fun handleAttack(): Int {
