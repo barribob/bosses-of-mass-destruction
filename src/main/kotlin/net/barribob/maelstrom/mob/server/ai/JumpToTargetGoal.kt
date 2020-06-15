@@ -6,8 +6,10 @@ import net.barribob.maelstrom.mob.MobUtils
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.ai.pathing.PathNodeType
 import net.minecraft.entity.mob.MobEntityWithAi
+import net.minecraft.util.hit.HitResult
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
+import net.minecraft.world.RayTraceContext
 import java.util.*
 import kotlin.math.pow
 
@@ -24,14 +26,15 @@ import kotlin.math.pow
  *
  * Does not employ any actual path finding, so it's not a true jumping navigation ai
  */
-class JumpToTargetGoal(val entity: MobEntityWithAi, private val maxJumpVel: Double) : IGoal {
+class JumpToTargetGoal(val entity: MobEntityWithAi, private val maxHorizonalVelocity: Double) : IGoal {
 
     private val minGapSize = 2
     private val minEntityDistance = 2.5
     var timeHasTarget = 0
-    private val minJumpVel: Double = 0.4
+    private val minJumpVel = 0.4
     private val targetAquireDelay = 5
     private val failureValue = -1.0
+    private val yVelMax = 0.5
 
     override fun getControls(): EnumSet<IGoal.Control>? {
         return EnumSet.of(IGoal.Control.MOVE)
@@ -54,8 +57,25 @@ class JumpToTargetGoal(val entity: MobEntityWithAi, private val maxJumpVel: Doub
             }
 
             val targetDirection: Vec3d = target.pos.subtract(entity.pos).planeProject(newVec3d(y = 1.0)).normalize()
-            for(angle in listOf(0, 30, -30, 60, -60)) {
-                if(tryToJump(targetDirection.rotateVector(newVec3d(y = 1.0), angle.toDouble()))) {
+            for(angle in listOf(0, 15, -15, 30, -30, 45, -45)) {
+
+                val maxGapDistance = 1.2
+                var gapStart = 0
+                val endPos = entity.pos.add(targetDirection.multiply(maxGapDistance))
+                val endPoint = 5
+                VecUtils.lineCallback(endPos, entity.pos, endPoint) { pos, _ ->
+                    run {
+                        if(hasObstacle(BlockPos(pos), minGapSize)) {
+                            gapStart += 1
+                        }
+                    }
+                }
+
+                if(gapStart in 1 until endPoint && !entity.moveControl.isMoving) {
+                    entity.moveControl.moveTo(endPos.x, endPos.y, endPos.z, 1.0)
+                }
+
+                if(hasObstacle(BlockPos(entity.pos), minGapSize) && tryToJump(targetDirection.rotateVector(newVec3d(y = 1.0), angle.toDouble()))) {
                     entity.navigation.stop()
                     return true
                 }
@@ -65,23 +85,11 @@ class JumpToTargetGoal(val entity: MobEntityWithAi, private val maxJumpVel: Doub
     }
 
     private fun tryToJump(targetDirection: Vec3d): Boolean {
-        var gapBelow = false
-        VecUtils.lineCallback(entity.pos, entity.pos.add(targetDirection.multiply(1.2)), 4) { pos, _ ->
-            run {
-                gapBelow = gapBelow || hasObstacle(BlockPos(pos), minGapSize)
-            }
-        }
-
-        if (!gapBelow) {
-            return false
-        }
-
         val jumpVel = getJumpLength(entity.pos, targetDirection)
         if (jumpVel < 0) {
             return false
         }
 
-        val yVelMax = 0.6
         MobUtils.leapTowards(entity, entity.pos.add(targetDirection), jumpVel, jumpVel.coerceAtMost(yVelMax))
         return true
     }
@@ -113,14 +121,17 @@ class JumpToTargetGoal(val entity: MobEntityWithAi, private val maxJumpVel: Doub
 
             jumpLength -= (entity.width * 0.5)
 
-            val jumpHeight = groundHeight - actorPos.y
-            val intercept = 0.2
-            val scale = 0.14
-            val verticalImpact = 0.8
-            val gravity = 1.2
-            val requiredJumpVel = intercept + scale * (jumpLength.pow(2.0) * gravity + verticalImpact * jumpHeight) / jumpLength
+            if (!hasClearance(jumpLength, targetDirection, 1.0)) {
+                return failureValue
+            }
 
-            if (requiredJumpVel < maxJumpVel) {
+            val blockHeight = entity.world.getBlockState(walkablePos).getCollisionShape(entity.world, walkablePos).boundingBox.yLength
+            val jumpHeight = groundHeight + blockHeight - actorPos.y
+            val verticalImpact = 0.33
+            val gravity = 0.25
+            val requiredJumpVel = (jumpLength.pow(2.0) * gravity + verticalImpact * jumpHeight) / jumpLength
+            val angledMaxJumpVel = MathUtils.magnitude(yVelMax, maxHorizonalVelocity)
+            if (requiredJumpVel < angledMaxJumpVel) {
                 return if (requiredJumpVel < minJumpVel) minJumpVel else requiredJumpVel
             }
             return failureValue
@@ -152,6 +163,14 @@ class JumpToTargetGoal(val entity: MobEntityWithAi, private val maxJumpVel: Doub
         val range = (-height..1)
         val walkablePos = range.firstOrNull{ getNode(pos.up(it)) == PathNodeType.WALKABLE }
         return if(walkablePos == null) failureValue.toInt() else walkablePos + pos.y - 1
+    }
+
+    private fun hasClearance(jumpLength: Double, jumpDirection: Vec3d, heightAbove: Double): Boolean {
+        val requiredHeight = entity.height + heightAbove
+        val start = entity.pos.yOffset(requiredHeight)
+        val end = start.add(jumpDirection.multiply(jumpLength))
+        val result = entity.world.rayTrace(RayTraceContext(start, end, RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, entity))
+        return result.type == HitResult.Type.MISS
     }
 
     private fun hasObstacle(startPos: BlockPos, blocksBelow: Int): Boolean {

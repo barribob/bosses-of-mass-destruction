@@ -25,7 +25,7 @@ class MaelstromScoutEntity(entityType: EntityType<out HostileEntity>, world: Wor
 
     override fun getGoals(goals: MutableList<Pair<Int, IGoal>>, targetGoals: MutableList<Pair<Int, IGoal>>) {
         goals.add(MobUtils.getSwimmingGoal(1, this))
-        goals.add(Pair(2, JumpToTargetGoal(this, 0.9)))
+        goals.add(Pair(2, JumpToTargetGoal(this, 0.7)))
         goals.add(Pair(3, TimedAttackGoal(this, 3F, 2.5F, 5, ::handleAttack)))
         goals.add(MobUtils.getWanderingGoal(4, 1.0, this))
         targetGoals.add(MobUtils.getTargetSelectGoal(1, this))
@@ -33,7 +33,7 @@ class MaelstromScoutEntity(entityType: EntityType<out HostileEntity>, world: Wor
     }
 
     private fun handleAttack(): Int {
-        MobUtils.leapTowards(this, this.target!!.pos, 0.4, 0.3)
+        MobUtils.leapTowards(this, this.target!!.pos, 0.4, 0.0)
         MaelstromMod.serverAnimationWatcher.startAnimation(this, "scout.attack")
 
         MaelstromMod.serverEventScheduler.addEvent( { this.target == null || !this.isAlive || this.health <= 0 }, {

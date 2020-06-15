@@ -31,11 +31,13 @@ object VecUtils {
 
     /**
      * Calls a function that linearly interpolates between two points. Includes both ends of the line
+     *
+     * Callback returns the position and the point number from 1 to points
      */
     fun lineCallback(start: Vec3d, end: Vec3d, points: Int, callback: (Vec3d, Int) -> Unit) {
         val dir: Vec3d = end.subtract(start).multiply(1 / (points - 1).toDouble())
         var pos = start
-        for (i in 0 until points) {
+        for (i in 1..points) {
             callback(pos, i)
             pos = pos.add(dir)
         }
