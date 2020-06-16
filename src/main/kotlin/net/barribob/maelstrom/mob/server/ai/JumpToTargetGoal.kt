@@ -1,5 +1,6 @@
 package net.barribob.maelstrom.mob.server.ai
 
+import net.barribob.maelstrom.MaelstromMod
 import net.barribob.maelstrom.adapters.IGoal
 import net.barribob.maelstrom.general.*
 import net.barribob.maelstrom.mob.MobUtils
@@ -25,6 +26,9 @@ import kotlin.math.pow
  * What it does not do
  *
  * Does not employ any actual path finding, so it's not a true jumping navigation ai
+ *
+ * Issues:
+ * Getting this ai to apply not just to entities with targets
  */
 class JumpToTargetGoal(val entity: MobEntityWithAi, private val maxHorizonalVelocity: Double) : IGoal {
 
@@ -75,7 +79,17 @@ class JumpToTargetGoal(val entity: MobEntityWithAi, private val maxHorizonalVelo
                     entity.moveControl.moveTo(endPos.x, endPos.y, endPos.z, 1.0)
                 }
 
-                if(hasObstacle(BlockPos(entity.pos), minGapSize) && tryToJump(targetDirection.rotateVector(newVec3d(y = 1.0), angle.toDouble()))) {
+                val direction = targetDirection.rotateVector(newVec3d(y = 1.0), angle.toDouble())
+
+                if(hasObstacle(BlockPos(entity.pos), minGapSize) && tryToJump(direction)) {
+                    for (i in 0..4) {
+                        MaelstromMod.serverEventScheduler.addEvent(
+                                { !entity.isAlive || entity.isOnGround },
+                                {
+                                    val movePos = entity.pos.add(direction)
+                                    entity.moveControl.moveTo(movePos.x, movePos.y, movePos.z, 1.0)
+                                }, i)
+                    }
                     entity.navigation.stop()
                     return true
                 }
