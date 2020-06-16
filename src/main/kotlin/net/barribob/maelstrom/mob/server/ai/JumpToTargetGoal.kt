@@ -4,7 +4,6 @@ import net.barribob.maelstrom.MaelstromMod
 import net.barribob.maelstrom.adapters.IGoal
 import net.barribob.maelstrom.general.*
 import net.barribob.maelstrom.mob.MobUtils
-import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.ai.pathing.PathNodeType
 import net.minecraft.entity.mob.MobEntityWithAi
 import net.minecraft.util.hit.HitResult
@@ -27,78 +26,82 @@ import kotlin.math.pow
  *
  * Does not employ any actual path finding, so it's not a true jumping navigation ai
  *
- * Issues:
- * Getting this ai to apply not just to entities with targets
  */
 class JumpToTargetGoal(val entity: MobEntityWithAi, private val maxHorizonalVelocity: Double) : IGoal {
 
     private val minGapSize = 2
     private val minEntityDistance = 2.5
-    var timeHasTarget = 0
     private val minJumpVel = 0.4
-    private val targetAquireDelay = 5
     private val failureValue = -1.0
     private val yVelMax = 0.5
+    private val jumpClearanceAboveHead = 1.0
+    private val verticalImpact = 0.33
+    private val gravity = 0.25
+    private val forwardMovementTicks = 4
+    private val anglesToAttemptJump = listOf(0, 15, -15, 30, -30, 45, -45)
+    private val edgeDetectionDistance = 1.2
+    private val detectionPoints = 5
+    private val moveSpeed = 1.0
 
     override fun getControls(): EnumSet<IGoal.Control>? {
         return EnumSet.of(IGoal.Control.MOVE)
     }
 
     override fun canStart(): Boolean {
-
-        if(entity.target != null) {
-            timeHasTarget++
-        }
-        else {
-            timeHasTarget = 0
-        }
-
-        if (timeHasTarget > targetAquireDelay && entity.navigation != null && entity.isOnGround && entity.distanceTo(entity.target) > minEntityDistance) {
-            val target: LivingEntity = entity.target ?: return false
+        if (entity.navigation != null && entity.isOnGround) {
             val path = entity.navigation.currentPath
             if(entity.navigation.isFollowingPath && path != null && path.reachesTarget() && path.nodes.none { isDanger(it.type) }) {
                 return false
             }
 
-            val targetDirection: Vec3d = target.pos.subtract(entity.pos).planeProject(newVec3d(y = 1.0)).normalize()
-            for(angle in listOf(0, 15, -15, 30, -30, 45, -45)) {
+            val target = entity.navigation.targetPos?.asVec3d()?.add(0.5, 0.0, 0.5)
 
-                val maxGapDistance = 1.2
-                var gapStart = 0
-                val endPos = entity.pos.add(targetDirection.multiply(maxGapDistance))
-                val endPoint = 5
-                VecUtils.lineCallback(endPos, entity.pos, endPoint) { pos, _ ->
-                    run {
-                        if(hasObstacle(BlockPos(pos), minGapSize)) {
-                            gapStart += 1
-                        }
+            if(target == null || target.distanceTo(entity.pos) < minEntityDistance) {
+                return false
+            }
+
+            return tryToJump(target)
+        }
+        return false
+    }
+
+    private fun tryToJump(target: Vec3d): Boolean {
+        val targetDirection: Vec3d = target.subtract(entity.pos).planeProject(newVec3d(y = 1.0)).normalize()
+        for(angle in anglesToAttemptJump) {
+
+            var gapStart = 0
+            val endPos = entity.pos.add(targetDirection.multiply(edgeDetectionDistance))
+            VecUtils.lineCallback(endPos, entity.pos, detectionPoints) { pos, _ ->
+                run {
+                    if(hasObstacle(BlockPos(pos))) {
+                        gapStart += 1
                     }
                 }
+            }
 
-                if(gapStart in 1 until endPoint && !entity.moveControl.isMoving) {
-                    entity.moveControl.moveTo(endPos.x, endPos.y, endPos.z, 1.0)
+            if(gapStart in 1 until detectionPoints && !entity.moveControl.isMoving) {
+                entity.moveControl.moveTo(endPos.x, endPos.y, endPos.z, moveSpeed)
+            }
+
+            val direction = targetDirection.rotateVector(newVec3d(y = 1.0), angle.toDouble())
+
+            if(hasObstacle(BlockPos(entity.pos)) && tryToJumpInDirection(direction)) {
+                for (i in 0..forwardMovementTicks) {
+                    MaelstromMod.serverEventScheduler.addEvent(
+                            { !entity.isAlive || entity.isOnGround },
+                            {
+                                val movePos = entity.pos.add(direction)
+                                entity.moveControl.moveTo(movePos.x, movePos.y, movePos.z, moveSpeed)
+                            }, i)
                 }
-
-                val direction = targetDirection.rotateVector(newVec3d(y = 1.0), angle.toDouble())
-
-                if(hasObstacle(BlockPos(entity.pos), minGapSize) && tryToJump(direction)) {
-                    for (i in 0..4) {
-                        MaelstromMod.serverEventScheduler.addEvent(
-                                { !entity.isAlive || entity.isOnGround },
-                                {
-                                    val movePos = entity.pos.add(direction)
-                                    entity.moveControl.moveTo(movePos.x, movePos.y, movePos.z, 1.0)
-                                }, i)
-                    }
-                    entity.navigation.stop()
-                    return true
-                }
+                entity.navigation.stop()
+                return true
             }
         }
         return false
     }
 
-    private fun tryToJump(targetDirection: Vec3d): Boolean {
+    private fun tryToJumpInDirection(targetDirection: Vec3d): Boolean {
         val jumpVel = getJumpLength(entity.pos, targetDirection)
         if (jumpVel < 0) {
             return false
@@ -109,7 +112,7 @@ class JumpToTargetGoal(val entity: MobEntityWithAi, private val maxHorizonalVelo
     }
 
     private fun getJumpLength(actorPos: Vec3d, targetDirection: Vec3d): Double {
-        val steps = 4
+        val steps = 5
 
         // Build the ground detection to reflect a staircase shape in this order:
         // 0 1 3
@@ -118,8 +121,8 @@ class JumpToTargetGoal(val entity: MobEntityWithAi, private val maxHorizonalVelo
         // etc...
         val heightDepthPairs = (0..steps).flatMap { d -> (0..(steps - d)).map { y -> Pair(d, y) } }.sortedBy { pair -> pair.first + pair.second }
         for ((x, y) in heightDepthPairs) {
-            val scaledStep = 2 + x + 0.5
-            val jumpToPos = actorPos.add(targetDirection.multiply(scaledStep))
+            val scaledStepX = 2.0 + x
+            val jumpToPos = actorPos.add(targetDirection.multiply(scaledStepX))
             val blockPos = BlockPos(jumpToPos)
             val groundHeight = findGroundAt(blockPos, y)
             val walkablePos = BlockPos(blockPos.x, groundHeight, blockPos.z)
@@ -135,14 +138,12 @@ class JumpToTargetGoal(val entity: MobEntityWithAi, private val maxHorizonalVelo
 
             jumpLength -= (entity.width * 0.5)
 
-            if (!hasClearance(jumpLength, targetDirection, 1.0)) {
+            if (!hasClearance(jumpLength, targetDirection)) {
                 return failureValue
             }
 
             val blockHeight = entity.world.getBlockState(walkablePos).getCollisionShape(entity.world, walkablePos).boundingBox.yLength
             val jumpHeight = groundHeight + blockHeight - actorPos.y
-            val verticalImpact = 0.33
-            val gravity = 0.25
             val requiredJumpVel = (jumpLength.pow(2.0) * gravity + verticalImpact * jumpHeight) / jumpLength
             val angledMaxJumpVel = MathUtils.magnitude(yVelMax, maxHorizonalVelocity)
             if (requiredJumpVel < angledMaxJumpVel) {
@@ -179,18 +180,18 @@ class JumpToTargetGoal(val entity: MobEntityWithAi, private val maxHorizonalVelo
         return if(walkablePos == null) failureValue.toInt() else walkablePos + pos.y - 1
     }
 
-    private fun hasClearance(jumpLength: Double, jumpDirection: Vec3d, heightAbove: Double): Boolean {
-        val requiredHeight = entity.height + heightAbove
+    private fun hasClearance(jumpLength: Double, jumpDirection: Vec3d): Boolean {
+        val requiredHeight = entity.height + jumpClearanceAboveHead
         val start = entity.pos.yOffset(requiredHeight)
         val end = start.add(jumpDirection.multiply(jumpLength))
         val result = entity.world.rayTrace(RayTraceContext(start, end, RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, entity))
         return result.type == HitResult.Type.MISS
     }
 
-    private fun hasObstacle(startPos: BlockPos, blocksBelow: Int): Boolean {
-        val range = (0 downTo - (blocksBelow - 1))
+    private fun hasObstacle(startPos: BlockPos): Boolean {
+        val range = (0 downTo - (minGapSize - 1))
         val isOpenInFront = getNode(startPos.up()) == PathNodeType.OPEN
-        val isOpenAtBottom = getNode(startPos.down(blocksBelow)) == PathNodeType.OPEN || getNode(startPos.down(blocksBelow)) == PathNodeType.WALKABLE
+        val isOpenAtBottom = getNode(startPos.down(minGapSize)) == PathNodeType.OPEN || getNode(startPos.down(minGapSize)) == PathNodeType.WALKABLE
         val isOpenGap = range.all { getNode(startPos.up(it)) == PathNodeType.OPEN }
 
         if(isOpenGap && isOpenAtBottom && isOpenInFront) {

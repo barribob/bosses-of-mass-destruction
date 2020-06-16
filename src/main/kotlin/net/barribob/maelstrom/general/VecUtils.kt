@@ -1,5 +1,6 @@
 package net.barribob.maelstrom.general
 
+import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import kotlin.math.cos
 import kotlin.math.sin
@@ -9,6 +10,8 @@ fun Vec3d.yOffset(i: Double): Vec3d = this.add(0.0, i, 0.0)
 fun Vec3d.planeProject(planeVector: Vec3d): Vec3d = this.subtract(planeVector.multiply(this.dotProduct(planeVector)))
 
 fun newVec3d(x: Double = 0.0, y: Double = 0.0, z: Double = 0.0): Vec3d = Vec3d(x, y, z)
+
+fun BlockPos.asVec3d(): Vec3d = Vec3d(this.x.toDouble(), this.y.toDouble(), this.z.toDouble())
 
 /**
  * Rotate a normalized vector around an axis by given degrees https://stackoverflow.com/questions/31225062/rotating-a-vector-by-angle-and-axis-in-java
