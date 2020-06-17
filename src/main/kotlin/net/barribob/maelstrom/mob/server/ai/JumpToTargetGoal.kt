@@ -23,11 +23,13 @@ import kotlin.math.pow
  * What it does not do
  * Does not employ any actual path finding, so it's not a true jumping navigation ai
  *
+ * Issues
+ * Lava and fire jump seem to not work
  */
 class JumpToTargetGoal(val entity: MobEntityWithAi, private val maxHorizonalVelocity: Double) : IGoal {
 
     private val minGapSize = 2 // Minimum number of open blocks for something to be counted as worth jumping over
-    private val minTargetDistance = 2.5 // Minimum distance required for the jump ai to activete
+    private val minTargetDistance = 2 // Minimum distance required for the jump ai to activate
     private val yVelMin = 0.4 // Minimum y velocity for a jump. Any velocities lower get clamped up to this value
     private val yVelMax = 0.5 // Maximum y velocity for a jump. Used in determining if an entity can make a jump
     private val jumpClearanceAboveHead = 1.0 // Y offset above an entity's hitbox to raycast to see if there are any blocks in the way of the jump
@@ -90,6 +92,8 @@ class JumpToTargetGoal(val entity: MobEntityWithAi, private val maxHorizonalVelo
             // If on edge, attempt jump
             if(hasObstacle(BlockPos(entity.pos)) && tryToJumpInDirection(direction)) {
 
+                print("jumped")
+
                 // Make entity move forward for a certain number of ticks in the future
                 for (i in 0..forwardMovementTicks) {
                     MaelstromMod.serverEventScheduler.addEvent(
@@ -100,9 +104,11 @@ class JumpToTargetGoal(val entity: MobEntityWithAi, private val maxHorizonalVelo
                             }, i)
                 }
                 entity.navigation.stop()
+                println()
                 return true
             }
         }
+        println()
         return false
     }
 
@@ -122,18 +128,23 @@ class JumpToTargetGoal(val entity: MobEntityWithAi, private val maxHorizonalVelo
         // etc...
         val heightDepthPairs = (0..steps).flatMap { d -> (0..(steps - d)).map { y -> Pair(d, y) } }.sortedBy { pair -> pair.first + pair.second }
         for ((x, y) in heightDepthPairs) {
-            val scaledStepX = 2.0 + x
+            val scaledStepX = 2.5 + x
             val jumpToPos = actorPos.add(targetDirection.multiply(scaledStepX))
             val blockPos = BlockPos(jumpToPos)
-            val groundHeight = findGroundAt(blockPos, y) ?: return null
+            val groundHeight = findGroundAt(blockPos, y) ?: continue
+            print("found ground: ")
             val walkablePos = BlockPos(blockPos.x, groundHeight, blockPos.z)
-            var jumpLength = calculateJumpDistance(walkablePos, actorPos, jumpToPos, groundHeight.toDouble()) ?: return null
+            var jumpLength = calculateJumpDistance(walkablePos, actorPos, jumpToPos, groundHeight.toDouble()) ?: continue
+
+            print("found length: ")
 
             jumpLength -= (entity.width * 0.5)
 
             if (!hasClearance(jumpLength, targetDirection)) {
                 return null
             }
+
+            print("has clearance: ")
 
             // Approximate required jump velocity using some basic physics... intuition?
             val blockHeight = entity.world.getBlockState(walkablePos).getCollisionShape(entity.world, walkablePos).boundingBox.yLength
