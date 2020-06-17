@@ -1,6 +1,5 @@
 package net.barribob.maelstrom.animation.server
 
-import com.google.gson.JsonObject
 import io.netty.buffer.Unpooled
 import net.barribob.maelstrom.MaelstromMod
 import net.barribob.maelstrom.animation.client.AnimationLoader
@@ -35,17 +34,7 @@ class ServerAnimationWatcher {
         packetData.writeString(animationId)
         watchingPlayers.forEach { ServerSidePacketRegistry.INSTANCE.sendToPlayer(it, MaelstromMod.START_ANIMATION_PACKET_ID, packetData) }
 
-        // The server needs to watch looping animations
-        val animation: JsonObject = animationLoader.getAnimationObject(animationId)
-        if (animation.has("loop")) {
-            if (animation["loop"].asBoolean) {
-                if (!loopingAnimations.containsKey(entity)) {
-                    loopingAnimations[entity] = mutableMapOf(Pair(animationId, entity.age))
-                } else {
-                    loopingAnimations[entity]?.put(animationId, entity.age)
-                }
-            }
-        }
+        // TODO: The server needs to watch looping animations
     }
 
     fun stopAnimation(entity: LivingEntity, animationId: String) {

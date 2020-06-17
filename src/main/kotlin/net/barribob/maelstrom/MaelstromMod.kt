@@ -1,9 +1,12 @@
 package net.barribob.maelstrom
 
+import net.barribob.maelstrom.adapters.GoalAdapter
 import net.barribob.maelstrom.animation.client.ClientAnimationWatcher
 import net.barribob.maelstrom.animation.server.ServerAnimationWatcher
 import net.barribob.maelstrom.general.EventScheduler
+import net.barribob.maelstrom.mob.AIManager
 import net.barribob.maelstrom.mob.MaelstromScoutEntity
+import net.barribob.maelstrom.mob.server.ai.JumpToTargetGoal
 import net.barribob.maelstrom.model.ModelMaelstromScout
 import net.barribob.maelstrom.registry.registerModRenderer
 import net.fabricmc.api.EnvType
@@ -28,6 +31,9 @@ object MaelstromMod {
     @Environment(EnvType.SERVER)
     val serverEventScheduler = EventScheduler()
 
+    @Environment(EnvType.SERVER)
+    val aiManager = AIManager()
+
     @Environment(EnvType.CLIENT)
     val clientAnimationWatcher = ClientAnimationWatcher()
 
@@ -37,9 +43,17 @@ object MaelstromMod {
     val LOGGER: Logger = LogManager.getLogger()
 }
 
+object Entities {
+    val MAELSTROM_SCOUT: EntityType<MaelstromScoutEntity> = Registry.register(Registry.ENTITY_TYPE,
+            Identifier(MaelstromMod.MODID, "maelstrom_scout"),
+            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, ::MaelstromScoutEntity).dimensions(EntityDimensions.fixed(0.9F, 1.8F)).build())
+}
+
 @Suppress("unused")
 fun init() {
     ServerTickCallback.EVENT.register(ServerTickCallback { MaelstromMod.serverEventScheduler.updateEvents() })
+
+    MaelstromMod.aiManager.addGoalInjection(Entities.MAELSTROM_SCOUT) { entity -> Pair(2, GoalAdapter(JumpToTargetGoal(entity, 0.7))) }
 }
 
 @Environment(EnvType.CLIENT)
@@ -61,11 +75,4 @@ fun clientInit() {
     }}
 
     ClientTickCallback.EVENT.register( ClientTickCallback { MaelstromMod.clientAnimationWatcher.tick() } )
-
-}
-
-object Entities {
-    val MAELSTROM_SCOUT: EntityType<MaelstromScoutEntity> = Registry.register(Registry.ENTITY_TYPE,
-            Identifier(MaelstromMod.MODID, "maelstrom_scout"),
-            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, ::MaelstromScoutEntity).dimensions(EntityDimensions.fixed(0.9F, 1.8F)).build())
 }

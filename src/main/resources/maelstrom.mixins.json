@@ -3,6 +3,7 @@
   "package": "net.barribob.maelstrom.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "AIManipulationMixin"
   ],
   "client": [
     "AnimationMixins"

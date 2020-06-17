@@ -5,7 +5,7 @@ import net.barribob.maelstrom.adapters.IGoal
 import net.barribob.maelstrom.general.*
 import net.barribob.maelstrom.mob.MobUtils
 import net.minecraft.entity.ai.pathing.PathNodeType
-import net.minecraft.entity.mob.MobEntityWithAi
+import net.minecraft.entity.mob.MobEntity
 import net.minecraft.util.hit.HitResult
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
@@ -26,7 +26,7 @@ import kotlin.math.pow
  * Issues
  * Lava and fire jump seem to not work
  */
-class JumpToTargetGoal(val entity: MobEntityWithAi, private val maxHorizonalVelocity: Double) : IGoal {
+class JumpToTargetGoal(val entity: MobEntity, private val maxHorizonalVelocity: Double) : IGoal {
 
     private val minGapSize = 2 // Minimum number of open blocks for something to be counted as worth jumping over
     private val minTargetDistance = 2 // Minimum distance required for the jump ai to activate

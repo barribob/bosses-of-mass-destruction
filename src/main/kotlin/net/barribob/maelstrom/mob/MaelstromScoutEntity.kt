@@ -4,7 +4,6 @@ import net.barribob.maelstrom.MaelstromMod
 import net.barribob.maelstrom.adapters.HostileEntityAdapter
 import net.barribob.maelstrom.adapters.IGoal
 import net.barribob.maelstrom.general.yOffset
-import net.barribob.maelstrom.mob.server.ai.JumpToTargetGoal
 import net.barribob.maelstrom.mob.server.ai.TimedAttackGoal
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.attribute.EntityAttribute
@@ -25,7 +24,6 @@ class MaelstromScoutEntity(entityType: EntityType<out HostileEntity>, world: Wor
 
     override fun getGoals(goals: MutableList<Pair<Int, IGoal>>, targetGoals: MutableList<Pair<Int, IGoal>>) {
         goals.add(MobUtils.getSwimmingGoal(1, this))
-        goals.add(Pair(2, JumpToTargetGoal(this, 0.7)))
         goals.add(Pair(3, TimedAttackGoal(this, 3F, 2.5F, 5, ::handleAttack)))
         goals.add(MobUtils.getWanderingGoal(4, 1.0, this))
         targetGoals.add(MobUtils.getTargetSelectGoal(1, this))

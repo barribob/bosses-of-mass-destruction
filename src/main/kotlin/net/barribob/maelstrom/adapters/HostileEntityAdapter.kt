@@ -26,5 +26,6 @@ open abstract class HostileEntityAdapter(entityType: EntityType<out HostileEntit
         this.getGoals(goals, targetGoals)
         goals.forEach { goalSelector.add(it.first, GoalAdapter(it.second)) }
         targetGoals.forEach { targetSelector.add(it.first, GoalAdapter(it.second)) }
+        super.initGoals()
     }
 }
