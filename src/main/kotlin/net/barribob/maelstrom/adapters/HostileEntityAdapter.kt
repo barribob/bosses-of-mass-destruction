@@ -7,7 +7,7 @@ import net.minecraft.entity.mob.HostileEntity
 import net.minecraft.world.World
 
 /**
- * Abstract base class for mobs. Not ideal in its archtecture, but the goal to allow easier updates by having most of the minecraft specific
+ * Abstract base class for mobs. Not ideal in its architecture, but the goal to allow easier updates by having most of the minecraft specific
  * stuff in there so I only have to heavily update this class instead of every entity class
  */
 open abstract class HostileEntityAdapter(entityType: EntityType<out HostileEntity>, world: World) : HostileEntity(entityType, world), IHostileEntity {
