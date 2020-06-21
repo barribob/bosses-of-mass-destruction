@@ -1,5 +1,6 @@
 package net.barribob.maelstrom.mob.server.ai
 
+import com.sun.javafx.geom.Vec2d
 import net.barribob.maelstrom.MaelstromMod
 import net.barribob.maelstrom.adapters.IGoal
 import net.barribob.maelstrom.general.*
@@ -37,12 +38,13 @@ class JumpToTargetGoal(val entity: MobEntity) : IGoal {
     private val gravity = 0.08 // Minecraft's gravity constant????
     private val forwardMovementTicks = 40 // How many ticks the entity will "press the forward key" while jumping
     private val anglesToAttemptJump = listOf(0, 15, -15, 30, -30, 45, -45)
-    private val edgeDetectionDistance = 1.2 // Maximum distance an entity can from an edge before the ai considers running
+    private val edgeDetectionDistance = 1.8 // Maximum distance an entity can from an edge before the ai considers running
     private val detectionPoints = 5
     private val moveSpeed = 1.0
     private val jumpForwardSpeed = 5.0
     private val maxHorizonalVelocity = entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) * moveSpeed
     private val yVelocityScale = 1.4
+    private var jumpData: JumpData? = null
 
     override fun getControls(): EnumSet<IGoal.Control>? {
         return EnumSet.of(IGoal.Control.MOVE)
@@ -65,66 +67,75 @@ class JumpToTargetGoal(val entity: MobEntity) : IGoal {
                 return false
             }
 
-            return tryToJump(target)
-        }
-        return false
-    }
+            val jumpData = findJump(target)
 
-    private fun tryToJump(target: Vec3d): Boolean {
-
-        // Only xz direction
-        val targetDirection: Vec3d = target.subtract(entity.pos).planeProject(newVec3d(y = 1.0)).normalize()
-
-        for(angle in anglesToAttemptJump) {
-            val gaps = BooleanArray(detectionPoints) { false }
-            val endPos = entity.pos.add(targetDirection.multiply(edgeDetectionDistance))
-
-            VecUtils.lineCallback(entity.pos, endPos, detectionPoints) { pos, i ->
-                run {
-                    if(getNode(BlockPos(pos)) == BlockType.PASSABLE_OBSTACLE) {
-                        gaps[i] = true
-                    }
-                }
-            }
-
-            println(gaps.joinToString())
-
-            // If edge is farther away, move towards edge
-            if(!gaps[0] && gaps.any{ it } && !entity.moveControl.isMoving) {
-                entity.moveControl.moveTo(endPos.x, endPos.y, endPos.z, moveSpeed)
-            }
-
-            val direction = targetDirection.rotateVector(newVec3d(y = 1.0), angle.toDouble())
-
-            // If on edge, attempt jump
-            if(gaps[0] && gaps[1] && tryToJumpInDirection(direction)) {
-
-                print("jumped")
-
-                // Make entity move forward for a certain number of ticks in the future
-                for (i in 0..forwardMovementTicks) {
-                    MaelstromMod.serverEventScheduler.addEvent(
-                            { !entity.isAlive || entity.isOnGround },
-                            {
-                                val movePos = entity.pos.add(direction)
-                                entity.moveControl.moveTo(movePos.x, movePos.y, movePos.z, jumpForwardSpeed)
-                            }, i)
-                }
-                entity.navigation.stop()
-                println()
+            if(jumpData != null) {
+                this.jumpData = jumpData
                 return true
             }
         }
         return false
     }
 
-    private fun tryToJumpInDirection(targetDirection: Vec3d): Boolean {
-        val jumpVel = getJumpLength(entity.pos, targetDirection) ?: return false
-        MobUtils.leapTowards(entity, entity.pos.add(targetDirection), jumpVel.first, jumpVel.second)
-        return true
+    private fun findJump(target: Vec3d): JumpData? {
+
+        // Only xz direction
+        val targetDirection: Vec3d = target.subtract(entity.pos).planeProject(newVec3d(y = 1.0)).normalize()
+
+        for(angle in anglesToAttemptJump) {
+            val jumpDirection = targetDirection.rotateVector(newVec3d(y = 1.0), angle.toDouble())
+            val gaps = Array<Pair<Vec3d, Boolean>>(detectionPoints) { Pair(Vec3d.ZERO, false) }
+            val endPos = entity.pos.add(jumpDirection.multiply(edgeDetectionDistance))
+
+            VecUtils.lineCallback(entity.pos, endPos, detectionPoints) { pos, i ->
+                run {
+                    if (getNode(BlockPos(pos)) == BlockType.PASSABLE_OBSTACLE) {
+                        gaps[i] = Pair(pos, true)
+                    }
+                }
+            }
+
+            val edgesInARow = gaps.fold(Pair(0, 0)){ acc: Pair<Int, Int>, pair ->
+                val currentInARow = if(pair.second) acc.second + 1 else 0
+                val highestInARow = if(currentInARow > acc.first) currentInARow else acc.first
+                Pair(highestInARow, currentInARow)
+            }.first
+            val firstEdge = gaps.firstOrNull { it.second }?.first
+
+            if(firstEdge != null && edgesInARow > 2) {
+                val jumpVel = getJumpLength(entity.pos, jumpDirection)
+                if(jumpVel != null) {
+                    return JumpData(jumpVel, jumpDirection, firstEdge)
+                }
+            }
+        }
+
+        return null
     }
 
-    private fun getJumpLength(actorPos: Vec3d, targetDirection: Vec3d): Pair<Double, Double>? {
+    data class JumpData(val jumpVel: Vec2d, val direction: Vec3d, val edgePos: Vec3d)
+
+    override fun tick() { // TODO: Move and jump when ready
+        val jumpData = jumpData ?: return
+
+        if(BlockPos(this.entity.pos) != BlockPos(jumpData.edgePos)) {
+            entity.moveControl.moveTo(jumpData.edgePos.x, jumpData.edgePos.y, jumpData.edgePos.z, moveSpeed)
+        }
+
+        MobUtils.leapTowards(entity, entity.pos.add(jumpData.direction), jumpData.jumpVel.x, jumpData.jumpVel.y)
+        for (i in 0..forwardMovementTicks) {
+            MaelstromMod.serverEventScheduler.addEvent(
+                    { !entity.isAlive || entity.isOnGround },
+                    {
+                        val movePos = entity.pos.add(jumpData.direction)
+                        entity.moveControl.moveTo(movePos.x, movePos.y, movePos.z, jumpForwardSpeed)
+                    }, i)
+        }
+        entity.navigation.stop()
+        this.jumpData = null
+    }
+
+    private fun getJumpLength(actorPos: Vec3d, targetDirection: Vec3d): Vec2d? {
         val steps = 5
 
         // Build the ground detection to reflect a staircase shape in this order:
@@ -163,14 +174,14 @@ class JumpToTargetGoal(val entity: MobEntity) : IGoal {
             println("$xVelNoJump $maxHorizonalVelocity")
 
             if(xVelNoJump < maxHorizonalVelocity) {
-                return Pair(xVelNoJump, 0.0)
+                return Vec2d(xVelNoJump, 0.0)
             }
 
             val xVelWithJump = calculateRequiredXVelocity(jumpLength, jumpHeight, jumpYVel)
 
             println("$xVelWithJump $maxHorizonalVelocity")
             if(xVelWithJump < maxHorizonalVelocity) {
-                return Pair(xVelWithJump, jumpYVel)
+                return Vec2d(xVelWithJump, jumpYVel)
             }
 
             return null
@@ -178,7 +189,7 @@ class JumpToTargetGoal(val entity: MobEntity) : IGoal {
         return null
     }
 
-    fun calculateRequiredXVelocity(jumpLength: Double, jumpHeight: Double, yVel: Double): Double {
+    private fun calculateRequiredXVelocity(jumpLength: Double, jumpHeight: Double, yVel: Double): Double {
         val scaledYVel = yVel * yVelocityScale
         val quadraticSqrt = sqrt(scaledYVel.pow(2) - 4 * - jumpHeight * -gravity)
         if(quadraticSqrt.isNaN()) return Double.POSITIVE_INFINITY
