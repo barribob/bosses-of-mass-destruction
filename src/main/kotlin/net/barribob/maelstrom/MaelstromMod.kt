@@ -53,7 +53,10 @@ object Entities {
 fun init() {
     ServerTickCallback.EVENT.register(ServerTickCallback { MaelstromMod.serverEventScheduler.updateEvents() })
 
-    MaelstromMod.aiManager.addGoalInjection(Entities.MAELSTROM_SCOUT) { entity -> Pair(2, GoalAdapter(JumpToTargetGoal(entity, 0.7))) }
+    MaelstromMod.aiManager.addGoalInjection(Entities.MAELSTROM_SCOUT) { entity -> Pair(2, GoalAdapter(JumpToTargetGoal(entity))) }
+    MaelstromMod.aiManager.addGoalInjection(EntityType.ZOMBIE) { entity -> Pair(1, GoalAdapter(JumpToTargetGoal(entity))) }
+    MaelstromMod.aiManager.addGoalInjection(EntityType.SILVERFISH) { entity -> Pair(1, GoalAdapter(JumpToTargetGoal(entity))) }
+    MaelstromMod.aiManager.addGoalInjection(EntityType.SPIDER) { entity -> Pair(3, GoalAdapter(JumpToTargetGoal(entity))) }
 }
 
 @Environment(EnvType.CLIENT)

@@ -3,20 +3,26 @@ package net.barribob.maelstrom.mob
 import net.barribob.maelstrom.adapters.GoalConverter
 import net.barribob.maelstrom.adapters.IGoal
 import net.barribob.maelstrom.general.yOffset
+import net.barribob.maelstrom.mob.server.ai.BlockType
+import net.minecraft.block.*
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.ai.goal.FollowTargetGoal
 import net.minecraft.entity.ai.goal.RevengeGoal
 import net.minecraft.entity.ai.goal.SwimGoal
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal
+import net.minecraft.entity.ai.pathing.NavigationType
 import net.minecraft.entity.boss.dragon.EnderDragonPart
 import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.mob.MobEntity
 import net.minecraft.entity.mob.MobEntityWithAi
 import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.tag.BlockTags
+import net.minecraft.tag.FluidTags
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Box
 import net.minecraft.util.math.Vec3d
+import net.minecraft.world.BlockView
 import kotlin.math.min
 import kotlin.math.pow
 
@@ -111,5 +117,37 @@ object MobUtils {
 
     fun getRevengeGoal(priority: Int, entity: MobEntityWithAi) : Pair<Int, IGoal> {
         return Pair(priority, GoalConverter(RevengeGoal(entity, *arrayOfNulls(0))))
+    }
+
+    fun getBlockType(world: BlockView, pos: BlockPos, callsLeft: Int): BlockType {
+        val blockState = world.getBlockState(pos)
+        val block = blockState.block
+        val material = blockState.material
+        val fluidState = world.getFluidState(pos)
+        val belowType = if(pos.y > 0 && callsLeft > 0) getBlockType(world, pos.down(), callsLeft - 1) else BlockType.OPEN
+
+        return when {
+            blockState.isOf(Blocks.SWEET_BERRY_BUSH) ||
+                    blockState.isIn(BlockTags.FIRE) ||
+                    CampfireBlock.isLitCampfire(blockState) ||
+                    fluidState.matches(FluidTags.WATER) -> BlockType.PASSABLE_OBSTACLE
+            fluidState.matches(FluidTags.LAVA) ||
+                    blockState.isOf(Blocks.CACTUS) ||
+                    blockState.isOf(Blocks.HONEY_BLOCK) ||
+                    blockState.isOf(Blocks.MAGMA_BLOCK) -> BlockType.SOLID_OBSTACLE
+            block is LeavesBlock ||
+                    block.isIn(BlockTags.FENCES) ||
+                    block.isIn(BlockTags.WALLS) ||
+                    (block is FenceGateBlock && !blockState.get(FenceGateBlock.OPEN)) ||
+                    (DoorBlock.isWoodenDoor(blockState) && !blockState.get(DoorBlock.OPEN)) ||
+                    (block is DoorBlock && material == Material.METAL && !blockState.get(DoorBlock.OPEN)) ||
+                    (block is DoorBlock && blockState.get(DoorBlock.OPEN)) ||
+                    !blockState.canPathfindThrough(world, pos, NavigationType.LAND) -> BlockType.BLOCKED
+            belowType == BlockType.BLOCKED -> BlockType.WALKABLE
+            belowType == BlockType.OPEN -> BlockType.PASSABLE_OBSTACLE
+            belowType == BlockType.PASSABLE_OBSTACLE -> BlockType.PASSABLE_OBSTACLE
+            belowType == BlockType.SOLID_OBSTACLE -> BlockType.PASSABLE_OBSTACLE
+            else -> BlockType.OPEN
+        }
     }
 }

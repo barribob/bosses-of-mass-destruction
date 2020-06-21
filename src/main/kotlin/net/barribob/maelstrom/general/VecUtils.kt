@@ -40,7 +40,7 @@ object VecUtils {
     fun lineCallback(start: Vec3d, end: Vec3d, points: Int, callback: (Vec3d, Int) -> Unit) {
         val dir: Vec3d = end.subtract(start).multiply(1 / (points - 1).toDouble())
         var pos = start
-        for (i in 1..points) {
+        for (i in 0 until points) {
             callback(pos, i)
             pos = pos.add(dir)
         }

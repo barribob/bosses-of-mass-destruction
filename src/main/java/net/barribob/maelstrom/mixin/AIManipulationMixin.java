@@ -17,14 +17,16 @@ public class AIManipulationMixin {
 
     @Shadow @Final protected GoalSelector goalSelector;
 
-    @Inject(at = @At(value = "RETURN"), method = "initGoals")
+    @Inject(at = @At(value = "RETURN"), method = "<init>")
     private void goal(CallbackInfo info) {
-        MobEntity entity = (MobEntity) (Object)this;
-        if(MaelstromMod.INSTANCE.getAiManager().getInjections().containsKey(entity.getType())) {
-            MaelstromMod.INSTANCE.getAiManager().getInjections().get(entity.getType()).forEach((generator) -> {
-                Pair<Integer, Goal> pair = generator.invoke(entity);
-                this.goalSelector.add(pair.component1(), pair.component2());
-            });
+        MobEntity entity = (MobEntity) (Object) this;
+        if (entity.world != null && !entity.world.isClient) {
+            if (MaelstromMod.INSTANCE.getAiManager().getInjections().containsKey(entity.getType())) {
+                MaelstromMod.INSTANCE.getAiManager().getInjections().get(entity.getType()).forEach((generator) -> {
+                    Pair<Integer, Goal> pair = generator.invoke(entity);
+                    this.goalSelector.add(pair.component1(), pair.component2());
+                });
+            }
         }
     }
 }
