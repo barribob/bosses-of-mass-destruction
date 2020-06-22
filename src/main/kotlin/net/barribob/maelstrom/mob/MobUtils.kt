@@ -14,6 +14,7 @@ import net.minecraft.entity.ai.goal.WanderAroundFarGoal
 import net.minecraft.entity.ai.pathing.NavigationType
 import net.minecraft.entity.boss.dragon.EnderDragonPart
 import net.minecraft.entity.damage.DamageSource
+import net.minecraft.entity.effect.StatusEffects
 import net.minecraft.entity.mob.MobEntity
 import net.minecraft.entity.mob.MobEntityWithAi
 import net.minecraft.entity.player.PlayerEntity
@@ -23,6 +24,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Box
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.BlockView
+import net.minecraft.world.World
 import kotlin.math.min
 import kotlin.math.pow
 
@@ -149,5 +151,24 @@ object MobUtils {
             belowType == BlockType.SOLID_OBSTACLE -> BlockType.PASSABLE_OBSTACLE
             else -> BlockType.OPEN
         }
+    }
+
+
+    fun getJumpVelocity(world: World, entity: LivingEntity): Double {
+        var baseVelocity = 0.42 * getJumpVelocityMultiplier(world, entity)
+        if (entity.hasStatusEffect(StatusEffects.JUMP_BOOST)) {
+            baseVelocity += 0.1 * (entity.getStatusEffect(StatusEffects.JUMP_BOOST)!!.amplifier + 1)
+        }
+        return baseVelocity
+    }
+
+    private fun getJumpVelocityMultiplier(world: World, entity: LivingEntity): Double {
+        val f: Float = world.getBlockState(entity.blockPos).block.jumpVelocityMultiplier
+        val g: Float = world.getBlockState(getVelocityAffectingPos(entity)).block.jumpVelocityMultiplier
+        return if (f.toDouble() == 1.0) g.toDouble() else f.toDouble()
+    }
+
+    private fun getVelocityAffectingPos(entity: LivingEntity): BlockPos? {
+        return BlockPos(entity.pos.x, entity.boundingBox.minY - 0.5000001, entity.pos.z)
     }
 }

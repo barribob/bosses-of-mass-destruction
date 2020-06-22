@@ -12,6 +12,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.RayTraceContext
 import java.util.*
+import kotlin.math.floor
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -26,24 +27,19 @@ import kotlin.math.sqrt
  * Does not employ any actual path finding, so it's not a true jumping navigation ai
  *
  * Issues
- * Entities hesitant to jump java
- * Entities that can't make the jump might run off
- * Entities have trouble with header hitting
+ * 4 block jumps / extreme speed, the equations seem to start failing
  */
 class JumpToTargetGoal(val entity: MobEntity) : IGoal {
-
     private val minTargetDistance = 2 // Minimum distance required for the jump ai to activate
-    private val jumpYVel = 0.5 // Maximum y velocity for a jump. Used in determining if an entity can make a jump
     private val jumpClearanceAboveHead = 1.0 // Y offset above an entity's hitbox to raycast to see if there are any blocks in the way of the jump
     private val gravity = 0.08 // Minecraft's gravity constant????
     private val forwardMovementTicks = 40 // How many ticks the entity will "press the forward key" while jumping
-    private val anglesToAttemptJump = listOf(0, 15, -15, 30, -30, 45, -45)
-    private val edgeDetectionDistance = 1.8 // Maximum distance an entity can from an edge before the ai considers running
-    private val detectionPoints = 5
+    private val anglesToAttemptJump = (-45..45 step 5).toList()
+    private val edgeDetectionDistance = 2.0 // Maximum distance an entity can from an edge before the ai considers running
+    private val detectionPoints = floor(edgeDetectionDistance * 8).toInt()
     private val moveSpeed = 1.0
     private val jumpForwardSpeed = 5.0
-    private val maxHorizonalVelocity = entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) * moveSpeed
-    private val yVelocityScale = 1.4
+    private val yVelocityScale = 1.38
     private var jumpData: JumpData? = null
 
     override fun getControls(): EnumSet<IGoal.Control>? {
@@ -51,7 +47,7 @@ class JumpToTargetGoal(val entity: MobEntity) : IGoal {
     }
 
     override fun canStart(): Boolean {
-        if (entity.navigation != null && entity.isOnGround) {
+        if (entity.navigation != null && entity.isOnGround && jumpData == null) {
             val path = entity.navigation.currentPath
 
             // If the pathfinder has found a safe path already, no need for jumping
@@ -70,6 +66,7 @@ class JumpToTargetGoal(val entity: MobEntity) : IGoal {
             val jumpData = findJump(target)
 
             if(jumpData != null) {
+                println("found jump")
                 this.jumpData = jumpData
                 return true
             }
@@ -77,22 +74,23 @@ class JumpToTargetGoal(val entity: MobEntity) : IGoal {
         return false
     }
 
+    override fun shouldContinue(): Boolean {
+        return canStart() || this.jumpData != null
+    }
+
     private fun findJump(target: Vec3d): JumpData? {
+//        println("trying to find jump...")
 
         // Only xz direction
         val targetDirection: Vec3d = target.subtract(entity.pos).planeProject(newVec3d(y = 1.0)).normalize()
 
         for(angle in anglesToAttemptJump) {
             val jumpDirection = targetDirection.rotateVector(newVec3d(y = 1.0), angle.toDouble())
-            val gaps = Array<Pair<Vec3d, Boolean>>(detectionPoints) { Pair(Vec3d.ZERO, false) }
+            val gaps = mutableListOf<Pair<Vec3d, Boolean>>()
             val endPos = entity.pos.add(jumpDirection.multiply(edgeDetectionDistance))
 
-            VecUtils.lineCallback(entity.pos, endPos, detectionPoints) { pos, i ->
-                run {
-                    if (getNode(BlockPos(pos)) == BlockType.PASSABLE_OBSTACLE) {
-                        gaps[i] = Pair(pos, true)
-                    }
-                }
+            VecUtils.lineCallback(entity.pos, endPos, detectionPoints) { pos, _ ->
+                gaps.add(Pair(pos, getNode(BlockPos(pos)) == BlockType.PASSABLE_OBSTACLE))
             }
 
             val edgesInARow = gaps.fold(Pair(0, 0)){ acc: Pair<Int, Int>, pair ->
@@ -103,7 +101,7 @@ class JumpToTargetGoal(val entity: MobEntity) : IGoal {
             val firstEdge = gaps.firstOrNull { it.second }?.first
 
             if(firstEdge != null && edgesInARow > 2) {
-                val jumpVel = getJumpLength(entity.pos, jumpDirection)
+                val jumpVel = getJumpLength(firstEdge, jumpDirection)
                 if(jumpVel != null) {
                     return JumpData(jumpVel, jumpDirection, firstEdge)
                 }
@@ -115,14 +113,19 @@ class JumpToTargetGoal(val entity: MobEntity) : IGoal {
 
     data class JumpData(val jumpVel: Vec2d, val direction: Vec3d, val edgePos: Vec3d)
 
-    override fun tick() { // TODO: Move and jump when ready
+    override fun tick() {
         val jumpData = jumpData ?: return
 
         if(BlockPos(this.entity.pos) != BlockPos(jumpData.edgePos)) {
             entity.moveControl.moveTo(jumpData.edgePos.x, jumpData.edgePos.y, jumpData.edgePos.z, moveSpeed)
+//            println("moving")
+            return
         }
 
-        MobUtils.leapTowards(entity, entity.pos.add(jumpData.direction), jumpData.jumpVel.x, jumpData.jumpVel.y)
+        MobUtils.leapTowards(entity, entity.pos.add(jumpData.direction), jumpData.jumpVel.x, 0.0)
+        if(jumpData.jumpVel.y > 0) {
+            entity.jumpControl.setActive()
+        }
         for (i in 0..forwardMovementTicks) {
             MaelstromMod.serverEventScheduler.addEvent(
                     { !entity.isAlive || entity.isOnGround },
@@ -132,23 +135,26 @@ class JumpToTargetGoal(val entity: MobEntity) : IGoal {
                     }, i)
         }
         entity.navigation.stop()
+//        println("jumped")
         this.jumpData = null
     }
 
     private fun getJumpLength(actorPos: Vec3d, targetDirection: Vec3d): Vec2d? {
-        val steps = 5
-
-        // Build the ground detection to reflect a staircase shape in this order:
-        // 0 1 3
-        // 2 4
-        // 5
-        // etc...
+        val jumpYVel = MobUtils.getJumpVelocity(entity.world, entity) // Maximum y velocity for a jump. Used in determining if an entity can make a jump
+        val maxJumpHeight = (jumpYVel * 4).toInt()
+        val maxHorizonalVelocity = entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) * moveSpeed
+//        println("Max y vel: $jumpYVel, Max x vel: $maxHorizonalVelocity")
+        val steps: Int = when {
+            maxHorizonalVelocity < 0.24 -> 3
+            maxHorizonalVelocity > 0.24 && maxHorizonalVelocity < 0.3 -> 4
+            else -> 5
+        }
         val heightDepthPairs = (0..steps).flatMap { d -> (0..(steps - d)).map { y -> Pair(d, y) } }.sortedBy { pair -> pair.first + pair.second }
         for ((x, y) in heightDepthPairs) {
             val scaledStepX = 1.0 + x
             val jumpToPos = actorPos.add(targetDirection.multiply(scaledStepX))
             val blockPos = BlockPos(jumpToPos)
-            val groundHeight = findGroundAt(blockPos, y) ?: continue
+            val groundHeight = findGroundAt(blockPos, y, maxJumpHeight) ?: continue
 //            print("found ground: ")
             val walkablePos = BlockPos(blockPos.x, groundHeight, blockPos.z)
             var jumpLength = calculateJumpDistance(walkablePos, actorPos, jumpToPos, groundHeight.toDouble()) ?: continue
@@ -157,7 +163,7 @@ class JumpToTargetGoal(val entity: MobEntity) : IGoal {
 
             jumpLength -= (entity.width * 0.5)
 
-            if (!hasClearance(jumpLength, targetDirection)) {
+            if (!hasClearance(actorPos, jumpLength, targetDirection)) {
                 return null
             }
 
@@ -168,10 +174,10 @@ class JumpToTargetGoal(val entity: MobEntity) : IGoal {
             val blockHeight = if(!blockShape.isEmpty) blockShape.boundingBox.yLength else 0.0
             val jumpHeight = groundHeight + blockHeight - actorPos.y
 
-            println("Jump Distance: $jumpLength Jump Height: $jumpHeight")
+//            println("Jump Distance: $jumpLength Jump Height: $jumpHeight")
 
             val xVelNoJump = calculateRequiredXVelocity(jumpLength, jumpHeight, 0.0)
-            println("$xVelNoJump $maxHorizonalVelocity")
+//            println("$xVelNoJump $maxHorizonalVelocity")
 
             if(xVelNoJump < maxHorizonalVelocity) {
                 return Vec2d(xVelNoJump, 0.0)
@@ -223,8 +229,8 @@ class JumpToTargetGoal(val entity: MobEntity) : IGoal {
     /**
      * Finds the first y position that has walkable ground or none
      */
-    private fun findGroundAt(pos: BlockPos, height: Int): Int? {
-        val range = (-height..1)
+    private fun findGroundAt(pos: BlockPos, height: Int, maxJumpHeight: Int): Int? {
+        val range = (-height..maxJumpHeight)
         val walkablePos = range.firstOrNull{ getNode(pos.up(it)) == BlockType.WALKABLE }
         return if(walkablePos == null) null else walkablePos + pos.y - 1
     }
@@ -232,9 +238,9 @@ class JumpToTargetGoal(val entity: MobEntity) : IGoal {
     /**
      * Finds if there are any blocks above the entity that may block the jump
      */
-    private fun hasClearance(jumpLength: Double, jumpDirection: Vec3d): Boolean {
+    private fun hasClearance(actorPos: Vec3d, jumpLength: Double, jumpDirection: Vec3d): Boolean {
         val requiredHeight = entity.height + jumpClearanceAboveHead
-        val start = entity.pos.yOffset(requiredHeight)
+        val start = actorPos.yOffset(requiredHeight)
         val end = start.add(jumpDirection.multiply(jumpLength))
         val result = entity.world.rayTrace(RayTraceContext(start, end, RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, entity))
         return result.type == HitResult.Type.MISS
