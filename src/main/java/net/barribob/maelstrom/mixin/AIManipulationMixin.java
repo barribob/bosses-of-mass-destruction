@@ -17,6 +17,8 @@ public class AIManipulationMixin {
 
     @Shadow @Final protected GoalSelector goalSelector;
 
+    @Shadow @Final protected GoalSelector targetSelector;
+
     @Inject(at = @At(value = "RETURN"), method = "<init>")
     private void goal(CallbackInfo info) {
         MobEntity entity = (MobEntity) (Object) this;
@@ -25,6 +27,11 @@ public class AIManipulationMixin {
                 MaelstromMod.INSTANCE.getAiManager().getInjections().get(entity.getType()).forEach((generator) -> {
                     Pair<Integer, Goal> pair = generator.invoke(entity);
                     this.goalSelector.add(pair.component1(), pair.component2());
+                });
+
+                MaelstromMod.INSTANCE.getAiManager().getTargetInjections().get(entity.getType()).forEach((generator) -> {
+                    Pair<Integer, Goal> pair = generator.invoke(entity);
+                    this.targetSelector.add(pair.component1(), pair.component2());
                 });
             }
         }
