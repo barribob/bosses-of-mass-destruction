@@ -28,7 +28,8 @@ public class AIManipulationMixin {
                     Pair<Integer, Goal> pair = generator.invoke(entity);
                     this.goalSelector.add(pair.component1(), pair.component2());
                 });
-
+            }
+            if (MaelstromMod.INSTANCE.getAiManager().getTargetInjections().containsKey(entity.getType())) {
                 MaelstromMod.INSTANCE.getAiManager().getTargetInjections().get(entity.getType()).forEach((generator) -> {
                     Pair<Integer, Goal> pair = generator.invoke(entity);
                     this.targetSelector.add(pair.component1(), pair.component2());

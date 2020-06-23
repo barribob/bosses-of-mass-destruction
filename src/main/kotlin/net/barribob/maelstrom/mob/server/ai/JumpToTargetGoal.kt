@@ -27,23 +27,23 @@ import kotlin.math.sqrt
  * Does not employ any actual path finding, so it's not a true jumping navigation ai
  *
  * Issues
- * 4 block jumps / extreme speed, the equations seem to start failing
+ * Spider navigation makes so that spiders speed off into a straight direction
  */
 class JumpToTargetGoal(val entity: MobEntity) : IGoal {
     private val minTargetDistance = 2 // Minimum distance required for the jump ai to activate
     private val jumpClearanceAboveHead = 1.0 // Y offset above an entity's hitbox to raycast to see if there are any blocks in the way of the jump
-    private val gravity = 0.08 // Minecraft's gravity constant????
     private val forwardMovementTicks = 40 // How many ticks the entity will "press the forward key" while jumping
     private val anglesToAttemptJump = (-45..45 step 5).toList()
     private val edgeDetectionDistance = 2.0 // Maximum distance an entity can from an edge before the ai considers running
     private val detectionPoints = floor(edgeDetectionDistance * 8).toInt()
     private val moveSpeed = 1.0
     private val jumpForwardSpeed = 5.0
-    private val yVelocityScale = 1.38
+    private val gravity = 0.1
+    private val yVelocityScale = 1.53
     private var jumpData: JumpData? = null
 
     override fun getControls(): EnumSet<IGoal.Control>? {
-        return EnumSet.of(IGoal.Control.MOVE)
+        return EnumSet.of(IGoal.Control.MOVE, IGoal.Control.JUMP)
     }
 
     override fun canStart(): Boolean {
@@ -71,11 +71,7 @@ class JumpToTargetGoal(val entity: MobEntity) : IGoal {
                 return true
             }
         }
-        return false
-    }
-
-    override fun shouldContinue(): Boolean {
-        return canStart() || this.jumpData != null
+        return jumpData != null
     }
 
     private fun findJump(target: Vec3d): JumpData? {
@@ -88,6 +84,10 @@ class JumpToTargetGoal(val entity: MobEntity) : IGoal {
             val jumpDirection = targetDirection.rotateVector(newVec3d(y = 1.0), angle.toDouble())
             val gaps = mutableListOf<Pair<Vec3d, Boolean>>()
             val endPos = entity.pos.add(jumpDirection.multiply(edgeDetectionDistance))
+
+            if(entity.velocity.add(jumpDirection).lengthSquared() < jumpDirection.lengthSquared()) {
+                continue
+            }
 
             VecUtils.lineCallback(entity.pos, endPos, detectionPoints) { pos, _ ->
                 gaps.add(Pair(pos, getNode(BlockPos(pos)) == BlockType.PASSABLE_OBSTACLE))
@@ -116,9 +116,11 @@ class JumpToTargetGoal(val entity: MobEntity) : IGoal {
     override fun tick() {
         val jumpData = jumpData ?: return
 
+//      println("${BlockPos(this.entity.pos)}, ${BlockPos(jumpData.edgePos)}")
+
         if(BlockPos(this.entity.pos) != BlockPos(jumpData.edgePos)) {
             entity.moveControl.moveTo(jumpData.edgePos.x, jumpData.edgePos.y, jumpData.edgePos.z, moveSpeed)
-//            println("moving")
+            println("moving")
             return
         }
 
@@ -130,12 +132,13 @@ class JumpToTargetGoal(val entity: MobEntity) : IGoal {
             MaelstromMod.serverEventScheduler.addEvent(
                     { !entity.isAlive || entity.isOnGround },
                     {
-                        val movePos = entity.pos.add(jumpData.direction)
+                        entity.navigation.stop()
+                        val movePos = entity.pos.add(jumpData.direction.multiply(3.0))
                         entity.moveControl.moveTo(movePos.x, movePos.y, movePos.z, jumpForwardSpeed)
                     }, i)
         }
         entity.navigation.stop()
-//        println("jumped")
+        println("jumped")
         this.jumpData = null
     }
 
@@ -143,7 +146,7 @@ class JumpToTargetGoal(val entity: MobEntity) : IGoal {
         val jumpYVel = MobUtils.getJumpVelocity(entity.world, entity) // Maximum y velocity for a jump. Used in determining if an entity can make a jump
         val maxJumpHeight = (jumpYVel * 4).toInt()
         val maxHorizonalVelocity = entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) * moveSpeed
-//        println("Max y vel: $jumpYVel, Max x vel: $maxHorizonalVelocity")
+        println("Max y vel: $jumpYVel, Max x vel: $maxHorizonalVelocity")
         val steps: Int = when {
             maxHorizonalVelocity < 0.24 -> 3
             maxHorizonalVelocity > 0.24 && maxHorizonalVelocity < 0.3 -> 4

@@ -57,10 +57,15 @@ fun init() {
 
     MaelstromMod.aiManager.addGoalInjection(Entities.MAELSTROM_SCOUT) { entity -> Pair(2, GoalAdapter(JumpToTargetGoal(entity))) }
     MaelstromMod.aiManager.addGoalInjection(EntityType.ZOMBIE) { entity -> Pair(1, GoalAdapter(JumpToTargetGoal(entity))) }
+
     MaelstromMod.aiManager.addGoalInjection(EntityType.SILVERFISH) { entity -> Pair(1, GoalAdapter(JumpToTargetGoal(entity))) }
     MaelstromMod.aiManager.addTargetInjection(EntityType.SILVERFISH) { entity -> Pair(3, FollowTargetGoal(entity, VillagerEntity::class.java, true)) }
-    MaelstromMod.aiManager.addGoalInjection(EntityType.SPIDER) { entity -> Pair(3, GoalAdapter(JumpToTargetGoal(entity))) }
+
+    MaelstromMod.aiManager.addGoalInjection(EntityType.SPIDER) { entity -> Pair(2, GoalAdapter(JumpToTargetGoal(entity))) }
     MaelstromMod.aiManager.addTargetInjection(EntityType.SPIDER) { entity -> Pair(4, FollowTargetGoal(entity, VillagerEntity::class.java, true)) }
+
+    MaelstromMod.aiManager.addGoalInjection(EntityType.VINDICATOR) { entity -> Pair(1, GoalAdapter(JumpToTargetGoal(entity))) }
+    MaelstromMod.aiManager.addGoalInjection(EntityType.ILLUSIONER) { entity -> Pair(3, GoalAdapter(JumpToTargetGoal(entity))) }
 }
 
 @Environment(EnvType.CLIENT)
