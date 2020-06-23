@@ -28,6 +28,7 @@ import kotlin.math.sqrt
  *
  * Issues
  * Spider navigation makes so that spiders speed off into a straight direction
+ * TODO: Adjust the jump angle according to calculated closest landing point
  */
 class JumpToTargetGoal(val entity: MobEntity) : IGoal {
     private val minTargetDistance = 2 // Minimum distance required for the jump ai to activate
@@ -82,28 +83,22 @@ class JumpToTargetGoal(val entity: MobEntity) : IGoal {
 
         for(angle in anglesToAttemptJump) {
             val jumpDirection = targetDirection.rotateVector(newVec3d(y = 1.0), angle.toDouble())
-            val gaps = mutableListOf<Pair<Vec3d, Boolean>>()
+            val gaps = mutableListOf<Pair<Vec3d, BlockType>>()
             val endPos = entity.pos.add(jumpDirection.multiply(edgeDetectionDistance))
 
             if(entity.velocity.add(jumpDirection).lengthSquared() < jumpDirection.lengthSquared()) {
                 continue
             }
 
-            VecUtils.lineCallback(entity.pos, endPos, detectionPoints) { pos, _ ->
-                gaps.add(Pair(pos, getNode(BlockPos(pos)) == BlockType.PASSABLE_OBSTACLE))
-            }
+            VecUtils.lineCallback(entity.pos, endPos, detectionPoints) { pos, _ -> gaps.add(Pair(pos, getNode(BlockPos(pos)))) }
 
-            val edgesInARow = gaps.fold(Pair(0, 0)){ acc: Pair<Int, Int>, pair ->
-                val currentInARow = if(pair.second) acc.second + 1 else 0
-                val highestInARow = if(currentInARow > acc.first) currentInARow else acc.first
-                Pair(highestInARow, currentInARow)
-            }.first
-            val firstEdge = gaps.firstOrNull { it.second }?.first
+            val pairs = gaps.zipWithNext().firstOrNull { it.first.second == BlockType.WALKABLE && it.second.second == BlockType.PASSABLE_OBSTACLE }
 
-            if(firstEdge != null && edgesInARow > 2) {
-                val jumpVel = getJumpLength(firstEdge, jumpDirection)
-                if(jumpVel != null) {
-                    return JumpData(jumpVel, jumpDirection, firstEdge)
+            if(pairs != null) {
+                val jumpVel = getJumpLength(pairs.second.first, jumpDirection)
+
+                if (jumpVel != null) {
+                    return JumpData(jumpVel, jumpDirection, pairs.second.first)
                 }
             }
         }
@@ -218,15 +213,8 @@ class JumpToTargetGoal(val entity: MobEntity) : IGoal {
                     .offset(walkablePos.x.toDouble(), actorPos.y - 1, walkablePos.z.toDouble())
         }
 
-        val start = actorPos.yOffset(-0.5)
-        val end = jumpToPos.yOffset(-0.5)
-        val result = blockShape.boundingBox.rayTrace(start, end)
-
-        if (result.isPresent) {
-            return result.get().subtract(actorPos).length()
-        }
-
-        return null
+        val end = MathUtils.findClosestCorner(actorPos, blockShape, 16)
+        return end?.subtract(actorPos)?.length()
     }
 
     /**
