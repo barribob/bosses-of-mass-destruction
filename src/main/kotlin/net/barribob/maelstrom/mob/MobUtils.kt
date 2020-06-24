@@ -132,8 +132,8 @@ object MobUtils {
             blockState.isOf(Blocks.SWEET_BERRY_BUSH) ||
                     blockState.isIn(BlockTags.FIRE) ||
                     CampfireBlock.isLitCampfire(blockState) ||
-                    fluidState.matches(FluidTags.WATER) -> BlockType.PASSABLE_OBSTACLE
-            fluidState.matches(FluidTags.LAVA) ||
+                    fluidState.isIn(FluidTags.WATER) -> BlockType.PASSABLE_OBSTACLE
+            fluidState.isIn(FluidTags.LAVA) ||
                     blockState.isOf(Blocks.CACTUS) ||
                     blockState.isOf(Blocks.HONEY_BLOCK) ||
                     blockState.isOf(Blocks.MAGMA_BLOCK) -> BlockType.SOLID_OBSTACLE
