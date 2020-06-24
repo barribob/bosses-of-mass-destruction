@@ -28,7 +28,6 @@ import kotlin.math.sqrt
  *
  * Issues
  * Spider navigation makes so that spiders speed off into a straight direction
- * TODO: Adjust the jump angle according to calculated closest landing point
  */
 class JumpToTargetGoal(val entity: MobEntity) : IGoal {
     private val minTargetDistance = 1.5 // Minimum distance required for the jump ai to activate
@@ -43,6 +42,8 @@ class JumpToTargetGoal(val entity: MobEntity) : IGoal {
     private val yVelocityScale = 1.53
     private var jumpData: JumpData? = null
 
+    data class JumpData(val jumpVel: Vec2d, val direction: Vec3d, val edgePos: Vec3d)
+
     override fun getControls(): EnumSet<IGoal.Control>? {
         return EnumSet.of(IGoal.Control.MOVE, IGoal.Control.JUMP)
     }
@@ -56,7 +57,7 @@ class JumpToTargetGoal(val entity: MobEntity) : IGoal {
             }
 
             val target = entity.navigation.targetPos?.asVec3d()?.add(0.5, 0.0, 0.5)
-            
+
             if(target == null || target.distanceTo(entity.pos) < minTargetDistance) {
                 return false
             }
@@ -100,8 +101,6 @@ class JumpToTargetGoal(val entity: MobEntity) : IGoal {
         return null
     }
 
-    data class JumpData(val jumpVel: Vec2d, val direction: Vec3d, val edgePos: Vec3d)
-
     override fun tick() {
         val jumpData = jumpData ?: return
 
@@ -126,7 +125,7 @@ class JumpToTargetGoal(val entity: MobEntity) : IGoal {
         this.jumpData = null
     }
 
-    fun getMobJumpAbilities(): Triple<Double, Int, Double>  {
+    private fun getMobJumpAbilities(): Triple<Double, Int, Double>  {
         val jumpYVel = MobUtils.getJumpVelocity(entity.world, entity) // Maximum y velocity for a jump. Used in determining if an entity can make a jump
         val maxJumpHeight = (jumpYVel * 4).toInt()
         val maxHorizonalVelocity = entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) * moveSpeed
@@ -167,18 +166,13 @@ class JumpToTargetGoal(val entity: MobEntity) : IGoal {
             val blockHeight = if(!blockShape.isEmpty) blockShape.boundingBox.yLength else 0.0
             val jumpHeight = groundHeight + blockHeight - actorPos.y
 
-            val xVelNoJump = calculateRequiredXVelocity(jumpLength, jumpHeight, 0.0)
+            for(jumpEffort in listOf(0.0, maxYVel)) {
+                val xVelWithJump = calculateRequiredXVelocity(jumpLength, jumpHeight, jumpEffort)
 
-            if(xVelNoJump < maxHorzVel) {
-                return Pair(recalculatedDirection, Vec2d(xVelNoJump, 0.0))
+                if(xVelWithJump < maxHorzVel) {
+                    return Pair(recalculatedDirection, Vec2d(xVelWithJump, jumpEffort))
+                }
             }
-
-            val xVelWithJump = calculateRequiredXVelocity(jumpLength, jumpHeight, maxYVel)
-
-            if(xVelWithJump < maxHorzVel) {
-                return Pair(recalculatedDirection, Vec2d(xVelWithJump, maxYVel))
-            }
-
             return null
         }
         return null
