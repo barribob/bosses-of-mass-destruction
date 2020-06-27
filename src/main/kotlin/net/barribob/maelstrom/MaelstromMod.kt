@@ -19,8 +19,6 @@ import net.minecraft.client.MinecraftClient
 import net.minecraft.entity.EntityDimensions
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.SpawnGroup
-import net.minecraft.entity.ai.goal.FollowTargetGoal
-import net.minecraft.entity.passive.VillagerEntity
 import net.minecraft.util.Identifier
 import net.minecraft.util.registry.Registry
 import org.apache.logging.log4j.LogManager
@@ -56,16 +54,6 @@ fun init() {
     ServerTickCallback.EVENT.register(ServerTickCallback { MaelstromMod.serverEventScheduler.updateEvents() })
 
     MaelstromMod.aiManager.addGoalInjection(Entities.MAELSTROM_SCOUT) { entity -> Pair(2, GoalAdapter(JumpToTargetGoal(entity))) }
-    MaelstromMod.aiManager.addGoalInjection(EntityType.ZOMBIE) { entity -> Pair(1, GoalAdapter(JumpToTargetGoal(entity))) }
-
-    MaelstromMod.aiManager.addGoalInjection(EntityType.SILVERFISH) { entity -> Pair(1, GoalAdapter(JumpToTargetGoal(entity))) }
-    MaelstromMod.aiManager.addTargetInjection(EntityType.SILVERFISH) { entity -> Pair(3, FollowTargetGoal(entity, VillagerEntity::class.java, true)) }
-
-    MaelstromMod.aiManager.addGoalInjection(EntityType.SPIDER) { entity -> Pair(2, GoalAdapter(JumpToTargetGoal(entity))) }
-    MaelstromMod.aiManager.addTargetInjection(EntityType.SPIDER) { entity -> Pair(4, FollowTargetGoal(entity, VillagerEntity::class.java, true)) }
-
-    MaelstromMod.aiManager.addGoalInjection(EntityType.VINDICATOR) { entity -> Pair(1, GoalAdapter(JumpToTargetGoal(entity))) }
-    MaelstromMod.aiManager.addGoalInjection(EntityType.ILLUSIONER) { entity -> Pair(3, GoalAdapter(JumpToTargetGoal(entity))) }
 }
 
 @Environment(EnvType.CLIENT)
