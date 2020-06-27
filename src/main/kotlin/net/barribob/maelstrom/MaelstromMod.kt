@@ -12,8 +12,8 @@ import net.barribob.maelstrom.registry.registerModRenderer
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.fabricmc.fabric.api.`object`.builder.v1.entity.FabricEntityTypeBuilder
-import net.fabricmc.fabric.api.event.client.ClientTickCallback
-import net.fabricmc.fabric.api.event.server.ServerTickCallback
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry
 import net.minecraft.client.MinecraftClient
 import net.minecraft.entity.EntityDimensions
@@ -51,7 +51,7 @@ object Entities {
 
 @Suppress("unused")
 fun init() {
-    ServerTickCallback.EVENT.register(ServerTickCallback { MaelstromMod.serverEventScheduler.updateEvents() })
+    ServerTickEvents.START_SERVER_TICK.register(ServerTickEvents.StartTick { MaelstromMod.serverEventScheduler.updateEvents() })
 
     MaelstromMod.aiManager.addGoalInjection(Entities.MAELSTROM_SCOUT) { entity -> Pair(2, GoalAdapter(JumpToTargetGoal(entity))) }
 }
@@ -74,5 +74,5 @@ fun clientInit() {
         }
     }}
 
-    ClientTickCallback.EVENT.register( ClientTickCallback { MaelstromMod.clientAnimationWatcher.tick() } )
+    ClientTickEvents.START_CLIENT_TICK.register( ClientTickEvents.StartTick { MaelstromMod.clientAnimationWatcher.tick() } )
 }
