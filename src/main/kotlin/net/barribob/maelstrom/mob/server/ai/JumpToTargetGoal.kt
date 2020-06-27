@@ -1,6 +1,5 @@
 package net.barribob.maelstrom.mob.server.ai
 
-import com.sun.javafx.geom.Vec2d
 import net.barribob.maelstrom.MaelstromMod
 import net.barribob.maelstrom.adapters.IGoal
 import net.barribob.maelstrom.general.*
@@ -17,7 +16,7 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 /**
- * Jumping AI
+ * Jumping AI by Barribob
  *
  * What it does
  * Detects gaps and compulsively makes entities jump over them if they are in the general direction of the target
@@ -25,11 +24,13 @@ import kotlin.math.sqrt
  *
  * What it does not do
  * Does not employ any actual path finding, so it's not a true jumping navigation ai
+ * Thus it can't do complex parkour in order to get to a target
  *
- * Issues
+ * Known Issues
  * Spider navigation makes so that spiders speed off into a straight direction
+ * Jump calculations start to overestimate the distance with high velocities... mostly because minecraft has a strangely high air resistance effect going on
  */
-class JumpToTargetGoal(val entity: MobEntity) : IGoal {
+class JumpToTargetGoal(private val entity: MobEntity) : IGoal {
     private val minTargetDistance = 1.5 // Minimum distance required for the jump ai to activate
     private val jumpClearanceAboveHead = 1.0 // Y offset above an entity's hitbox to raycast to see if there are any blocks in the way of the jump
     private val forwardMovementTicks = 40 // How many ticks the entity will "press the forward key" while jumping
@@ -40,9 +41,10 @@ class JumpToTargetGoal(val entity: MobEntity) : IGoal {
     private val jumpForwardSpeed = 5.0
     private val gravity = 0.1
     private val yVelocityScale = 1.53
+    private val jumpNoise = 0.1
     private var jumpData: JumpData? = null
 
-    data class JumpData(val jumpVel: Vec2d, val direction: Vec3d, val edgePos: Vec3d)
+    data class JumpData(val jumpVel: Pair<Double, Double>, val direction: Vec3d, val edgePos: Vec3d)
 
     override fun getControls(): EnumSet<IGoal.Control>? {
         return EnumSet.of(IGoal.Control.MOVE, IGoal.Control.JUMP)
@@ -109,8 +111,8 @@ class JumpToTargetGoal(val entity: MobEntity) : IGoal {
             return
         }
 
-        MobUtils.leapTowards(entity, entity.pos.add(jumpData.direction), jumpData.jumpVel.x, if(jumpData.jumpVel.y > 0) 0.0 else 0.1)
-        if(jumpData.jumpVel.y > 0) {
+        MobUtils.leapTowards(entity, entity.pos.add(jumpData.direction), jumpData.jumpVel.first + jumpData.jumpVel.first * RandomUtils.double(jumpNoise), if(jumpData.jumpVel.second > 0) 0.0 else 0.1)
+        if(jumpData.jumpVel.second > 0) {
             entity.jumpControl.setActive()
         }
         for (i in 0..forwardMovementTicks) {
@@ -141,7 +143,7 @@ class JumpToTargetGoal(val entity: MobEntity) : IGoal {
         return (0..steps).flatMap { d -> (0..(steps - d)).map { y -> Pair(d, y) } }.sortedBy { pair -> pair.first + pair.second }
     }
 
-    private fun getJumpLength(actorPos: Vec3d, targetDirection: Vec3d): Pair<Vec3d, Vec2d>? {
+    private fun getJumpLength(actorPos: Vec3d, targetDirection: Vec3d): Pair<Vec3d, Pair<Double, Double>>? {
 
         val (maxYVel, maxJumpHeight, maxHorzVel) = getMobJumpAbilities()
         val jumpOffsets = getJumpOffsets(maxHorzVel)
@@ -154,12 +156,12 @@ class JumpToTargetGoal(val entity: MobEntity) : IGoal {
 
             val walkablePos = BlockPos(blockPos.x, groundHeight, blockPos.z)
             val blockShape = entity.world.getBlockState(walkablePos).getCollisionShape(entity.world, walkablePos)
-            val fred = actorPos.subtract(walkablePos.asVec3d())
-            val cornerPos = MathUtils.findClosestCorner(fred, blockShape, 16)?.add(walkablePos.asVec3d()) ?: continue
-            val bob = Vec3d(cornerPos.x, actorPos.y, cornerPos.z)
+            val offsetPos = actorPos.subtract(walkablePos.asVec3d())
+            val cornerPos = MathUtils.findClosestCorner(offsetPos, blockShape, 16)?.add(walkablePos.asVec3d()) ?: continue
+            val horizontalJumpPos = Vec3d(cornerPos.x, actorPos.y, cornerPos.z)
 
-            val jumpLength = bob.subtract(actorPos).length() - (entity.width * 0.5)
-            val recalculatedDirection = bob.subtract(actorPos).normalize()
+            val jumpLength = horizontalJumpPos.subtract(actorPos).length() - (entity.width * 0.5)
+            val recalculatedDirection = horizontalJumpPos.subtract(actorPos).normalize()
 
             if (!hasClearance(actorPos, jumpLength, targetDirection)) return null
 
@@ -170,7 +172,7 @@ class JumpToTargetGoal(val entity: MobEntity) : IGoal {
                 val xVelWithJump = calculateRequiredXVelocity(jumpLength, jumpHeight, jumpEffort)
 
                 if(xVelWithJump < maxHorzVel) {
-                    return Pair(recalculatedDirection, Vec2d(xVelWithJump, jumpEffort))
+                    return Pair(recalculatedDirection, Pair(xVelWithJump, jumpEffort))
                 }
             }
             return null
