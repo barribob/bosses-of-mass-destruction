@@ -1,10 +1,8 @@
-package main.test
-
 import net.barribob.maelstrom.general.newVec3d
 import net.barribob.maelstrom.general.planeProject
 import net.minecraft.util.math.Vec3d
-import org.junit.Test
-import kotlin.test.assertEquals
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 
 class TestVecUtils {
 

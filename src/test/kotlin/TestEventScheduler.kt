@@ -1,8 +1,6 @@
-package main.test
-
 import net.barribob.maelstrom.general.EventScheduler
-import org.junit.Test
-import kotlin.test.assertEquals
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 
 class TestEventScheduler {
 

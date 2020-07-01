@@ -14,6 +14,9 @@ group = project.maven_group
 minecraft {
 }
 
+test {
+    useJUnitPlatform()
+}
 
 repositories {
     maven { url = "http://maven.fabricmc.net/" }
@@ -32,6 +35,8 @@ dependencies {
 
     // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
     // You may need to force-disable transitiveness on them.
+    testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5:1.3.72'
+    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.4.2'
 }
 
 processResources {
