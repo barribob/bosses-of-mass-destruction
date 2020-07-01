@@ -1,3 +1,9 @@
+/*
+To publish a dependent mod: #1 publish this mod to mavenLocal. Then, go to the dependent mod settings.gradle and remove the includeBuild
+composite dependency. Then add mavenLocal() to the repositories in the dependent mod build.gradle and add include statement to dependencies
+if needed. This should allow you to publish the mod with this mod as a library.
+ */
+
 plugins {
     id 'fabric-loom'
     id 'maven-publish'
@@ -72,7 +78,6 @@ jar {
 }
 
 publishing.repositories {
-// uncomment to publish to the local maven
 // mavenLocal()
 }
 
