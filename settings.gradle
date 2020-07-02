@@ -15,4 +15,4 @@ pluginManagement {
 
 }
 
-rootProject.name = 'maelstrom-mod-invasions'
+rootProject.name = 'maelstrom-library'

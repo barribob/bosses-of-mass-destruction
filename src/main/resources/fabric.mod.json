@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "id": "maelstrom",
+  "id": "maelstrom_library",
   "version": "${version}",
 
-  "name": "Into the Maelstrom: Invasions",
+  "name": "Maelstrom Library",
   "description": "",
   "authors": [
     "Barribob"

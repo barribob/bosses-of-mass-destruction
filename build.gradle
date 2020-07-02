@@ -78,7 +78,7 @@ jar {
 }
 
 publishing.repositories {
-// mavenLocal()
+    mavenLocal()
 }
 
 compileKotlin.kotlinOptions.jvmTarget = "1.8"
