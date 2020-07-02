@@ -1,11 +1,12 @@
 {
   "required": true,
-  "package": "net.fabricmc.example.mixin",
+  "package": "net.barribob.maelstrom.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "AIManipulationMixin"
   ],
   "client": [
-    "ExampleMixin"
+    "AnimationMixins"
   ],
   "injectors": {
     "defaultRequire": 1

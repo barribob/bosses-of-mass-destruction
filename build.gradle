@@ -1,3 +1,9 @@
+/*
+To publish a dependent mod: #1 publish this mod to mavenLocal. Then, go to the dependent mod settings.gradle and remove the includeBuild
+composite dependency. Then add mavenLocal() to the repositories in the dependent mod build.gradle and add include statement to dependencies
+if needed. This should allow you to publish the mod with this mod as a library.
+ */
+
 plugins {
     id 'fabric-loom'
     id 'maven-publish'
@@ -14,6 +20,9 @@ group = project.maven_group
 minecraft {
 }
 
+test {
+    useJUnitPlatform()
+}
 
 repositories {
     maven { url = "http://maven.fabricmc.net/" }
@@ -32,6 +41,8 @@ dependencies {
 
     // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
     // You may need to force-disable transitiveness on them.
+    testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5:1.3.72'
+    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.4.2'
 }
 
 processResources {
@@ -66,25 +77,8 @@ jar {
     from "LICENSE"
 }
 
-// configure the maven publication
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            // add all the jars that should be included when publishing to maven
-            artifact(remapJar) {
-                builtBy remapJar
-            }
-            artifact(sourcesJar) {
-                builtBy remapSourcesJar
-            }
-        }
-    }
-
-    // select the repositories you want to publish to
-    repositories {
-        // uncomment to publish to the local maven
-        // mavenLocal()
-    }
+publishing.repositories {
+    mavenLocal()
 }
 
 compileKotlin.kotlinOptions.jvmTarget = "1.8"
