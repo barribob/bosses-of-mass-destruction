@@ -1,4 +1,4 @@
-package net.barribob.maelstrom.model;
+package net.barribob.invasion.model.model;
 
 // Made with Blockbench 3.5.4
 

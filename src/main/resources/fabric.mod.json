@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "id": "maelstrom_library",
+  "id": "maelstrom_invasions",
   "version": "${version}",
 
-  "name": "Maelstrom Library",
+  "name": "Into the Maelstrom: Invasions",
   "description": "",
   "authors": [
     "Barribob"
@@ -15,20 +15,17 @@
   },
 
   "license": "",
-  "icon": "assets/maelstrom/icon.png",
+  "icon": "assets/invasion/icon.png",
 
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.barribob.maelstrom.MaelstromModKt::init"
+      "net.barribob.invasion.MaelstromModKt::init"
     ],
     "client": [
-      "net.barribob.maelstrom.MaelstromModKt::clientInit"
+      "net.barribob.invasion.MaelstromModKt::clientInit"
     ]
   },
-  "mixins": [
-    "maelstrom.mixins.json"
-  ],
   "depends": {
     "fabricloader": ">=0.7.1",
     "fabric": "*",

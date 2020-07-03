@@ -1,9 +1,10 @@
-package net.barribob.maelstrom.mob
+package net.barribob.invasion.mob
 
 import net.barribob.maelstrom.MaelstromMod
 import net.barribob.maelstrom.adapters.HostileEntityAdapter
 import net.barribob.maelstrom.adapters.IGoal
 import net.barribob.maelstrom.general.yOffset
+import net.barribob.maelstrom.mob.MobUtils
 import net.barribob.maelstrom.mob.server.ai.TimedAttackGoal
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.attribute.EntityAttribute
@@ -37,7 +38,15 @@ class MaelstromScoutEntity(entityType: EntityType<out HostileEntity>, world: Wor
         MaelstromMod.serverEventScheduler.addEvent( { this.target == null || !this.isAlive || this.health <= 0 }, {
             val pos: Vec3d = this.pos.yOffset(1.0).add(this.rotationVector)
             this.playSound(SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, 1.0F, 0.8F / (this.random.nextFloat() * 0.4F + 0.8F))
-            MobUtils.handleAreaImpact(0.6, this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE).toFloat() , this, pos, DamageSource.mob(this), 0.20, damageDecay = false)
+            MobUtils.handleAreaImpact(
+                0.6,
+                this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE).toFloat(),
+                this,
+                pos,
+                DamageSource.mob(this),
+                0.20,
+                damageDecay = false
+            )
         }, 10)
 
         return 20

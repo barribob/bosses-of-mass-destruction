@@ -15,4 +15,4 @@ pluginManagement {
 
 }
 
-rootProject.name = 'maelstrom-library'
+includeBuild("../maelstrom-library")
