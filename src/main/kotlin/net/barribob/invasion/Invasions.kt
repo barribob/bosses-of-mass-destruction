@@ -1,7 +1,6 @@
 package net.barribob.invasion
 
 import net.barribob.invasion.mob.MaelstromScoutEntity
-import net.barribob.maelstrom.adapters.GoalAdapter
 import net.barribob.maelstrom.mob.server.ai.JumpToTargetGoal
 import net.barribob.invasion.model.model.ModelMaelstromScout
 import net.barribob.maelstrom.MaelstromMod
@@ -27,7 +26,7 @@ object Entities {
 
 @Suppress("unused")
 fun init() {
-    MaelstromMod.aiManager.addGoalInjection(EntityType.getId(Entities.MAELSTROM_SCOUT).toString()) { entity -> Pair(2, GoalAdapter(JumpToTargetGoal(entity))) }
+    MaelstromMod.aiManager.addGoalInjection(EntityType.getId(Entities.MAELSTROM_SCOUT).toString()) { entity -> Pair(2, JumpToTargetGoal(entity)) }
 }
 
 @Environment(EnvType.CLIENT)
