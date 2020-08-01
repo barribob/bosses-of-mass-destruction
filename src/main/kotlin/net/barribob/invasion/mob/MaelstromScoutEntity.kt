@@ -5,9 +5,6 @@ import net.barribob.maelstrom.general.yOffset
 import net.barribob.maelstrom.mob.MobUtils
 import net.barribob.maelstrom.mob.server.ai.TimedAttackGoal
 import net.minecraft.entity.EntityType
-import net.minecraft.entity.LivingEntity
-import net.minecraft.entity.ai.goal.FollowTargetGoal
-import net.minecraft.entity.ai.goal.RevengeGoal
 import net.minecraft.entity.ai.goal.SwimGoal
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal
 import net.minecraft.entity.attribute.AttributeContainer
@@ -33,8 +30,8 @@ class MaelstromScoutEntity(entityType: EntityType<out HostileEntity>, world: Wor
         this.goalSelector.add(1, SwimGoal(this))
         this.goalSelector.add(3, TimedAttackGoal(this, 3F, 2.5F, 5, ::handleAttack))
         this.goalSelector.add(4, WanderAroundFarGoal(this, 1.0))
-        this.targetSelector.add(1, FollowTargetGoal(this, LivingEntity::class.java, true))
-        this.targetSelector.add(1, RevengeGoal(this, *arrayOfNulls(0)))
+        this.targetSelector.add(1, MobUtils.getRevengeGoal(this))
+        this.targetSelector.add(2, MobUtils.getTargetSelectGoal(this))
     }
 
     private fun handleAttack(): Int {
