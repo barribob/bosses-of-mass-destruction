@@ -20,10 +20,10 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.barribob.invasion.MaelstromModKt::init"
+      "net.barribob.invasion.InvasionsKt::init"
     ],
     "client": [
-      "net.barribob.invasion.MaelstromModKt::clientInit"
+      "net.barribob.invasion.InvasionsKt::clientInit"
     ]
   },
   "depends": {
