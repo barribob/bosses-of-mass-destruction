@@ -13,9 +13,13 @@ import net.minecraft.entity.EntityType
 import net.minecraft.entity.SpawnGroup
 import net.minecraft.util.Identifier
 import net.minecraft.util.registry.Registry
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 
 object Invasions {
     const val MODID = "maelstrom_invasions"
+
+    val LOGGER: Logger = LogManager.getLogger()
 }
 
 object Entities {
@@ -27,6 +31,8 @@ object Entities {
 @Suppress("unused")
 fun init() {
     MaelstromMod.aiManager.addGoalInjection(EntityType.getId(Entities.MAELSTROM_SCOUT).toString()) { entity -> Pair(2, JumpToTargetGoal(entity)) }
+
+    Invasions.LOGGER.info(MaelstromMod.hoconConfigManager.handleConfigLoad(Invasions.MODID, "test").getString("test"))
 }
 
 @Environment(EnvType.CLIENT)

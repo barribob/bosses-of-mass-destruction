@@ -17,6 +17,7 @@ minecraft {
 
 repositories {
     maven { url = "http://maven.fabricmc.net/" }
+    mavenCentral()
 //    mavenLocal()
 }
 
@@ -36,6 +37,8 @@ dependencies {
 //    modImplementation "net.barribob:maelstrom-library:${project.maelstrom_version}"
     implementation "net.barribob:maelstrom-library:${project.maelstrom_version}"
     include "net.barribob:maelstrom-library:${project.maelstrom_version}"
+
+    implementation "com.typesafe:config:${project.config_version}"
 }
 
 processResources {
