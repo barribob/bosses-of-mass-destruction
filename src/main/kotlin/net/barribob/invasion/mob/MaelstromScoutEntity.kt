@@ -1,7 +1,11 @@
 package net.barribob.invasion.mob
 
 import net.barribob.maelstrom.MaelstromMod
+import net.barribob.maelstrom.animation.client.GeckolibAnimationManager
+import net.barribob.maelstrom.general.ClientServerUtils
+import net.barribob.maelstrom.general.TimedEvent
 import net.barribob.maelstrom.general.yOffset
+import net.barribob.maelstrom.mob.BaseEntity
 import net.barribob.maelstrom.mob.MobUtils
 import net.barribob.maelstrom.mob.server.ai.TimedAttackGoal
 import net.minecraft.entity.EntityType
@@ -10,12 +14,15 @@ import net.minecraft.entity.ai.goal.WanderAroundFarGoal
 import net.minecraft.entity.attribute.AttributeContainer
 import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.entity.damage.DamageSource
-import net.minecraft.entity.mob.HostileEntity
+import net.minecraft.entity.mob.HostileEntity.createHostileAttributes
 import net.minecraft.sound.SoundEvents
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 
-class MaelstromScoutEntity(entityType: EntityType<out HostileEntity>, world: World) : HostileEntity(entityType, world) {
+class MaelstromScoutEntity(entityType: EntityType<out MaelstromScoutEntity>, world: World) : BaseEntity(entityType, world) {
+
+    override fun initializeGeckoManager(): GeckolibAnimationManager<out BaseEntity> =
+        GeckolibAnimationManager(this, MaelstromScoutAnimations())
 
     override fun getAttributes(): AttributeContainer {
         val attributeBuilder = createHostileAttributes()
@@ -36,9 +43,10 @@ class MaelstromScoutEntity(entityType: EntityType<out HostileEntity>, world: Wor
 
     private fun handleAttack(): Int {
         MobUtils.leapTowards(this, this.target!!.pos, 0.4, 0.0)
-        MaelstromMod.serverAnimationWatcher.startAnimation(this, "scout.attack")
+        ClientServerUtils.startAnimation(this, "attack")
 
-        MaelstromMod.serverEventScheduler.addEvent({ this.target == null || !this.isAlive || this.health <= 0 }, {
+        val shouldCancel = { this.target == null || !this.isAlive || this.health <= 0 }
+        val callback = {
             val pos: Vec3d = this.pos.yOffset(1.0).add(this.rotationVector)
             this.playSound(SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, 1.0F, 0.8F / (this.random.nextFloat() * 0.4F + 0.8F))
             MobUtils.handleAreaImpact(
@@ -50,7 +58,14 @@ class MaelstromScoutEntity(entityType: EntityType<out HostileEntity>, world: Wor
                 0.20,
                 damageDecay = false
             )
-        }, 10)
+        }
+        MaelstromMod.serverEventScheduler.addEvent(
+            TimedEvent(
+                callback,
+                10,
+                shouldCancel = shouldCancel
+            )
+        )
 
         return 20
     }
