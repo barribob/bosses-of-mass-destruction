@@ -1,7 +1,7 @@
 package net.barribob.invasion.mob
 
-import net.barribob.maelstrom.animation.client.GeckolibAnimationManager
-import net.barribob.maelstrom.animation.client.IAnimationRegister
+import net.barribob.maelstrom.mob.animation.GeckolibAnimationManager
+import net.barribob.maelstrom.mob.animation.IAnimationRegister
 import software.bernie.geckolib.animation.builder.AnimationBuilder
 
 class MaelstromScoutAnimations : IAnimationRegister<MaelstromScoutEntity> {

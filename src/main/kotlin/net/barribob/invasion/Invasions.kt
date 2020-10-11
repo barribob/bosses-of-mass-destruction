@@ -1,10 +1,10 @@
 package net.barribob.invasion
 
 import net.barribob.invasion.mob.MaelstromScoutEntity
-import net.barribob.maelstrom.mob.server.ai.JumpToTargetGoal
+import net.barribob.maelstrom.mob.ai.JumpToTargetGoal
 import net.barribob.invasion.model.model.ModelMaelstromScout
 import net.barribob.maelstrom.MaelstromMod
-import net.barribob.maelstrom.registry.registerModRenderer
+import net.barribob.maelstrom.static_utilities.registerModRenderer
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.fabricmc.fabric.api.`object`.builder.v1.entity.FabricEntityTypeBuilder
