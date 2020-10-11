@@ -69,4 +69,11 @@ class MaelstromScoutEntity(entityType: EntityType<out MaelstromScoutEntity>, wor
 
         return 20
     }
+
+    init {
+        if(world.isClient) {
+            geckoManager.startAnimation("float")
+            geckoManager.startAnimation("idle_arms")
+        }
+    }
 }
