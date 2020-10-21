@@ -5,9 +5,7 @@ import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.mob.BaseEntity
 import net.barribob.maelstrom.mob.ai.TimedAttackGoal
 import net.barribob.maelstrom.mob.animation.GeckolibAnimationManager
-import net.barribob.maelstrom.static_utilities.ClientServerUtils
-import net.barribob.maelstrom.static_utilities.MobUtils
-import net.barribob.maelstrom.static_utilities.yOffset
+import net.barribob.maelstrom.static_utilities.*
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.ai.goal.SwimGoal
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal
