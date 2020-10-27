@@ -1,11 +1,13 @@
 package net.barribob.invasion.mob
 
+import net.barribob.invasion.mob.utils.BaseEntity
+import net.barribob.invasion.mob.utils.animation.GeckolibAnimationManager
+import net.barribob.invasion.static_utilities.Animations
 import net.barribob.maelstrom.MaelstromMod
 import net.barribob.maelstrom.general.event.TimedEvent
-import net.barribob.maelstrom.mob.BaseEntity
 import net.barribob.maelstrom.mob.ai.TimedAttackGoal
-import net.barribob.maelstrom.mob.animation.GeckolibAnimationManager
-import net.barribob.maelstrom.static_utilities.*
+import net.barribob.maelstrom.static_utilities.MobUtils
+import net.barribob.maelstrom.static_utilities.yOffset
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.ai.goal.SwimGoal
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal
@@ -41,7 +43,7 @@ class MaelstromScoutEntity(entityType: EntityType<out MaelstromScoutEntity>, wor
 
     private fun handleAttack(): Int {
         MobUtils.leapTowards(this, this.target!!.pos, 0.4, 0.0)
-        ClientServerUtils.startAnimation(this, "attack")
+        Animations.startAnimation(this, "attack")
 
         val shouldCancel = { this.target == null || !this.isAlive || this.health <= 0 }
         val callback = {
