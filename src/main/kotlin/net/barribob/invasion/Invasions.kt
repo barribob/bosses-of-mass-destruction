@@ -35,8 +35,6 @@ object Entities {
 @Suppress("unused")
 fun init() {
     MaelstromMod.aiManager.addGoalInjection(EntityType.getId(Entities.MAELSTROM_SCOUT).toString()) { entity -> Pair(2, JumpToTargetGoal(entity)) }
-
-    Invasions.LOGGER.info(MaelstromMod.hoconConfigManager.handleConfigLoad(Invasions.MODID, "test").getString("test"))
 }
 
 @Environment(EnvType.CLIENT)
