@@ -24,14 +24,6 @@ class MaelstromScoutEntity(entityType: EntityType<out MaelstromScoutEntity>, wor
     override fun initializeGeckoManager(): GeckolibAnimationManager<out BaseEntity> =
         GeckolibAnimationManager(this, MaelstromScoutAnimations())
 
-    override fun getAttributes(): AttributeContainer {
-        val attributeBuilder = createHostileAttributes()
-        attributeBuilder.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.26)
-            .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 6.0)
-            .add(EntityAttributes.GENERIC_MAX_HEALTH, 25.0)
-        return AttributeContainer(attributeBuilder.build())
-    }
-
     override fun initGoals() {
         super.initGoals()
         this.goalSelector.add(1, SwimGoal(this))

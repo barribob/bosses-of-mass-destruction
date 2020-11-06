@@ -4,26 +4,28 @@ import net.barribob.invasion.mob.MaelstromScoutEntity
 import net.barribob.invasion.model.model.ModelMaelstromScout
 import net.barribob.invasion.static_utilities.Animations
 import net.barribob.maelstrom.MaelstromMod
+import net.barribob.maelstrom.general.io.ConsoleLogger
 import net.barribob.maelstrom.mob.ai.JumpToTargetGoal
 import net.barribob.maelstrom.static_utilities.registerModRenderer
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
+import net.fabricmc.fabric.api.`object`.builder.v1.entity.FabricDefaultAttributeRegistry
 import net.fabricmc.fabric.api.`object`.builder.v1.entity.FabricEntityTypeBuilder
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry
 import net.minecraft.entity.EntityDimensions
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.SpawnGroup
+import net.minecraft.entity.mob.HostileEntity
 import net.minecraft.util.Identifier
 import net.minecraft.util.registry.Registry
 import org.apache.logging.log4j.LogManager
-import org.apache.logging.log4j.Logger
 
 object Invasions {
     const val MODID = "maelstrom_invasions"
 
     val START_ANIMATION_PACKET_ID = Identifier(MaelstromMod.MODID, "start_animation")
 
-    val LOGGER: Logger = LogManager.getLogger()
+    val LOGGER = ConsoleLogger(LogManager.getLogger())
 }
 
 object Entities {
@@ -35,6 +37,7 @@ object Entities {
 @Suppress("unused")
 fun init() {
     MaelstromMod.aiManager.addGoalInjection(EntityType.getId(Entities.MAELSTROM_SCOUT).toString()) { entity -> Pair(2, JumpToTargetGoal(entity)) }
+    FabricDefaultAttributeRegistry.register(Entities.MAELSTROM_SCOUT, HostileEntity.createHostileAttributes())
 }
 
 @Environment(EnvType.CLIENT)

@@ -13,6 +13,7 @@ import net.minecraft.client.MinecraftClient
 import net.minecraft.network.PacketByteBuf
 
 object Animations {
+    // Todo: Remove library logger dependency
     fun startAnimation(entity: BaseEntity, animationId: String) {
         val animId = entity.geckoManager.idRegistry.getIdFromName(animationId)
         if (animId == null) {
