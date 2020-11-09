@@ -19,7 +19,9 @@ repositories {
     maven { url 'https://repo.repsy.io/mvn/gandiber/geckolib' }
     maven { url = "http://maven.fabricmc.net/" }
     mavenCentral()
-//    mavenLocal()
+    if (project.doBuild) {
+        mavenLocal()
+    }
 }
 
 dependencies {
@@ -35,8 +37,7 @@ dependencies {
 
     // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
     // You may need to force-disable transitiveness on them.
-//    modImplementation "net.barribob:maelstrom-library:${project.maelstrom_version}-${project.minecraft_version}"
-    implementation "net.barribob:maelstrom-library:${project.maelstrom_version}-${project.minecraft_version}"
+    modImplementation "net.barribob:maelstrom-library:${project.maelstrom_version}-${project.minecraft_version}"
     include "net.barribob:maelstrom-library:${project.maelstrom_version}-${project.minecraft_version}"
 
     implementation "com.typesafe:config:${project.config_version}"
