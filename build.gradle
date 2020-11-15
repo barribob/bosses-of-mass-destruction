@@ -42,8 +42,7 @@ dependencies {
 
     implementation "com.typesafe:config:${project.config_version}"
 
-    modImplementation "software.bernie.geckolib:fabric-1.16.2-geckolib:${geckolib_version}"
-    include "software.bernie.geckolib:fabric-1.16.2-geckolib:${geckolib_version}"
+    modImplementation "software.bernie.geckolib:${geckolib_minecraft_version}-geckolib:${geckolib_version}"
 }
 
 processResources {

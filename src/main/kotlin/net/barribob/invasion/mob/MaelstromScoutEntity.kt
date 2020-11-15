@@ -1,9 +1,9 @@
 package net.barribob.invasion.mob
 
 import net.barribob.invasion.mob.utils.BaseEntity
-import net.barribob.invasion.mob.utils.animation.GeckolibAnimationManager
-import net.barribob.invasion.static_utilities.Animations
+import net.barribob.invasion.mob.utils.animation.AnimationPredicate
 import net.barribob.maelstrom.MaelstromMod
+import net.barribob.maelstrom.general.data.BooleanFlag
 import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.mob.ai.TimedAttackGoal
 import net.barribob.maelstrom.static_utilities.MobUtils
@@ -11,18 +11,23 @@ import net.barribob.maelstrom.static_utilities.yOffset
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.ai.goal.SwimGoal
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal
-import net.minecraft.entity.attribute.AttributeContainer
 import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.entity.damage.DamageSource
-import net.minecraft.entity.mob.HostileEntity.createHostileAttributes
 import net.minecraft.sound.SoundEvents
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
+import software.bernie.geckolib3.core.PlayState
+import software.bernie.geckolib3.core.builder.AnimationBuilder
+import software.bernie.geckolib3.core.controller.AnimationController
+import software.bernie.geckolib3.core.manager.AnimationData
 
-class MaelstromScoutEntity(entityType: EntityType<out MaelstromScoutEntity>, world: World) : BaseEntity(entityType, world) {
 
-    override fun initializeGeckoManager(): GeckolibAnimationManager<out BaseEntity> =
-        GeckolibAnimationManager(this, MaelstromScoutAnimations())
+class MaelstromScoutEntity(entityType: EntityType<out MaelstromScoutEntity>, world: World) : BaseEntity(
+    entityType,
+    world
+) {
+    private val attackFlag: BooleanFlag = BooleanFlag()
+    private val attackByte: Byte = 0
 
     override fun initGoals() {
         super.initGoals()
@@ -33,9 +38,47 @@ class MaelstromScoutEntity(entityType: EntityType<out MaelstromScoutEntity>, wor
         this.targetSelector.add(2, MobUtils.getTargetSelectGoal(this))
     }
 
+    override fun registerControllers(data: AnimationData) {
+        data.addAnimationController(AnimationController(this, "idle_arms", 0f, idleArms))
+        data.addAnimationController(AnimationController(this, "float", 0f, float))
+        data.addAnimationController(AnimationController(this, "attack", 0f, attack))
+    }
+
+    private val idleArms = AnimationPredicate<MaelstromScoutEntity> {
+        it.controller.setAnimation(
+            AnimationBuilder()
+                .addAnimation("idle_arms", true)
+        )
+        PlayState.CONTINUE
+    }
+
+    private val float = AnimationPredicate<MaelstromScoutEntity> {
+        it.controller.setAnimation(
+            AnimationBuilder()
+                .addAnimation("float", true)
+        )
+        PlayState.CONTINUE
+    }
+
+    private val attack = AnimationPredicate<MaelstromScoutEntity> {
+        if(attackFlag.getAndReset()) {
+            it.controller.markNeedsReload()
+            it.controller.setAnimation(
+                AnimationBuilder()
+                    .addAnimation("attack2", false)
+            )
+        }
+        PlayState.CONTINUE
+    }
+
+    override fun handleStatus(status: Byte) {
+        if(status == attackByte) attackFlag.flag()
+        super.handleStatus(status)
+    }
+
     private fun handleAttack(): Int {
         MobUtils.leapTowards(this, this.target!!.pos, 0.4, 0.0)
-        Animations.startAnimation(this, "attack")
+        world.sendEntityStatus(this, attackByte)
 
         val shouldCancel = { this.target == null || !this.isAlive || this.health <= 0 }
         val callback = {
@@ -60,12 +103,5 @@ class MaelstromScoutEntity(entityType: EntityType<out MaelstromScoutEntity>, wor
         )
 
         return 20
-    }
-
-    init {
-        if(world.isClient) {
-            geckoManager.startAnimation("float")
-            geckoManager.startAnimation("idle_arms")
-        }
     }
 }
