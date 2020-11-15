@@ -1,5 +1,7 @@
 package net.barribob.invasion.mob
 
+import net.barribob.invasion.Invasions
+import net.barribob.invasion.Particles
 import net.barribob.invasion.mob.utils.BaseEntity
 import net.barribob.invasion.mob.utils.animation.AnimationPredicate
 import net.barribob.maelstrom.MaelstromMod
@@ -13,6 +15,7 @@ import net.minecraft.entity.ai.goal.SwimGoal
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal
 import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.entity.damage.DamageSource
+import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundEvents
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
@@ -79,6 +82,7 @@ class MaelstromScoutEntity(entityType: EntityType<out MaelstromScoutEntity>, wor
     private fun handleAttack(): Int {
         MobUtils.leapTowards(this, this.target!!.pos, 0.4, 0.0)
         world.sendEntityStatus(this, attackByte)
+        (world as ServerWorld).spawnParticles(Particles.SKELETON, pos.x, pos.y + 3, pos.z, 1, 0.0, 0.0, 0.0, 0.0)
 
         val shouldCancel = { this.target == null || !this.isAlive || this.health <= 0 }
         val callback = {
