@@ -19,9 +19,7 @@ repositories {
     maven { url 'https://repo.repsy.io/mvn/gandiber/geckolib' }
     maven { url = "http://maven.fabricmc.net/" }
     mavenCentral()
-    if (project.doBuild) {
-        mavenLocal()
-    }
+    mavenLocal()
 }
 
 dependencies {
@@ -37,7 +35,19 @@ dependencies {
 
     // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
     // You may need to force-disable transitiveness on them.
-    modImplementation "net.barribob:maelstrom-library:${project.maelstrom_version}-${project.minecraft_version}"
+    testImplementation(
+            'org.assertj:assertj-core:3.12.2',
+            'org.junit.jupiter:junit-jupiter-api:5.4.2',
+            'org.hamcrest:hamcrest-library:2.2'
+    )
+    testRuntime('org.junit.jupiter:junit-jupiter-engine:5.4.2')
+
+    if(project.doBuild.toBoolean()) {
+        modImplementation "net.barribob:maelstrom-library:${project.maelstrom_version}-${project.minecraft_version}"
+    } else {
+        implementation "net.barribob:maelstrom-library:${project.maelstrom_version}-${project.minecraft_version}"
+    }
+
     include "net.barribob:maelstrom-library:${project.maelstrom_version}-${project.minecraft_version}"
 
     implementation "com.typesafe:config:${project.config_version}"
