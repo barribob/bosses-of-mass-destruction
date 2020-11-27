@@ -1,17 +1,16 @@
 package net.barribob.invasion.mob.ai
 
-import net.barribob.maelstrom.static_utilities.addVelocity
 import net.minecraft.entity.ai.goal.Goal
-import net.minecraft.entity.mob.PathAwareEntity
+import net.minecraft.util.math.Vec3d
 import java.util.*
 
 class AerialWanderGoal(
-    private val mob: PathAwareEntity,
+    private val onTargetSelected: (Vec3d) -> Unit,
     private val steering: ISteering,
     private val targetSelector: ITargetSelector
 ) : Goal() {
     init {
-        controls = EnumSet.of(Control.MOVE)
+        controls = EnumSet.of(Control.MOVE, Control.LOOK)
     }
 
     override fun canStart(): Boolean = true
@@ -19,7 +18,7 @@ class AerialWanderGoal(
     override fun tick() {
         val target = targetSelector.getTarget()
         val velocity = steering.accelerateTo(target)
-        mob.addVelocity(velocity)
+        onTargetSelected(velocity)
 
         super.tick()
     }

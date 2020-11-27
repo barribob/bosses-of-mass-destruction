@@ -2,7 +2,8 @@ package net.barribob.invasion.mob
 
 import net.barribob.invasion.Invasions
 import net.barribob.invasion.animation.IAnimationTimer
-import net.barribob.invasion.mob.mobs.LichEntity
+import net.barribob.invasion.mob.mobs.lich.LichCodeAnimations
+import net.barribob.invasion.mob.mobs.lich.LichEntity
 import net.barribob.invasion.mob.utils.ModGeoRenderer
 import net.barribob.maelstrom.MaelstromMod
 import net.barribob.maelstrom.mob.ai.JumpToTargetGoal
@@ -54,12 +55,13 @@ object Entities {
             )
         }
         EntityRendererRegistry.INSTANCE.register(LICH) { entityRenderDispatcher, _ ->
-            ModGeoRenderer<LichEntity>(
+            ModGeoRenderer(
                 entityRenderDispatcher, GeoModel(
                     Invasions.identifier("geo/lich.geo.json"),
                     Invasions.identifier("textures/entity/lich.png"),
                     Invasions.identifier("animations/lich.animation.json"),
-                    animationTimer
+                    animationTimer,
+                    LichCodeAnimations()
                 )
             )
         }

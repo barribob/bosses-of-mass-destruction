@@ -36,8 +36,11 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
 
     final override fun tick() {
         if (idlePosition == Vec3d.ZERO) idlePosition = pos
+        if (world.isClient) clientTick()
         super.tick()
     }
+
+    open fun clientTick() {} // Todo: this may not be the best pattern to use
 
     final override fun fromTag(tag: CompoundTag?) {
         super.fromTag(tag)

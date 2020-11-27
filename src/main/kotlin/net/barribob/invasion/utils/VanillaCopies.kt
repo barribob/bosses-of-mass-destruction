@@ -3,7 +3,9 @@ package net.barribob.invasion.utils
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.MovementType
 import net.minecraft.entity.mob.FlyingEntity
+import net.minecraft.entity.mob.MobEntity
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
 
 object VanillaCopies {
@@ -38,5 +40,34 @@ object VanillaCopies {
             }
         }
         entity.method_29242(entity, false)
+    }
+
+    /**
+     * Adapted from [MobEntity.lookAtEntity]
+     */
+    fun MobEntity.lookAtTarget(target: Vec3d, maxYawChange: Float, maxPitchChange: Float) {
+        val d: Double = target.x - this.x
+        val e: Double = target.z - this.z
+        val g: Double = target.y - this.eyeY
+
+        val h = MathHelper.sqrt(d * d + e * e).toDouble()
+        val i = (MathHelper.atan2(e, d) * 57.2957763671875).toFloat() - 90.0f
+        val j = (-(MathHelper.atan2(g, h) * 57.2957763671875)).toFloat()
+        this.pitch = changeAngle(this.pitch, j, maxPitchChange)
+        this.yaw = changeAngle(this.yaw, i, maxYawChange)
+    }
+
+    /**
+     * [MobEntity.changeAngle]
+     */
+    private fun changeAngle(oldAngle: Float, newAngle: Float, maxChangeInAngle: Float): Float {
+        var f = MathHelper.wrapDegrees(newAngle - oldAngle)
+        if (f > maxChangeInAngle) {
+            f = maxChangeInAngle
+        }
+        if (f < -maxChangeInAngle) {
+            f = -maxChangeInAngle
+        }
+        return oldAngle + f
     }
 }
