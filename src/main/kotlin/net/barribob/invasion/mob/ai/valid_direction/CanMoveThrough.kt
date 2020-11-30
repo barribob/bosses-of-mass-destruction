@@ -22,11 +22,6 @@ class CanMoveThrough(private val entity: Entity, private val reactionDistance: D
         )
         val noFluidCollisions = blockCollision.type == HitResult.Type.MISS
 
-        // Todo: Remove when finished with animation
-//        val points = mutableListOf<Vec3d>()
-//        MathUtils.lineCallback(entity.pos, target, 100) { vec3d, _ -> points.add(vec3d) }
-//        val color = if (noBlockCollisions && noFluidCollisions) listOf(1f, 1f, 0f, 1f) else listOf(1f, 0f, 0f, 1f)
-//        ClientServerUtils.drawDebugPoints(points, 1, entity.pos, entity.world, color)
         return noFluidCollisions && noBlockCollisions
     }
 }

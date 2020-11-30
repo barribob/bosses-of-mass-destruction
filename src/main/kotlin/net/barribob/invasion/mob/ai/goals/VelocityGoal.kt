@@ -1,10 +1,12 @@
-package net.barribob.invasion.mob.ai
+package net.barribob.invasion.mob.ai.goals
 
+import net.barribob.invasion.mob.ai.ISteering
+import net.barribob.invasion.mob.ai.ITargetSelector
 import net.minecraft.entity.ai.goal.Goal
 import net.minecraft.util.math.Vec3d
 import java.util.*
 
-class AerialWanderGoal(
+class VelocityGoal(
     private val onTargetSelected: (Vec3d) -> Unit,
     private val steering: ISteering,
     private val targetSelector: ITargetSelector

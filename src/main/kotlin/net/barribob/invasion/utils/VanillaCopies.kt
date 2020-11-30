@@ -4,6 +4,9 @@ import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.MovementType
 import net.minecraft.entity.mob.FlyingEntity
 import net.minecraft.entity.mob.MobEntity
+import net.minecraft.entity.mob.PathAwareEntity
+import net.minecraft.entity.projectile.thrown.SnowballEntity
+import net.minecraft.sound.SoundEvents
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
@@ -69,5 +72,18 @@ object VanillaCopies {
             f = -maxChangeInAngle
         }
         return oldAngle + f
+    }
+
+    // Todo: Temporary placeholder projectile - do we want to use this, or bring our custom projectiles from the core?
+    fun attack(actor: PathAwareEntity, target: LivingEntity) {
+        val snowballEntity = SnowballEntity(actor.world, actor)
+        val d = target.eyeY - 1.100000023841858
+        val e: Double = target.x - actor.getX()
+        val f: Double = d - snowballEntity.y
+        val g: Double = target.z - actor.getZ()
+        val h = MathHelper.sqrt(e * e + g * g) * 0.2f
+        snowballEntity.setVelocity(e, f + h.toDouble(), g, 1.6f, 12.0f)
+        actor.playSound(SoundEvents.ENTITY_SNOW_GOLEM_SHOOT, 1.0f, 0.4f / (actor.getRandom().nextFloat() * 0.4f + 0.8f))
+        actor.world.spawnEntity(snowballEntity)
     }
 }
