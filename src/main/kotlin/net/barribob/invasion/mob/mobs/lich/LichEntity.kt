@@ -1,11 +1,10 @@
 package net.barribob.invasion.mob.mobs.lich
 
-import net.barribob.invasion.Particles
 import net.barribob.invasion.mob.ai.ValidatedTargetSelector
 import net.barribob.invasion.mob.ai.VelocitySteering
 import net.barribob.invasion.mob.ai.action.ActionWithConstantCooldown
 import net.barribob.invasion.mob.ai.action.CooldownAction
-import net.barribob.invasion.mob.ai.action.SnowballThrowAction
+import net.barribob.invasion.mob.ai.action.ThrowProjectileAction
 import net.barribob.invasion.mob.ai.goals.ActionGoal
 import net.barribob.invasion.mob.ai.goals.CompositeGoal
 import net.barribob.invasion.mob.ai.goals.VelocityGoal
@@ -13,7 +12,10 @@ import net.barribob.invasion.mob.ai.valid_direction.CanMoveThrough
 import net.barribob.invasion.mob.ai.valid_direction.InDesiredRange
 import net.barribob.invasion.mob.ai.valid_direction.ValidDirectionAnd
 import net.barribob.invasion.mob.utils.BaseEntity
-import net.barribob.invasion.mob.utils.animation.AnimationPredicate
+import net.barribob.invasion.mob.utils.ProjectileData
+import net.barribob.invasion.mob.utils.ProjectileThrower
+import net.barribob.invasion.particle.Particles
+import net.barribob.invasion.utils.ModUtils
 import net.barribob.invasion.utils.VanillaCopies
 import net.barribob.invasion.utils.VanillaCopies.lookAtTarget
 import net.barribob.maelstrom.MaelstromMod
@@ -28,12 +30,11 @@ import net.minecraft.entity.EntityType
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.ai.goal.FollowTargetGoal
 import net.minecraft.entity.ai.goal.SwimGoal
+import net.minecraft.entity.projectile.thrown.SnowballEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
-import software.bernie.geckolib3.core.PlayState
-import software.bernie.geckolib3.core.builder.AnimationBuilder
 import software.bernie.geckolib3.core.controller.AnimationController
 import software.bernie.geckolib3.core.manager.AnimationData
 
@@ -45,10 +46,10 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
     private val reactionDistance = 4.0
 
     override fun registerControllers(data: AnimationData) {
-        data.addAnimationController(AnimationController(this, "skull_float", 0f, createIdlePredicate("skull_float")))
-        data.addAnimationController(AnimationController(this, "float", 0f, createIdlePredicate("float")))
-        data.addAnimationController(AnimationController(this, "arms_idle", 0f, createIdlePredicate("arms_idle")))
-        data.addAnimationController(AnimationController(this, "book_idle", 0f, createIdlePredicate("book_idle")))
+        data.addAnimationController(AnimationController(this, "skull_float", 0f, ModUtils.createIdlePredicate("skull_float")))
+        data.addAnimationController(AnimationController(this, "float", 0f, ModUtils.createIdlePredicate("float")))
+        data.addAnimationController(AnimationController(this, "arms_idle", 0f, ModUtils.createIdlePredicate("arms_idle")))
+        data.addAnimationController(AnimationController(this, "book_idle", 0f, ModUtils.createIdlePredicate("book_idle")))
     }
 
     override fun initGoals() {
@@ -66,7 +67,13 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
     }
 
     private fun buildAttackGoal(): ActionGoal {
-        val snowballThrowAction = CooldownAction(ActionWithConstantCooldown(SnowballThrowAction(this), 20), 60)
+        val snowballThrower = ProjectileThrower {
+            val snowballEntity = SnowballEntity(world, this)
+            world.spawnEntity(snowballEntity)
+            ProjectileData(snowballEntity, 1.2f, 12f)
+        }
+        val snowballThrowAction =
+            CooldownAction(ActionWithConstantCooldown(ThrowProjectileAction(this, snowballThrower), 20), 60)
         return ActionGoal(
             { target != null },
             tickAction = snowballThrowAction,
@@ -176,14 +183,6 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
         if (isInvulnerable) {
             (world as ServerWorld).spawnParticles(Particles.SKELETON, pos.x, pos.y + 5, pos.z, 1, 0.0, 0.0, 0.0, 0.0)
         }
-    }
-
-    private fun createIdlePredicate(animationName: String): AnimationPredicate<LichEntity> = AnimationPredicate {
-        it.controller.setAnimation(
-            AnimationBuilder()
-                .addAnimation(animationName, true)
-        )
-        PlayState.CONTINUE
     }
 
     override fun handleFallDamage(fallDistance: Float, damageMultiplier: Float): Boolean = false

@@ -1,12 +1,14 @@
 package net.barribob.invasion.utils
 
+import net.fabricmc.fabric.api.network.PacketContext
+import net.minecraft.client.MinecraftClient
+import net.minecraft.client.network.ClientPlayNetworkHandler
+import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.MovementType
 import net.minecraft.entity.mob.FlyingEntity
 import net.minecraft.entity.mob.MobEntity
-import net.minecraft.entity.mob.PathAwareEntity
-import net.minecraft.entity.projectile.thrown.SnowballEntity
-import net.minecraft.sound.SoundEvents
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
@@ -74,16 +76,28 @@ object VanillaCopies {
         return oldAngle + f
     }
 
-    // Todo: Temporary placeholder projectile - do we want to use this, or bring our custom projectiles from the core?
-    fun attack(actor: PathAwareEntity, target: LivingEntity) {
-        val snowballEntity = SnowballEntity(actor.world, actor)
-        val d = target.eyeY - 1.100000023841858
-        val e: Double = target.x - actor.getX()
-        val f: Double = d - snowballEntity.y
-        val g: Double = target.z - actor.getZ()
-        val h = MathHelper.sqrt(e * e + g * g) * 0.2f
-        snowballEntity.setVelocity(e, f + h.toDouble(), g, 1.6f, 12.0f)
-        actor.playSound(SoundEvents.ENTITY_SNOW_GOLEM_SHOOT, 1.0f, 0.4f / (actor.getRandom().nextFloat() * 0.4f + 0.8f))
-        actor.world.spawnEntity(snowballEntity)
+    /**
+     * [ClientPlayNetworkHandler.onEntitySpawn]
+     */
+    fun handleClientSpawnEntity(packetContext: PacketContext, packet: EntitySpawnS2CPacket) {
+        val d: Double = packet.x
+        val e: Double = packet.y
+        val f: Double = packet.z
+        val entityType = packet.entityTypeId
+        val world = packetContext.player.world
+
+        val entity15 = entityType.create(world)
+
+        if (entity15 != null) {
+            val i: Int = packet.id
+            entity15.updateTrackedPosition(d, e, f)
+            entity15.refreshPositionAfterTeleport(d, e, f)
+            entity15.pitch = (packet.pitch * 360).toFloat() / 256.0f
+            entity15.yaw = (packet.yaw * 360).toFloat() / 256.0f
+            entity15.entityId = i
+            entity15.uuid = packet.uuid
+            val clientWorld = MinecraftClient.getInstance().world
+            clientWorld?.addEntity(i, entity15 as Entity?)
+        }
     }
 }

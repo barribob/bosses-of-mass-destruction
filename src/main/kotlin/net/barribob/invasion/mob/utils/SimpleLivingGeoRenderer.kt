@@ -6,7 +6,7 @@ import software.bernie.geckolib3.core.IAnimatable
 import software.bernie.geckolib3.model.AnimatedGeoModel
 import software.bernie.geckolib3.renderer.geo.GeoEntityRenderer
 
-class ModGeoRenderer<T>(
+class SimpleLivingGeoRenderer<T>(
     renderManager: EntityRenderDispatcher?,
     modelProvider: AnimatedGeoModel<T>?
 ) : GeoEntityRenderer<T>(renderManager, modelProvider) where T : IAnimatable, T : LivingEntity

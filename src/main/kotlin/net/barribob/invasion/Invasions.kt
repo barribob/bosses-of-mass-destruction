@@ -2,20 +2,17 @@ package net.barribob.invasion
 
 import net.barribob.invasion.animation.PauseAnimationTimer
 import net.barribob.invasion.mob.Entities
-import net.barribob.invasion.particle.SimpleParticle
-import net.barribob.invasion.particle.SimpleParticleFactory
+import net.barribob.invasion.particle.Particles
+import net.barribob.invasion.utils.InGameTests
+import net.barribob.invasion.utils.ModUtils
+import net.barribob.maelstrom.MaelstromMod
 import net.barribob.maelstrom.general.io.ConsoleLogger
-import net.barribob.maelstrom.static_utilities.RandomUtils
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
-import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry
-import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes
+import net.fabricmc.fabric.api.network.ClientSidePacketRegistry
 import net.minecraft.client.MinecraftClient
-import net.minecraft.client.particle.SpriteProvider
 import net.minecraft.client.util.GlfwUtil
-import net.minecraft.particle.DefaultParticleType
 import net.minecraft.util.Identifier
-import net.minecraft.util.registry.Registry
 import org.apache.logging.log4j.LogManager
 import software.bernie.geckolib3.GeckoLib
 
@@ -27,13 +24,10 @@ object Invasions {
     fun identifier(path: String) = Identifier(MODID, path)
 }
 
-object Particles {
-    val SKELETON: DefaultParticleType =
-        Registry.register(Registry.PARTICLE_TYPE, Invasions.identifier("skeleton"), FabricParticleTypes.simple())
-}
-
 @Suppress("unused")
 fun init() {
+    MaelstromMod.testCommand.addId(InGameTests::throwProjectile.name, InGameTests::throwProjectile)
+
     GeckoLib.initialize()
 
     Entities.init()
@@ -42,16 +36,10 @@ fun init() {
 @Environment(EnvType.CLIENT)
 @Suppress("unused")
 fun clientInit() {
-    ParticleFactoryRegistry.getInstance()
-        .register(Particles.SKELETON) { provider: SpriteProvider ->
-            SimpleParticleFactory(provider) {
-                SimpleParticle(it) {
-                    RandomUtils.range(15, 20)
-                }
-            }
-        }
-
     val animationTimer = PauseAnimationTimer({ GlfwUtil.getTime() * 20 }, { MinecraftClient.getInstance().isPaused })
 
+    ClientSidePacketRegistry.INSTANCE.register(ModUtils.SPAWN_ENTITY_PACKET_ID, ModUtils::handleSpawnClientEntity)
+
     Entities.clientInit(animationTimer)
+    Particles.clientInit()
 }

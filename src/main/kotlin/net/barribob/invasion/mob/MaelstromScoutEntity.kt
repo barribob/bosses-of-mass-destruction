@@ -1,9 +1,8 @@
 package net.barribob.invasion.mob
 
-import net.barribob.invasion.Invasions
-import net.barribob.invasion.Particles
 import net.barribob.invasion.mob.utils.BaseEntity
 import net.barribob.invasion.mob.utils.animation.AnimationPredicate
+import net.barribob.invasion.particle.Particles
 import net.barribob.maelstrom.MaelstromMod
 import net.barribob.maelstrom.general.data.BooleanFlag
 import net.barribob.maelstrom.general.event.TimedEvent
