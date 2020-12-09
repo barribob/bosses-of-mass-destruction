@@ -2,6 +2,7 @@ package net.barribob.invasion.mob
 
 import net.barribob.invasion.Invasions
 import net.barribob.invasion.animation.IAnimationTimer
+import net.barribob.invasion.animation.PauseAnimationTimer
 import net.barribob.invasion.mob.mobs.lich.LichCodeAnimations
 import net.barribob.invasion.mob.mobs.lich.LichEntity
 import net.barribob.invasion.mob.utils.SimpleLivingGeoRenderer
@@ -22,7 +23,9 @@ import net.barribob.maelstrom.static_utilities.RandomUtils
 import net.fabricmc.fabric.api.`object`.builder.v1.entity.FabricDefaultAttributeRegistry
 import net.fabricmc.fabric.api.`object`.builder.v1.entity.FabricEntityTypeBuilder
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry
+import net.minecraft.client.MinecraftClient
 import net.minecraft.client.render.entity.FlyingItemEntityRenderer
+import net.minecraft.client.util.GlfwUtil
 import net.minecraft.entity.EntityDimensions
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.SpawnGroup
@@ -100,6 +103,7 @@ object Entities {
             .color { MathUtils.lerpVec(it, ModColors.COMET_BLUE, ModColors.FADED_COMET_BLUE) }
             .brightness { Particles.FULL_BRIGHT }
             .scale { 0.5f + it * 0.3f }
+        val pauseSecondTimer = PauseAnimationTimer({ GlfwUtil.getTime() }, { MinecraftClient.getInstance().isPaused })
         EntityRendererRegistry.INSTANCE.register(COMET) { entityRenderDispatcher, _ ->
             ModGeoRenderer(entityRenderDispatcher, GeoModel(
                 Invasions.identifier("geo/comet.geo.json"),
@@ -108,7 +112,8 @@ object Entities {
                 animationTimer,
                 CometCodeAnimations()
             ),
-                FrameLimitedRenderer(3f,
+                FrameLimitedRenderer(60f,
+                    pauseSecondTimer,
                     LerpedPosRenderer { cometTrailParticleFactory.build(it.add(RandomUtils.randVec().multiply(0.5))) }),
                 FullRenderLight()
             )

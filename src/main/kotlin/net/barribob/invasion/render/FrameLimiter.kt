@@ -1,22 +1,18 @@
 package net.barribob.invasion.render
 
-class FrameLimiter(framesPerTick: Float) {
-    private val minimumFrameDelta = 1 / framesPerTick
-    var previousPartialTicks = -1.0f
+import net.barribob.invasion.animation.IAnimationTimer
 
-    fun canDoFrame(partialTicks: Float): Boolean {
-        if (getFrameDelta(partialTicks) >= minimumFrameDelta) {
-            previousPartialTicks = partialTicks
+class FrameLimiter(framesPerUnit: Float, private val timer: IAnimationTimer) {
+    private val minimumFrameDelta = 1 / framesPerUnit
+    var previousTime = 0f
+
+    fun canDoFrame(): Boolean {
+        val currentTick = timer.getCurrentTick()
+        val frameDelta = currentTick - previousTime
+        if (frameDelta >= minimumFrameDelta) {
+            previousTime = currentTick
             return true
         }
         return false
-    }
-
-    fun getFrameDelta(partialTicks: Float): Float {
-        return if (partialTicks > previousPartialTicks) {
-            partialTicks - previousPartialTicks
-        } else {
-            1 - previousPartialTicks + partialTicks
-        }
     }
 }
