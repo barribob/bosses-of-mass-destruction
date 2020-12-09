@@ -42,7 +42,7 @@ class ClientParticleBuilder(private val effect: ParticleEffect) {
         val camera: Camera = client.gameRenderer.camera
         if (client != null && camera.isReady && client.particleManager != null) {
             val particle = client.particleManager.addParticle(effect, pos.x, pos.y, pos.z, vel.x, vel.y, vel.z)
-                    ?: return
+                ?: return
 
             scale?.let { particle.scale(it(0f)) }
             color?.let {
@@ -52,9 +52,9 @@ class ClientParticleBuilder(private val effect: ParticleEffect) {
             age?.let { particle.maxAge = it() }
 
             if (particle is SimpleParticle) {
-                particle.setBrightnessOverride(brightness)
-                particle.setColorOverride(color)
-                particle.setScaleOverride(scale)
+                brightness?.let { particle.setBrightnessOverride(brightness) }
+                color?.let { particle.setColorOverride(color) }
+                scale?.let { particle.setScaleOverride(scale) }
             }
         }
     }

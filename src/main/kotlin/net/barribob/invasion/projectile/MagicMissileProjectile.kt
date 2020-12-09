@@ -9,23 +9,21 @@ import net.minecraft.entity.projectile.thrown.ThrownItemEntity
 import net.minecraft.util.hit.EntityHitResult
 import net.minecraft.world.World
 
-class SmallThrownItemEntity : BaseThrownItemEntity {
+class MagicMissileProjectile : BaseThrownItemEntity {
     constructor(
         d: Double,
         e: Double,
         f: Double,
         world: World,
-    ) : super(Entities.TEST_PROJECTILE, d, e, f, world)
+    ) : super(Entities.MAGIC_MISSILE, d, e, f, world)
 
     constructor(entityType: EntityType<out ThrownItemEntity>, world: World?) : super(entityType, world)
 
     constructor(livingEntity: LivingEntity, world: World) : super(
-        Entities.TEST_PROJECTILE,
+        Entities.MAGIC_MISSILE,
         livingEntity,
         world
     )
-
-    override fun shouldRender(distance: Double): Boolean = false
 
     override fun onEntityHit(entityHitResult: EntityHitResult) {
         val entity = entityHitResult.entity

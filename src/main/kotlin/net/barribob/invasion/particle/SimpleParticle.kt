@@ -23,18 +23,23 @@ class SimpleParticle(private val particleContext: ParticleContext, particleAge: 
         super.tick()
         if (isAlive) {
             setSpriteForAge(particleContext.spriteProvider)
-            val colorOverride1 = colorOverride
             val ageRatio = age / maxAge.toFloat()
-            if (colorOverride1 != null) {
-                val color = colorOverride1(ageRatio)
-                setColor(color.x.toFloat(), color.y.toFloat(), color.z.toFloat())
-            }
+            setColorFromOverride(colorOverride, ageRatio)
+            setScaleFromOverride(scaleOverride, ageRatio)
+        }
+    }
 
-            val scaleOverride = scaleOverride
-            if (scaleOverride != null) {
-                scale = scaleOverride(ageRatio)
-                setBoundingBoxSpacing(0.2f * scale, 0.2f * scale)
-            }
+    private fun setScaleFromOverride(scaleOverride: ((Float) -> Float)?, ageRatio: Float) {
+        if (scaleOverride != null) {
+            scale = scaleOverride(ageRatio)
+            setBoundingBoxSpacing(0.2f * scale, 0.2f * scale)
+        }
+    }
+
+    private fun setColorFromOverride(colorOverride: ((Float) -> Vec3d)?, ageRatio: Float) {
+        if (colorOverride != null) {
+            val color = colorOverride(ageRatio)
+            setColor(color.x.toFloat(), color.y.toFloat(), color.z.toFloat())
         }
     }
 
@@ -44,14 +49,16 @@ class SimpleParticle(private val particleContext: ParticleContext, particleAge: 
 
     fun setColorOverride(override: ((Float) -> Vec3d)?) {
         colorOverride = override
+        setColorFromOverride(override, 0f)
     }
 
     fun setScaleOverride(override: ((Float) -> Float)?) {
         scaleOverride = override
+        setScaleFromOverride(override, 0f)
     }
 
-    override fun getColorMultiplier(tint: Float): Int = brightnessOverride?.invoke(age / maxAge.toFloat()) ?: super.getColorMultiplier(
-        tint)
+    override fun getColorMultiplier(tint: Float): Int =
+        brightnessOverride?.invoke(age / maxAge.toFloat()) ?: super.getColorMultiplier(tint)
 
     init {
         this.maxAge = particleAge()

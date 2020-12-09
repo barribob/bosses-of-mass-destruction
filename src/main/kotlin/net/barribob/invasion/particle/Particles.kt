@@ -1,6 +1,7 @@
 package net.barribob.invasion.particle
 
 import net.barribob.invasion.Invasions
+import net.barribob.invasion.utils.ModColors
 import net.barribob.maelstrom.static_utilities.RandomUtils
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes
@@ -14,6 +15,10 @@ object Particles {
 
     val DISAPPEARING_SWIRL: DefaultParticleType = Registry.register(Registry.PARTICLE_TYPE,
         Invasions.identifier("disappearing_swirl"),
+        FabricParticleTypes.simple())
+
+    val SOUL_FLAME: DefaultParticleType = Registry.register(Registry.PARTICLE_TYPE,
+        Invasions.identifier("soul_flame"),
         FabricParticleTypes.simple())
 
     const val FULL_BRIGHT = 15728880
@@ -35,6 +40,14 @@ object Particles {
                 SimpleParticle(it) {
                     RandomUtils.range(15, 20)
                 }
+            }
+        }
+
+        particleFactory.register(SOUL_FLAME) { provider: SpriteProvider ->
+            SimpleParticleFactory(provider) {
+                val particle = SimpleParticle(it) { RandomUtils.range(15, 20) }
+                particle.setColorOverride { ModColors.COMET_BLUE }
+                particle
             }
         }
     }

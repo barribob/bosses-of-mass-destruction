@@ -3,15 +3,21 @@ package net.barribob.invasion.utils
 import net.fabricmc.fabric.api.network.PacketContext
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.network.ClientPlayNetworkHandler
+import net.minecraft.client.render.OverlayTexture
+import net.minecraft.client.render.RenderLayer
+import net.minecraft.client.render.VertexConsumer
+import net.minecraft.client.render.VertexConsumerProvider
+import net.minecraft.client.render.entity.DragonFireballEntityRenderer
+import net.minecraft.client.render.entity.EntityRenderDispatcher
+import net.minecraft.client.util.math.MatrixStack
+import net.minecraft.client.util.math.Vector3f
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.MovementType
 import net.minecraft.entity.mob.FlyingEntity
 import net.minecraft.entity.mob.MobEntity
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket
-import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.MathHelper
-import net.minecraft.util.math.Vec3d
+import net.minecraft.util.math.*
 
 object VanillaCopies {
     /**
@@ -99,5 +105,48 @@ object VanillaCopies {
             val clientWorld = MinecraftClient.getInstance().world
             clientWorld?.addEntity(i, entity15 as Entity?)
         }
+    }
+
+    /**
+     * [DragonFireballEntityRenderer.render]
+     */
+    fun renderBillboard(
+        matrixStack: MatrixStack,
+        vertexConsumerProvider: VertexConsumerProvider,
+        i: Int,
+        dispatcher: EntityRenderDispatcher,
+        layer: RenderLayer,
+    ) {
+        matrixStack.push()
+        matrixStack.multiply(dispatcher.rotation)
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f))
+        val entry = matrixStack.peek()
+        val matrix4f = entry.model
+        val matrix3f = entry.normal
+        val vertexConsumer = vertexConsumerProvider.getBuffer(layer)
+        produceVertex(vertexConsumer, matrix4f, matrix3f, i, 0.0f, 0, 0, 1)
+        produceVertex(vertexConsumer, matrix4f, matrix3f, i, 1.0f, 0, 1, 1)
+        produceVertex(vertexConsumer, matrix4f, matrix3f, i, 1.0f, 1, 1, 0)
+        produceVertex(vertexConsumer, matrix4f, matrix3f, i, 0.0f, 1, 0, 0)
+        matrixStack.pop()
+    }
+
+    /**
+     * [DragonFireballEntityRenderer.produceVertex]
+     */
+    private fun produceVertex(
+        vertexConsumer: VertexConsumer,
+        modelMatrix: Matrix4f,
+        normalMatrix: Matrix3f,
+        light: Int,
+        x: Float,
+        y: Int,
+        textureU: Int,
+        textureV: Int,
+    ) {
+        vertexConsumer.vertex(modelMatrix, x - 0.5f, y.toFloat() - 0.25f, 0.0f).color(255, 255, 255, 255)
+            .texture(textureU.toFloat(),
+                textureV.toFloat()).overlay(OverlayTexture.DEFAULT_UV).light(light)
+            .normal(normalMatrix, 0.0f, 1.0f, 0.0f).next()
     }
 }
