@@ -6,6 +6,7 @@ import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity
+import net.minecraft.util.hit.BlockHitResult
 import net.minecraft.util.hit.EntityHitResult
 import net.minecraft.world.World
 
@@ -34,5 +35,10 @@ class MagicMissileProjectile : BaseThrownItemEntity {
                 owner.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE).toFloat()
             )
         }
+    }
+
+    override fun onBlockHit(blockHitResult: BlockHitResult?) {
+        super.onBlockHit(blockHitResult)
+        remove()
     }
 }

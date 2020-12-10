@@ -7,6 +7,7 @@ import net.minecraft.entity.projectile.thrown.ThrownItemEntity
 import net.minecraft.item.Item
 import net.minecraft.item.Items
 import net.minecraft.network.Packet
+import net.minecraft.util.hit.HitResult
 import net.minecraft.world.World
 
 abstract class BaseThrownItemEntity : ThrownItemEntity {
@@ -41,6 +42,12 @@ abstract class BaseThrownItemEntity : ThrownItemEntity {
 
     override fun createSpawnPacket(): Packet<*> {
         return ModUtils.createClientEntityPacket(this)
+    }
+
+    override fun onCollision(hitResult: HitResult) {
+        if(!world.isClient) {
+            super.onCollision(hitResult)
+        }
     }
 
     open fun clientTick() {
