@@ -41,6 +41,7 @@ class CometProjectile : BaseThrownItemEntity, IAnimatable {
         val owner = owner
         if (owner != null && owner is LivingEntity) {
             world.createExplosion(this, x, y, z, 1.0f, Explosion.DestructionType.NONE)
+            remove()
         }
     }
 
