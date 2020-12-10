@@ -14,6 +14,7 @@ import net.barribob.invasion.projectile.comet.CometProjectile
 import net.barribob.invasion.render.*
 import net.barribob.invasion.utils.ModColors
 import net.barribob.maelstrom.MaelstromMod
+import net.barribob.maelstrom.general.data.WeakHashPredicate
 import net.barribob.maelstrom.mob.ai.JumpToTargetGoal
 import net.barribob.maelstrom.static_utilities.MathUtils
 import net.barribob.maelstrom.static_utilities.RandomUtils
@@ -104,11 +105,9 @@ object Entities {
                 entityRenderDispatcher,
                 CompositeRenderer(listOf(
                     BillboardRenderer(entityRenderDispatcher, magicMissileRenderLayer) { 0.5f },
-                    FrameLimitedRenderer(20f,
-                        pauseSecondTimer,
-                        LerpedPosRenderer {
-                            magicMissileParticleFactory.build(it.add(RandomUtils.randVec().multiply(0.25)))
-                        })
+                    ConditionalRenderer(
+                        WeakHashPredicate<MagicMissileProjectile> { FrameLimiter(20f, pauseSecondTimer)::canDoFrame },
+                        LerpedPosRenderer { magicMissileParticleFactory.build(it.add(RandomUtils.randVec().multiply(0.25))) })
                 )),
                 { missileTexture },
                 FullRenderLight()
@@ -127,8 +126,8 @@ object Entities {
                 animationTimer,
                 CometCodeAnimations()
             ),
-                FrameLimitedRenderer(60f,
-                    pauseSecondTimer,
+                ConditionalRenderer(
+                    WeakHashPredicate { FrameLimiter(60f, pauseSecondTimer)::canDoFrame },
                     LerpedPosRenderer { cometTrailParticleFactory.build(it.add(RandomUtils.randVec().multiply(0.5))) }),
                 FullRenderLight()
             )
