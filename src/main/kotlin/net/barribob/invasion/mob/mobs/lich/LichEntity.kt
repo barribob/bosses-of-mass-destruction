@@ -14,42 +14,82 @@ import net.barribob.invasion.mob.ai.valid_direction.ValidDirectionAnd
 import net.barribob.invasion.mob.utils.BaseEntity
 import net.barribob.invasion.mob.utils.ProjectileData
 import net.barribob.invasion.mob.utils.ProjectileThrower
+import net.barribob.invasion.mob.utils.animation.AnimationPredicate
+import net.barribob.invasion.particle.ParticleFactories
 import net.barribob.invasion.particle.Particles
+import net.barribob.invasion.projectile.comet.CometProjectile
 import net.barribob.invasion.utils.ModUtils
 import net.barribob.invasion.utils.VanillaCopies
 import net.barribob.invasion.utils.VanillaCopies.lookAtTarget
 import net.barribob.maelstrom.MaelstromMod
+import net.barribob.maelstrom.general.data.BooleanFlag
 import net.barribob.maelstrom.general.data.HistoricalData
 import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.general.random.ModRandom
-import net.barribob.maelstrom.static_utilities.MathUtils
-import net.barribob.maelstrom.static_utilities.addVelocity
-import net.barribob.maelstrom.static_utilities.newVec3d
+import net.barribob.maelstrom.static_utilities.*
 import net.minecraft.block.BlockState
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.ai.goal.FollowTargetGoal
 import net.minecraft.entity.ai.goal.SwimGoal
-import net.minecraft.entity.projectile.thrown.SnowballEntity
 import net.minecraft.server.world.ServerWorld
+import net.minecraft.sound.SoundEvents
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
+import software.bernie.geckolib3.core.PlayState
+import software.bernie.geckolib3.core.builder.AnimationBuilder
 import software.bernie.geckolib3.core.controller.AnimationController
 import software.bernie.geckolib3.core.manager.AnimationData
 
+/**
+ * For the most part, our quick and dirty tracer code to create a nice attack that the player can react to was a success
+ *
+ * Few problems
+ * - The attack range is way off - we're going to use minecraft standards for now
+ * - The movement ai doesn't seem to work in all cases - Figure this out late - hopefully teleportation can cover this
+ *
+ * - How to not make this class awful to read and to find things in. It's already near 300 lines and counting
+ */
 class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEntity(
     entityType,
     world
 ) {
     var velocityHistory = HistoricalData(Vec3d.ZERO)
     private val reactionDistance = 4.0
+    private val summonCometStatus: Byte = 16
+    private val stopAttackStatus: Byte = 17
+    private var cometAttackFlag = false
+    private val attackFlag = BooleanFlag()
 
     override fun registerControllers(data: AnimationData) {
-        data.addAnimationController(AnimationController(this, "skull_float", 0f, ModUtils.createIdlePredicate("skull_float")))
+        data.addAnimationController(AnimationController(this, "attack", 0f, attack))
+        data.addAnimationController(AnimationController(this,
+            "skull_float",
+            0f,
+            ModUtils.createIdlePredicate("skull_float")))
         data.addAnimationController(AnimationController(this, "float", 0f, ModUtils.createIdlePredicate("float")))
-        data.addAnimationController(AnimationController(this, "arms_idle", 0f, ModUtils.createIdlePredicate("arms_idle")))
-        data.addAnimationController(AnimationController(this, "book_idle", 0f, ModUtils.createIdlePredicate("book_idle")))
+        data.addAnimationController(AnimationController(this,
+            "book_idle",
+            0f,
+            ModUtils.createIdlePredicate("book_idle")))
+    }
+
+    private val attack = AnimationPredicate<LichEntity> {
+        if (attackFlag.getAndReset()) {
+            it.controller.markNeedsReload()
+            it.controller.setAnimation(
+                AnimationBuilder().addAnimation("summon_fireball", false).addAnimation("arms_idle", true)
+            )
+        }
+
+        if (!cometAttackFlag) {
+            it.controller.setAnimation(
+                AnimationBuilder().addAnimation("arms_idle", true)
+            )
+        }
+
+        PlayState.CONTINUE
     }
 
     override fun initGoals() {
@@ -67,17 +107,39 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
     }
 
     private fun buildAttackGoal(): ActionGoal {
-        val snowballThrower = ProjectileThrower {
-            val snowballEntity = SnowballEntity(world, this)
-            world.spawnEntity(snowballEntity)
-            ProjectileData(snowballEntity, 1.2f, 12f)
+        val canContinueAttack = { isAlive && target != null }
+
+        val cometThrower = ProjectileThrower {
+            val projectile = CometProjectile(this, world)
+            projectile.setPos(getCometLaunchPosition())
+            world.spawnEntity(projectile)
+            ProjectileData(projectile, 1.6f, 0f)
         }
-        val snowballThrowAction =
-            CooldownAction(ActionWithConstantCooldown(ThrowProjectileAction(this, snowballThrower), 20), 60)
+
+        val throwCometAction = {
+            ThrowProjectileAction(this, cometThrower).perform()
+            playSound(SoundEvents.ENTITY_BLAZE_SHOOT, 1.5f, 1.0f)
+        }
+
+        val readyCometAction = {
+            MaelstromMod.serverEventScheduler.addEvent(TimedEvent(throwCometAction,
+                60,
+                shouldCancel = { !canContinueAttack() }))
+            world.sendEntityStatus(this, summonCometStatus)
+            playSound(SoundEvents.ENTITY_ILLUSIONER_CAST_SPELL, 2.0f, 1.0f)
+        }
+
+        val cometThrowAction = ActionWithConstantCooldown(readyCometAction, 80)
+
+        val attackAction = CooldownAction(cometThrowAction, 80)
+        val onCancel = {
+            world.sendEntityStatus(this, stopAttackStatus)
+            attackAction.stop()
+        }
         return ActionGoal(
-            { target != null },
-            tickAction = snowballThrowAction,
-            endAction = snowballThrowAction
+            canContinueAttack,
+            tickAction = attackAction,
+            endAction = onCancel
         )
     }
 
@@ -184,6 +246,22 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
             (world as ServerWorld).spawnParticles(Particles.SKELETON, pos.x, pos.y + 5, pos.z, 1, 0.0, 0.0, 0.0, 0.0)
         }
     }
+
+    override fun handleStatus(status: Byte) {
+        if (status == summonCometStatus) {
+            cometAttackFlag = true
+            attackFlag.flag()
+            MaelstromMod.clientEventScheduler.addEvent(TimedEvent({
+                ParticleFactories.COMET_TRAIL.build(getCometLaunchPosition())
+            }, 15, 45, { !isAlive || !cometAttackFlag }))
+        }
+        if (status == stopAttackStatus) {
+            cometAttackFlag = false
+        }
+        super.handleStatus(status)
+    }
+
+    private fun getCometLaunchPosition() = pos.add(VecUtils.yAxis.multiply(4.0))
 
     override fun handleFallDamage(fallDistance: Float, damageMultiplier: Float): Boolean = false
 

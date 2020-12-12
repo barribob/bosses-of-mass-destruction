@@ -13,7 +13,8 @@
 			"bones": [
 				{
 					"name": "root",
-					"pivot": [0, 24, 0]
+					"pivot": [0, 24, 0],
+					"rotation": [32.5, 0, 0]
 				},
 				{
 					"name": "headBase",
@@ -542,13 +543,18 @@
 					]
 				},
 				{
-					"name": "leftArm",
+					"name": "leftArm1",
 					"parent": "torso",
 					"pivot": [10, 35, 1]
 				},
 				{
+					"name": "leftArm2",
+					"parent": "leftArm1",
+					"pivot": [10, 35, 1]
+				},
+				{
 					"name": "leftSleeve",
-					"parent": "leftArm",
+					"parent": "leftArm2",
 					"pivot": [9.84024, 35.66413, 1.14738],
 					"cubes": [
 						{"origin": [9.84024, 30.8308, -1.354], "size": [8, 7, 5], "uv": [46, 18]},
@@ -558,7 +564,7 @@
 				},
 				{
 					"name": "humerusL2",
-					"parent": "leftArm",
+					"parent": "leftArm2",
 					"pivot": [10, 35, 1],
 					"cubes": [
 						{"origin": [10.84024, 34.5808, 0.646], "size": [7, 2, 2], "uv": [52, 84]}
