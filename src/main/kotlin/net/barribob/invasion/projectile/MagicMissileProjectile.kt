@@ -35,6 +35,7 @@ class MagicMissileProjectile : BaseThrownItemEntity {
                 owner.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE).toFloat()
             )
         }
+        remove()
     }
 
     override fun onBlockHit(blockHitResult: BlockHitResult?) {

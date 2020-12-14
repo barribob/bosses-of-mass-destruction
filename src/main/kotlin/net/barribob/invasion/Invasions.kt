@@ -27,6 +27,7 @@ object Invasions {
 @Suppress("unused")
 fun init() {
     MaelstromMod.testCommand.addId(InGameTests::throwProjectile.name, InGameTests::throwProjectile)
+    MaelstromMod.testCommand.addId(InGameTests::axisOffset.name, InGameTests::axisOffset)
 
     GeckoLib.initialize()
 

@@ -284,7 +284,7 @@
 				"hand2": {
 					"rotation": {
 						"0.0": {
-							"vector": [0, 0, 0]
+							"vector": [22.5, 0, -17.5]
 						},
 						"0.8": {
 							"vector": [22.5, 0, -17.5]
@@ -318,14 +318,9 @@
 							"easing": "easeInOutCubic"
 						},
 						"3.76": {
-							"vector": [0, 0, 0],
+							"vector": [22.5, 0, -17.5],
 							"easing": "easeOutSine"
 						}
-					}
-				},
-				"staff": {
-					"rotation": {
-						"vector": [0, 0, -12.5]
 					}
 				},
 				"leftArm1": {
@@ -357,6 +352,207 @@
 							"vector": [0, 0, 0],
 							"easing": "easeOutSine"
 						}
+					}
+				},
+				"staff": {
+					"rotation": {
+						"vector": [0, 0, -12.5]
+					}
+				}
+			}
+		},
+		"summon_missiles": {
+			"animation_length": 3.8,
+			"bones": {
+				"root": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.4": {
+							"vector": [0, 0, -25],
+							"easing": "easeInOutSine"
+						},
+						"0.68": {
+							"vector": [0, 0, -25]
+						},
+						"1.16": {
+							"vector": [0, 0, 17.5],
+							"easing": "easeInOutBack"
+						},
+						"1.4": {
+							"vector": [0, 0, 17.5]
+						},
+						"1.76": {
+							"vector": [-25, 0, 0],
+							"easing": "easeInOutSine"
+						},
+						"2.12": {
+							"vector": [-25, 0, 0]
+						},
+						"2.6": {
+							"vector": [15, 0, 0],
+							"easing": "easeInOutBack"
+						},
+						"3.28": {
+							"vector": [0, 0, 0],
+							"easing": "easeInOutSine"
+						}
+					}
+				},
+				"rightArm": {
+					"rotation": {
+						"vector": [0, -60, 0]
+					}
+				},
+				"humerusR": {
+					"rotation": {
+						"vector": [0, 0, -42.5]
+					}
+				},
+				"rightForearm": {
+					"rotation": {
+						"vector": [-87.5, 0, 80]
+					}
+				},
+				"leftArm2": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 60, 0]
+						},
+						"0.4": {
+							"vector": [0, 0, -65],
+							"easing": "easeInOutSine"
+						},
+						"0.68": {
+							"vector": [0, 0, -65]
+						},
+						"1.04": {
+							"vector": [0, 0, 30],
+							"easing": "easeInOutQuad"
+						},
+						"1.4": {
+							"vector": [0, 0, 30]
+						},
+						"1.76": {
+							"vector": [0, 0, -60],
+							"easing": "easeInOutSine"
+						},
+						"2.12": {
+							"vector": [0, 0, -60]
+						},
+						"2.52": {
+							"vector": [0, 0, 81.07],
+							"easing": "easeInOutQuad"
+						},
+						"3.12": {
+							"vector": [0, 60, 0],
+							"easing": "easeInOutSine"
+						}
+					}
+				},
+				"humerusL2": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 55]
+						},
+						"0.4": {
+							"vector": [0, 0, -2.5],
+							"easing": "easeInOutSine"
+						},
+						"0.68": {
+							"vector": [0, 0, -2.5],
+							"easing": "easeInOutQuad"
+						},
+						"1.04": {
+							"vector": [0, 0, 30],
+							"easing": "easeInOutQuad"
+						},
+						"1.4": {
+							"vector": [0, 0, 30]
+						},
+						"1.76": {
+							"vector": [0, 0, 0],
+							"easing": "easeInOutSine"
+						},
+						"2.12": {
+							"vector": [0, 0, 0]
+						},
+						"2.52": {
+							"vector": [0, 0, 0],
+							"easing": "easeInOutQuad"
+						},
+						"3.12": {
+							"vector": [0, 0, 55],
+							"easing": "easeInOutSine"
+						}
+					}
+				},
+				"leftForearm": {
+					"rotation": {
+						"vector": [0, 0, 0]
+					}
+				},
+				"staff": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, -12.5]
+						},
+						"0.4": {
+							"vector": [0, 0, 17.5],
+							"easing": "easeInOutSine"
+						},
+						"0.68": {
+							"vector": [0, 0, 17.5]
+						},
+						"1.04": {
+							"vector": [0, 0, 32.5],
+							"easing": "easeInOutQuad"
+						},
+						"1.4": {
+							"vector": [0, 0, 32.5]
+						},
+						"1.76": {
+							"vector": [0, 0, 42.5],
+							"easing": "easeInOutSine"
+						},
+						"2.12": {
+							"vector": [0, 0, 42.5]
+						},
+						"3.12": {
+							"vector": [0, 0, -12.5],
+							"easing": "easeInOutSine"
+						}
+					}
+				},
+				"leftArm1": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"1.4": {
+							"vector": [0, 0, 0]
+						},
+						"1.76": {
+							"vector": [0, 90, 0],
+							"easing": "easeInOutSine"
+						},
+						"2.12": {
+							"vector": [0, 90, 0]
+						},
+						"2.52": {
+							"vector": [0, 90, 0],
+							"easing": "easeInOutQuad"
+						},
+						"3.12": {
+							"vector": [0, 0, 0],
+							"easing": "easeInOutSine"
+						}
+					}
+				},
+				"humerusL": {
+					"rotation": {
+						"vector": [0, 0, -42.5]
 					}
 				}
 			}

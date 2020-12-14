@@ -6,9 +6,7 @@ import net.barribob.invasion.animation.PauseAnimationTimer
 import net.barribob.invasion.mob.mobs.lich.LichCodeAnimations
 import net.barribob.invasion.mob.mobs.lich.LichEntity
 import net.barribob.invasion.mob.utils.SimpleLivingGeoRenderer
-import net.barribob.invasion.particle.ClientParticleBuilder
 import net.barribob.invasion.particle.ParticleFactories
-import net.barribob.invasion.particle.Particles
 import net.barribob.invasion.projectile.MagicMissileProjectile
 import net.barribob.invasion.projectile.comet.CometCodeAnimations
 import net.barribob.invasion.projectile.comet.CometProjectile
@@ -97,8 +95,6 @@ object Entities {
 
         val missileTexture = Invasions.identifier("textures/entity/blue_magic_missile.png")
         val magicMissileRenderLayer = RenderLayer.getEntityCutoutNoCull(missileTexture)
-        val magicMissileParticleFactory = ClientParticleBuilder(Particles.SOUL_FLAME)
-            .brightness { Particles.FULL_BRIGHT }
         EntityRendererRegistry.INSTANCE.register(MAGIC_MISSILE) { entityRenderDispatcher, _ ->
             SimpleEntityRenderer(
                 entityRenderDispatcher,
@@ -106,7 +102,7 @@ object Entities {
                     BillboardRenderer(entityRenderDispatcher, magicMissileRenderLayer) { 0.5f },
                     ConditionalRenderer(
                         WeakHashPredicate<MagicMissileProjectile> { FrameLimiter(20f, pauseSecondTimer)::canDoFrame },
-                        LerpedPosRenderer { magicMissileParticleFactory.build(it.add(RandomUtils.randVec().multiply(0.25))) })
+                        LerpedPosRenderer { ParticleFactories.soulFlame().build(it.add(RandomUtils.randVec().multiply(0.25))) })
                 )),
                 { missileTexture },
                 FullRenderLight()
@@ -123,7 +119,7 @@ object Entities {
             ),
                 ConditionalRenderer(
                     WeakHashPredicate { FrameLimiter(60f, pauseSecondTimer)::canDoFrame },
-                    LerpedPosRenderer { ParticleFactories.COMET_TRAIL.build(it.add(RandomUtils.randVec().multiply(0.5))) }),
+                    LerpedPosRenderer { ParticleFactories.cometTrail().build(it.add(RandomUtils.randVec().multiply(0.5))) }),
                 FullRenderLight()
             )
         }

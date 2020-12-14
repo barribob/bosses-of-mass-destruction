@@ -17,6 +17,7 @@ import net.barribob.invasion.mob.utils.ProjectileThrower
 import net.barribob.invasion.mob.utils.animation.AnimationPredicate
 import net.barribob.invasion.particle.ParticleFactories
 import net.barribob.invasion.particle.Particles
+import net.barribob.invasion.projectile.MagicMissileProjectile
 import net.barribob.invasion.projectile.comet.CometProjectile
 import net.barribob.invasion.utils.ModUtils
 import net.barribob.invasion.utils.VanillaCopies
@@ -50,6 +51,10 @@ import software.bernie.geckolib3.core.manager.AnimationData
  * - The movement ai doesn't seem to work in all cases - Figure this out late - hopefully teleportation can cover this
  *
  * - How to not make this class awful to read and to find things in. It's already near 300 lines and counting
+ *
+ * - Next we want to make the second attack (projectile volley) independently of the first attack
+ *  - This is there our current structure becomes a major problem: the first attack is very tightly coupled to the entity itself
+ *  - So we need to figure out a way to abstract attacks to some degree - enough to where we can make the second attack independently of the first
  */
 class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEntity(
     entityType,
@@ -59,8 +64,10 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
     private val reactionDistance = 4.0
     private val summonCometStatus: Byte = 16
     private val stopAttackStatus: Byte = 17
-    private var cometAttackFlag = false
-    private val attackFlag = BooleanFlag()
+    private val summonMissileStatus: Byte = 18
+    private var isIdle_Client = true
+    private val beginCometAttack_Client = BooleanFlag()
+    private val beginMissileAttack_Client = BooleanFlag()
 
     override fun registerControllers(data: AnimationData) {
         data.addAnimationController(AnimationController(this, "attack", 0f, attack))
@@ -76,14 +83,21 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
     }
 
     private val attack = AnimationPredicate<LichEntity> {
-        if (attackFlag.getAndReset()) {
+        if (beginCometAttack_Client.getAndReset()) {
             it.controller.markNeedsReload()
             it.controller.setAnimation(
                 AnimationBuilder().addAnimation("summon_fireball", false).addAnimation("arms_idle", true)
             )
         }
 
-        if (!cometAttackFlag) {
+        if (beginMissileAttack_Client.getAndReset()) {
+            it.controller.markNeedsReload()
+            it.controller.setAnimation(
+                AnimationBuilder().addAnimation("summon_missiles", false).addAnimation("arms_idle", true)
+            )
+        }
+
+        if (isIdle_Client) {
             it.controller.setAnimation(
                 AnimationBuilder().addAnimation("arms_idle", true)
             )
@@ -107,8 +121,52 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
     }
 
     private fun buildAttackGoal(): ActionGoal {
-        val canContinueAttack = { isAlive && target != null }
+        val cometThrowAction = buildCometAction(::canContinueAttack)
+        val missileAction = buildMissileAction(::canContinueAttack)
 
+        val attackAction = CooldownAction(missileAction, 80)
+        val onCancel = {
+            world.sendEntityStatus(this, stopAttackStatus)
+            attackAction.stop()
+        }
+        return ActionGoal(
+            ::canContinueAttack,
+            tickAction = attackAction,
+            endAction = onCancel
+        )
+    }
+
+    private fun buildMissileAction(canContinueAttack: () -> Boolean): ActionWithConstantCooldown {
+        val cometThrower = { offset: Vec3d ->
+            ProjectileThrower {
+                val projectile = MagicMissileProjectile(this, world)
+                projectile.setPos(getCameraPosVec(0f).add(offset))
+                world.spawnEntity(projectile)
+                ProjectileData(projectile, 1.6f, 0f)
+            }
+        }
+
+        val throwMissilesAction = {
+            target?.let {
+                val target = it.boundingBox.center
+                for (offset in getMissileLaunchOffsets()) {
+                    cometThrower(offset).throwProjectile(target.add(offset.planeProject(VecUtils.yAxis)))
+                }
+            }
+            playSound(SoundEvents.ENTITY_BLAZE_SHOOT, 1.5f, 1.0f)
+        }
+
+        val readyMissilesAction = {
+            MaelstromMod.serverEventScheduler.addEvent(TimedEvent(throwMissilesAction,
+                46, shouldCancel = { !canContinueAttack() }))
+            world.sendEntityStatus(this, summonMissileStatus)
+            playSound(SoundEvents.ENTITY_ILLUSIONER_CAST_SPELL, 2.0f, 1.0f)
+        }
+
+        return ActionWithConstantCooldown(readyMissilesAction, 80)
+    }
+
+    private fun buildCometAction(canContinueAttack: () -> Boolean): ActionWithConstantCooldown {
         val cometThrower = ProjectileThrower {
             val projectile = CometProjectile(this, world)
             projectile.setPos(getCometLaunchPosition())
@@ -129,18 +187,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
             playSound(SoundEvents.ENTITY_ILLUSIONER_CAST_SPELL, 2.0f, 1.0f)
         }
 
-        val cometThrowAction = ActionWithConstantCooldown(readyCometAction, 80)
-
-        val attackAction = CooldownAction(cometThrowAction, 80)
-        val onCancel = {
-            world.sendEntityStatus(this, stopAttackStatus)
-            attackAction.stop()
-        }
-        return ActionGoal(
-            canContinueAttack,
-            tickAction = attackAction,
-            endAction = onCancel
-        )
+        return ActionWithConstantCooldown(readyCometAction, 80)
     }
 
     private fun buildAttackMovement(): VelocityGoal {
@@ -249,19 +296,39 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
 
     override fun handleStatus(status: Byte) {
         if (status == summonCometStatus) {
-            cometAttackFlag = true
-            attackFlag.flag()
+            isIdle_Client = false
+            beginCometAttack_Client.flag()
             MaelstromMod.clientEventScheduler.addEvent(TimedEvent({
-                ParticleFactories.COMET_TRAIL.build(getCometLaunchPosition())
-            }, 15, 45, { !isAlive || !cometAttackFlag }))
+                ParticleFactories.cometTrail().build(getCometLaunchPosition())
+            }, 15, 45, { !isAlive || isIdle_Client }))
+        }
+        if (status == summonMissileStatus) {
+            isIdle_Client = false
+            beginMissileAttack_Client.flag()
+            MaelstromMod.clientEventScheduler.addEvent(TimedEvent({
+                for (offset in getMissileLaunchOffsets()) {
+                    ParticleFactories.soulFlame().age { 2 }.build(getCameraPosVec(0f).add(offset))
+                }
+            }, 16, 30, { !isAlive || isIdle_Client }))
         }
         if (status == stopAttackStatus) {
-            cometAttackFlag = false
+            isIdle_Client = true
         }
         super.handleStatus(status)
     }
 
     private fun getCometLaunchPosition() = pos.add(VecUtils.yAxis.multiply(4.0))
+    private fun getMissileLaunchOffsets(): List<Vec3d> {
+        return listOf(
+            MathUtils.axisOffset(rotationVector, VecUtils.yAxis.add(VecUtils.zAxis.multiply(2.0))),
+            MathUtils.axisOffset(rotationVector, VecUtils.yAxis.multiply(1.5).add(VecUtils.zAxis)),
+            MathUtils.axisOffset(rotationVector, VecUtils.yAxis.multiply(2.0)),
+            MathUtils.axisOffset(rotationVector, VecUtils.yAxis.multiply(1.5).add(VecUtils.zAxis.negateServer())),
+            MathUtils.axisOffset(rotationVector, VecUtils.yAxis.add(VecUtils.zAxis.negateServer().multiply(2.0)))
+        )
+    }
+
+    private fun canContinueAttack() = isAlive && target != null
 
     override fun handleFallDamage(fallDistance: Float, damageMultiplier: Float): Boolean = false
 
@@ -269,7 +336,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
         heightDifference: Double,
         onGround: Boolean,
         landedState: BlockState?,
-        landedPosition: BlockPos?
+        landedPosition: BlockPos?,
     ) {
         this.moveControl
     }
