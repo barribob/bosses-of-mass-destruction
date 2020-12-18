@@ -21,6 +21,10 @@ object Particles {
         Invasions.identifier("soul_flame"),
         FabricParticleTypes.simple())
 
+    val LICH_MAGIC_CIRCLE: DefaultParticleType = Registry.register(Registry.PARTICLE_TYPE,
+        Invasions.identifier("magic_circle"),
+        FabricParticleTypes.simple())
+
     const val FULL_BRIGHT = 15728880
 
     fun clientInit() {
@@ -47,6 +51,15 @@ object Particles {
             SimpleParticleFactory(provider) {
                 val particle = SimpleParticle(it) { RandomUtils.range(15, 20) }
                 particle.setColorOverride { ModColors.COMET_BLUE }
+                particle
+            }
+        }
+
+        particleFactory.register(LICH_MAGIC_CIRCLE) { provider: SpriteProvider ->
+            SimpleParticleFactory(provider) {
+                val particle = SimpleParticle(it) { 40 }
+                particle.setBrightnessOverride { FULL_BRIGHT }
+                particle.scale(4f)
                 particle
             }
         }

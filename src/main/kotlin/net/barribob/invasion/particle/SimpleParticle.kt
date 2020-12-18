@@ -62,7 +62,7 @@ class SimpleParticle(private val particleContext: ParticleContext, particleAge: 
 
     init {
         this.maxAge = particleAge()
-        setSprite(particleContext.spriteProvider)
+        setSpriteForAge(particleContext.spriteProvider)
         velocityX = particleContext.vel.x
         velocityY = particleContext.vel.y
         velocityZ = particleContext.vel.z

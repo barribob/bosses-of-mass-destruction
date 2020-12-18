@@ -7,8 +7,8 @@
 				"texture_width": 196,
 				"texture_height": 128,
 				"visible_bounds_width": 6,
-				"visible_bounds_height": 6,
-				"visible_bounds_offset": [0, 2, 0]
+				"visible_bounds_height": 7,
+				"visible_bounds_offset": [0, 2.5, 0]
 			},
 			"bones": [
 				{
@@ -393,8 +393,13 @@
 					]
 				},
 				{
-					"name": "rightArm",
+					"name": "rightArm2",
 					"parent": "torso",
+					"pivot": [-10, 35, 1]
+				},
+				{
+					"name": "rightArm",
+					"parent": "rightArm2",
 					"pivot": [-10, 35, 1]
 				},
 				{
@@ -408,7 +413,7 @@
 					]
 				},
 				{
-					"name": "humerusL",
+					"name": "humerusR",
 					"parent": "rightArm",
 					"pivot": [-10, 35, 1],
 					"cubes": [
@@ -417,7 +422,7 @@
 				},
 				{
 					"name": "rightForearm",
-					"parent": "humerusL",
+					"parent": "humerusR",
 					"pivot": [-17.34024, 35.66413, 1.14738],
 					"cubes": [
 						{"origin": [-27.34024, 34.4308, 1.146], "size": [10, 1, 1], "uv": [77, 25]},

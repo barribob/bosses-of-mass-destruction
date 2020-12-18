@@ -556,6 +556,208 @@
 					}
 				}
 			}
+		},
+		"summon_minions": {
+			"animation_length": 3.12,
+			"bones": {
+				"root": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.52": {
+							"vector": [0, 0, 22.5],
+							"easing": "easeInOutSine"
+						},
+						"1.04": {
+							"vector": [0, 0, 10],
+							"easing": "easeInOutSine"
+						},
+						"1.56": {
+							"vector": [0, 0, 22.5],
+							"easing": "easeInOutSine"
+						},
+						"2.08": {
+							"vector": [0, 0, 10],
+							"easing": "easeInOutSine"
+						},
+						"2.6": {
+							"vector": [0, 0, 0],
+							"easing": "easeInOutSine"
+						}
+					}
+				},
+				"rightArm": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, -60, 0]
+						},
+						"0.52": {
+							"vector": [0, -60, 0],
+							"easing": "easeInOutSine"
+						},
+						"1.04": {
+							"vector": [0, -75, 0],
+							"easing": "easeInOutSine"
+						},
+						"1.56": {
+							"vector": [0, -60, 0],
+							"easing": "easeInOutSine"
+						},
+						"2.08": {
+							"vector": [0, -75, 0],
+							"easing": "easeInOutSine"
+						},
+						"2.6": {
+							"vector": [0, -60, 0]
+						}
+					}
+				},
+				"humerusR": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, -42.5]
+						},
+						"0.52": {
+							"vector": [0, 0, -7.5],
+							"easing": "easeInOutSine"
+						},
+						"2.32": {
+							"vector": [0, 0, -7.5],
+							"easing": "easeInOutSine"
+						},
+						"2.84": {
+							"vector": [0, 0, -42.5]
+						}
+					}
+				},
+				"rightForearm": {
+					"rotation": {
+						"0.0": {
+							"vector": [-87.5, 0, 80]
+						},
+						"0.52": {
+							"vector": [-87.5, 0, 35],
+							"easing": "easeInOutSine"
+						},
+						"2.32": {
+							"vector": [-87.5, 0, 35],
+							"easing": "easeInOutSine"
+						},
+						"2.84": {
+							"vector": [-87.5, 0, 80]
+						}
+					}
+				},
+				"hand": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.52": {
+							"vector": [0, 70, 0],
+							"easing": "easeInOutSine"
+						},
+						"2.32": {
+							"vector": [0, 70, 0],
+							"easing": "easeInOutSine"
+						},
+						"2.84": {
+							"vector": [0, 0, 0]
+						}
+					}
+				},
+				"book": {
+					"rotation": {
+						"0.24": {
+							"vector": [0, 0, 0]
+						},
+						"0.76": {
+							"vector": [0, 52.5, -20],
+							"easing": "easeInOutSine"
+						},
+						"1.32": {
+							"vector": [0, 52.5, -20],
+							"easing": "easeInOutSine"
+						},
+						"1.84": {
+							"vector": [0, 52.5, -20],
+							"easing": "easeInOutSine"
+						},
+						"2.32": {
+							"vector": [0, 0, 0],
+							"easing": "easeInOutSine"
+						}
+					},
+					"position": {
+						"0.24": {
+							"vector": [0, 0, 0]
+						},
+						"0.76": {
+							"vector": [0, 0, -15],
+							"easing": "easeInOutSine"
+						},
+						"1.04": {
+							"vector": [0, 0, -10],
+							"easing": "easeInOutSine"
+						},
+						"1.32": {
+							"vector": [0, 0, -15],
+							"easing": "easeInOutSine"
+						},
+						"1.56": {
+							"vector": [0, 0, -10],
+							"easing": "easeInOutSine"
+						},
+						"1.84": {
+							"vector": [0, 0, -15],
+							"easing": "easeInOutSine"
+						},
+						"2.32": {
+							"vector": [0, 0, 0],
+							"easing": "easeInOutSine"
+						}
+					}
+				},
+				"leftArm2": {
+					"rotation": {
+						"vector": [0, 60, 0]
+					}
+				},
+				"humerusL2": {
+					"rotation": {
+						"vector": [0, 0, 55]
+					}
+				},
+				"leftForearm": {
+					"rotation": {
+						"vector": [0, 0, 0]
+					}
+				},
+				"staff": {
+					"rotation": {
+						"vector": [0, 0, -12.5]
+					}
+				},
+				"rightArm2": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.52": {
+							"vector": [-60, 0, 0],
+							"easing": "easeInOutSine"
+						},
+						"2.32": {
+							"vector": [-60, 0, 0],
+							"easing": "easeInOutSine"
+						},
+						"2.84": {
+							"vector": [0, 0, 0]
+						}
+					}
+				}
+			}
 		}
 	},
 	"geckolib_format_version": 2

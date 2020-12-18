@@ -28,6 +28,7 @@ object Invasions {
 fun init() {
     MaelstromMod.testCommand.addId(InGameTests::throwProjectile.name, InGameTests::throwProjectile)
     MaelstromMod.testCommand.addId(InGameTests::axisOffset.name, InGameTests::axisOffset)
+    MaelstromMod.testCommand.addId(InGameTests::spawnEntity.name, InGameTests::spawnEntity)
 
     GeckoLib.initialize()
 

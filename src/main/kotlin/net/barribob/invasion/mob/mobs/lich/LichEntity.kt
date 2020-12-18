@@ -1,16 +1,16 @@
 package net.barribob.invasion.mob.mobs.lich
 
+import net.barribob.invasion.Invasions
 import net.barribob.invasion.mob.ai.ValidatedTargetSelector
 import net.barribob.invasion.mob.ai.VelocitySteering
-import net.barribob.invasion.mob.ai.action.ActionWithConstantCooldown
-import net.barribob.invasion.mob.ai.action.CooldownAction
-import net.barribob.invasion.mob.ai.action.ThrowProjectileAction
+import net.barribob.invasion.mob.ai.action.*
 import net.barribob.invasion.mob.ai.goals.ActionGoal
 import net.barribob.invasion.mob.ai.goals.CompositeGoal
 import net.barribob.invasion.mob.ai.goals.VelocityGoal
 import net.barribob.invasion.mob.ai.valid_direction.CanMoveThrough
 import net.barribob.invasion.mob.ai.valid_direction.InDesiredRange
 import net.barribob.invasion.mob.ai.valid_direction.ValidDirectionAnd
+import net.barribob.invasion.mob.spawn.*
 import net.barribob.invasion.mob.utils.BaseEntity
 import net.barribob.invasion.mob.utils.ProjectileData
 import net.barribob.invasion.mob.utils.ProjectileThrower
@@ -19,7 +19,10 @@ import net.barribob.invasion.particle.ParticleFactories
 import net.barribob.invasion.particle.Particles
 import net.barribob.invasion.projectile.MagicMissileProjectile
 import net.barribob.invasion.projectile.comet.CometProjectile
+import net.barribob.invasion.utils.ModColors
 import net.barribob.invasion.utils.ModUtils
+import net.barribob.invasion.utils.ModUtils.playSound
+import net.barribob.invasion.utils.ModUtils.spawnParticle
 import net.barribob.invasion.utils.VanillaCopies
 import net.barribob.invasion.utils.VanillaCopies.lookAtTarget
 import net.barribob.maelstrom.MaelstromMod
@@ -29,33 +32,26 @@ import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.general.random.ModRandom
 import net.barribob.maelstrom.static_utilities.*
 import net.minecraft.block.BlockState
+import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.ai.goal.FollowTargetGoal
 import net.minecraft.entity.ai.goal.SwimGoal
+import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.world.ServerWorld
+import net.minecraft.sound.SoundCategory
+import net.minecraft.sound.SoundEvent
 import net.minecraft.sound.SoundEvents
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
+import net.minecraft.util.registry.Registry
 import net.minecraft.world.World
 import software.bernie.geckolib3.core.PlayState
 import software.bernie.geckolib3.core.builder.AnimationBuilder
 import software.bernie.geckolib3.core.controller.AnimationController
+import software.bernie.geckolib3.core.event.predicate.AnimationEvent
 import software.bernie.geckolib3.core.manager.AnimationData
 
-/**
- * For the most part, our quick and dirty tracer code to create a nice attack that the player can react to was a success
- *
- * Few problems
- * - The attack range is way off - we're going to use minecraft standards for now
- * - The movement ai doesn't seem to work in all cases - Figure this out late - hopefully teleportation can cover this
- *
- * - How to not make this class awful to read and to find things in. It's already near 300 lines and counting
- *
- * - Next we want to make the second attack (projectile volley) independently of the first attack
- *  - This is there our current structure becomes a major problem: the first attack is very tightly coupled to the entity itself
- *  - So we need to figure out a way to abstract attacks to some degree - enough to where we can make the second attack independently of the first
- */
 class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEntity(
     entityType,
     world
@@ -65,9 +61,11 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
     private val summonCometStatus: Byte = 16
     private val stopAttackStatus: Byte = 17
     private val summonMissileStatus: Byte = 18
+    private val summonMinionsStatus: Byte = 19
     private var isIdle_Client = true
     private val beginCometAttack_Client = BooleanFlag()
     private val beginMissileAttack_Client = BooleanFlag()
+    private val beginMinionAttack_Client = BooleanFlag()
 
     override fun registerControllers(data: AnimationData) {
         data.addAnimationController(AnimationController(this, "attack", 0f, attack))
@@ -83,19 +81,9 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
     }
 
     private val attack = AnimationPredicate<LichEntity> {
-        if (beginCometAttack_Client.getAndReset()) {
-            it.controller.markNeedsReload()
-            it.controller.setAnimation(
-                AnimationBuilder().addAnimation("summon_fireball", false).addAnimation("arms_idle", true)
-            )
-        }
-
-        if (beginMissileAttack_Client.getAndReset()) {
-            it.controller.markNeedsReload()
-            it.controller.setAnimation(
-                AnimationBuilder().addAnimation("summon_missiles", false).addAnimation("arms_idle", true)
-            )
-        }
+        checkAttackAnimation(it, beginCometAttack_Client, "summon_fireball")
+        checkAttackAnimation(it, beginMissileAttack_Client, "summon_missiles")
+        checkAttackAnimation(it, beginMinionAttack_Client, "summon_minions")
 
         if (isIdle_Client) {
             it.controller.setAnimation(
@@ -104,6 +92,17 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
         }
 
         PlayState.CONTINUE
+    }
+
+    private fun checkAttackAnimation(it: AnimationEvent<*>, booleanFlag: BooleanFlag, animationName: String) {
+        if (booleanFlag.getAndReset()) {
+            it.controller.markNeedsReload()
+            it.controller.setAnimation(
+                AnimationBuilder()
+                    .addAnimation(animationName, false)
+                    .addAnimation("arms_idle", true)
+            )
+        }
     }
 
     override fun initGoals() {
@@ -123,8 +122,9 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
     private fun buildAttackGoal(): ActionGoal {
         val cometThrowAction = buildCometAction(::canContinueAttack)
         val missileAction = buildMissileAction(::canContinueAttack)
+        val minionAction = buildMinionAction(::canContinueAttack)
 
-        val attackAction = CooldownAction(missileAction, 80)
+        val attackAction = CooldownAction(minionAction, 80)
         val onCancel = {
             world.sendEntityStatus(this, stopAttackStatus)
             attackAction.stop()
@@ -134,6 +134,45 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
             tickAction = attackAction,
             endAction = onCancel
         )
+    }
+
+    private fun buildMinionAction(canContinueAttack: () -> Boolean): IActionWithCooldown {
+        val compoundTag = CompoundTag()
+        compoundTag.putString("id", Registry.ENTITY_TYPE.getId(EntityType.PHANTOM).toString()) // Todo: want to move this into a config
+        val serverWorld = world as ServerWorld
+        val mobSpawner = SimpleMobSpawner(serverWorld)
+        val entityProvider = CompoundTagEntityProvider(compoundTag, serverWorld, Invasions.LOGGER)
+        val spawnPredicate = MobEntitySpawnPredicate(world)
+        val summonCircleBeforeSpawn: (pos: Vec3d, entity: Entity) -> Unit = { pos, entity ->
+            serverWorld.spawnParticle(Particles.LICH_MAGIC_CIRCLE, pos, Vec3d.ZERO)
+            world.playSound(pos, SoundEvents.ENTITY_EVOKER_PREPARE_SUMMON, SoundCategory.HOSTILE, 1.5f)
+            val spawnMobWithEffect = {
+                mobSpawner.spawn(pos, entity)
+                entity.playSound(SoundEvents.ENTITY_BLAZE_SHOOT, 1.5f, 1.0f)
+            }
+            MaelstromMod.serverEventScheduler.addEvent(
+                TimedEvent(spawnMobWithEffect, 40, shouldCancel = { !canContinueAttack() }))
+        }
+
+        val beginSpell: () -> Unit = {
+            target?.let {
+                playSound(SoundEvents.ENTITY_ILLUSIONER_CAST_SPELL, 2.0f, 1.0f)
+                MobSpawnLogic(
+                    RangedSpawnPosition({ it.pos }, 4.0, 8.0, ModRandom()),
+                    entityProvider,
+                    spawnPredicate,
+                    summonCircleBeforeSpawn
+                ).trySpawnMob(30)
+            }
+        }
+
+        val summonMobsAction = IAction {
+            world.sendEntityStatus(this, summonMinionsStatus)
+            MaelstromMod.serverEventScheduler.addEvent(
+                TimedEvent(beginSpell, 40, shouldCancel = { !canContinueAttack() }))
+        }
+
+        return ActionWithConstantCooldown(summonMobsAction, 80)
     }
 
     private fun buildMissileAction(canContinueAttack: () -> Boolean): ActionWithConstantCooldown {
@@ -310,6 +349,21 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
                     ParticleFactories.soulFlame().age { 2 }.build(getCameraPosVec(0f).add(offset))
                 }
             }, 16, 30, { !isAlive || isIdle_Client }))
+        }
+        if (status == summonMinionsStatus) {
+            isIdle_Client = false
+            beginMinionAttack_Client.flag()
+            MaelstromMod.clientEventScheduler.addEvent(TimedEvent({
+                ParticleFactories.soulFlame()
+                    .color { ModColors.WHITE }
+                    .velocity(VecUtils.yAxis.multiply(RandomUtils.double(0.2) + 0.2))
+                    .build(getCameraPosVec(0f)
+                        .add(VecUtils.yAxis.multiply(1.0))
+                        .add(RandomUtils.randVec()
+                            .planeProject(VecUtils.yAxis)
+                            .normalize()
+                            .multiply(getRandom().nextGaussian())))
+            }, 10, 40, { !isAlive || isIdle_Client }))
         }
         if (status == stopAttackStatus) {
             isIdle_Client = true
