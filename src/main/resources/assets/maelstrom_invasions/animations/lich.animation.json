@@ -758,6 +758,224 @@
 					}
 				}
 			}
+		},
+		"teleport": {
+			"animation_length": 1.44,
+			"bones": {
+				"root": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.52": {
+							"vector": [-12.5, 20, 0],
+							"easing": "easeInOutSine"
+						},
+						"0.68": {
+							"vector": [-12.5, 20, 0],
+							"easing": "easeInOutSine"
+						},
+						"1.44": {
+							"vector": [0, -360, 0],
+							"easing": "easeInOutSine"
+						}
+					},
+					"scale": {
+						"0.68": {
+							"vector": [1, 1, 1]
+						},
+						"1.44": {
+							"vector": [0, 1, 0],
+							"easing": "easeInSine"
+						}
+					}
+				},
+				"rightArm2": {
+					"rotation": {
+						"vector": [0, 0, 0]
+					}
+				},
+				"rightArm": {
+					"rotation": {
+						"vector": [0, -60, 0]
+					}
+				},
+				"humerusR": {
+					"rotation": {
+						"vector": [0, 0, -42.5]
+					}
+				},
+				"rightForearm": {
+					"rotation": {
+						"vector": [-87.5, 0, 80]
+					}
+				},
+				"hand": {
+					"rotation": {
+						"vector": [0, 0, 0]
+					}
+				},
+				"leftArm1": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.52": {
+							"vector": [-20, 0, -57.5],
+							"easing": "easeInOutSine"
+						},
+						"0.68": {
+							"vector": [-20, 0, -57.5],
+							"easing": "easeInOutSine"
+						},
+						"0.88": {
+							"vector": [75, 0, -57.5],
+							"easing": "easeInOutSine"
+						}
+					}
+				},
+				"leftArm2": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 60, 0]
+						},
+						"0.52": {
+							"vector": [0, 90, 0],
+							"easing": "easeInOutSine"
+						},
+						"0.68": {
+							"vector": [0, 90, 0],
+							"easing": "easeInOutSine"
+						}
+					}
+				},
+				"humerusL2": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 55]
+						},
+						"0.52": {
+							"vector": [0, 0, 12.5],
+							"easing": "easeInOutSine"
+						},
+						"0.68": {
+							"vector": [0, 0, 12.5],
+							"easing": "easeInOutSine"
+						},
+						"0.88": {
+							"vector": [0, 0, 37.5],
+							"easing": "easeInOutSine"
+						}
+					}
+				},
+				"leftForearm": {
+					"rotation": {
+						"vector": [0, 0, 0]
+					}
+				},
+				"hand2": {
+					"rotation": {
+						"0.68": {
+							"vector": [0, 0, 0]
+						},
+						"1.04": {
+							"vector": [0, 0, 50],
+							"easing": "easeInOutSine"
+						}
+					}
+				},
+				"staff": {
+					"rotation": {
+						"vector": [0, 0, -12.5]
+					}
+				}
+			}
+		},
+		"teleporting": {
+			"loop": true,
+			"animation_length": 0.04,
+			"bones": {
+				"root": {
+					"scale": {
+						"vector": [0, 1, 0]
+					}
+				}
+			}
+		},
+		"unteleport": {
+			"animation_length": 1.04,
+			"bones": {
+				"root": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, -360, 0]
+						},
+						"0.52": {
+							"vector": [0, 0, 0],
+							"easing": "easeInOutSine"
+						}
+					},
+					"scale": {
+						"0.0": {
+							"vector": [0, 1, 0]
+						},
+						"0.52": {
+							"vector": [1, 1, 1],
+							"easing": "easeInOutSine"
+						}
+					}
+				},
+				"rightArm2": {
+					"rotation": {
+						"vector": [0, 0, 0]
+					}
+				},
+				"rightArm": {
+					"rotation": {
+						"vector": [0, -60, 0]
+					}
+				},
+				"humerusR": {
+					"rotation": {
+						"vector": [0, 0, -42.5]
+					}
+				},
+				"rightForearm": {
+					"rotation": {
+						"vector": [-87.5, 0, 80]
+					}
+				},
+				"hand": {
+					"rotation": {
+						"vector": [0, 0, 0]
+					}
+				},
+				"leftArm1": {
+					"rotation": {
+						"vector": [0, 0, 0]
+					}
+				},
+				"leftArm2": {
+					"rotation": {
+						"vector": [0, 60, 0]
+					}
+				},
+				"humerusL2": {
+					"rotation": {
+						"vector": [0, 0, 55]
+					}
+				},
+				"leftForearm": {
+					"rotation": {
+						"vector": [0, 0, 0]
+					}
+				},
+				"staff": {
+					"rotation": {
+						"vector": [0, 0, -12.5]
+					}
+				}
+			}
 		}
 	},
 	"geckolib_format_version": 2

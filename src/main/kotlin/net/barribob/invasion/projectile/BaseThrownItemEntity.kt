@@ -1,6 +1,6 @@
 package net.barribob.invasion.projectile
 
-import net.barribob.invasion.utils.ModUtils
+import net.barribob.invasion.utils.NetworkUtils
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity
@@ -41,7 +41,7 @@ abstract class BaseThrownItemEntity : ThrownItemEntity {
     }
 
     override fun createSpawnPacket(): Packet<*> {
-        return ModUtils.createClientEntityPacket(this)
+        return NetworkUtils.createClientEntityPacket(this)
     }
 
     override fun onCollision(hitResult: HitResult) {

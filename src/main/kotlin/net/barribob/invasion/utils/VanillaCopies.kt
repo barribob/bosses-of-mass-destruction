@@ -17,7 +17,10 @@ import net.minecraft.entity.MovementType
 import net.minecraft.entity.mob.FlyingEntity
 import net.minecraft.entity.mob.MobEntity
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket
+import net.minecraft.util.hit.HitResult
 import net.minecraft.util.math.*
+import net.minecraft.world.BlockView
+import net.minecraft.world.RaycastContext
 
 object VanillaCopies {
     /**
@@ -148,5 +151,16 @@ object VanillaCopies {
             .texture(textureU.toFloat(),
                 textureV.toFloat()).overlay(OverlayTexture.DEFAULT_UV).light(light)
             .normal(normalMatrix, 0.0f, 1.0f, 0.0f).next()
+    }
+
+    /**
+     * [LivingEntity.canSee]
+     */
+    fun hasDirectLineOfSight(to: Vec3d, from: Vec3d, world: BlockView, entity: Entity): Boolean {
+        return world.raycast(RaycastContext(to,
+            from,
+            RaycastContext.ShapeType.COLLIDER,
+            RaycastContext.FluidHandling.NONE,
+            entity)).type == HitResult.Type.MISS
     }
 }

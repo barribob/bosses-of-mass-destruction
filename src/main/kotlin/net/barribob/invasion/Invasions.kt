@@ -4,7 +4,7 @@ import net.barribob.invasion.animation.PauseAnimationTimer
 import net.barribob.invasion.mob.Entities
 import net.barribob.invasion.particle.Particles
 import net.barribob.invasion.utils.InGameTests
-import net.barribob.invasion.utils.ModUtils
+import net.barribob.invasion.utils.NetworkUtils
 import net.barribob.maelstrom.MaelstromMod
 import net.barribob.maelstrom.general.io.ConsoleLogger
 import net.fabricmc.api.EnvType
@@ -40,7 +40,7 @@ fun init() {
 fun clientInit() {
     val animationTimer = PauseAnimationTimer({ GlfwUtil.getTime() * 20 }, { MinecraftClient.getInstance().isPaused })
 
-    ClientSidePacketRegistry.INSTANCE.register(ModUtils.SPAWN_ENTITY_PACKET_ID, ModUtils::handleSpawnClientEntity)
+    ClientSidePacketRegistry.INSTANCE.register(NetworkUtils.SPAWN_ENTITY_PACKET_ID, NetworkUtils::handleSpawnClientEntity)
 
     Entities.clientInit(animationTimer)
     Particles.clientInit()

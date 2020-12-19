@@ -44,12 +44,12 @@ object InGameTests {
         val compoundTag = CompoundTag()
         compoundTag.putString("id", Registry.ENTITY_TYPE.getId(EntityType.PHANTOM).toString())
 
-        val spawner = MobSpawnLogic(
+        val spawner = MobPlacementLogic(
             RangedSpawnPosition({ entity.pos }, 3.0, 6.0, ModRandom()),
             CompoundTagEntityProvider(compoundTag, serverWorld, Invasions.LOGGER),
             MobEntitySpawnPredicate(entity.world),
             SimpleMobSpawner(serverWorld)
         )
-        spawner.trySpawnMob(10)
+        spawner.tryPlacement(10)
     }
 }

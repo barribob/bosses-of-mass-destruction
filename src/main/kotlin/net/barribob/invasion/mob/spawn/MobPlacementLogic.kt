@@ -1,12 +1,12 @@
 package net.barribob.invasion.mob.spawn
 
-class MobSpawnLogic(
+class MobPlacementLogic(
     private val locationFinder: ISpawnPosition,
     private val entityProvider: IEntityProvider,
     private val spawnPredicate: ISpawnPredicate,
     private val spawner: IMobSpawner,
 ) {
-    fun trySpawnMob(tries: Int): Boolean {
+    fun tryPlacement(tries: Int): Boolean {
         val entity = entityProvider.getEntity() ?: return false
         for (i in 0 until tries) {
             val location = locationFinder.getPos()

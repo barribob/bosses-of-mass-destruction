@@ -15,6 +15,7 @@ import net.barribob.invasion.mob.utils.BaseEntity
 import net.barribob.invasion.mob.utils.ProjectileData
 import net.barribob.invasion.mob.utils.ProjectileThrower
 import net.barribob.invasion.mob.utils.animation.AnimationPredicate
+import net.barribob.invasion.particle.ClientParticleBuilder
 import net.barribob.invasion.particle.ParticleFactories
 import net.barribob.invasion.particle.Particles
 import net.barribob.invasion.projectile.MagicMissileProjectile
@@ -40,7 +41,6 @@ import net.minecraft.entity.ai.goal.SwimGoal
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
-import net.minecraft.sound.SoundEvent
 import net.minecraft.sound.SoundEvents
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
@@ -58,14 +58,22 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
 ) {
     var velocityHistory = HistoricalData(Vec3d.ZERO)
     private val reactionDistance = 4.0
-    private val summonCometStatus: Byte = 16
-    private val stopAttackStatus: Byte = 17
-    private val summonMissileStatus: Byte = 18
-    private val summonMinionsStatus: Byte = 19
+    private val summonCometStatus: Byte = 4
+    private val stopAttackStatus: Byte = 5
+    private val summonMissileStatus: Byte = 6
+    private val summonMinionsStatus: Byte = 7
+    private val teleportStatus: Byte = 8
+    private val successfulTeleportStatus: Byte = 9
     private var isIdle_Client = true
     private val beginCometAttack_Client = BooleanFlag()
     private val beginMissileAttack_Client = BooleanFlag()
     private val beginMinionAttack_Client = BooleanFlag()
+    private val beginTeleport_Client = BooleanFlag()
+    private val endTeleport_Client = BooleanFlag()
+    private val teleportParticleBuilder = ClientParticleBuilder(Particles.DISAPPEARING_SWIRL)
+        .color { ModColors.TELEPORT_PURPLE }
+        .age { RandomUtils.range(10, 15) }
+        .brightness { Particles.FULL_BRIGHT }
 
     override fun registerControllers(data: AnimationData) {
         data.addAnimationController(AnimationController(this, "attack", 0f, attack))
@@ -84,6 +92,8 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
         checkAttackAnimation(it, beginCometAttack_Client, "summon_fireball")
         checkAttackAnimation(it, beginMissileAttack_Client, "summon_missiles")
         checkAttackAnimation(it, beginMinionAttack_Client, "summon_minions")
+        checkAttackAnimation(it, beginTeleport_Client, "teleport", "teleporting")
+        checkAttackAnimation(it, endTeleport_Client, "unteleport")
 
         if (isIdle_Client) {
             it.controller.setAnimation(
@@ -94,13 +104,18 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
         PlayState.CONTINUE
     }
 
-    private fun checkAttackAnimation(it: AnimationEvent<*>, booleanFlag: BooleanFlag, animationName: String) {
+    private fun checkAttackAnimation(
+        it: AnimationEvent<*>,
+        booleanFlag: BooleanFlag,
+        animationName: String,
+        idleAnimationName: String = "arms_idle",
+    ) {
         if (booleanFlag.getAndReset()) {
             it.controller.markNeedsReload()
             it.controller.setAnimation(
                 AnimationBuilder()
                     .addAnimation(animationName, false)
-                    .addAnimation("arms_idle", true)
+                    .addAnimation(idleAnimationName, true)
             )
         }
     }
@@ -123,8 +138,9 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
         val cometThrowAction = buildCometAction(::canContinueAttack)
         val missileAction = buildMissileAction(::canContinueAttack)
         val minionAction = buildMinionAction(::canContinueAttack)
+        val teleportAction = buildTeleportAction(::canContinueAttack)
 
-        val attackAction = CooldownAction(minionAction, 80)
+        val attackAction = CooldownAction(teleportAction, 80)
         val onCancel = {
             world.sendEntityStatus(this, stopAttackStatus)
             attackAction.stop()
@@ -135,6 +151,41 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
             endAction = onCancel
         )
     }
+
+    private fun buildTeleportAction(canContinueAttack: () -> Boolean): IActionWithCooldown {
+        val spawnPredicate = MobEntitySpawnPredicate(world)
+        val teleportAction = IAction {
+            target?.let {
+                MobPlacementLogic(
+                    RangedSpawnPosition({ it.pos }, 20.0, 35.0, ModRandom()),
+                    { this },
+                    { pos, entity -> spawnPredicate.canSpawn(pos, entity) && inLineOfSight(pos, it) },
+                    { pos, entity ->
+                        world.sendEntityStatus(this, teleportStatus)
+                        MaelstromMod.serverEventScheduler.addEvent(TimedEvent({
+                            playSound(SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, 2.5f, 1.0f)
+                            MaelstromMod.serverEventScheduler.addEvent(TimedEvent({
+                                entity.refreshPositionAndAngles(pos.x, pos.y, pos.z, yaw, pitch)
+                                world.sendEntityStatus(this, successfulTeleportStatus)
+                                playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, 1.5f, 1.0f)
+                            }, 29))
+                        }, 10, shouldCancel = { !canContinueAttack() }))
+                    })
+                    .tryPlacement(100)
+            }
+        }
+
+        return ActionWithConstantCooldown(teleportAction, 80)
+    }
+
+    private fun inLineOfSight(
+        pos: Vec3d,
+        target: LivingEntity,
+    ) = VanillaCopies.hasDirectLineOfSight(pos.add(newVec3d(y = standingEyeHeight.toDouble())),
+        target.pos,
+        world,
+        this) &&
+            MathUtils.facingSameDirection(target.rotationVector, MathUtils.unNormedDirection(target.pos, pos))
 
     private fun buildMinionAction(canContinueAttack: () -> Boolean): IActionWithCooldown {
         val compoundTag = CompoundTag()
@@ -157,12 +208,12 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
         val beginSpell: () -> Unit = {
             target?.let {
                 playSound(SoundEvents.ENTITY_ILLUSIONER_CAST_SPELL, 2.0f, 1.0f)
-                MobSpawnLogic(
+                MobPlacementLogic(
                     RangedSpawnPosition({ it.pos }, 4.0, 8.0, ModRandom()),
                     entityProvider,
                     spawnPredicate,
                     summonCircleBeforeSpawn
-                ).trySpawnMob(30)
+                ).tryPlacement(30)
             }
         }
 
@@ -233,7 +284,8 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
         val tooCloseDistance = 20.0
         val tooFarDistance = 35.0
         val tooCloseToTarget: (Vec3d) -> Boolean = getWithinDistancePredicate(tooCloseDistance) { this.target!!.pos }
-        val tooFarFromTarget: (Vec3d) -> Boolean = { !getWithinDistancePredicate(tooFarDistance) { this.target!!.pos }(it) }
+        val tooFarFromTarget: (Vec3d) -> Boolean =
+            { !getWithinDistancePredicate(tooFarDistance) { this.target!!.pos }(it) }
         val movingToTarget: (Vec3d) -> Boolean = { MathUtils.movingTowards(this.target!!.pos, pos, it) }
 
         val canMoveTowardsPositionValidator = ValidDirectionAnd(
@@ -339,7 +391,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
             beginCometAttack_Client.flag()
             MaelstromMod.clientEventScheduler.addEvent(TimedEvent({
                 ParticleFactories.cometTrail().build(getCometLaunchPosition())
-            }, 15, 45, { !isAlive || isIdle_Client }))
+            }, 15, 45, ::shouldCancelAttackAnimation))
         }
         if (status == summonMissileStatus) {
             isIdle_Client = false
@@ -348,7 +400,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
                 for (offset in getMissileLaunchOffsets()) {
                     ParticleFactories.soulFlame().age { 2 }.build(getCameraPosVec(0f).add(offset))
                 }
-            }, 16, 30, { !isAlive || isIdle_Client }))
+            }, 16, 30, ::shouldCancelAttackAnimation))
         }
         if (status == summonMinionsStatus) {
             isIdle_Client = false
@@ -363,12 +415,33 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
                             .planeProject(VecUtils.yAxis)
                             .normalize()
                             .multiply(getRandom().nextGaussian())))
-            }, 10, 40, { !isAlive || isIdle_Client }))
+            }, 10, 40, ::shouldCancelAttackAnimation))
+        }
+        if (status == teleportStatus) {
+            isIdle_Client = false
+            beginTeleport_Client.flag()
+            MaelstromMod.clientEventScheduler.addEvent(TimedEvent(::spawnTeleportParticles,
+                15,
+                10,
+                ::shouldCancelAttackAnimation))
+        }
+        if (status == successfulTeleportStatus) {
+            endTeleport_Client.flag()
+            MaelstromMod.clientEventScheduler.addEvent(TimedEvent(::spawnTeleportParticles,
+                1,
+                10,
+                ::shouldCancelAttackAnimation))
         }
         if (status == stopAttackStatus) {
             isIdle_Client = true
         }
         super.handleStatus(status)
+    }
+
+    private fun spawnTeleportParticles() {
+        teleportParticleBuilder.build(getCameraPosVec(0f)
+            .add(RandomUtils.randVec()
+                .multiply(3.0)))
     }
 
     private fun getCometLaunchPosition() = pos.add(VecUtils.yAxis.multiply(4.0))
@@ -383,6 +456,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
     }
 
     private fun canContinueAttack() = isAlive && target != null
+    private fun shouldCancelAttackAnimation() = !isAlive || isIdle_Client
 
     override fun handleFallDamage(fallDistance: Float, damageMultiplier: Float): Boolean = false
 
