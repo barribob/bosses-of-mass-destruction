@@ -75,6 +75,10 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
         .age { RandomUtils.range(10, 15) }
         .brightness { Particles.FULL_BRIGHT }
 
+    init {
+        ignoreCameraFrustum = true
+    }
+
     override fun registerControllers(data: AnimationData) {
         data.addAnimationController(AnimationController(this, "attack", 0f, attack))
         data.addAnimationController(AnimationController(this,
