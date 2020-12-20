@@ -70,6 +70,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
     private val beginMinionAttack_Client = BooleanFlag()
     private val beginTeleport_Client = BooleanFlag()
     private val endTeleport_Client = BooleanFlag()
+    private var collides = true
     private val teleportParticleBuilder = ClientParticleBuilder(Particles.DISAPPEARING_SWIRL)
         .color { ModColors.TELEPORT_PURPLE }
         .age { RandomUtils.range(10, 15) }
@@ -168,11 +169,13 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
                         world.sendEntityStatus(this, teleportStatus)
                         MaelstromMod.serverEventScheduler.addEvent(TimedEvent({
                             playSound(SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, 2.5f, 1.0f)
+                            collides = false
                             MaelstromMod.serverEventScheduler.addEvent(TimedEvent({
                                 entity.refreshPositionAndAngles(pos.x, pos.y, pos.z, yaw, pitch)
                                 world.sendEntityStatus(this, successfulTeleportStatus)
                                 playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, 1.5f, 1.0f)
-                            }, 29))
+                                collides = true
+                            }, 30))
                         }, 10, shouldCancel = { !canContinueAttack() }))
                     })
                     .tryPlacement(100)
@@ -193,7 +196,8 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
 
     private fun buildMinionAction(canContinueAttack: () -> Boolean): IActionWithCooldown {
         val compoundTag = CompoundTag()
-        compoundTag.putString("id", Registry.ENTITY_TYPE.getId(EntityType.PHANTOM).toString()) // Todo: want to move this into a config
+        compoundTag.putString("id",
+            Registry.ENTITY_TYPE.getId(EntityType.PHANTOM).toString()) // Todo: want to move this into a config
         val serverWorld = world as ServerWorld
         val mobSpawner = SimpleMobSpawner(serverWorld)
         val entityProvider = CompoundTagEntityProvider(compoundTag, serverWorld, Invasions.LOGGER)
@@ -440,6 +444,10 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
             isIdle_Client = true
         }
         super.handleStatus(status)
+    }
+
+    override fun collides(): Boolean {
+        return collides
     }
 
     private fun spawnTeleportParticles() {
