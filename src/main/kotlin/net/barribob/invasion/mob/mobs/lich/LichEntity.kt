@@ -20,8 +20,8 @@ import net.barribob.invasion.particle.ParticleFactories
 import net.barribob.invasion.particle.Particles
 import net.barribob.invasion.projectile.MagicMissileProjectile
 import net.barribob.invasion.projectile.comet.CometProjectile
+import net.barribob.invasion.utils.AnimationUtils
 import net.barribob.invasion.utils.ModColors
-import net.barribob.invasion.utils.ModUtils
 import net.barribob.invasion.utils.ModUtils.playSound
 import net.barribob.invasion.utils.ModUtils.spawnParticle
 import net.barribob.invasion.utils.VanillaCopies
@@ -49,7 +49,6 @@ import net.minecraft.world.World
 import software.bernie.geckolib3.core.PlayState
 import software.bernie.geckolib3.core.builder.AnimationBuilder
 import software.bernie.geckolib3.core.controller.AnimationController
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent
 import software.bernie.geckolib3.core.manager.AnimationData
 
 class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEntity(
@@ -66,21 +65,119 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
     private val successfulTeleportStatus: Byte = 9
     private val fireballRageStatus: Byte = 10
     private val missileRageStatus: Byte = 11
-    private var isIdle_Client = true
-    private val beginCometAttack_Client = BooleanFlag()
-    private val beginMissileAttack_Client = BooleanFlag()
-    private val beginMinionAttack_Client = BooleanFlag()
-    private val beginTeleport_Client = BooleanFlag()
-    private val endTeleport_Client = BooleanFlag()
-    private val rage_Client = BooleanFlag()
+    private var doIdleAnimation = true
+    private val doCometAttackAnimation = BooleanFlag()
+    private val doMissileAttackAnimation = BooleanFlag()
+    private val doMinionAttackAnimation = BooleanFlag()
+    private val doTeleportAnimation = BooleanFlag()
+    private val doEndTeleportAnimation = BooleanFlag()
+    private val doRageAnimation = BooleanFlag()
     private var collides = true
+
+    private val cometThrowDelay = 60
+    private val cometParticleSummonDelay = 15
+    private val cometThrowCooldown = 80
+
+    private val missileThrowDelay = 46
+    private val missileThrowCooldown = 80
+    private val missileParticleSummonDelay = 16
+
+    private val minionRuneToMinionSpawnDelay = 40
+    private val minionSummonDelay = 40
+    private val minionSummonParticleDelay = 10
+    private val minionSummonCooldown = 80
+
+    private val numMobs = 9
+    private val initialSpawnTimeCooldown = 40
+    private val initialBetweenSpawnDelay = 40
+    private val spawnDelayDecrease = 3
+    private val delayTimes: List<Int>
+    private val totalMoveTime: Int
+
+    private val teleportCooldown = 80
+    private val teleportStartSoundDelay = 10
+    private val teleportDelay = 40
+    private val beginTeleportParticleDelay = 15
+    private val teleportParticleDuration = 10
+
+    private val numCometsDuringRage = 6
+    private val initialRageCometDelay = 60
+    private val delayBetweenRageComets = 30
+    private val rageCometsMoveDuration: Int
+
+    private val ragedMissileVolleyInitialDelay = 60
+    private val ragedMissileVolleyBetweenVolleyDelay = 30
+    private val ragedMissileParticleDelay = 30
+
+    private val tooFarFromTargetDistance = 35.0
+    private val tooCloseToTargetDistance = 20.0
+    private val idleWanderDistance = 25.0
+
+    private val summonMissileParticleBuilder = ParticleFactories.soulFlame().age { 2 }
     private val teleportParticleBuilder = ClientParticleBuilder(Particles.DISAPPEARING_SWIRL)
         .color { ModColors.TELEPORT_PURPLE }
         .age { RandomUtils.range(10, 15) }
         .brightness { Particles.FULL_BRIGHT }
+    private val summonCometParticleBuilder = ParticleFactories.cometTrail()
+    private val flameRingFactory = ClientParticleBuilder(Particles.SOUL_FLAME)
+        .color { MathUtils.lerpVec(it, ModColors.WHITE, ModColors.WHITE.multiply(0.5)) }
+        .brightness { Particles.FULL_BRIGHT }
+        .age { RandomUtils.range(0, 7) }
+    private val minionSummonParticleBuilder = ParticleFactories.soulFlame()
+        .color { ModColors.WHITE }
+        .velocity(VecUtils.yAxis.multiply(RandomUtils.double(0.2) + 0.2))
+
+    val missileThrower = { offset: Vec3d ->
+        ProjectileThrower {
+            val projectile = MagicMissileProjectile(this, world)
+            projectile.setPos(eyePos().add(offset))
+            world.spawnEntity(projectile)
+            ProjectileData(projectile, 1.6f, 0f)
+        }
+    }
+
+    val cometThrower = { offset: Vec3d ->
+        ProjectileThrower {
+            val projectile = CometProjectile(this, world)
+            projectile.setPos(eyePos().add(offset))
+            world.spawnEntity(projectile)
+            ProjectileData(projectile, 1.6f, 0f)
+        }
+    }
+
+    private fun playCometLaunchSound() = playSound(SoundEvents.ENTITY_BLAZE_SHOOT, 1.5f, 1.0f)
+    private fun playCometPrepareSound() = playSound(SoundEvents.ENTITY_ILLUSIONER_CAST_SPELL, 2.0f, 1.0f)
+    private fun playVolleyShootSound() = playSound(SoundEvents.ENTITY_BLAZE_SHOOT, 1.5f, 1.0f)
+    private fun playVolleyPrepareSound() = playSound(SoundEvents.ENTITY_ILLUSIONER_CAST_SPELL, 2.0f, 1.0f)
+    private fun playBeginTeleportSound() = playSound(SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, 2.5f, 1.0f)
+    private fun playTeleportSound() = playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, 1.5f, 1.0f)
+    private fun playPrepareSummonMinionSound() = playSound(SoundEvents.ENTITY_ILLUSIONER_CAST_SPELL, 2.0f, 1.0f)
+    private fun playMinionRuneSound() =
+        world.playSound(pos, SoundEvents.ENTITY_EVOKER_PREPARE_SUMMON, SoundCategory.HOSTILE, 1.5f)
+
+    private fun playMinionSummonSound(entity: Entity) = entity.playSound(SoundEvents.ENTITY_BLAZE_SHOOT, 1.5f, 1.0f)
 
     init {
         ignoreCameraFrustum = true
+        delayTimes = (0 until numMobs)
+            .map { MathUtils.consecutiveSum(0, it) }
+            .mapIndexed { index, i -> initialSpawnTimeCooldown + (index * initialBetweenSpawnDelay) - (i * spawnDelayDecrease) }
+        totalMoveTime = delayTimes.last() + minionRuneToMinionSpawnDelay
+        rageCometsMoveDuration = initialRageCometDelay + (numCometsDuringRage * delayBetweenRageComets)
+
+        if (!world.isClient) {
+            goalSelector.add(1, SwimGoal(this))
+            goalSelector.add(2, buildDefendGoal())
+            goalSelector.add(3, CompositeGoal(listOf(buildAttackGoal(), buildAttackMovement())))
+            goalSelector.add(4, buildWanderGoal())
+
+            targetSelector.add(
+                2, FollowTargetGoal(
+                    this,
+                    LivingEntity::class.java, true
+                )
+            )
+        }
     }
 
     override fun registerControllers(data: AnimationData) {
@@ -88,23 +185,23 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
         data.addAnimationController(AnimationController(this,
             "skull_float",
             0f,
-            ModUtils.createIdlePredicate("skull_float")))
-        data.addAnimationController(AnimationController(this, "float", 0f, ModUtils.createIdlePredicate("float")))
+            AnimationUtils.createIdlePredicate("skull_float")))
+        data.addAnimationController(AnimationController(this, "float", 0f, AnimationUtils.createIdlePredicate("float")))
         data.addAnimationController(AnimationController(this,
             "book_idle",
             0f,
-            ModUtils.createIdlePredicate("book_idle")))
+            AnimationUtils.createIdlePredicate("book_idle")))
     }
 
     private val attack = AnimationPredicate<LichEntity> {
-        checkAttackAnimation(it, beginCometAttack_Client, "summon_fireball")
-        checkAttackAnimation(it, beginMissileAttack_Client, "summon_missiles")
-        checkAttackAnimation(it, beginMinionAttack_Client, "summon_minions")
-        checkAttackAnimation(it, beginTeleport_Client, "teleport", "teleporting")
-        checkAttackAnimation(it, endTeleport_Client, "unteleport")
-        checkAttackAnimation(it, rage_Client, "rage_mode")
+        AnimationUtils.checkAttackAnimation(it, doCometAttackAnimation, "summon_fireball", "arms_idle")
+        AnimationUtils.checkAttackAnimation(it, doMissileAttackAnimation, "summon_missiles", "arms_idle")
+        AnimationUtils.checkAttackAnimation(it, doMinionAttackAnimation, "summon_minions", "arms_idle")
+        AnimationUtils.checkAttackAnimation(it, doTeleportAnimation, "teleport", "teleporting")
+        AnimationUtils.checkAttackAnimation(it, doEndTeleportAnimation, "unteleport", "arms_idle")
+        AnimationUtils.checkAttackAnimation(it, doRageAnimation, "rage_mode", "arms_idle")
 
-        if (isIdle_Client) {
+        if (doIdleAnimation) {
             it.controller.setAnimation(
                 AnimationBuilder().addAnimation("arms_idle", true)
             )
@@ -113,46 +210,16 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
         PlayState.CONTINUE
     }
 
-    private fun checkAttackAnimation(
-        it: AnimationEvent<*>,
-        booleanFlag: BooleanFlag,
-        animationName: String,
-        idleAnimationName: String = "arms_idle",
-    ) {
-        if (booleanFlag.getAndReset()) {
-            it.controller.markNeedsReload()
-            it.controller.setAnimation(
-                AnimationBuilder()
-                    .addAnimation(animationName, false)
-                    .addAnimation(idleAnimationName, true)
-            )
-        }
-    }
-
-    override fun initGoals() {
-        goalSelector.add(1, SwimGoal(this))
-        goalSelector.add(2, buildDefendGoal())
-        goalSelector.add(3, CompositeGoal(listOf(buildAttackGoal(), buildAttackMovement())))
-        goalSelector.add(4, buildWanderGoal())
-
-        targetSelector.add(
-            2, FollowTargetGoal(
-                this,
-                LivingEntity::class.java, true
-            )
-        )
-    }
-
     private fun buildAttackGoal(): ActionGoal {
         val cometThrowAction = buildCometAction(::canContinueAttack)
         val missileAction = buildMissileAction(::canContinueAttack)
         val minionAction = buildMinionAction(::canContinueAttack)
         val teleportAction = buildTeleportAction(::canContinueAttack)
-        val fireballRageAction = buildFireballRageAction(::canContinueAttack)
+        val cometRageAction = buildCometRageAction(::canContinueAttack)
         val volleyRageAction = buildVolleyRageAction(::canContinueAttack)
         val minionRageAction = buildMinionRageAction(::canContinueAttack)
 
-        val attackAction = CooldownAction(minionRageAction, 80)
+        val attackAction = CooldownAction(cometRageAction, 80)
         val onCancel = {
             world.sendEntityStatus(this, stopAttackStatus)
             attackAction.stop()
@@ -165,59 +232,45 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
     }
 
     private fun buildVolleyRageAction(canContinueAttack: () -> Boolean): IActionWithCooldown {
-        val missileThrower = { offset: Vec3d ->
-            ProjectileThrower {
-                val projectile = MagicMissileProjectile(this, world)
-                projectile.setPos(getCameraPosVec(0f).add(offset))
-                world.spawnEntity(projectile)
-                ProjectileData(projectile, 1.6f, 0f)
-            }
-        }
-
+        val rageMissileVolleys = getRageMissileVolleys().size
         val throwMissilesAction = IAction {
             target?.let {
                 world.sendEntityStatus(this, missileRageStatus)
-                val rageMissileVolleys = getRageMissileVolleys().size
+                playVolleyPrepareSound()
                 for (i in 0 until rageMissileVolleys) {
                     MaelstromMod.serverEventScheduler.addEvent(TimedEvent({
                         val target = it.boundingBox.center
                         for (offset in getRageMissileVolleys()[i]) {
                             missileThrower(offset).throwProjectile(target.add(offset))
                         }
-                        playSound(SoundEvents.ENTITY_BLAZE_SHOOT, 1.5f, 1.0f)
-                    }, 60 + (i * 30), shouldCancel = { !canContinueAttack() }))
+                        playVolleyShootSound()
+                    },
+                        ragedMissileVolleyInitialDelay + (i * ragedMissileVolleyBetweenVolleyDelay),
+                        shouldCancel = { !canContinueAttack() }))
                 }
             }
         }
 
-        return ActionWithConstantCooldown(throwMissilesAction, 240)
+        return ActionWithConstantCooldown(throwMissilesAction,
+            ragedMissileVolleyInitialDelay + (rageMissileVolleys * ragedMissileVolleyBetweenVolleyDelay))
     }
 
-    private fun buildFireballRageAction(canContinueAttack: () -> Boolean): IActionWithCooldown {
-        val cometThrower = { offset: Vec3d ->
-            ProjectileThrower {
-                val projectile = CometProjectile(this, world)
-                projectile.setPos(getCameraPosVec(0f).add(offset))
-                world.spawnEntity(projectile)
-                ProjectileData(projectile, 1.6f, 0f)
-            }
-        }
-
-        val readyMissilesAction = IAction {
+    private fun buildCometRageAction(canContinueAttack: () -> Boolean): IActionWithCooldown {
+        val readyCometsAction = IAction {
             target?.let {
                 for ((i, offset) in getRageCometOffsets().withIndex()) {
                     MaelstromMod.serverEventScheduler.addEvent(TimedEvent({
                         val target = it.boundingBox.center
                         cometThrower(offset).throwProjectile(target)
-                        playSound(SoundEvents.ENTITY_BLAZE_SHOOT, 1.5f, 1.0f)
-                    }, 60 + (i * 30), shouldCancel = { !canContinueAttack() }))
+                        playCometLaunchSound()
+                    }, initialRageCometDelay + (i * delayBetweenRageComets), shouldCancel = { !canContinueAttack() }))
                 }
                 world.sendEntityStatus(this, fireballRageStatus)
-                playSound(SoundEvents.ENTITY_ILLUSIONER_CAST_SPELL, 2.0f, 1.0f)
+                playCometPrepareSound()
             }
         }
 
-        return ActionWithConstantCooldown(readyMissilesAction, 240)
+        return ActionWithConstantCooldown(readyCometsAction, rageCometsMoveDuration)
     }
 
     private fun buildTeleportAction(canContinueAttack: () -> Boolean): IActionWithCooldown {
@@ -225,58 +278,58 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
         val teleportAction = IAction {
             target?.let {
                 MobPlacementLogic(
-                    RangedSpawnPosition({ it.pos }, 20.0, 35.0, ModRandom()),
+                    RangedSpawnPosition({ it.pos }, tooCloseToTargetDistance, tooFarFromTargetDistance, ModRandom()),
                     { this },
                     { pos, entity -> spawnPredicate.canSpawn(pos, entity) && inLineOfSight(pos, it) },
                     { pos, entity ->
                         world.sendEntityStatus(this, teleportStatus)
                         MaelstromMod.serverEventScheduler.addEvent(TimedEvent({
-                            playSound(SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, 2.5f, 1.0f)
+                            playBeginTeleportSound()
                             collides = false
                             MaelstromMod.serverEventScheduler.addEvent(TimedEvent({
                                 entity.refreshPositionAndAngles(pos.x, pos.y, pos.z, yaw, pitch)
                                 world.sendEntityStatus(this, successfulTeleportStatus)
-                                playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, 1.5f, 1.0f)
+                                playTeleportSound()
                                 collides = true
-                            }, 30))
-                        }, 10, shouldCancel = { !canContinueAttack() }))
+                            }, teleportDelay - teleportStartSoundDelay))
+                        }, teleportStartSoundDelay, shouldCancel = { !canContinueAttack() }))
                     })
                     .tryPlacement(100)
             }
         }
 
-        return ActionWithConstantCooldown(teleportAction, 80)
+        return ActionWithConstantCooldown(teleportAction, teleportCooldown)
     }
 
-    private fun inLineOfSight(pos: Vec3d, target: LivingEntity) =
-        VanillaCopies.hasDirectLineOfSight(pos.add(newVec3d(y = standingEyeHeight.toDouble())),
-            target.pos,
-            world,
-            this) &&
-                MathUtils.facingSameDirection(target.rotationVector, MathUtils.unNormedDirection(target.pos, pos))
+    private fun inLineOfSight(pos: Vec3d, target: LivingEntity) = VanillaCopies.hasDirectLineOfSight(
+        pos.add(newVec3d(y = standingEyeHeight.toDouble())),
+        target.pos,
+        world,
+        this) &&
+            MathUtils.facingSameDirection(target.rotationVector, MathUtils.unNormedDirection(target.pos, pos))
 
     private fun buildMinionRageAction(canContinueAttack: () -> Boolean): IActionWithCooldown {
         val summonMobsAction = IAction {
             world.sendEntityStatus(this, summonMinionsStatus)
-            var j = 0
-            for (i in 0 until 9) {
-                j += i
+            for (delayTime in delayTimes) {
                 MaelstromMod.serverEventScheduler.addEvent(TimedEvent({ beginSummonSingleMob(canContinueAttack) },
-                    40 + (i * 40) - (j * 3), shouldCancel = { !canContinueAttack() }))
+                    delayTime, shouldCancel = { !canContinueAttack() }))
             }
         }
 
-        return ActionWithConstantCooldown(summonMobsAction, 260)
+        return ActionWithConstantCooldown(summonMobsAction, totalMoveTime)
     }
 
     private fun buildMinionAction(canContinueAttack: () -> Boolean): IActionWithCooldown {
         val summonMobsAction = IAction {
             world.sendEntityStatus(this, summonMinionsStatus)
             MaelstromMod.serverEventScheduler.addEvent(
-                TimedEvent({ beginSummonSingleMob(canContinueAttack) }, 40, shouldCancel = { !canContinueAttack() }))
+                TimedEvent({ beginSummonSingleMob(canContinueAttack) },
+                    minionSummonDelay,
+                    shouldCancel = { !canContinueAttack() }))
         }
 
-        return ActionWithConstantCooldown(summonMobsAction, 80)
+        return ActionWithConstantCooldown(summonMobsAction, minionSummonCooldown)
     }
 
     private fun beginSummonSingleMob(canContinueAttack: () -> Boolean) {
@@ -289,17 +342,17 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
         val spawnPredicate = MobEntitySpawnPredicate(world)
         val summonCircleBeforeSpawn: (pos: Vec3d, entity: Entity) -> Unit = { pos, entity ->
             serverWorld.spawnParticle(Particles.LICH_MAGIC_CIRCLE, pos, Vec3d.ZERO)
-            world.playSound(pos, SoundEvents.ENTITY_EVOKER_PREPARE_SUMMON, SoundCategory.HOSTILE, 1.5f)
+            playMinionRuneSound()
             val spawnMobWithEffect = {
                 mobSpawner.spawn(pos, entity)
-                entity.playSound(SoundEvents.ENTITY_BLAZE_SHOOT, 1.5f, 1.0f)
+                playMinionSummonSound(entity)
             }
             MaelstromMod.serverEventScheduler.addEvent(
-                TimedEvent(spawnMobWithEffect, 40, shouldCancel = { !canContinueAttack() }))
+                TimedEvent(spawnMobWithEffect, minionRuneToMinionSpawnDelay, shouldCancel = { !canContinueAttack() }))
         }
 
         target?.let {
-            playSound(SoundEvents.ENTITY_ILLUSIONER_CAST_SPELL, 2.0f, 1.0f)
+            playPrepareSummonMinionSound()
             MobPlacementLogic(
                 RangedSpawnPosition({ it.pos }, 4.0, 8.0, ModRandom()),
                 entityProvider,
@@ -310,65 +363,48 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
     }
 
     private fun buildMissileAction(canContinueAttack: () -> Boolean): ActionWithConstantCooldown {
-        val missileThrower = { offset: Vec3d ->
-            ProjectileThrower {
-                val projectile = MagicMissileProjectile(this, world)
-                projectile.setPos(getCameraPosVec(0f).add(offset))
-                world.spawnEntity(projectile)
-                ProjectileData(projectile, 1.6f, 0f)
-            }
-        }
-
-        val throwMissilesAction = {
+        val throwMissilesAction: () -> Unit = {
             target?.let {
                 val target = it.boundingBox.center
                 for (offset in getMissileLaunchOffsets()) {
                     missileThrower(offset).throwProjectile(target.add(offset.planeProject(VecUtils.yAxis)))
                 }
+                playVolleyShootSound()
             }
-            playSound(SoundEvents.ENTITY_BLAZE_SHOOT, 1.5f, 1.0f)
         }
 
         val readyMissilesAction = {
             MaelstromMod.serverEventScheduler.addEvent(TimedEvent(throwMissilesAction,
-                46, shouldCancel = { !canContinueAttack() }))
+                missileThrowDelay, shouldCancel = { !canContinueAttack() }))
             world.sendEntityStatus(this, summonMissileStatus)
-            playSound(SoundEvents.ENTITY_ILLUSIONER_CAST_SPELL, 2.0f, 1.0f)
+            playVolleyPrepareSound()
         }
 
-        return ActionWithConstantCooldown(readyMissilesAction, 80)
+        return ActionWithConstantCooldown(readyMissilesAction, missileThrowCooldown)
     }
 
     private fun buildCometAction(canContinueAttack: () -> Boolean): ActionWithConstantCooldown {
-        val cometThrower = ProjectileThrower {
-            val projectile = CometProjectile(this, world)
-            projectile.setPos(getCometLaunchPosition())
-            world.spawnEntity(projectile)
-            ProjectileData(projectile, 1.6f, 0f)
-        }
-
         val throwCometAction = {
-            ThrowProjectileAction(this, cometThrower).perform()
-            playSound(SoundEvents.ENTITY_BLAZE_SHOOT, 1.5f, 1.0f)
+            ThrowProjectileAction(this, cometThrower(getCometLaunchPosition())).perform()
+            playCometLaunchSound()
         }
 
         val readyCometAction = {
             MaelstromMod.serverEventScheduler.addEvent(TimedEvent(throwCometAction,
-                60,
+                cometThrowDelay,
                 shouldCancel = { !canContinueAttack() }))
             world.sendEntityStatus(this, summonCometStatus)
-            playSound(SoundEvents.ENTITY_ILLUSIONER_CAST_SPELL, 2.0f, 1.0f)
+            playCometPrepareSound()
         }
 
-        return ActionWithConstantCooldown(readyCometAction, 80)
+        return ActionWithConstantCooldown(readyCometAction, cometThrowCooldown)
     }
 
     private fun buildAttackMovement(): VelocityGoal {
-        val tooCloseDistance = 20.0
-        val tooFarDistance = 35.0
-        val tooCloseToTarget: (Vec3d) -> Boolean = getWithinDistancePredicate(tooCloseDistance) { this.target!!.pos }
+        val tooCloseToTarget: (Vec3d) -> Boolean =
+            getWithinDistancePredicate(tooCloseToTargetDistance) { this.target!!.pos }
         val tooFarFromTarget: (Vec3d) -> Boolean =
-            { !getWithinDistancePredicate(tooFarDistance) { this.target!!.pos }(it) }
+            { !getWithinDistancePredicate(tooFarFromTargetDistance) { this.target!!.pos }(it) }
         val movingToTarget: (Vec3d) -> Boolean = { MathUtils.movingTowards(this.target!!.pos, pos, it) }
 
         val canMoveTowardsPositionValidator = ValidDirectionAnd(
@@ -413,7 +449,6 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
     private fun shouldDefend(): Boolean = target != null && target?.isUsingItem == true
 
     private fun buildWanderGoal(): VelocityGoal {
-        val idleWanderDistance = 25.0
         val tooFarFromTarget: (Vec3d) -> Boolean = getWithinDistancePredicate(idleWanderDistance) { idlePosition }
         val movingTowardsIdleCenter: (Vec3d) -> Boolean = { MathUtils.movingTowards(idlePosition, pos, it) }
         val canMoveTowardsPositionValidator = ValidDirectionAnd(
@@ -470,85 +505,89 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
 
     override fun handleStatus(status: Byte) {
         if (status == summonCometStatus) {
-            isIdle_Client = false
-            beginCometAttack_Client.flag()
-            MaelstromMod.clientEventScheduler.addEvent(TimedEvent({
-                ParticleFactories.cometTrail().build(getCometLaunchPosition())
-            }, 15, 45, ::shouldCancelAttackAnimation))
+            doIdleAnimation = false
+            doCometAttackAnimation.flag()
+            MaelstromMod.clientEventScheduler.addEvent(
+                TimedEvent({ summonCometParticleBuilder.build(getCometLaunchPosition()) },
+                    cometParticleSummonDelay,
+                    cometThrowDelay - cometParticleSummonDelay,
+                    ::shouldCancelAttackAnimation))
         }
         if (status == summonMissileStatus) {
-            isIdle_Client = false
-            beginMissileAttack_Client.flag()
-            MaelstromMod.clientEventScheduler.addEvent(TimedEvent({
-                for (offset in getMissileLaunchOffsets()) {
-                    ParticleFactories.soulFlame().age { 2 }.build(getCameraPosVec(0f).add(offset))
-                }
-            }, 16, 30, ::shouldCancelAttackAnimation))
+            doIdleAnimation = false
+            doMissileAttackAnimation.flag()
+            MaelstromMod.clientEventScheduler.addEvent(
+                TimedEvent({
+                    for (offset in getMissileLaunchOffsets()) {
+                        summonMissileParticleBuilder.build(eyePos().add(offset))
+                    }
+                },
+                    missileParticleSummonDelay,
+                    missileThrowDelay - missileParticleSummonDelay,
+                    ::shouldCancelAttackAnimation))
         }
         if (status == summonMinionsStatus) {
-            isIdle_Client = false
-            beginMinionAttack_Client.flag()
+            doIdleAnimation = false
+            doMinionAttackAnimation.flag()
             MaelstromMod.clientEventScheduler.addEvent(TimedEvent({
-                ParticleFactories.soulFlame()
-                    .color { ModColors.WHITE }
-                    .velocity(VecUtils.yAxis.multiply(RandomUtils.double(0.2) + 0.2))
-                    .build(getCameraPosVec(0f)
-                        .add(VecUtils.yAxis.multiply(1.0))
-                        .add(RandomUtils.randVec()
-                            .planeProject(VecUtils.yAxis)
-                            .normalize()
-                            .multiply(getRandom().nextGaussian())))
-            }, 10, 40, ::shouldCancelAttackAnimation))
+                minionSummonParticleBuilder.build(eyePos()
+                    .add(VecUtils.yAxis.multiply(1.0))
+                    .add(RandomUtils.randVec()
+                        .planeProject(VecUtils.yAxis)
+                        .normalize()
+                        .multiply(getRandom().nextGaussian())))
+            },
+                minionSummonParticleDelay,
+                minionSummonDelay - minionSummonParticleDelay,
+                ::shouldCancelAttackAnimation))
         }
         if (status == teleportStatus) {
-            isIdle_Client = false
-            beginTeleport_Client.flag()
-            MaelstromMod.clientEventScheduler.addEvent(TimedEvent(::spawnTeleportParticles,
-                15,
-                10,
-                ::shouldCancelAttackAnimation))
+            doIdleAnimation = false
+            doTeleportAnimation.flag()
+            MaelstromMod.clientEventScheduler.addEvent(
+                TimedEvent(::spawnTeleportParticles,
+                    beginTeleportParticleDelay,
+                    teleportParticleDuration,
+                    ::shouldCancelAttackAnimation))
         }
         if (status == successfulTeleportStatus) {
-            endTeleport_Client.flag()
-            MaelstromMod.clientEventScheduler.addEvent(TimedEvent(::spawnTeleportParticles,
-                1,
-                10,
-                ::shouldCancelAttackAnimation))
+            doEndTeleportAnimation.flag()
+            MaelstromMod.clientEventScheduler.addEvent(
+                TimedEvent(::spawnTeleportParticles, 1, teleportParticleDuration, ::shouldCancelAttackAnimation))
         }
         if (status == fireballRageStatus) {
-            isIdle_Client = false
-            rage_Client.flag()
+            doIdleAnimation = false
+            doRageAnimation.flag()
             val numComets = getRageCometOffsets().size
             for (i in 0 until numComets) {
                 MaelstromMod.clientEventScheduler.addEvent(TimedEvent({
                     val cometOffset = getRageCometOffsets()[i]
-                    ParticleFactories.cometTrail().build(cometOffset.add(getCameraPosVec(0f)))
-                }, i * 30, 60, ::shouldCancelAttackAnimation))
+                    summonCometParticleBuilder.build(cometOffset.add(eyePos()))
+                }, i * delayBetweenRageComets, initialRageCometDelay, ::shouldCancelAttackAnimation))
             }
-            val flameRingFactory = ClientParticleBuilder(Particles.SOUL_FLAME)
-                .color { MathUtils.lerpVec(it, ModColors.WHITE, ModColors.WHITE.multiply(0.5)) }
-                .brightness { Particles.FULL_BRIGHT }
-                .age { RandomUtils.range(0, 7) }
             MaelstromMod.clientEventScheduler.addEvent(TimedEvent({
                 MathUtils.circleCallback(3.0, 72, rotationVector) {
-                    flameRingFactory.build(it.add(getCameraPosVec(0f)))
+                    flameRingFactory.build(it.add(eyePos()))
                 }
-            }, 0, 240, ::shouldCancelAttackAnimation))
+            }, 0, rageCometsMoveDuration, ::shouldCancelAttackAnimation))
         }
         if (status == missileRageStatus) {
-            isIdle_Client = false
-            rage_Client.flag()
+            doIdleAnimation = false
+            doRageAnimation.flag()
             val numVolleys = getRageMissileVolleys().size
             for (i in 0 until numVolleys) {
                 MaelstromMod.clientEventScheduler.addEvent(TimedEvent({
                     for (offset in getRageMissileVolleys()[i]) {
-                        ParticleFactories.soulFlame().age { 2 }.build(getCameraPosVec(0f).add(offset))
+                        summonMissileParticleBuilder.build(eyePos().add(offset))
                     }
-                }, 30 + (i * 30), 30, ::shouldCancelAttackAnimation))
+                },
+                    ragedMissileParticleDelay + (i * ragedMissileVolleyBetweenVolleyDelay),
+                    ragedMissileVolleyBetweenVolleyDelay,
+                    ::shouldCancelAttackAnimation))
             }
         }
         if (status == stopAttackStatus) {
-            isIdle_Client = true
+            doIdleAnimation = true
         }
         super.handleStatus(status)
     }
@@ -558,12 +597,12 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
     }
 
     private fun spawnTeleportParticles() {
-        teleportParticleBuilder.build(getCameraPosVec(0f)
+        teleportParticleBuilder.build(eyePos()
             .add(RandomUtils.randVec()
                 .multiply(3.0)))
     }
 
-    private fun getCometLaunchPosition() = pos.add(VecUtils.yAxis.multiply(4.0))
+    private fun getCometLaunchPosition() = VecUtils.yAxis.multiply(2.0)
     private fun getMissileLaunchOffsets(): List<Vec3d> = listOf(
         MathUtils.axisOffset(rotationVector, VecUtils.yAxis.add(VecUtils.zAxis.multiply(2.0))),
         MathUtils.axisOffset(rotationVector, VecUtils.yAxis.multiply(1.5).add(VecUtils.zAxis)),
@@ -574,7 +613,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
 
     private fun getRageCometOffsets(): List<Vec3d> {
         val offsets = mutableListOf<Vec3d>()
-        MathUtils.circleCallback(3.0, 6, rotationVector) { offsets.add(it) }
+        MathUtils.circleCallback(3.0, numCometsDuringRage, rotationVector) { offsets.add(it) }
         return offsets
     }
 
@@ -598,7 +637,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
     }
 
     private fun canContinueAttack() = isAlive && target != null
-    private fun shouldCancelAttackAnimation() = !isAlive || isIdle_Client
+    private fun shouldCancelAttackAnimation() = !isAlive || doIdleAnimation
 
     override fun handleFallDamage(fallDistance: Float, damageMultiplier: Float): Boolean = false
 

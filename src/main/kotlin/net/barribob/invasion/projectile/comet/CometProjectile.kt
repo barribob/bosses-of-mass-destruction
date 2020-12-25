@@ -2,7 +2,7 @@ package net.barribob.invasion.projectile.comet
 
 import net.barribob.invasion.mob.Entities
 import net.barribob.invasion.projectile.BaseThrownItemEntity
-import net.barribob.invasion.utils.ModUtils
+import net.barribob.invasion.utils.AnimationUtils
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.damage.DamageSource
@@ -65,7 +65,7 @@ class CometProjectile : BaseThrownItemEntity, IAnimatable {
     }
 
     override fun registerControllers(data: AnimationData) {
-        data.addAnimationController(AnimationController(this, "spin", 0f, ModUtils.createIdlePredicate("spin")))
+        data.addAnimationController(AnimationController(this, "spin", 0f, AnimationUtils.createIdlePredicate("spin")))
     }
 
     private val animationFactory = AnimationFactory(this)
