@@ -1,6 +1,7 @@
 package net.barribob.invasion.mob.mobs.lich
 
 import net.barribob.invasion.Invasions
+import net.barribob.invasion.mob.ai.BossVisibilityCache
 import net.barribob.invasion.mob.ai.ValidatedTargetSelector
 import net.barribob.invasion.mob.ai.VelocitySteering
 import net.barribob.invasion.mob.ai.action.*
@@ -31,6 +32,7 @@ import net.barribob.maelstrom.general.data.BooleanFlag
 import net.barribob.maelstrom.general.data.HistoricalData
 import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.general.random.ModRandom
+import net.barribob.maelstrom.general.random.WeightedRandom
 import net.barribob.maelstrom.static_utilities.*
 import net.minecraft.block.BlockState
 import net.minecraft.entity.Entity
@@ -38,6 +40,7 @@ import net.minecraft.entity.EntityType
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.ai.goal.FollowTargetGoal
 import net.minecraft.entity.ai.goal.SwimGoal
+import net.minecraft.entity.damage.DamageSource
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
@@ -55,7 +58,10 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
     entityType,
     world
 ) {
-    var velocityHistory = HistoricalData(Vec3d.ZERO)
+    val velocityHistory = HistoricalData(Vec3d.ZERO)
+    private val positionalHistory = HistoricalData(Vec3d.ZERO, 10)
+    private val damageHistory = HistoricalData(0, 3)
+    private val moveHistory = HistoricalData(IActionWithCooldown { 0 }, 3)
     private val reactionDistance = 4.0
     private val summonCometStatus: Byte = 4
     private val stopAttackStatus: Byte = 5
@@ -113,6 +119,8 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
     private val tooCloseToTargetDistance = 20.0
     private val idleWanderDistance = 25.0
 
+    private val visibilityCache = BossVisibilityCache(this)
+
     private val summonMissileParticleBuilder = ParticleFactories.soulFlame().age { 2 }
     private val teleportParticleBuilder = ClientParticleBuilder(Particles.DISAPPEARING_SWIRL)
         .color { ModColors.TELEPORT_PURPLE }
@@ -127,7 +135,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
         .color { ModColors.WHITE }
         .velocity(VecUtils.yAxis.multiply(RandomUtils.double(0.2) + 0.2))
 
-    val missileThrower = { offset: Vec3d ->
+    private val missileThrower = { offset: Vec3d ->
         ProjectileThrower {
             val projectile = MagicMissileProjectile(this, world)
             projectile.setPos(eyePos().add(offset))
@@ -136,7 +144,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
         }
     }
 
-    val cometThrower = { offset: Vec3d ->
+    private val cometThrower = { offset: Vec3d ->
         ProjectileThrower {
             val projectile = CometProjectile(this, world)
             projectile.setPos(eyePos().add(offset))
@@ -144,6 +152,14 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
             ProjectileData(projectile, 1.6f, 0f)
         }
     }
+
+    private val cometThrowAction = buildCometAction(::canContinueAttack)
+    private val missileAction = buildMissileAction(::canContinueAttack)
+    private val minionAction = buildMinionAction(::canContinueAttack)
+    private val teleportAction = buildTeleportAction(::canContinueAttack) { target }
+    private val cometRageAction = buildCometRageAction(::canContinueAttack)
+    private val volleyRageAction = buildVolleyRageAction(::canContinueAttack)
+    private val minionRageAction = buildMinionRageAction(::canContinueAttack)
 
     private fun playCometLaunchSound() = playSound(SoundEvents.ENTITY_BLAZE_SHOOT, 1.5f, 1.0f)
     private fun playCometPrepareSound() = playSound(SoundEvents.ENTITY_ILLUSIONER_CAST_SPELL, 2.0f, 1.0f)
@@ -167,7 +183,6 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
 
         if (!world.isClient) {
             goalSelector.add(1, SwimGoal(this))
-            goalSelector.add(2, buildDefendGoal())
             goalSelector.add(3, CompositeGoal(listOf(buildAttackGoal(), buildAttackMovement())))
             goalSelector.add(4, buildWanderGoal())
 
@@ -179,6 +194,8 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
             )
         }
     }
+
+    override fun getVisibilityCache() = visibilityCache
 
     override fun registerControllers(data: AnimationData) {
         data.addAnimationController(AnimationController(this, "attack", 0f, attack))
@@ -211,15 +228,34 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
     }
 
     private fun buildAttackGoal(): ActionGoal {
-        val cometThrowAction = buildCometAction(::canContinueAttack)
-        val missileAction = buildMissileAction(::canContinueAttack)
-        val minionAction = buildMinionAction(::canContinueAttack)
-        val teleportAction = buildTeleportAction(::canContinueAttack)
-        val cometRageAction = buildCometRageAction(::canContinueAttack)
-        val volleyRageAction = buildVolleyRageAction(::canContinueAttack)
-        val minionRageAction = buildMinionRageAction(::canContinueAttack)
 
-        val attackAction = CooldownAction(cometRageAction, 80)
+        val attackAction = CooldownAction({
+            target?.let {
+                val random = WeightedRandom<IActionWithCooldown>()
+                val distanceTraveled = positionalHistory.getAll().zipWithNext()
+                    .fold(0.0) { acc, pair -> acc + pair.first.distanceTo(pair.second) }
+                val damage = damageHistory.getAll()
+                val hasBeenRapidlyDamaged = damage.size > 2 && damage.last() - damage.first() < 60
+                val teleportWeight = 0.0 +
+                        (if (inLineOfSight(pos, it)) 0.0 else 4.0) +
+                        (if (distanceTraveled > 0.25) 0.0 else 8.0) +
+                        (if (distanceTo(target) < 6.0) 8.0 else 0.0) +
+                        (if (hasBeenRapidlyDamaged) 8.0 else 0.0)
+                val minionWeight = if (moveHistory.getAll().contains(minionAction)) 0.0 else 2.0
+
+                random.addAll(
+                    listOf(
+                        Pair(1.0, cometThrowAction),
+                        Pair(1.0, missileAction),
+                        Pair(minionWeight, minionAction),
+                        Pair(teleportWeight, teleportAction)
+                    )
+                )
+                val nextMove = random.next()
+                moveHistory.set(nextMove)
+                nextMove.perform()
+            } ?: 80
+        }, 80)
         val onCancel = {
             world.sendEntityStatus(this, stopAttackStatus)
             attackAction.stop()
@@ -273,10 +309,13 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
         return ActionWithConstantCooldown(readyCometsAction, rageCometsMoveDuration)
     }
 
-    private fun buildTeleportAction(canContinueAttack: () -> Boolean): IActionWithCooldown {
+    private fun buildTeleportAction(
+        canContinueAttack: () -> Boolean,
+        target: () -> LivingEntity?,
+    ): IActionWithCooldown {
         val spawnPredicate = MobEntitySpawnPredicate(world)
         val teleportAction = IAction {
-            target?.let {
+            target()?.let {
                 MobPlacementLogic(
                     RangedSpawnPosition({ it.pos }, tooCloseToTargetDistance, tooFarFromTargetDistance, ModRandom()),
                     { this },
@@ -425,29 +464,6 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
         )
     }
 
-    private fun buildDefendGoal() = ActionGoal(
-        ::shouldDefend,
-        startAction = {
-            MaelstromMod.serverEventScheduler.addEvent(
-                TimedEvent(
-                    { isInvulnerable = true },
-                    10,
-                    shouldCancel = { !shouldDefend() })
-            )
-        },
-        endAction = {
-            MaelstromMod.serverEventScheduler.addEvent(
-                TimedEvent(
-                    { isInvulnerable = false },
-                    20,
-                    shouldCancel = ::shouldDefend
-                )
-            )
-        }
-    )
-
-    private fun shouldDefend(): Boolean = target != null && target?.isUsingItem == true
-
     private fun buildWanderGoal(): VelocityGoal {
         val tooFarFromTarget: (Vec3d) -> Boolean = getWithinDistancePredicate(idleWanderDistance) { idlePosition }
         val movingTowardsIdleCenter: (Vec3d) -> Boolean = { MathUtils.movingTowards(idlePosition, pos, it) }
@@ -498,9 +514,23 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
     }
 
     override fun serverTick() {
+        positionalHistory.set(pos)
         if (isInvulnerable) {
             (world as ServerWorld).spawnParticles(Particles.SKELETON, pos.x, pos.y + 5, pos.z, 1, 0.0, 0.0, 0.0, 0.0)
         }
+    }
+
+    override fun damage(source: DamageSource?, amount: Float): Boolean {
+        damageHistory.set(age)
+
+        if (target == null) {
+            val attacker = source?.attacker
+            if (attacker is LivingEntity) {
+                buildTeleportAction({ isAlive }, { attacker }).perform()
+            }
+        }
+
+        return super.damage(source, amount)
     }
 
     override fun handleStatus(status: Byte) {
@@ -508,7 +538,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
             doIdleAnimation = false
             doCometAttackAnimation.flag()
             MaelstromMod.clientEventScheduler.addEvent(
-                TimedEvent({ summonCometParticleBuilder.build(getCometLaunchPosition()) },
+                TimedEvent({ summonCometParticleBuilder.build(eyePos().add(getCometLaunchPosition())) },
                     cometParticleSummonDelay,
                     cometThrowDelay - cometParticleSummonDelay,
                     ::shouldCancelAttackAnimation))
