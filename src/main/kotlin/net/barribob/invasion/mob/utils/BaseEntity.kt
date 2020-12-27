@@ -6,12 +6,17 @@ import net.barribob.maelstrom.MaelstromMod
 import net.barribob.maelstrom.static_utilities.NbtUtils
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.LivingEntity
+import net.minecraft.entity.boss.BossBar
+import net.minecraft.entity.boss.ServerBossBar
 import net.minecraft.entity.mob.PathAwareEntity
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.server.network.ServerPlayerEntity
+import net.minecraft.text.Text
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.Vec3d
 import net.minecraft.util.registry.Registry
 import net.minecraft.world.World
+import org.jetbrains.annotations.Nullable
 import software.bernie.geckolib3.core.IAnimatable
 import software.bernie.geckolib3.core.manager.AnimationFactory
 
@@ -20,6 +25,7 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
     private val animationFactory: AnimationFactory by lazy { AnimationFactory(this) }
     override fun getFactory(): AnimationFactory = animationFactory
     var idlePosition: Vec3d = Vec3d.ZERO // TODO: I don't actually know if this implementation works
+    private val bossBar = ServerBossBar(this.displayName, BossBar.Color.PURPLE, BossBar.Style.PROGRESS)
 
     init {
         val mobsConfig = MaelstromMod.configRegistry.getConfig(Identifier(Invasions.MODID, "mobs"))
@@ -47,9 +53,33 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
     open fun clientTick() {} // Todo: this may not be the best pattern to use
     open fun serverTick() {}
 
+    override fun mobTick() {
+        super.mobTick()
+        bossBar.percent = this.health / this.maxHealth
+    }
+
     final override fun fromTag(tag: CompoundTag?) {
         super.fromTag(tag)
+        if (hasCustomName()) {
+            bossBar.name = this.displayName
+        }
     }
+
+    final override fun setCustomName(@Nullable name: Text?) {
+        super.setCustomName(name)
+        bossBar.name = this.displayName
+    }
+
+    override fun onStartedTrackingBy(player: ServerPlayerEntity?) {
+        super.onStartedTrackingBy(player)
+        bossBar.addPlayer(player)
+    }
+
+    override fun onStoppedTrackingBy(player: ServerPlayerEntity?) {
+        super.onStoppedTrackingBy(player)
+        bossBar.removePlayer(player)
+    }
+
 
     final override fun readCustomDataFromTag(tag: CompoundTag?) {
         super.readCustomDataFromTag(tag)

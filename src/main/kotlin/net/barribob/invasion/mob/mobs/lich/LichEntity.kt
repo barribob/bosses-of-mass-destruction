@@ -11,8 +11,10 @@ import net.barribob.invasion.mob.ai.goals.VelocityGoal
 import net.barribob.invasion.mob.ai.valid_direction.CanMoveThrough
 import net.barribob.invasion.mob.ai.valid_direction.InDesiredRange
 import net.barribob.invasion.mob.ai.valid_direction.ValidDirectionAnd
+import net.barribob.invasion.mob.damage.StagedDamageHandler
 import net.barribob.invasion.mob.spawn.*
 import net.barribob.invasion.mob.utils.BaseEntity
+import net.barribob.invasion.mob.utils.IEntityStats
 import net.barribob.invasion.mob.utils.ProjectileData
 import net.barribob.invasion.mob.utils.ProjectileThrower
 import net.barribob.invasion.mob.utils.animation.AnimationPredicate
@@ -57,7 +59,7 @@ import software.bernie.geckolib3.core.manager.AnimationData
 class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEntity(
     entityType,
     world
-) {
+), IEntityStats {
     val velocityHistory = HistoricalData(Vec3d.ZERO)
     private val positionalHistory = HistoricalData(Vec3d.ZERO, 10)
     private val damageHistory = HistoricalData(0, 3)
@@ -80,6 +82,8 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
     private val doRageAnimation = BooleanFlag()
     private var collides = true
 
+    private val healingStrength = 0.1f
+
     private val cometThrowDelay = 60
     private val cometParticleSummonDelay = 15
     private val cometThrowCooldown = 80
@@ -97,8 +101,10 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
     private val initialSpawnTimeCooldown = 40
     private val initialBetweenSpawnDelay = 40
     private val spawnDelayDecrease = 3
-    private val delayTimes: List<Int>
-    private val totalMoveTime: Int
+    private val delayTimes = (0 until numMobs)
+        .map { MathUtils.consecutiveSum(0, it) }
+        .mapIndexed { index, i -> initialSpawnTimeCooldown + (index * initialBetweenSpawnDelay) - (i * spawnDelayDecrease) }
+    private val totalMoveTime = delayTimes.last() + minionRuneToMinionSpawnDelay
 
     private val teleportCooldown = 80
     private val teleportStartSoundDelay = 10
@@ -109,7 +115,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
     private val numCometsDuringRage = 6
     private val initialRageCometDelay = 60
     private val delayBetweenRageComets = 30
-    private val rageCometsMoveDuration: Int
+    private val rageCometsMoveDuration = initialRageCometDelay + (numCometsDuringRage * delayBetweenRageComets)
 
     private val ragedMissileVolleyInitialDelay = 60
     private val ragedMissileVolleyBetweenVolleyDelay = 30
@@ -120,6 +126,13 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
     private val idleWanderDistance = 25.0
 
     private val visibilityCache = BossVisibilityCache(this)
+    private val hpPercentRageModes = listOf(0.0f, 0.25f, 0.5f, 0.75f, 1.0f)
+    private val damageHandler = StagedDamageHandler(hpPercentRageModes) {
+        priorityMoves.addAll(listOf(
+            cometRageAction, volleyRageAction, minionRageAction
+        ))
+    }
+    private val priorityMoves = mutableListOf<IActionWithCooldown>()
 
     private val summonMissileParticleBuilder = ParticleFactories.soulFlame().age { 2 }
     private val teleportParticleBuilder = ClientParticleBuilder(Particles.DISAPPEARING_SWIRL)
@@ -175,11 +188,6 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
 
     init {
         ignoreCameraFrustum = true
-        delayTimes = (0 until numMobs)
-            .map { MathUtils.consecutiveSum(0, it) }
-            .mapIndexed { index, i -> initialSpawnTimeCooldown + (index * initialBetweenSpawnDelay) - (i * spawnDelayDecrease) }
-        totalMoveTime = delayTimes.last() + minionRuneToMinionSpawnDelay
-        rageCometsMoveDuration = initialRageCometDelay + (numCometsDuringRage * delayBetweenRageComets)
 
         if (!world.isClient) {
             goalSelector.add(1, SwimGoal(this))
@@ -231,27 +239,11 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
 
         val attackAction = CooldownAction({
             target?.let {
-                val random = WeightedRandom<IActionWithCooldown>()
-                val distanceTraveled = positionalHistory.getAll().zipWithNext()
-                    .fold(0.0) { acc, pair -> acc + pair.first.distanceTo(pair.second) }
-                val damage = damageHistory.getAll()
-                val hasBeenRapidlyDamaged = damage.size > 2 && damage.last() - damage.first() < 60
-                val teleportWeight = 0.0 +
-                        (if (inLineOfSight(pos, it)) 0.0 else 4.0) +
-                        (if (distanceTraveled > 0.25) 0.0 else 8.0) +
-                        (if (distanceTo(target) < 6.0) 8.0 else 0.0) +
-                        (if (hasBeenRapidlyDamaged) 8.0 else 0.0)
-                val minionWeight = if (moveHistory.getAll().contains(minionAction)) 0.0 else 2.0
-
-                random.addAll(
-                    listOf(
-                        Pair(1.0, cometThrowAction),
-                        Pair(1.0, missileAction),
-                        Pair(minionWeight, minionAction),
-                        Pair(teleportWeight, teleportAction)
-                    )
-                )
-                val nextMove = random.next()
+                val nextMove = if (priorityMoves.isEmpty()) {
+                    chooseRegularMove(it)
+                } else {
+                    priorityMoves.removeFirst()
+                }
                 moveHistory.set(nextMove)
                 nextMove.perform()
             } ?: 80
@@ -265,6 +257,30 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
             tickAction = attackAction,
             endAction = onCancel
         )
+    }
+
+    private fun chooseRegularMove(it: LivingEntity): IActionWithCooldown {
+        val random = WeightedRandom<IActionWithCooldown>()
+        val distanceTraveled = positionalHistory.getAll().zipWithNext()
+            .fold(0.0) { acc, pair -> acc + pair.first.distanceTo(pair.second) }
+        val damage = damageHistory.getAll()
+        val hasBeenRapidlyDamaged = damage.size > 2 && damage.last() - damage.first() < 60
+        val teleportWeight = 0.0 +
+                (if (inLineOfSight(pos, it)) 0.0 else 4.0) +
+                (if (distanceTraveled > 0.25) 0.0 else 8.0) +
+                (if (distanceTo(target) < 6.0) 8.0 else 0.0) +
+                (if (hasBeenRapidlyDamaged) 8.0 else 0.0)
+        val minionWeight = if (moveHistory.getAll().contains(minionAction)) 0.0 else 2.0
+
+        random.addAll(
+            listOf(
+                Pair(1.0, cometThrowAction),
+                Pair(1.0, missileAction),
+                Pair(minionWeight, minionAction),
+                Pair(teleportWeight, teleportAction)
+            )
+        )
+        return random.next()
     }
 
     private fun buildVolleyRageAction(canContinueAttack: () -> Boolean): IActionWithCooldown {
@@ -518,19 +534,34 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
         if (isInvulnerable) {
             (world as ServerWorld).spawnParticles(Particles.SKELETON, pos.x, pos.y + 5, pos.z, 1, 0.0, 0.0, 0.0, 0.0)
         }
-    }
 
-    override fun damage(source: DamageSource?, amount: Float): Boolean {
-        damageHistory.set(age)
-
-        if (target == null) {
-            val attacker = source?.attacker
-            if (attacker is LivingEntity) {
-                buildTeleportAction({ isAlive }, { attacker }).perform()
+        if (isAlive && target == null) {
+            val targetHealthRatio = MathUtils.roundedStep(health / maxHealth, hpPercentRageModes)
+            if ((health + healingStrength) / maxHealth < targetHealthRatio) {
+                heal(healingStrength)
             }
         }
+    }
 
-        return super.damage(source, amount)
+    // Todo: Figure out a better way to handle this situation (no overridding - use IDamageHandler)
+    override fun damage(source: DamageSource, amount: Float): Boolean {
+        if (!world.isClient) {
+            damageHistory.set(age)
+
+            if (target == null) {
+                val attacker = source.attacker
+                if (attacker is LivingEntity) {
+                    buildTeleportAction({ isAlive }, { attacker }).perform()
+                }
+            }
+
+            damageHandler.beforeDamage(this, source, amount)
+        }
+        val result = super.damage(source, amount)
+        if (!world.isClient) {
+            damageHandler.afterDamage(this)
+        }
+        return result
     }
 
     override fun handleStatus(status: Byte) {
