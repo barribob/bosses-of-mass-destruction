@@ -1,7 +1,7 @@
 package net.barribob.invasion.mob.ai
 
-import net.barribob.invasion.utils.IVelPos
-import net.barribob.invasion.testing_utilities.StubVelPos
+import net.barribob.invasion.mob.utils.IEntity
+import net.barribob.invasion.testing_utilities.StubEntity
 import net.barribob.maelstrom.general.random.IRandom
 import net.barribob.maelstrom.static_utilities.RandomUtils
 import net.barribob.maelstrom.static_utilities.VecUtils
@@ -15,7 +15,7 @@ class TestValidatedTargetSelector {
 
     @Test
     fun getTarget_AdjustsTarget_WhenValid() {
-        val targetSelector = createTargetSelector(StubVelPos(), { true }, { RandomUtils.randVec() }, { 1.0 })
+        val targetSelector = createTargetSelector(StubEntity(), { true }, { RandomUtils.randVec() }, { 1.0 })
 
         val target = targetSelector.getTarget()
         val target2 = targetSelector.getTarget()
@@ -26,7 +26,7 @@ class TestValidatedTargetSelector {
     @Test
     fun getTarget_Reverses_WhenInvalid() {
         val direction = VecUtils.xAxis
-        val targetSelector = createTargetSelector(StubVelPos(), { false }, { direction }, { 1.0 })
+        val targetSelector = createTargetSelector(StubEntity(), { false }, { direction }, { 1.0 })
 
         val target = targetSelector.getTarget()
         val expected = direction.negate()
@@ -41,7 +41,7 @@ class TestValidatedTargetSelector {
     @Test
     fun getTarget_AdjustsForPosition() {
         val targetSelector =
-            createTargetSelector(StubVelPos(position = VecUtils.unit), { true }, { VecUtils.xAxis }, { 0.0 })
+            createTargetSelector(StubEntity(position = VecUtils.unit), { true }, { VecUtils.xAxis }, { 0.0 })
 
         val target = targetSelector.getTarget()
         val expected = Vec3d(2.0, 1.0, 1.0)
@@ -54,11 +54,11 @@ class TestValidatedTargetSelector {
     }
 
     private fun createTargetSelector(
-        velPos: IVelPos,
+        entity: IEntity,
         validator: (Vec3d) -> Boolean,
         randomVec: () -> Vec3d,
         randomDouble: () -> Double
-    ) = ValidatedTargetSelector(velPos, validator, StubRandom(randomVec, randomDouble))
+    ) = ValidatedTargetSelector(entity, validator, StubRandom(randomVec, randomDouble))
 
     private class StubRandom(
         val randomVec: () -> Vec3d,

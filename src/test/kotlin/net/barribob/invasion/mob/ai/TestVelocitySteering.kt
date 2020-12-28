@@ -1,6 +1,6 @@
 package net.barribob.invasion.mob.ai
 
-import net.barribob.invasion.testing_utilities.StubVelPos
+import net.barribob.invasion.testing_utilities.StubEntity
 import net.barribob.maelstrom.static_utilities.VecUtils
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -11,7 +11,7 @@ class TestVelocitySteering {
 
     @Test
     fun velocitySteering_AtZeroVelocity_AcceleratesToTarget() {
-        val velocitySteering = VelocitySteering(StubVelPos(), 1.0, 1.0)
+        val velocitySteering = VelocitySteering(StubEntity(), 1.0, 1.0)
 
         val velocityChange = velocitySteering.accelerateTo(VecUtils.yAxis)
         val error = 0.0001
@@ -26,6 +26,6 @@ class TestVelocitySteering {
 
     @Test
     fun velocitySteering_WithZeroMass_ThrowsException() {
-        assertThrows<IllegalArgumentException> { VelocitySteering(StubVelPos(), 1.0, 0.0) }
+        assertThrows<IllegalArgumentException> { VelocitySteering(StubEntity(), 1.0, 0.0) }
     }
 }

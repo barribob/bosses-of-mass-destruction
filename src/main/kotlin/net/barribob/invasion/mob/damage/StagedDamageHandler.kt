@@ -14,7 +14,7 @@ class StagedDamageHandler(
         previousHpRatio = hpPercent(stats)
     }
 
-    override fun afterDamage(stats: IEntityStats) {
+    override fun afterDamage(stats: IEntityStats, damageSource: DamageSource, amount: Float) {
         val newHpRatio = hpPercent(stats)
         val firstRageMode = MathUtils.roundedStep(previousHpRatio, hpPercentRageModes)
         val secondRageMode = MathUtils.roundedStep(newHpRatio, hpPercentRageModes)

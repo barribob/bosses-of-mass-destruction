@@ -1,13 +1,14 @@
 package net.barribob.invasion.mob.utils
 
 import net.barribob.invasion.Invasions
-import net.barribob.invasion.utils.IVelPos
+import net.barribob.invasion.mob.damage.IDamageHandler
 import net.barribob.maelstrom.MaelstromMod
 import net.barribob.maelstrom.static_utilities.NbtUtils
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.boss.BossBar
 import net.minecraft.entity.boss.ServerBossBar
+import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.mob.PathAwareEntity
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.network.ServerPlayerEntity
@@ -21,11 +22,12 @@ import software.bernie.geckolib3.core.IAnimatable
 import software.bernie.geckolib3.core.manager.AnimationFactory
 
 abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: World) :
-    PathAwareEntity(entityType, world), IAnimatable, IVelPos {
+    PathAwareEntity(entityType, world), IAnimatable, IEntityStats {
     private val animationFactory: AnimationFactory by lazy { AnimationFactory(this) }
     override fun getFactory(): AnimationFactory = animationFactory
     var idlePosition: Vec3d = Vec3d.ZERO // TODO: I don't actually know if this implementation works
     private val bossBar = ServerBossBar(this.displayName, BossBar.Color.PURPLE, BossBar.Style.PROGRESS)
+    protected open val damageHandler: IDamageHandler? = null
 
     init {
         val mobsConfig = MaelstromMod.configRegistry.getConfig(Identifier(Invasions.MODID, "mobs"))
@@ -80,15 +82,23 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
         bossBar.removePlayer(player)
     }
 
-
     final override fun readCustomDataFromTag(tag: CompoundTag?) {
         super.readCustomDataFromTag(tag)
     }
 
-    final override fun setTarget(target: LivingEntity?) {
-        if(target == null) idlePosition = pos
-        super.setTarget(target)
+    final override fun damage(source: DamageSource, amount: Float): Boolean {
+        if(!world.isClient) {
+            damageHandler?.beforeDamage(this, source, amount)
+        }
+        val result = super.damage(source, amount)
+        if (!world.isClient) {
+            damageHandler?.afterDamage(this, source, amount)
+        }
+        return result
     }
 
-    override fun getVel(): Vec3d = velocity
+    final override fun setTarget(target: LivingEntity?) {
+        if (target == null) idlePosition = pos
+        super.setTarget(target)
+    }
 }

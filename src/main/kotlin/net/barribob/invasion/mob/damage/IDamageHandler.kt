@@ -5,5 +5,5 @@ import net.minecraft.entity.damage.DamageSource
 
 interface IDamageHandler {
     fun beforeDamage(stats: IEntityStats, damageSource: DamageSource, amount: Float)
-    fun afterDamage(stats: IEntityStats)
+    fun afterDamage(stats: IEntityStats, damageSource: DamageSource, amount: Float)
 }
