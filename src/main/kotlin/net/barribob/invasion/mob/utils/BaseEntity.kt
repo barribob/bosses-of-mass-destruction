@@ -26,7 +26,7 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
     private val animationFactory: AnimationFactory by lazy { AnimationFactory(this) }
     override fun getFactory(): AnimationFactory = animationFactory
     var idlePosition: Vec3d = Vec3d.ZERO // TODO: I don't actually know if this implementation works
-    private val bossBar = ServerBossBar(this.displayName, BossBar.Color.PURPLE, BossBar.Style.PROGRESS)
+    protected open val bossBar: ServerBossBar? = null
     protected open val damageHandler: IDamageHandler? = null
 
     init {
@@ -57,29 +57,29 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
 
     override fun mobTick() {
         super.mobTick()
-        bossBar.percent = this.health / this.maxHealth
+        bossBar?.percent = this.health / this.maxHealth
     }
 
     final override fun fromTag(tag: CompoundTag?) {
         super.fromTag(tag)
         if (hasCustomName()) {
-            bossBar.name = this.displayName
+            bossBar?.name = this.displayName
         }
     }
 
     final override fun setCustomName(@Nullable name: Text?) {
         super.setCustomName(name)
-        bossBar.name = this.displayName
+        bossBar?.name = this.displayName
     }
 
     override fun onStartedTrackingBy(player: ServerPlayerEntity?) {
         super.onStartedTrackingBy(player)
-        bossBar.addPlayer(player)
+        bossBar?.addPlayer(player)
     }
 
     override fun onStoppedTrackingBy(player: ServerPlayerEntity?) {
         super.onStoppedTrackingBy(player)
-        bossBar.removePlayer(player)
+        bossBar?.removePlayer(player)
     }
 
     final override fun readCustomDataFromTag(tag: CompoundTag?) {

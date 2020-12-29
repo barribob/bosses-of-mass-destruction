@@ -36,7 +36,7 @@ object Entities {
             .dimensions(EntityDimensions.fixed(0.9F, 1.8F)).build()
     )
 
-    private val LICH: EntityType<LichEntity> = Registry.register(
+    val LICH: EntityType<LichEntity> = Registry.register(
         Registry.ENTITY_TYPE,
         Invasions.identifier("lich"),
         FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, ::LichEntity)

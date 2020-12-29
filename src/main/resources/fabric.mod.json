@@ -26,6 +26,9 @@
       "net.barribob.invasion.InvasionsKt::clientInit"
     ]
   },
+  "mixins": [
+    "invasions.mixins.json"
+  ],
   "depends": {
     "fabricloader": ">=0.7.1",
     "fabric": "*",

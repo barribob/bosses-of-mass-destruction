@@ -14,6 +14,7 @@ import net.barribob.invasion.mob.ai.valid_direction.ValidDirectionAnd
 import net.barribob.invasion.mob.damage.CompositeDamageHandler
 import net.barribob.invasion.mob.damage.DamagedAttackerNotSeen
 import net.barribob.invasion.mob.damage.StagedDamageHandler
+import net.barribob.invasion.mob.mobs.lich.LichUtils.hpPercentRageModes
 import net.barribob.invasion.mob.spawn.*
 import net.barribob.invasion.mob.utils.*
 import net.barribob.invasion.mob.utils.animation.AnimationPredicate
@@ -40,6 +41,8 @@ import net.minecraft.entity.EntityType
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.ai.goal.FollowTargetGoal
 import net.minecraft.entity.ai.goal.SwimGoal
+import net.minecraft.entity.boss.BossBar
+import net.minecraft.entity.boss.ServerBossBar
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
@@ -123,7 +126,6 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
     private val iEntity = EntityAdapter(this)
 
     private val visibilityCache = BossVisibilityCache(this)
-    private val hpPercentRageModes = listOf(0.0f, 0.25f, 0.5f, 0.75f, 1.0f)
     override val damageHandler = CompositeDamageHandler(listOf(
         StagedDamageHandler(hpPercentRageModes) {
             priorityMoves.addAll(listOf(
@@ -132,6 +134,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
         },
         DamagedAttackerNotSeen(iEntity) { buildTeleportAction({ isAlive }, { it }) }))
     private val priorityMoves = mutableListOf<IActionWithCooldown>()
+    override val bossBar = ServerBossBar(this.displayName, BossBar.Color.BLUE, BossBar.Style.PROGRESS)
 
     private val summonMissileParticleBuilder = ParticleFactories.soulFlame().age { 2 }
     private val teleportParticleBuilder = ClientParticleBuilder(Particles.DISAPPEARING_SWIRL)

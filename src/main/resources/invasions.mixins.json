@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "package": "net.barribob.invasion.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "BossBarHudMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
