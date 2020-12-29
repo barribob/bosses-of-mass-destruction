@@ -9,6 +9,7 @@ import net.minecraft.client.render.VertexConsumer
 import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.client.render.entity.DragonFireballEntityRenderer
 import net.minecraft.client.render.entity.EntityRenderDispatcher
+import net.minecraft.client.render.entity.EntityRenderer
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.client.util.math.Vector3f
 import net.minecraft.entity.Entity
@@ -20,6 +21,7 @@ import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket
 import net.minecraft.util.hit.HitResult
 import net.minecraft.util.math.*
 import net.minecraft.world.BlockView
+import net.minecraft.world.LightType
 import net.minecraft.world.RaycastContext
 
 object VanillaCopies {
@@ -162,5 +164,12 @@ object VanillaCopies {
             RaycastContext.ShapeType.COLLIDER,
             RaycastContext.FluidHandling.NONE,
             entity)).type == HitResult.Type.MISS
+    }
+
+    /**
+     * [EntityRenderer.getBlockLight]
+     */
+    fun getBlockLight(entity: Entity, blockPos: BlockPos?): Int {
+        return if (entity.isOnFire) 15 else entity.world.getLightLevel(LightType.BLOCK, blockPos)
     }
 }

@@ -3,6 +3,7 @@ package net.barribob.invasion.mob
 import net.barribob.invasion.Invasions
 import net.barribob.invasion.animation.IAnimationTimer
 import net.barribob.invasion.animation.PauseAnimationTimer
+import net.barribob.invasion.mob.mobs.lich.BoundedLighting
 import net.barribob.invasion.mob.mobs.lich.LichCodeAnimations
 import net.barribob.invasion.mob.mobs.lich.LichEntity
 import net.barribob.invasion.mob.utils.SimpleLivingGeoRenderer
@@ -89,7 +90,8 @@ object Entities {
                     Invasions.identifier("animations/lich.animation.json"),
                     animationTimer,
                     LichCodeAnimations()
-                )
+                ),
+               BoundedLighting(10)
             )
         }
 
