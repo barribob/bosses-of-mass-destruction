@@ -7,6 +7,7 @@ import net.barribob.invasion.mob.ai.VelocitySteering
 import net.barribob.invasion.mob.ai.action.*
 import net.barribob.invasion.mob.ai.goals.ActionGoal
 import net.barribob.invasion.mob.ai.goals.CompositeGoal
+import net.barribob.invasion.mob.ai.goals.FindTargetGoal
 import net.barribob.invasion.mob.ai.goals.VelocityGoal
 import net.barribob.invasion.mob.ai.valid_direction.CanMoveThrough
 import net.barribob.invasion.mob.ai.valid_direction.InDesiredRange
@@ -39,7 +40,6 @@ import net.minecraft.block.BlockState
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.LivingEntity
-import net.minecraft.entity.ai.goal.FollowTargetGoal
 import net.minecraft.entity.ai.goal.SwimGoal
 import net.minecraft.entity.boss.BossBar
 import net.minecraft.entity.boss.ServerBossBar
@@ -197,9 +197,10 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
             goalSelector.add(4, buildWanderGoal())
 
             targetSelector.add(
-                2, FollowTargetGoal(
+                2, FindTargetGoal(
                     this,
-                    LivingEntity::class.java, true
+                    LivingEntity::class.java,
+                    { boundingBox.expand(it) }
                 )
             )
         }
