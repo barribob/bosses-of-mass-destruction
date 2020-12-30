@@ -34,10 +34,6 @@ import net.minecraft.util.registry.Registry
 import net.minecraft.world.World
 
 object Entities {
-    private val MAELSTROM_SCOUT: EntityType<MaelstromScoutEntity> =
-        registerConfiguredMob("maelstrom_scout", ::MaelstromScoutEntity)
-        { it.dimensions(EntityDimensions.fixed(0.9F, 1.8F)) }
-
     val LICH: EntityType<LichEntity> = registerConfiguredMob("lich", ::LichEntity)
     { it.dimensions(EntityDimensions.fixed(1.0f, 3.0f)) }
 
@@ -71,13 +67,6 @@ object Entities {
     }
 
     fun init() {
-        MaelstromMod.aiManager.addGoalInjection(EntityType.getId(MAELSTROM_SCOUT).toString()) { entity ->
-            Pair(
-                2,
-                JumpToTargetGoal(entity)
-            )
-        }
-        FabricDefaultAttributeRegistry.register(MAELSTROM_SCOUT, HostileEntity.createHostileAttributes())
         FabricDefaultAttributeRegistry.register(LICH,
             HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_FLYING_SPEED, 4.0))
     }
@@ -85,16 +74,6 @@ object Entities {
     fun clientInit(animationTimer: IAnimationTimer) {
         val pauseSecondTimer = PauseAnimationTimer({ GlfwUtil.getTime() }, { MinecraftClient.getInstance().isPaused })
 
-        EntityRendererRegistry.INSTANCE.register(MAELSTROM_SCOUT) { entityRenderDispatcher, _ ->
-            SimpleLivingGeoRenderer<MaelstromScoutEntity>(
-                entityRenderDispatcher, GeoModel(
-                    Identifier(Invasions.MODID, "geo/maelstrom_scout.geo.json"),
-                    Identifier(Invasions.MODID, "textures/entity/maelstrom_scout.png"),
-                    Identifier(Invasions.MODID, "animations/scout.animation.json"),
-                    animationTimer
-                )
-            )
-        }
         EntityRendererRegistry.INSTANCE.register(LICH) { entityRenderDispatcher, _ ->
             SimpleLivingGeoRenderer(
                 entityRenderDispatcher, GeoModel(
