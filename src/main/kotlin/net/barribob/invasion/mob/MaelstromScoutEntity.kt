@@ -6,6 +6,7 @@ import net.barribob.invasion.particle.Particles
 import net.barribob.maelstrom.MaelstromMod
 import net.barribob.maelstrom.general.data.BooleanFlag
 import net.barribob.maelstrom.general.event.TimedEvent
+import net.barribob.maelstrom.general.io.config.IConfig
 import net.barribob.maelstrom.mob.ai.TimedAttackGoal
 import net.barribob.maelstrom.static_utilities.MobUtils
 import net.barribob.maelstrom.static_utilities.yOffset
@@ -23,10 +24,10 @@ import software.bernie.geckolib3.core.builder.AnimationBuilder
 import software.bernie.geckolib3.core.controller.AnimationController
 import software.bernie.geckolib3.core.manager.AnimationData
 
-
-class MaelstromScoutEntity(entityType: EntityType<out MaelstromScoutEntity>, world: World) : BaseEntity(
+class MaelstromScoutEntity(entityType: EntityType<out MaelstromScoutEntity>, world: World, mobConfig: IConfig) : BaseEntity(
     entityType,
-    world
+    world,
+    mobConfig
 ) {
     private val attackFlag: BooleanFlag = BooleanFlag()
     private val attackByte: Byte = 0

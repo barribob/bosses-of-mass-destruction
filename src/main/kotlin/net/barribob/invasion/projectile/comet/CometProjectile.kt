@@ -9,8 +9,8 @@ import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity
 import net.minecraft.util.hit.BlockHitResult
 import net.minecraft.util.hit.EntityHitResult
+import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
-import net.minecraft.world.explosion.Explosion
 import software.bernie.geckolib3.core.IAnimatable
 import software.bernie.geckolib3.core.controller.AnimationController
 import software.bernie.geckolib3.core.manager.AnimationData
@@ -18,6 +18,7 @@ import software.bernie.geckolib3.core.manager.AnimationFactory
 
 class CometProjectile : BaseThrownItemEntity, IAnimatable {
     var impacted: Boolean = false
+    private var impactAction: ((Vec3d) -> Unit)? = null
 
     constructor(
         d: Double,
@@ -28,11 +29,13 @@ class CometProjectile : BaseThrownItemEntity, IAnimatable {
 
     constructor(entityType: EntityType<out ThrownItemEntity>, world: World?) : super(entityType, world)
 
-    constructor(livingEntity: LivingEntity, world: World) : super(
+    constructor(livingEntity: LivingEntity, world: World, impactAction: (Vec3d) -> Unit) : super(
         Entities.COMET,
         livingEntity,
-        world
-    )
+        world,
+    ) {
+        this.impactAction = impactAction
+    }
 
     private fun onImpact() {
         if (impacted) return
@@ -40,7 +43,7 @@ class CometProjectile : BaseThrownItemEntity, IAnimatable {
         impacted = true
         val owner = owner
         if (owner != null && owner is LivingEntity) {
-            world.createExplosion(this, x, y, z, 1.0f, Explosion.DestructionType.NONE)
+            impactAction?.let { it(pos) }
             remove()
         }
     }

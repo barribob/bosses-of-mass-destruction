@@ -19,7 +19,7 @@ object InGameTests {
     fun throwProjectile(source: ServerCommandSource) {
         val entity = source.entityOrThrow
         if (entity is LivingEntity) {
-            val projectile = CometProjectile(entity, entity.world)
+            val projectile = CometProjectile(entity, entity.world) {}
             projectile.setProperties(entity, entity.pitch, entity.yaw, 0f, 1.5f, 1.0f)
             entity.world.spawnEntity(projectile)
         }

@@ -2,26 +2,23 @@ package net.barribob.invasion.mob.utils
 
 import net.barribob.invasion.Invasions
 import net.barribob.invasion.mob.damage.IDamageHandler
-import net.barribob.maelstrom.MaelstromMod
+import net.barribob.maelstrom.general.io.config.IConfig
 import net.barribob.maelstrom.static_utilities.NbtUtils
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.LivingEntity
-import net.minecraft.entity.boss.BossBar
 import net.minecraft.entity.boss.ServerBossBar
 import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.mob.PathAwareEntity
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.text.Text
-import net.minecraft.util.Identifier
 import net.minecraft.util.math.Vec3d
-import net.minecraft.util.registry.Registry
 import net.minecraft.world.World
 import org.jetbrains.annotations.Nullable
 import software.bernie.geckolib3.core.IAnimatable
 import software.bernie.geckolib3.core.manager.AnimationFactory
 
-abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: World) :
+abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: World, mobConfig: IConfig) :
     PathAwareEntity(entityType, world), IAnimatable, IEntityStats {
     private val animationFactory: AnimationFactory by lazy { AnimationFactory(this) }
     override fun getFactory(): AnimationFactory = animationFactory
@@ -30,15 +27,10 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
     protected open val damageHandler: IDamageHandler? = null
 
     init {
-        val mobsConfig = MaelstromMod.configRegistry.getConfig(Identifier(Invasions.MODID, "mobs"))
-        val id = Registry.ENTITY_TYPE.getId(entityType)
-        if (id != Registry.ENTITY_TYPE.defaultId && mobsConfig.hasPath(id.path)) {
-            val entityConfig = mobsConfig.getConfig(id.path)
-            val nbtKey = "default_nbt"
-            if (entityConfig.hasPath(nbtKey)) {
-                val nbt = NbtUtils.readDefaultNbt(Invasions.LOGGER, entityConfig.getConfig(nbtKey))
-                fromTag(nbt)
-            }
+        val nbtKey = "default_nbt"
+        if (mobConfig.hasPath(nbtKey)) {
+            val nbt = NbtUtils.readDefaultNbt(Invasions.LOGGER, mobConfig.getConfig(nbtKey))
+            fromTag(nbt)
         }
     }
 

@@ -11,6 +11,8 @@ import net.minecraft.util.hit.EntityHitResult
 import net.minecraft.world.World
 
 class MagicMissileProjectile : BaseThrownItemEntity {
+    private var entityHit: ((LivingEntity) -> Unit)? = null
+
     constructor(
         d: Double,
         e: Double,
@@ -20,11 +22,13 @@ class MagicMissileProjectile : BaseThrownItemEntity {
 
     constructor(entityType: EntityType<out ThrownItemEntity>, world: World?) : super(entityType, world)
 
-    constructor(livingEntity: LivingEntity, world: World) : super(
+    constructor(livingEntity: LivingEntity, world: World, entityHit: (LivingEntity) -> Unit) : super(
         Entities.MAGIC_MISSILE,
         livingEntity,
         world
-    )
+    ) {
+        this.entityHit = entityHit
+    }
 
     override fun onEntityHit(entityHitResult: EntityHitResult) {
         val entity = entityHitResult.entity
@@ -34,6 +38,9 @@ class MagicMissileProjectile : BaseThrownItemEntity {
                 DamageSource.thrownProjectile(this, owner),
                 owner.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE).toFloat()
             )
+            if (entity is LivingEntity) {
+                entityHit?.let { it(entity ) }
+            }
         }
         remove()
     }

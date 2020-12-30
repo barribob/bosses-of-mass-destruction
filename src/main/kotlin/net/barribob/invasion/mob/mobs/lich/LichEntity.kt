@@ -34,6 +34,7 @@ import net.barribob.maelstrom.MaelstromMod
 import net.barribob.maelstrom.general.data.BooleanFlag
 import net.barribob.maelstrom.general.data.HistoricalData
 import net.barribob.maelstrom.general.event.TimedEvent
+import net.barribob.maelstrom.general.io.config.IConfig
 import net.barribob.maelstrom.general.random.ModRandom
 import net.barribob.maelstrom.static_utilities.*
 import net.minecraft.block.BlockState
@@ -41,25 +42,38 @@ import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.ai.goal.SwimGoal
+import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.entity.boss.BossBar
 import net.minecraft.entity.boss.ServerBossBar
-import net.minecraft.nbt.CompoundTag
+import net.minecraft.entity.effect.StatusEffectInstance
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvents
+import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.util.registry.Registry
 import net.minecraft.world.World
+import net.minecraft.world.explosion.Explosion
 import software.bernie.geckolib3.core.PlayState
 import software.bernie.geckolib3.core.builder.AnimationBuilder
 import software.bernie.geckolib3.core.controller.AnimationController
 import software.bernie.geckolib3.core.manager.AnimationData
 
-class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEntity(
+class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig: IConfig) : BaseEntity(
     entityType,
-    world
+    world,
+    mobConfig
 ) {
+    private val cometExplosionStrength = mobConfig.getFloat("comet_explosion_strength")
+    private val missileStatusEffect =
+        Registry.STATUS_EFFECT.getOrEmpty(Identifier(mobConfig.getString("missile.status_effect_id")))
+    private val missileStatusDuration = mobConfig.getInt("missile.status_effect_duration")
+    private val missileStatusPotency = mobConfig.getInt("missile.status_effect_potency")
+    private val healingStrength = mobConfig.getFloat("idle_healing_per_tick")
+    private val summonId = mobConfig.getString("summon.mob_id")
+    private val summonNbt = NbtUtils.readDefaultNbt(Invasions.LOGGER, mobConfig.getConfig("summon.summon_nbt"))
+
     val velocityHistory = HistoricalData(Vec3d.ZERO)
     private val positionalHistory = HistoricalData(Vec3d.ZERO, 10)
     private val moveHistory = HistoricalData(IActionWithCooldown { 0 }, 3)
@@ -80,8 +94,6 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
     private val doEndTeleportAnimation = BooleanFlag()
     private val doRageAnimation = BooleanFlag()
     private var collides = true
-
-    private val healingStrength = 0.1f
 
     private val cometThrowDelay = 60
     private val cometParticleSummonDelay = 15
@@ -152,7 +164,13 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
 
     private val missileThrower = { offset: Vec3d ->
         ProjectileThrower {
-            val projectile = MagicMissileProjectile(this, world)
+            val projectile = MagicMissileProjectile(this, world) {
+                missileStatusEffect.ifPresent { effect ->
+                    it.addStatusEffect(StatusEffectInstance(effect,
+                        missileStatusDuration,
+                        missileStatusPotency))
+                }
+            }
             projectile.setPos(eyePos().add(offset))
             world.spawnEntity(projectile)
             ProjectileData(projectile, 1.6f, 0f)
@@ -161,7 +179,14 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
 
     private val cometThrower = { offset: Vec3d ->
         ProjectileThrower {
-            val projectile = CometProjectile(this, world)
+            val projectile = CometProjectile(this, world) {
+                world.createExplosion(this,
+                    it.x,
+                    it.y,
+                    it.z,
+                    cometExplosionStrength,
+                    Explosion.DestructionType.DESTROY)
+            }
             projectile.setPos(eyePos().add(offset))
             world.spawnEntity(projectile)
             ProjectileData(projectile, 1.6f, 0f)
@@ -200,7 +225,10 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
                 2, FindTargetGoal(
                     this,
                     LivingEntity::class.java,
-                    { boundingBox.expand(it) }
+                    { boundingBox.expand(it) },
+                    targetPredicate = {
+                        it.registryId != summonId && it.registryId != registryId
+                    }
                 )
             )
         }
@@ -366,9 +394,8 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
     }
 
     private fun beginSummonSingleMob(canContinueAttack: () -> Boolean) {
-        val compoundTag = CompoundTag()
-        compoundTag.putString("id",
-            Registry.ENTITY_TYPE.getId(EntityType.PHANTOM).toString()) // Todo: want to move this into a config
+        val compoundTag = summonNbt.copy()
+        compoundTag.putString("id", summonId)
         val serverWorld = world as ServerWorld
         val mobSpawner = SimpleMobSpawner(serverWorld)
         val entityProvider = CompoundTagEntityProvider(compoundTag, serverWorld, Invasions.LOGGER)
@@ -479,7 +506,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World) : BaseEnt
         )
     }
 
-    private fun createSteering() = VelocitySteering(iEntity, 4.0, 120.0)
+    private fun createSteering() = VelocitySteering(iEntity, getAttributeValue(EntityAttributes.GENERIC_FLYING_SPEED), 120.0)
 
     private fun getWithinDistancePredicate(distance: Double, targetPos: () -> Vec3d): (Vec3d) -> Boolean = {
         val target = pos.add(it.multiply(reactionDistance))
