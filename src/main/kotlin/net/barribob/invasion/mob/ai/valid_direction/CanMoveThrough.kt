@@ -8,7 +8,7 @@ import net.minecraft.world.RaycastContext
 
 class CanMoveThrough(private val entity: Entity, private val reactionDistance: Double) : IValidDirection {
     override fun isValidDirection(normedDirection: Vec3d): Boolean {
-        val reactionDirection = normedDirection.multiply(reactionDistance)
+        val reactionDirection = normedDirection.multiply(reactionDistance).add(entity.velocity)
         val target = entity.pos.add(reactionDirection)
         val noBlockCollisions = MathUtils.willBoxFit(entity.boundingBox, reactionDirection) { !entity.world.isSpaceEmpty(entity, it) }
         val blockCollision = entity.world.raycast(

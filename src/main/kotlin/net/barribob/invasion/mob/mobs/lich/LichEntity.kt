@@ -134,7 +134,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
 
     private val tooFarFromTargetDistance = 35.0
     private val tooCloseToTargetDistance = 20.0
-    private val idleWanderDistance = 25.0
+    private val idleWanderDistance = 50.0
     private val iEntity = EntityAdapter(this)
 
     private val visibilityCache = BossVisibilityCache(this)
