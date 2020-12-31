@@ -4,6 +4,7 @@ import net.barribob.invasion.Invasions
 import net.barribob.invasion.animation.IAnimationTimer
 import net.barribob.invasion.animation.PauseAnimationTimer
 import net.barribob.invasion.mob.mobs.lich.BoundedLighting
+import net.barribob.invasion.mob.mobs.lich.LichBoneLight
 import net.barribob.invasion.mob.mobs.lich.LichCodeAnimations
 import net.barribob.invasion.mob.mobs.lich.LichEntity
 import net.barribob.invasion.mob.utils.SimpleLivingGeoRenderer
@@ -15,7 +16,6 @@ import net.barribob.invasion.render.*
 import net.barribob.maelstrom.MaelstromMod
 import net.barribob.maelstrom.general.data.WeakHashPredicate
 import net.barribob.maelstrom.general.io.config.IConfig
-import net.barribob.maelstrom.mob.ai.JumpToTargetGoal
 import net.barribob.maelstrom.static_utilities.RandomUtils
 import net.fabricmc.fabric.api.`object`.builder.v1.entity.FabricDefaultAttributeRegistry
 import net.fabricmc.fabric.api.`object`.builder.v1.entity.FabricEntityTypeBuilder
@@ -83,7 +83,8 @@ object Entities {
                     animationTimer,
                     LichCodeAnimations()
                 ),
-                BoundedLighting(10)
+                BoundedLighting(7),
+                LichBoneLight()
             )
         }
 
