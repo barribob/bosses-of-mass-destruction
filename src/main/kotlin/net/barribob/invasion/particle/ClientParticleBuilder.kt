@@ -11,6 +11,7 @@ class ClientParticleBuilder(private val effect: ParticleEffect) {
     private var brightness: ((Float) -> Int)? = null
     private var scale: ((Float) -> Float)? = null
     private var age: (() -> Int)? = null
+    private var colorVariation: Double = 0.0
 
     fun velocity(velocity: Vec3d): ClientParticleBuilder {
         this.vel = velocity
@@ -37,6 +38,11 @@ class ClientParticleBuilder(private val effect: ParticleEffect) {
         return this
     }
 
+    fun colorVariation(variation: Double): ClientParticleBuilder {
+        this.colorVariation = variation
+        return this
+    }
+
     fun build(pos: Vec3d) {
         val client = MinecraftClient.getInstance()
         val camera: Camera = client.gameRenderer.camera
@@ -55,6 +61,7 @@ class ClientParticleBuilder(private val effect: ParticleEffect) {
                 brightness?.let { particle.setBrightnessOverride(brightness) }
                 color?.let { particle.setColorOverride(color) }
                 scale?.let { particle.setScaleOverride(scale) }
+                particle.setColorVariation(colorVariation)
             }
         }
     }

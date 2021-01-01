@@ -86,6 +86,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
     private val successfulTeleportStatus: Byte = 9
     private val fireballRageStatus: Byte = 10
     private val missileRageStatus: Byte = 11
+    private val hpBelowThresholdStatus: Byte = 12
     private var doIdleAnimation = true
     private val doCometAttackAnimation = BooleanFlag()
     private val doMissileAttackAnimation = BooleanFlag()
@@ -143,17 +144,18 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
             priorityMoves.addAll(listOf(
                 cometRageAction, volleyRageAction, minionRageAction
             ))
+            world.sendEntityStatus(this, hpBelowThresholdStatus)
         },
         DamagedAttackerNotSeen(iEntity) { buildTeleportAction({ isAlive }, { it }) }))
     private val priorityMoves = mutableListOf<IActionWithCooldown>()
     override val bossBar = ServerBossBar(this.displayName, BossBar.Color.BLUE, BossBar.Style.PROGRESS)
 
-    private val summonMissileParticleBuilder = ParticleFactories.soulFlame().age { 2 }
+    private val summonMissileParticleBuilder = ParticleFactories.soulFlame().age { 2 }.colorVariation(0.5)
     private val teleportParticleBuilder = ClientParticleBuilder(Particles.DISAPPEARING_SWIRL)
         .color { ModColors.TELEPORT_PURPLE }
         .age { RandomUtils.range(10, 15) }
         .brightness { Particles.FULL_BRIGHT }
-    private val summonCometParticleBuilder = ParticleFactories.cometTrail()
+    private val summonCometParticleBuilder = ParticleFactories.cometTrail().colorVariation(0.5)
     private val flameRingFactory = ClientParticleBuilder(Particles.SOUL_FLAME)
         .color { MathUtils.lerpVec(it, ModColors.WHITE, ModColors.WHITE.multiply(0.5)) }
         .brightness { Particles.FULL_BRIGHT }
@@ -161,6 +163,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
     private val minionSummonParticleBuilder = ParticleFactories.soulFlame()
         .color { ModColors.WHITE }
         .velocity(VecUtils.yAxis.multiply(RandomUtils.double(0.2) + 0.2))
+    private val thresholdParticleBuilder = ParticleFactories.soulFlame().age { 20 }.scale { 0.5f }
 
     private val missileThrower = { offset: Vec3d ->
         ProjectileThrower {
@@ -621,6 +624,13 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
                     ragedMissileParticleDelay + (i * ragedMissileVolleyBetweenVolleyDelay),
                     ragedMissileVolleyBetweenVolleyDelay,
                     ::shouldCancelAttackAnimation))
+            }
+        }
+        if(status == hpBelowThresholdStatus) {
+            for(i in 0 until 20) {
+                thresholdParticleBuilder
+                    .velocity( RandomUtils.randVec() )
+                    .build(eyePos())
             }
         }
         if (status == stopAttackStatus) {

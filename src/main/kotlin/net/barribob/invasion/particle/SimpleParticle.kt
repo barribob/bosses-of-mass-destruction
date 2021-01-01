@@ -1,5 +1,9 @@
 package net.barribob.invasion.particle
 
+import net.barribob.maelstrom.static_utilities.RandomUtils
+import net.barribob.maelstrom.static_utilities.VecUtils
+import net.barribob.maelstrom.static_utilities.coerceAtLeast
+import net.barribob.maelstrom.static_utilities.coerceAtMost
 import net.minecraft.client.particle.ParticleTextureSheet
 import net.minecraft.client.particle.SpriteBillboardParticle
 import net.minecraft.util.math.Vec3d
@@ -15,6 +19,7 @@ class SimpleParticle(private val particleContext: ParticleContext, particleAge: 
     private var brightnessOverride: ((Float) -> Int)? = null
     private var colorOverride: ((Float) -> Vec3d)? = null
     private var scaleOverride: ((Float) -> Float)? = null
+    private var colorVariation: Vec3d = Vec3d.ZERO
 
     override fun getType(): ParticleTextureSheet = ParticleTextureSheet.PARTICLE_SHEET_OPAQUE
 
@@ -39,7 +44,8 @@ class SimpleParticle(private val particleContext: ParticleContext, particleAge: 
     private fun setColorFromOverride(colorOverride: ((Float) -> Vec3d)?, ageRatio: Float) {
         if (colorOverride != null) {
             val color = colorOverride(ageRatio)
-            setColor(color.x.toFloat(), color.y.toFloat(), color.z.toFloat())
+            val variedColor = color.add(colorVariation).coerceAtLeast(Vec3d.ZERO).coerceAtMost(VecUtils.unit)
+            setColor(variedColor.x.toFloat(), variedColor.y.toFloat(), variedColor.z.toFloat())
         }
     }
 
@@ -55,6 +61,11 @@ class SimpleParticle(private val particleContext: ParticleContext, particleAge: 
     fun setScaleOverride(override: ((Float) -> Float)?) {
         scaleOverride = override
         setScaleFromOverride(override, 0f)
+    }
+
+    fun setColorVariation(variation: Double) {
+        colorVariation = RandomUtils.randVec().multiply(variation)
+        setColorFromOverride(colorOverride, 0f)
     }
 
     override fun getColorMultiplier(tint: Float): Int =
