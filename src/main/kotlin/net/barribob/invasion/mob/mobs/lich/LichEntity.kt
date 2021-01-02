@@ -48,6 +48,7 @@ import net.minecraft.entity.boss.ServerBossBar
 import net.minecraft.entity.effect.StatusEffectInstance
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
+import net.minecraft.sound.SoundEvent
 import net.minecraft.sound.SoundEvents
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
@@ -204,17 +205,19 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
     private val volleyRageAction = buildVolleyRageAction(::canContinueAttack)
     private val minionRageAction = buildMinionRageAction(::canContinueAttack)
 
-    private fun playCometLaunchSound() = playSound(SoundEvents.ENTITY_BLAZE_SHOOT, 1.5f, 1.0f)
-    private fun playCometPrepareSound() = playSound(SoundEvents.ENTITY_ILLUSIONER_CAST_SPELL, 2.0f, 1.0f)
-    private fun playVolleyShootSound() = playSound(SoundEvents.ENTITY_BLAZE_SHOOT, 1.5f, 1.0f)
-    private fun playVolleyPrepareSound() = playSound(SoundEvents.ENTITY_ILLUSIONER_CAST_SPELL, 2.0f, 1.0f)
-    private fun playBeginTeleportSound() = playSound(SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, 2.5f, 1.0f)
-    private fun playTeleportSound() = playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, 1.5f, 1.0f)
-    private fun playPrepareSummonMinionSound() = playSound(SoundEvents.ENTITY_ILLUSIONER_CAST_SPELL, 2.0f, 1.0f)
-    private fun playMinionRuneSound() =
-        world.playSound(pos, SoundEvents.ENTITY_EVOKER_PREPARE_SUMMON, SoundCategory.HOSTILE, 1.5f)
+    private fun playCometLaunchSound() = playSound(Invasions.sounds.cometShoot, 0.4f)
+    private fun playCometPrepareSound() = playSound(Invasions.sounds.cometPrepare, 0.4f)
+    private fun playVolleyShootSound() = playSound(Invasions.sounds.missileShoot, 1.0f)
+    private fun playVolleyPrepareSound() = playSound(Invasions.sounds.missilePrepare, 4.0f)
+    private fun playBeginTeleportSound() = playSound(Invasions.sounds.teleportPrepare, 3.0f)
+    private fun playTeleportSound() = playSound(SoundEvents.ENTITY_ILLUSIONER_MIRROR_MOVE, 2.0f)
+    private fun playRageBeginSound() = playSound(Invasions.sounds.ragePrepare, 1.0f)
+    private fun playMinionRuneSound(pos: Vec3d) =
+        world.playSound(pos, Invasions.sounds.minionRune, SoundCategory.HOSTILE, 1.0f, range = 64.0)
 
-    private fun playMinionSummonSound(entity: Entity) = entity.playSound(SoundEvents.ENTITY_BLAZE_SHOOT, 1.5f, 1.0f)
+    private fun playMinionSummonSound(entity: Entity) = entity.playSound(Invasions.sounds.minionSummon, 0.7f, 1.0f)
+    private fun playSound(soundEvent: SoundEvent, volume: Float) =
+        world.playSound(pos, soundEvent, SoundCategory.HOSTILE, volume, range = 64.0)
 
     init {
         ignoreCameraFrustum = true
@@ -327,7 +330,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
                     }, initialRageCometDelay + (i * delayBetweenRageComets), shouldCancel = { !canContinueAttack() }))
                 }
                 world.sendEntityStatus(this, fireballRageStatus)
-                playCometPrepareSound()
+                playRageBeginSound()
             }
         }
 
@@ -405,7 +408,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
         val spawnPredicate = MobEntitySpawnPredicate(world)
         val summonCircleBeforeSpawn: (pos: Vec3d, entity: Entity) -> Unit = { pos, entity ->
             serverWorld.spawnParticle(Particles.LICH_MAGIC_CIRCLE, pos, Vec3d.ZERO)
-            playMinionRuneSound()
+            playMinionRuneSound(pos)
             val spawnMobWithEffect = {
                 mobSpawner.spawn(pos, entity)
                 playMinionSummonSound(entity)
@@ -415,7 +418,6 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
         }
 
         target?.let {
-            playPrepareSummonMinionSound()
             MobPlacementLogic(
                 RangedSpawnPosition({ it.pos }, 4.0, 8.0, ModRandom()),
                 entityProvider,
@@ -440,7 +442,8 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
             MaelstromMod.serverEventScheduler.addEvent(TimedEvent(throwMissilesAction,
                 missileThrowDelay, shouldCancel = { !canContinueAttack() }))
             world.sendEntityStatus(this, summonMissileStatus)
-            playVolleyPrepareSound()
+            MaelstromMod.serverEventScheduler.addEvent(
+                TimedEvent(::playVolleyPrepareSound, 10, shouldCancel = { !canContinueAttack() }))
         }
 
         return ActionWithConstantCooldown(readyMissilesAction, missileThrowCooldown)
@@ -457,7 +460,8 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
                 cometThrowDelay,
                 shouldCancel = { !canContinueAttack() }))
             world.sendEntityStatus(this, summonCometStatus)
-            playCometPrepareSound()
+            MaelstromMod.serverEventScheduler.addEvent(
+                TimedEvent(::playCometPrepareSound, 10, shouldCancel = { !canContinueAttack() }))
         }
 
         return ActionWithConstantCooldown(readyCometAction, cometThrowCooldown)
@@ -509,7 +513,8 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
         )
     }
 
-    private fun createSteering() = VelocitySteering(iEntity, getAttributeValue(EntityAttributes.GENERIC_FLYING_SPEED), 120.0)
+    private fun createSteering() =
+        VelocitySteering(iEntity, getAttributeValue(EntityAttributes.GENERIC_FLYING_SPEED), 120.0)
 
     private fun getWithinDistancePredicate(distance: Double, targetPos: () -> Vec3d): (Vec3d) -> Boolean = {
         val target = pos.add(it.multiply(reactionDistance))
@@ -626,10 +631,10 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
                     ::shouldCancelAttackAnimation))
             }
         }
-        if(status == hpBelowThresholdStatus) {
-            for(i in 0 until 20) {
+        if (status == hpBelowThresholdStatus) {
+            for (i in 0 until 20) {
                 thresholdParticleBuilder
-                    .velocity( RandomUtils.randVec() )
+                    .velocity(RandomUtils.randVec())
                     .build(eyePos())
             }
         }

@@ -1,0 +1,50 @@
+{
+  "comet_shoot": {
+    "subtitle": "subtitles.maelstrom_invasions.comet_shoot",
+    "sounds": [
+      "maelstrom_invasions:comet_shoot"
+    ]
+  },
+  "comet_prepare": {
+    "subtitle": "subtitles.maelstrom_invasions.comet_prepare",
+    "sounds": [
+      "maelstrom_invasions:comet_prepare"
+    ]
+  },
+  "missile_shoot": {
+    "subtitle": "subtitles.maelstrom_invasions.missile_shoot",
+    "sounds": [
+      "maelstrom_invasions:missile_shoot"
+    ]
+  },
+  "missile_prepare": {
+    "subtitle": "subtitles.maelstrom_invasions.missile_prepare",
+    "sounds": [
+      "maelstrom_invasions:missile_prepare"
+    ]
+  },
+  "teleport_prepare": {
+    "subtitle": "subtitles.maelstrom_invasions.teleport_prepare",
+    "sounds": [
+      "maelstrom_invasions:teleport_prepare"
+    ]
+  },
+  "minion_rune": {
+    "subtitle": "subtitles.maelstrom_invasions.minion_rune",
+    "sounds": [
+      "maelstrom_invasions:minion_rune"
+    ]
+  },
+  "minion_summon": {
+    "subtitle": "subtitles.maelstrom_invasions.minion_summon",
+    "sounds": [
+      "maelstrom_invasions:minion_summon"
+    ]
+  },
+  "rage_prepare": {
+    "subtitle": "subtitles.maelstrom_invasions.rage_prepare",
+    "sounds": [
+      "maelstrom_invasions:rage_prepare"
+    ]
+  }
+}

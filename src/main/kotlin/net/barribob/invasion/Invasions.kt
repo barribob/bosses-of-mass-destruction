@@ -3,6 +3,7 @@ package net.barribob.invasion
 import net.barribob.invasion.animation.PauseAnimationTimer
 import net.barribob.invasion.mob.Entities
 import net.barribob.invasion.particle.Particles
+import net.barribob.invasion.sound.ModSounds
 import net.barribob.invasion.utils.InGameTests
 import net.barribob.invasion.utils.NetworkUtils
 import net.barribob.maelstrom.MaelstromMod
@@ -21,6 +22,8 @@ object Invasions {
 
     val LOGGER = ConsoleLogger(LogManager.getLogger())
 
+    val sounds: ModSounds = ModSounds()
+
     fun identifier(path: String) = Identifier(MODID, path)
 }
 
@@ -33,6 +36,8 @@ fun init() {
     GeckoLib.initialize()
 
     Entities.init()
+
+    Invasions.sounds.init()
 }
 
 @Environment(EnvType.CLIENT)
