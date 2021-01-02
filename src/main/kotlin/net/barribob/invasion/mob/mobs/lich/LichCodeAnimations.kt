@@ -14,7 +14,10 @@ class LichCodeAnimations : ICodeAnimations<LichEntity> {
         val headPitch = MathHelper.lerp(data.partialTick, animatable.prevPitch, animatable.pitch)
 
         val velocity = MathUtils.lerpVec(data.partialTick, animatable.velocityHistory.get(1), animatable.velocityHistory.get())
-        val bodyPitch = (MathUtils.directionToPitch(velocity) * 0.5) + 45
+
+        val neutralPoseDegree = 30
+        val maxDegreeVariation = 15
+        val bodyPitch = (MathUtils.directionToPitch(velocity) * (maxDegreeVariation / 90.0)) + neutralPoseDegree
 
         val yaw = headYaw - bodyYaw
         val adjustedHeadPitch = headPitch - bodyPitch

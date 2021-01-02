@@ -35,7 +35,7 @@ import net.minecraft.world.World
 
 object Entities {
     val LICH: EntityType<LichEntity> = registerConfiguredMob("lich", ::LichEntity)
-    { it.dimensions(EntityDimensions.fixed(1.0f, 3.0f)) }
+    { it.dimensions(EntityDimensions.fixed(1.8f, 3.0f)) }
 
     val MAGIC_MISSILE: EntityType<MagicMissileProjectile> = Registry.register(
         Registry.ENTITY_TYPE,
