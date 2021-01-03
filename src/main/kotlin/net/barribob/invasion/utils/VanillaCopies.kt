@@ -15,14 +15,14 @@ import net.minecraft.client.util.math.Vector3f
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.MovementType
+import net.minecraft.entity.mob.CreeperEntity
 import net.minecraft.entity.mob.FlyingEntity
 import net.minecraft.entity.mob.MobEntity
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket
 import net.minecraft.util.hit.HitResult
 import net.minecraft.util.math.*
-import net.minecraft.world.BlockView
-import net.minecraft.world.LightType
-import net.minecraft.world.RaycastContext
+import net.minecraft.world.*
+import net.minecraft.world.explosion.Explosion.DestructionType
 
 object VanillaCopies {
     /**
@@ -171,5 +171,12 @@ object VanillaCopies {
      */
     fun getBlockLight(entity: Entity, blockPos: BlockPos?): Int {
         return if (entity.isOnFire) 15 else entity.world.getLightLevel(LightType.BLOCK, blockPos)
+    }
+
+    /**
+     * [CreeperEntity.explode]
+     */
+    fun getEntityDestructionType(world: World): DestructionType {
+        return if (world.gameRules.getBoolean(GameRules.DO_MOB_GRIEFING)) DestructionType.DESTROY else DestructionType.NONE
     }
 }

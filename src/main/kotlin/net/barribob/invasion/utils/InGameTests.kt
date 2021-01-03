@@ -2,7 +2,7 @@ package net.barribob.invasion.utils
 
 import net.barribob.invasion.Invasions
 import net.barribob.invasion.mob.spawn.*
-import net.barribob.invasion.projectile.comet.CometProjectile
+import net.barribob.invasion.projectile.MagicMissileProjectile
 import net.barribob.maelstrom.general.random.ModRandom
 import net.barribob.maelstrom.static_utilities.ClientServerUtils
 import net.barribob.maelstrom.static_utilities.MathUtils
@@ -19,7 +19,7 @@ object InGameTests {
     fun throwProjectile(source: ServerCommandSource) {
         val entity = source.entityOrThrow
         if (entity is LivingEntity) {
-            val projectile = CometProjectile(entity, entity.world) {}
+            val projectile = MagicMissileProjectile(entity, entity.world, {}, listOf(EntityType.ZOMBIE))
             projectile.setProperties(entity, entity.pitch, entity.yaw, 0f, 1.5f, 1.0f)
             entity.world.spawnEntity(projectile)
         }

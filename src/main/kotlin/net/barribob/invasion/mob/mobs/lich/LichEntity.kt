@@ -74,6 +74,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
     private val healingStrength = mobConfig.getFloat("idle_healing_per_tick")
     private val summonId = mobConfig.getString("summon.mob_id")
     private val summonNbt = NbtUtils.readDefaultNbt(Invasions.LOGGER, mobConfig.getConfig("summon.summon_nbt"))
+    private val summonEntityType = Registry.ENTITY_TYPE[Identifier(summonId)]
 
     val velocityHistory = HistoricalData(Vec3d.ZERO)
     private val positionalHistory = HistoricalData(Vec3d.ZERO, 10)
@@ -168,13 +169,13 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
 
     private val missileThrower = { offset: Vec3d ->
         ProjectileThrower {
-            val projectile = MagicMissileProjectile(this, world) {
+            val projectile = MagicMissileProjectile(this, world, {
                 missileStatusEffect.ifPresent { effect ->
                     it.addStatusEffect(StatusEffectInstance(effect,
                         missileStatusDuration,
                         missileStatusPotency))
                 }
-            }
+            }, listOf(summonEntityType))
             projectile.setPos(eyePos().add(offset))
             world.spawnEntity(projectile)
             ProjectileData(projectile, 1.6f, 0f)
@@ -183,14 +184,14 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
 
     private val cometThrower = { offset: Vec3d ->
         ProjectileThrower {
-            val projectile = CometProjectile(this, world) {
+            val projectile = CometProjectile(this, world, {
                 world.createExplosion(this,
                     it.x,
                     it.y,
                     it.z,
                     cometExplosionStrength,
-                    Explosion.DestructionType.DESTROY)
-            }
+                    VanillaCopies.getEntityDestructionType(world))
+            }, listOf(summonEntityType))
             projectile.setPos(eyePos().add(offset))
             world.spawnEntity(projectile)
             ProjectileData(projectile, 1.6f, 0f)

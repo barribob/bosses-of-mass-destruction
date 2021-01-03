@@ -2,6 +2,7 @@ package net.barribob.invasion.projectile.comet
 
 import net.barribob.invasion.mob.Entities
 import net.barribob.invasion.projectile.BaseThrownItemEntity
+import net.barribob.invasion.projectile.util.ExemptEntities
 import net.barribob.invasion.utils.AnimationUtils
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.LivingEntity
@@ -29,10 +30,11 @@ class CometProjectile : BaseThrownItemEntity, IAnimatable {
 
     constructor(entityType: EntityType<out ThrownItemEntity>, world: World?) : super(entityType, world)
 
-    constructor(livingEntity: LivingEntity, world: World, impactAction: (Vec3d) -> Unit) : super(
+    constructor(livingEntity: LivingEntity, world: World, impactAction: (Vec3d) -> Unit, exemptEntities: List<EntityType<*>>) : super(
         Entities.COMET,
         livingEntity,
         world,
+        ExemptEntities(exemptEntities)
     ) {
         this.impactAction = impactAction
     }
@@ -48,9 +50,8 @@ class CometProjectile : BaseThrownItemEntity, IAnimatable {
         }
     }
 
-    override fun onEntityHit(entityHitResult: EntityHitResult) {
+    override fun entityHit(entityHitResult: EntityHitResult) {
         onImpact()
-        super.onEntityHit(entityHitResult)
     }
 
     override fun onBlockHit(blockHitResult: BlockHitResult?) {

@@ -1,6 +1,7 @@
 package net.barribob.invasion.projectile
 
 import net.barribob.invasion.mob.Entities
+import net.barribob.invasion.projectile.util.ExemptEntities
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.attribute.EntityAttributes
@@ -23,15 +24,16 @@ class MagicMissileProjectile : BaseThrownItemEntity {
 
     constructor(entityType: EntityType<out ThrownItemEntity>, world: World?) : super(entityType, world)
 
-    constructor(livingEntity: LivingEntity, world: World, entityHit: (LivingEntity) -> Unit) : super(
+    constructor(livingEntity: LivingEntity, world: World, entityHit: (LivingEntity) -> Unit, exemptEntities: List<EntityType<*>>) : super(
         Entities.MAGIC_MISSILE,
         livingEntity,
-        world
+        world,
+        ExemptEntities(exemptEntities)
     ) {
         this.entityHit = entityHit
     }
 
-    override fun onEntityHit(entityHitResult: EntityHitResult) {
+    override fun entityHit(entityHitResult: EntityHitResult) {
         val entity = entityHitResult.entity
         val owner = owner
         if (owner != null && owner is LivingEntity) {
