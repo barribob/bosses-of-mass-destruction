@@ -11,6 +11,7 @@ import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.mob.PathAwareEntity
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.network.ServerPlayerEntity
+import net.minecraft.server.world.ServerWorld
 import net.minecraft.text.Text
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
@@ -39,13 +40,13 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
         if (world.isClient) {
             clientTick()
         } else {
-            serverTick()
+            serverTick(world as ServerWorld)
         }
         super.tick()
     }
 
     open fun clientTick() {} // Todo: this may not be the best pattern to use
-    open fun serverTick() {}
+    open fun serverTick(serverWorld: ServerWorld) {}
 
     override fun mobTick() {
         super.mobTick()

@@ -3,10 +3,7 @@ package net.barribob.invasion.mob
 import net.barribob.invasion.Invasions
 import net.barribob.invasion.animation.IAnimationTimer
 import net.barribob.invasion.animation.PauseAnimationTimer
-import net.barribob.invasion.mob.mobs.lich.BoundedLighting
-import net.barribob.invasion.mob.mobs.lich.LichBoneLight
-import net.barribob.invasion.mob.mobs.lich.LichCodeAnimations
-import net.barribob.invasion.mob.mobs.lich.LichEntity
+import net.barribob.invasion.mob.mobs.lich.*
 import net.barribob.invasion.mob.utils.SimpleLivingGeoRenderer
 import net.barribob.invasion.particle.ParticleFactories
 import net.barribob.invasion.projectile.MagicMissileProjectile
@@ -84,7 +81,8 @@ object Entities {
                     LichCodeAnimations()
                 ),
                 BoundedLighting(7),
-                LichBoneLight()
+                LichBoneLight(),
+                EternalNightRenderer()
             )
         }
 

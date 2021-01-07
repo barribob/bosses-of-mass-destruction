@@ -55,7 +55,6 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.util.registry.Registry
 import net.minecraft.world.World
-import net.minecraft.world.explosion.Explosion
 import software.bernie.geckolib3.core.PlayState
 import software.bernie.geckolib3.core.builder.AnimationBuilder
 import software.bernie.geckolib3.core.controller.AnimationController
@@ -75,6 +74,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
     private val summonId = mobConfig.getString("summon.mob_id")
     private val summonNbt = NbtUtils.readDefaultNbt(Invasions.LOGGER, mobConfig.getConfig("summon.summon_nbt"))
     private val summonEntityType = Registry.ENTITY_TYPE[Identifier(summonId)]
+    val shouldSetToNighttime = mobConfig.getBoolean("eternal_nighttime")
 
     val velocityHistory = HistoricalData(Vec3d.ZERO)
     private val positionalHistory = HistoricalData(Vec3d.ZERO, 10)
@@ -543,10 +543,14 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
         velocityHistory.set(velocity)
     }
 
-    override fun serverTick() {
+    override fun serverTick(serverWorld: ServerWorld) {
         positionalHistory.set(pos)
 
         LichUtils.cappedHeal(iEntity, this, hpPercentRageModes, healingStrength, ::heal)
+
+        if(shouldSetToNighttime) {
+            serverWorld.timeOfDay = LichUtils.timeToNighttime(serverWorld.timeOfDay)
+        }
     }
 
     override fun handleStatus(status: Byte) {

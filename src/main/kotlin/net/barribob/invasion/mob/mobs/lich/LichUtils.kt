@@ -10,6 +10,7 @@ import net.minecraft.client.gui.DrawableHelper
 import net.minecraft.client.gui.hud.BossBarHud
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.entity.boss.BossBar
+import net.minecraft.server.world.ServerWorld
 import net.minecraft.text.TranslatableText
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 
@@ -17,6 +18,15 @@ object LichUtils {
     val hpPercentRageModes = listOf(0.0f, 0.25f, 0.5f, 0.75f, 1.0f)
     private const val textureSize = 256
     private val bossBarDividerTexture = Invasions.identifier("textures/gui/lich_boss_bar_dividers.png")
+
+    /**
+     * Info from [ServerWorld.tick]
+     */
+    fun timeToNighttime(currentTime: Long): Long {
+        val dayLength = 24000L
+        val midnight = 16000L
+        return (currentTime - (currentTime % dayLength)) + midnight
+    }
 
     fun cappedHeal(
         iEntity: IEntity,
