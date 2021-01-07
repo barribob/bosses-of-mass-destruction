@@ -89,6 +89,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
     private val fireballRageStatus: Byte = 10
     private val missileRageStatus: Byte = 11
     private val hpBelowThresholdStatus: Byte = 12
+    private val minionRageStatus: Byte = 13
     private var doIdleAnimation = true
     private val doCometAttackAnimation = BooleanFlag()
     private val doMissileAttackAnimation = BooleanFlag()
@@ -166,6 +167,14 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
         .color { ModColors.WHITE }
         .velocity(VecUtils.yAxis.multiply(RandomUtils.double(0.2) + 0.2))
     private val thresholdParticleBuilder = ParticleFactories.soulFlame().age { 20 }.scale { 0.5f }
+    private val summonRingFactory = ClientParticleBuilder(Particles.SOUL_FLAME)
+        .color { MathUtils.lerpVec(it, ModColors.COMET_BLUE, ModColors.FADED_COMET_BLUE) }
+        .brightness { Particles.FULL_BRIGHT }
+        .colorVariation(0.5)
+        .age { 40 }
+    private val summonRingCompleteFactory = ParticleFactories.soulFlame()
+        .color { ModColors.WHITE }
+        .age { RandomUtils.range(20, 30) }
 
     private val missileThrower = { offset: Vec3d ->
         ProjectileThrower {
@@ -378,7 +387,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
 
     private fun buildMinionRageAction(canContinueAttack: () -> Boolean): IActionWithCooldown {
         val summonMobsAction = IAction {
-            world.sendEntityStatus(this, summonMinionsStatus)
+            world.sendEntityStatus(this, minionRageStatus)
             for (delayTime in delayTimes) {
                 MaelstromMod.serverEventScheduler.addEvent(TimedEvent({ beginSummonSingleMob(canContinueAttack) },
                     delayTime, shouldCancel = { !canContinueAttack() }))
@@ -548,7 +557,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
 
         LichUtils.cappedHeal(iEntity, this, hpPercentRageModes, healingStrength, ::heal)
 
-        if(shouldSetToNighttime) {
+        if (shouldSetToNighttime) {
             serverWorld.timeOfDay = LichUtils.timeToNighttime(serverWorld.timeOfDay)
         }
     }
@@ -590,6 +599,15 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
                 minionSummonParticleDelay,
                 minionSummonDelay - minionSummonParticleDelay,
                 ::shouldCancelAttackAnimation))
+        }
+        if (status == minionRageStatus) {
+            doIdleAnimation = false
+            doRageAnimation.flag()
+            MaelstromMod.clientEventScheduler.addEvent(TimedEvent({
+                animatedParticleMagicCircle(3.0, 30, 0f)
+                animatedParticleMagicCircle(6.0, 60, 120f)
+                animatedParticleMagicCircle(9.0, 90, 240f)
+            }, 10, shouldCancel = ::shouldCancelAttackAnimation))
         }
         if (status == teleportStatus) {
             doIdleAnimation = false
@@ -647,6 +665,21 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
             doIdleAnimation = true
         }
         super.handleStatus(status)
+    }
+
+    private fun animatedParticleMagicCircle(radius: Double, points: Int, rotationDegrees: Float): Vec3d? {
+        val spellPos = pos
+        val circlePoints = MathUtils.circlePoints(radius, points, rotationVector)
+        circlePoints.mapIndexed { index, off ->
+            MaelstromMod.clientEventScheduler.addEvent(TimedEvent({
+                off.rotateY(rotationDegrees)
+                summonRingFactory.build(off.add(spellPos))
+            }, index))
+        }
+        MaelstromMod.clientEventScheduler.addEvent(TimedEvent({
+            circlePoints.map { summonRingCompleteFactory.build(it.add(spellPos)) }
+        }, points))
+        return spellPos
     }
 
     override fun collides(): Boolean {
