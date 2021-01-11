@@ -46,6 +46,7 @@ import net.minecraft.entity.ai.goal.SwimGoal
 import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.entity.boss.BossBar
 import net.minecraft.entity.boss.ServerBossBar
+import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.effect.StatusEffectInstance
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
@@ -744,6 +745,10 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
             this.despawnCounter = 0
         }
     }
+
+    override fun getHurtSound(source: DamageSource): SoundEvent = SoundEvents.ENTITY_WITHER_SKELETON_HURT
+    override fun getDeathSound(): SoundEvent = SoundEvents.ENTITY_WITHER_SKELETON_DEATH
+    override fun getSoundVolume(): Float = 5.0f
 
     override fun fall(
         heightDifference: Double,
