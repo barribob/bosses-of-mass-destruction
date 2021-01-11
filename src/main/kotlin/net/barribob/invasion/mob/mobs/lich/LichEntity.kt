@@ -174,7 +174,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
         .color { MathUtils.lerpVec(it, ModColors.COMET_BLUE, ModColors.FADED_COMET_BLUE) }
         .brightness { Particles.FULL_BRIGHT }
         .colorVariation(0.5)
-        .age { 40 }
+        .age { 10 }
     private val summonRingCompleteFactory = ParticleFactories.soulFlame()
         .color { ModColors.WHITE }
         .age { RandomUtils.range(20, 30) }
@@ -607,9 +607,9 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
             doIdleAnimation = false
             doRageAnimation.flag()
             MaelstromMod.clientEventScheduler.addEvent(TimedEvent({
-                animatedParticleMagicCircle(3.0, 30, 0f)
-                animatedParticleMagicCircle(6.0, 60, 120f)
-                animatedParticleMagicCircle(9.0, 90, 240f)
+                animatedParticleMagicCircle(3.0, 30, 12, 0f)
+                animatedParticleMagicCircle(6.0, 60, 24, 120f)
+                animatedParticleMagicCircle(9.0, 90, 36, 240f)
             }, 10, shouldCancel = ::shouldCancelAttackAnimation))
         }
         if (status == teleportStatus) {
@@ -670,18 +670,19 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
         super.handleStatus(status)
     }
 
-    private fun animatedParticleMagicCircle(radius: Double, points: Int, rotationDegrees: Float): Vec3d? {
+    private fun animatedParticleMagicCircle(radius: Double, points: Int, time: Int, rotationDegrees: Float): Vec3d? {
         val spellPos = pos
         val circlePoints = MathUtils.circlePoints(radius, points, rotationVector)
+        val timeScale = time / points.toFloat()
         circlePoints.mapIndexed { index, off ->
             MaelstromMod.clientEventScheduler.addEvent(TimedEvent({
                 off.rotateY(rotationDegrees)
                 summonRingFactory.build(off.add(spellPos))
-            }, index))
+            }, (index * timeScale).toInt()))
         }
         MaelstromMod.clientEventScheduler.addEvent(TimedEvent({
             circlePoints.map { summonRingCompleteFactory.build(it.add(spellPos)) }
-        }, points))
+        }, (points * timeScale).toInt()))
         return spellPos
     }
 
