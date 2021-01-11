@@ -39,6 +39,7 @@ import net.barribob.maelstrom.general.random.ModRandom
 import net.barribob.maelstrom.static_utilities.*
 import net.minecraft.block.BlockState
 import net.minecraft.entity.Entity
+import net.minecraft.entity.EntityGroup
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.ai.goal.SwimGoal
@@ -54,6 +55,7 @@ import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.util.registry.Registry
+import net.minecraft.world.Difficulty
 import net.minecraft.world.World
 import software.bernie.geckolib3.core.PlayState
 import software.bernie.geckolib3.core.builder.AnimationBuilder
@@ -730,6 +732,18 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
     private fun shouldCancelAttackAnimation() = !isAlive || doIdleAnimation
 
     override fun handleFallDamage(fallDistance: Float, damageMultiplier: Float): Boolean = false
+    override fun getGroup(): EntityGroup = EntityGroup.UNDEAD
+
+    override fun checkDespawn() = preventDespawnExceptPeaceful()
+    override fun isDisallowedInPeaceful() = true
+
+    private fun preventDespawnExceptPeaceful() {
+        if (world.difficulty == Difficulty.PEACEFUL && this.isDisallowedInPeaceful) {
+            this.remove()
+        } else {
+            this.despawnCounter = 0
+        }
+    }
 
     override fun fall(
         heightDifference: Double,
