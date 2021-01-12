@@ -13,8 +13,10 @@ import net.minecraft.client.render.entity.EntityRenderer
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.client.util.math.Vector3f
 import net.minecraft.entity.Entity
+import net.minecraft.entity.ExperienceOrbEntity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.MovementType
+import net.minecraft.entity.boss.dragon.EnderDragonEntity
 import net.minecraft.entity.mob.CreeperEntity
 import net.minecraft.entity.mob.FlyingEntity
 import net.minecraft.entity.mob.MobEntity
@@ -178,5 +180,17 @@ object VanillaCopies {
      */
     fun getEntityDestructionType(world: World): DestructionType {
         return if (world.gameRules.getBoolean(GameRules.DO_MOB_GRIEFING)) DestructionType.DESTROY else DestructionType.NONE
+    }
+
+    /**
+     * Adapted from [EnderDragonEntity.awardExperience]
+     */
+    fun awardExperience(amount: Int, pos: Vec3d, world: World) {
+        var amt = amount
+        while (amt > 0) {
+            val i = ExperienceOrbEntity.roundToOrbSize(amt)
+            amt -= i
+            world.spawnEntity(ExperienceOrbEntity(world, pos.x, pos.y, pos.z, i))
+        }
     }
 }

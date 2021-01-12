@@ -2,15 +2,21 @@ package net.barribob.invasion.utils
 
 import io.netty.buffer.Unpooled
 import net.barribob.invasion.Invasions
+import net.fabricmc.api.EnvType
+import net.fabricmc.api.Environment
 import net.fabricmc.fabric.api.network.PacketContext
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry
+import net.fabricmc.fabric.api.server.PlayerStream
 import net.minecraft.entity.Entity
 import net.minecraft.network.Packet
 import net.minecraft.network.PacketByteBuf
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket
+import net.minecraft.util.math.Vec3d
+import net.minecraft.world.World
 
 object NetworkUtils {
     val SPAWN_ENTITY_PACKET_ID = Invasions.identifier("spawn_entity")
+    val CLIENT_TEST_PACKET_ID = Invasions.identifier("client_test")
 
     private fun packSpawnClientEntity(packet: EntitySpawnS2CPacket): PacketByteBuf {
         val packetData = PacketByteBuf(Unpooled.buffer())
@@ -29,5 +35,23 @@ object NetworkUtils {
         packet.read(buf)
 
         packetContext.taskQueue.execute { VanillaCopies.handleClientSpawnEntity(packetContext, packet) }
+    }
+
+    fun testClient(world: World, watchPoint: Vec3d) {
+        val packetData = PacketByteBuf(Unpooled.buffer())
+        PlayerStream.around(world, watchPoint, 100.0).forEach {
+            ServerSidePacketRegistry.INSTANCE.sendToPlayer(
+                it,
+                CLIENT_TEST_PACKET_ID,
+                packetData
+            )
+        }
+    }
+
+    @Environment(EnvType.CLIENT)
+    fun handleTestClient(packetContext: PacketContext, packetData: PacketByteBuf) {
+        packetContext.taskQueue.execute {
+            InGameTests.testClientCallback(packetContext)
+        }
     }
 }

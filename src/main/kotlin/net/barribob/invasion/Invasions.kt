@@ -32,6 +32,7 @@ fun init() {
     MaelstromMod.testCommand.addId(InGameTests::throwProjectile.name, InGameTests::throwProjectile)
     MaelstromMod.testCommand.addId(InGameTests::axisOffset.name, InGameTests::axisOffset)
     MaelstromMod.testCommand.addId(InGameTests::spawnEntity.name, InGameTests::spawnEntity)
+    MaelstromMod.testCommand.addId(InGameTests::testClient.name, InGameTests::testClient)
 
     GeckoLib.initialize()
 
@@ -46,6 +47,7 @@ fun clientInit() {
     val animationTimer = PauseAnimationTimer({ GlfwUtil.getTime() * 20 }, { MinecraftClient.getInstance().isPaused })
 
     ClientSidePacketRegistry.INSTANCE.register(NetworkUtils.SPAWN_ENTITY_PACKET_ID, NetworkUtils::handleSpawnClientEntity)
+    ClientSidePacketRegistry.INSTANCE.register(NetworkUtils.CLIENT_TEST_PACKET_ID, NetworkUtils::handleTestClient)
 
     Entities.clientInit(animationTimer)
     Particles.clientInit()

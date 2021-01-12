@@ -38,10 +38,7 @@ import net.barribob.maelstrom.general.io.config.IConfig
 import net.barribob.maelstrom.general.random.ModRandom
 import net.barribob.maelstrom.static_utilities.*
 import net.minecraft.block.BlockState
-import net.minecraft.entity.Entity
-import net.minecraft.entity.EntityGroup
-import net.minecraft.entity.EntityType
-import net.minecraft.entity.LivingEntity
+import net.minecraft.entity.*
 import net.minecraft.entity.ai.goal.SwimGoal
 import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.entity.boss.BossBar
@@ -78,6 +75,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
     private val summonNbt = NbtUtils.readDefaultNbt(Invasions.LOGGER, mobConfig.getConfig("summon.summon_nbt"))
     private val summonEntityType = Registry.ENTITY_TYPE[Identifier(summonId)]
     val shouldSetToNighttime = mobConfig.getBoolean("eternal_nighttime")
+    private val experienceDrop = mobConfig.getInt("experience_drop")
 
     val velocityHistory = HistoricalData(Vec3d.ZERO)
     private val positionalHistory = HistoricalData(Vec3d.ZERO, 10)
@@ -168,8 +166,11 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
         .age { RandomUtils.range(0, 7) }
     private val minionSummonParticleBuilder = ParticleFactories.soulFlame()
         .color { ModColors.WHITE }
-        .velocity(VecUtils.yAxis.multiply(RandomUtils.double(0.2) + 0.2))
-    private val thresholdParticleBuilder = ParticleFactories.soulFlame().age { 20 }.scale { 0.5f }
+        .velocity{ VecUtils.yAxis.multiply(RandomUtils.double(0.2) + 0.2) }
+    private val thresholdParticleBuilder = ParticleFactories.soulFlame()
+        .age { 20 }
+        .scale { 0.5f }
+        .velocity{ RandomUtils.randVec() }
     private val summonRingFactory = ClientParticleBuilder(Particles.SOUL_FLAME)
         .color { MathUtils.lerpVec(it, ModColors.COMET_BLUE, ModColors.FADED_COMET_BLUE) }
         .brightness { Particles.FULL_BRIGHT }
@@ -178,6 +179,12 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
     private val summonRingCompleteFactory = ParticleFactories.soulFlame()
         .color { ModColors.WHITE }
         .age { RandomUtils.range(20, 30) }
+    private val deathParticleFactory = ParticleFactories.soulFlame()
+        .color { MathUtils.lerpVec(it, ModColors.COMET_BLUE, ModColors.FADED_COMET_BLUE) }
+        .age { RandomUtils.range(40, 80) }
+        .velocity { RandomUtils.randVec() }
+        .colorVariation(0.5)
+        .scale { 0.5f - (it * 0.3f) }
 
     private val missileThrower = { offset: Vec3d ->
         ProjectileThrower {
@@ -660,12 +667,18 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
         if (status == hpBelowThresholdStatus) {
             for (i in 0 until 20) {
                 thresholdParticleBuilder
-                    .velocity(RandomUtils.randVec())
                     .build(eyePos())
             }
         }
         if (status == stopAttackStatus) {
             doIdleAnimation = true
+        }
+        if (status.toInt() == 3) { // Death status
+            MaelstromMod.clientEventScheduler.addEvent(TimedEvent({
+                for(i in 0..4) {
+                    deathParticleFactory.build(eyePos())
+                }
+            }, 0, 10))
         }
         super.handleStatus(status)
     }
@@ -738,6 +751,15 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
 
     override fun checkDespawn() = preventDespawnExceptPeaceful()
     override fun isDisallowedInPeaceful() = true
+
+    override fun onDeath(source: DamageSource?) {
+        val expTicks = 20
+        val expPerTick = (experienceDrop / expTicks.toFloat()).toInt()
+        MaelstromMod.serverEventScheduler.addEvent(TimedEvent({
+            VanillaCopies.awardExperience(expPerTick, eyePos(), world)
+        }, 0, expTicks))
+        super.onDeath(source)
+    }
 
     private fun preventDespawnExceptPeaceful() {
         if (world.difficulty == Difficulty.PEACEFUL && this.isDisallowedInPeaceful) {

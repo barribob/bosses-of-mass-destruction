@@ -6,15 +6,15 @@ import net.minecraft.particle.ParticleEffect
 import net.minecraft.util.math.Vec3d
 
 class ClientParticleBuilder(private val effect: ParticleEffect) {
-    private var vel: Vec3d = Vec3d.ZERO
+    private var getVel: () -> Vec3d = { Vec3d.ZERO }
     private var color: ((Float) -> Vec3d)? = null
     private var brightness: ((Float) -> Int)? = null
     private var scale: ((Float) -> Float)? = null
     private var age: (() -> Int)? = null
     private var colorVariation: Double = 0.0
 
-    fun velocity(velocity: Vec3d): ClientParticleBuilder {
-        this.vel = velocity
+    fun velocity(velocity: () -> Vec3d): ClientParticleBuilder {
+        this.getVel = velocity
         return this
     }
 
@@ -47,6 +47,7 @@ class ClientParticleBuilder(private val effect: ParticleEffect) {
         val client = MinecraftClient.getInstance()
         val camera: Camera = client.gameRenderer.camera
         if (client != null && camera.isReady && client.particleManager != null) {
+            val vel = getVel()
             val particle = client.particleManager.addParticle(effect, pos.x, pos.y, pos.z, vel.x, vel.y, vel.z)
                 ?: return
 

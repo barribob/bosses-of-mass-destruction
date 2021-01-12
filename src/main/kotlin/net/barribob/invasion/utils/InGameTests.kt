@@ -2,11 +2,16 @@ package net.barribob.invasion.utils
 
 import net.barribob.invasion.Invasions
 import net.barribob.invasion.mob.spawn.*
+import net.barribob.invasion.particle.ParticleFactories
 import net.barribob.invasion.projectile.MagicMissileProjectile
+import net.barribob.maelstrom.MaelstromMod
+import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.general.random.ModRandom
 import net.barribob.maelstrom.static_utilities.ClientServerUtils
 import net.barribob.maelstrom.static_utilities.MathUtils
+import net.barribob.maelstrom.static_utilities.RandomUtils
 import net.barribob.maelstrom.static_utilities.VecUtils
+import net.fabricmc.fabric.api.network.PacketContext
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.LivingEntity
 import net.minecraft.nbt.CompoundTag
@@ -51,5 +56,24 @@ object InGameTests {
             SimpleMobSpawner(serverWorld)
         )
         spawner.tryPlacement(10)
+    }
+
+    fun testClient(source: ServerCommandSource) {
+        NetworkUtils.testClient(source.world, source.position)
+    }
+
+    fun testClientCallback(packetContext: PacketContext) {
+        val deathParticleFactory = ParticleFactories.soulFlame()
+            .color { MathUtils.lerpVec(it, ModColors.COMET_BLUE, ModColors.FADED_COMET_BLUE) }
+            .age { RandomUtils.range(40, 80) }
+            .velocity { RandomUtils.randVec() }
+            .colorVariation(0.5)
+            .scale { 0.5f - (it * 0.3f) }
+
+        MaelstromMod.clientEventScheduler.addEvent(TimedEvent({
+            for(i in 0..4) {
+                deathParticleFactory.build(packetContext.player.pos)
+            }
+        }, 0, 10))
     }
 }
