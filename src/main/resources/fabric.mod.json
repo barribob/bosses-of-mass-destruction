@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "maelstrom_invasions",
+  "id": "bosses_of_mass_destruction",
   "version": "${version}",
 
   "name": "Into the Maelstrom: Invasions",
@@ -15,15 +15,15 @@
   },
 
   "license": "",
-  "icon": "assets/invasion/icon.png",
+  "icon": "assets/bosses_of_mass_destruction/icon.png",
 
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.barribob.invasion.InvasionsKt::init"
+      "net.barribob.boss.MainKt::init"
     ],
     "client": [
-      "net.barribob.invasion.InvasionsKt::clientInit"
+      "net.barribob.boss.MainKt::clientInit"
     ]
   },
   "mixins": [
