@@ -1,50 +1,50 @@
 {
   "comet_shoot": {
-    "subtitle": "subtitles.maelstrom_invasions.comet_shoot",
+    "subtitle": "subtitles.bosses_of_mass_destruction.comet_shoot",
     "sounds": [
-      "maelstrom_invasions:comet_shoot"
+      "bosses_of_mass_destruction:comet_shoot"
     ]
   },
   "comet_prepare": {
-    "subtitle": "subtitles.maelstrom_invasions.comet_prepare",
+    "subtitle": "subtitles.bosses_of_mass_destruction.comet_prepare",
     "sounds": [
-      "maelstrom_invasions:comet_prepare"
+      "bosses_of_mass_destruction:comet_prepare"
     ]
   },
   "missile_shoot": {
-    "subtitle": "subtitles.maelstrom_invasions.missile_shoot",
+    "subtitle": "subtitles.bosses_of_mass_destruction.missile_shoot",
     "sounds": [
-      "maelstrom_invasions:missile_shoot"
+      "bosses_of_mass_destruction:missile_shoot"
     ]
   },
   "missile_prepare": {
-    "subtitle": "subtitles.maelstrom_invasions.missile_prepare",
+    "subtitle": "subtitles.bosses_of_mass_destruction.missile_prepare",
     "sounds": [
-      "maelstrom_invasions:missile_prepare"
+      "bosses_of_mass_destruction:missile_prepare"
     ]
   },
   "teleport_prepare": {
-    "subtitle": "subtitles.maelstrom_invasions.teleport_prepare",
+    "subtitle": "subtitles.bosses_of_mass_destruction.teleport_prepare",
     "sounds": [
-      "maelstrom_invasions:teleport_prepare"
+      "bosses_of_mass_destruction:teleport_prepare"
     ]
   },
   "minion_rune": {
-    "subtitle": "subtitles.maelstrom_invasions.minion_rune",
+    "subtitle": "subtitles.bosses_of_mass_destruction.minion_rune",
     "sounds": [
-      "maelstrom_invasions:minion_rune"
+      "bosses_of_mass_destruction:minion_rune"
     ]
   },
   "minion_summon": {
-    "subtitle": "subtitles.maelstrom_invasions.minion_summon",
+    "subtitle": "subtitles.bosses_of_mass_destruction.minion_summon",
     "sounds": [
-      "maelstrom_invasions:minion_summon"
+      "bosses_of_mass_destruction:minion_summon"
     ]
   },
   "rage_prepare": {
-    "subtitle": "subtitles.maelstrom_invasions.rage_prepare",
+    "subtitle": "subtitles.bosses_of_mass_destruction.rage_prepare",
     "sounds": [
-      "maelstrom_invasions:rage_prepare"
+      "bosses_of_mass_destruction:rage_prepare"
     ]
   }
 }
