@@ -10,6 +10,7 @@ class ProjectileThrower(val projectileProvider: () -> ProjectileData) {
         val direction = target.subtract(projectileData.projectile.pos)
         val h = MathHelper.sqrt(direction.x * direction.x + direction.z * direction.z) * projectileData.gravityCompensation
         projectileData.projectile.setVelocity(direction.x, direction.y + h, direction.z, projectileData.speed, projectileData.divergence)
+        projectileData.projectile.world.spawnEntity(projectileData.projectile)
     }
 }
 

@@ -196,7 +196,6 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
                 }
             }, listOf(summonEntityType))
             projectile.setPos(eyePos().add(offset))
-            world.spawnEntity(projectile)
             ProjectileData(projectile, 1.6f, 0f)
         }
     }
@@ -212,7 +211,6 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
                     VanillaCopies.getEntityDestructionType(world))
             }, listOf(summonEntityType))
             projectile.setPos(eyePos().add(offset))
-            world.spawnEntity(projectile)
             ProjectileData(projectile, 1.6f, 0f)
         }
     }
