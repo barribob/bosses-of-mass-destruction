@@ -50,6 +50,8 @@ class SimpleLivingGeoRenderer<T>(
         light: Int,
     ) {
         renderer?.render(entity, yaw, tickDelta, matrices, vertexConsumers, light)
+        matrices.push()
         super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light)
+        matrices.pop()
     }
 }

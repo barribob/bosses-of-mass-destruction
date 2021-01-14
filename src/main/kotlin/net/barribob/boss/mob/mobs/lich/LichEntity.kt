@@ -47,6 +47,7 @@ import net.minecraft.entity.boss.BossBar
 import net.minecraft.entity.boss.ServerBossBar
 import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.effect.StatusEffectInstance
+import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvent
@@ -247,15 +248,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
             goalSelector.add(3, CompositeGoal(listOf(buildAttackGoal(), buildAttackMovement())))
             goalSelector.add(4, buildWanderGoal())
 
-            targetSelector.add(
-                2, FindTargetGoal(
-                    this,
-                    LivingEntity::class.java,
-                    { boundingBox.expand(it) },
-                    targetPredicate = {
-                        it.registryId != summonId && it.registryId != registryId
-                    }
-                )
+            targetSelector.add(2, FindTargetGoal(this, PlayerEntity::class.java, { boundingBox.expand(it) })
             )
         }
     }
