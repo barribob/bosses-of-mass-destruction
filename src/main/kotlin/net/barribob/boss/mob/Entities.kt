@@ -36,7 +36,7 @@ object Entities {
 
     val MAGIC_MISSILE: EntityType<MagicMissileProjectile> = Registry.register(
         Registry.ENTITY_TYPE,
-        Mod.identifier("magic_missile"),
+        Mod.identifier("blue_fireball"),
         FabricEntityTypeBuilder.create(SpawnGroup.MISC, ::MagicMissileProjectile)
             .dimensions(EntityDimensions.fixed(0.25f, 0.25f)).build()
     )
