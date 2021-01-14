@@ -2,6 +2,7 @@ package net.barribob.boss.mob.utils
 
 import net.barribob.boss.Mod
 import net.barribob.boss.mob.damage.IDamageHandler
+import net.barribob.maelstrom.general.event.EventScheduler
 import net.barribob.maelstrom.general.io.config.IConfig
 import net.barribob.maelstrom.static_utilities.NbtUtils
 import net.minecraft.entity.EntityType
@@ -26,6 +27,7 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
     var idlePosition: Vec3d = Vec3d.ZERO // TODO: I don't actually know if this implementation works
     protected open val bossBar: ServerBossBar? = null
     protected open val damageHandler: IDamageHandler? = null
+    protected val eventScheduler = EventScheduler()
 
     init {
         val nbtKey = "default_nbt"
@@ -36,6 +38,7 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
     }
 
     final override fun tick() {
+        eventScheduler.updateEvents()
         if (idlePosition == Vec3d.ZERO) idlePosition = pos
         if (world.isClient) {
             clientTick()

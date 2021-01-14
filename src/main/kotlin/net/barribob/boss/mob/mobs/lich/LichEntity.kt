@@ -30,7 +30,6 @@ import net.barribob.boss.utils.ModUtils.playSound
 import net.barribob.boss.utils.ModUtils.spawnParticle
 import net.barribob.boss.utils.VanillaCopies
 import net.barribob.boss.utils.VanillaCopies.lookAtTarget
-import net.barribob.maelstrom.MaelstromMod
 import net.barribob.maelstrom.general.data.BooleanFlag
 import net.barribob.maelstrom.general.data.HistoricalData
 import net.barribob.maelstrom.general.event.TimedEvent
@@ -38,7 +37,10 @@ import net.barribob.maelstrom.general.io.config.IConfig
 import net.barribob.maelstrom.general.random.ModRandom
 import net.barribob.maelstrom.static_utilities.*
 import net.minecraft.block.BlockState
-import net.minecraft.entity.*
+import net.minecraft.entity.Entity
+import net.minecraft.entity.EntityGroup
+import net.minecraft.entity.EntityType
+import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.ai.goal.SwimGoal
 import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.entity.boss.BossBar
@@ -320,7 +322,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
                 world.sendEntityStatus(this, missileRageStatus)
                 playVolleyPrepareSound()
                 for (i in 0 until rageMissileVolleys) {
-                    MaelstromMod.serverEventScheduler.addEvent(TimedEvent({
+                    eventScheduler.addEvent(TimedEvent({
                         val target = it.boundingBox.center
                         for (offset in getRageMissileVolleys()[i]) {
                             missileThrower(offset).throwProjectile(target.add(offset))
@@ -341,7 +343,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
         val readyCometsAction = IAction {
             target?.let {
                 for ((i, offset) in getRageCometOffsets().withIndex()) {
-                    MaelstromMod.serverEventScheduler.addEvent(TimedEvent({
+                    eventScheduler.addEvent(TimedEvent({
                         val target = it.boundingBox.center
                         cometThrower(offset).throwProjectile(target)
                         playCometLaunchSound()
@@ -368,10 +370,10 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
                     { pos, entity -> spawnPredicate.canSpawn(pos, entity) && inLineOfSight(pos, EntityAdapter(it)) },
                     { pos, entity ->
                         world.sendEntityStatus(this, teleportStatus)
-                        MaelstromMod.serverEventScheduler.addEvent(TimedEvent({
+                        eventScheduler.addEvent(TimedEvent({
                             playBeginTeleportSound()
                             collides = false
-                            MaelstromMod.serverEventScheduler.addEvent(TimedEvent({
+                            eventScheduler.addEvent(TimedEvent({
                                 entity.refreshPositionAndAngles(pos.x, pos.y, pos.z, yaw, pitch)
                                 world.sendEntityStatus(this, successfulTeleportStatus)
                                 playTeleportSound()
@@ -397,7 +399,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
         val summonMobsAction = IAction {
             world.sendEntityStatus(this, minionRageStatus)
             for (delayTime in delayTimes) {
-                MaelstromMod.serverEventScheduler.addEvent(TimedEvent({ beginSummonSingleMob(canContinueAttack) },
+                eventScheduler.addEvent(TimedEvent({ beginSummonSingleMob(canContinueAttack) },
                     delayTime, shouldCancel = { !canContinueAttack() }))
             }
         }
@@ -408,7 +410,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
     private fun buildMinionAction(canContinueAttack: () -> Boolean): IActionWithCooldown {
         val summonMobsAction = IAction {
             world.sendEntityStatus(this, summonMinionsStatus)
-            MaelstromMod.serverEventScheduler.addEvent(
+            eventScheduler.addEvent(
                 TimedEvent({ beginSummonSingleMob(canContinueAttack) },
                     minionSummonDelay,
                     shouldCancel = { !canContinueAttack() }))
@@ -431,7 +433,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
                 mobSpawner.spawn(pos, entity)
                 playMinionSummonSound(entity)
             }
-            MaelstromMod.serverEventScheduler.addEvent(
+            eventScheduler.addEvent(
                 TimedEvent(spawnMobWithEffect, minionRuneToMinionSpawnDelay, shouldCancel = { !canContinueAttack() }))
         }
 
@@ -457,10 +459,10 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
         }
 
         val readyMissilesAction = {
-            MaelstromMod.serverEventScheduler.addEvent(TimedEvent(throwMissilesAction,
+            eventScheduler.addEvent(TimedEvent(throwMissilesAction,
                 missileThrowDelay, shouldCancel = { !canContinueAttack() }))
             world.sendEntityStatus(this, summonMissileStatus)
-            MaelstromMod.serverEventScheduler.addEvent(
+            eventScheduler.addEvent(
                 TimedEvent(::playVolleyPrepareSound, 10, shouldCancel = { !canContinueAttack() }))
         }
 
@@ -474,11 +476,11 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
         }
 
         val readyCometAction = {
-            MaelstromMod.serverEventScheduler.addEvent(TimedEvent(throwCometAction,
+            eventScheduler.addEvent(TimedEvent(throwCometAction,
                 cometThrowDelay,
                 shouldCancel = { !canContinueAttack() }))
             world.sendEntityStatus(this, summonCometStatus)
-            MaelstromMod.serverEventScheduler.addEvent(
+            eventScheduler.addEvent(
                 TimedEvent(::playCometPrepareSound, 10, shouldCancel = { !canContinueAttack() }))
         }
 
@@ -574,7 +576,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
         if (status == summonCometStatus) {
             doIdleAnimation = false
             doCometAttackAnimation.flag()
-            MaelstromMod.clientEventScheduler.addEvent(
+            eventScheduler.addEvent(
                 TimedEvent({ summonCometParticleBuilder.build(eyePos().add(getCometLaunchPosition())) },
                     cometParticleSummonDelay,
                     cometThrowDelay - cometParticleSummonDelay,
@@ -583,7 +585,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
         if (status == summonMissileStatus) {
             doIdleAnimation = false
             doMissileAttackAnimation.flag()
-            MaelstromMod.clientEventScheduler.addEvent(
+            eventScheduler.addEvent(
                 TimedEvent({
                     for (offset in getMissileLaunchOffsets()) {
                         summonMissileParticleBuilder.build(eyePos().add(offset))
@@ -596,7 +598,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
         if (status == summonMinionsStatus) {
             doIdleAnimation = false
             doMinionAttackAnimation.flag()
-            MaelstromMod.clientEventScheduler.addEvent(TimedEvent({
+            eventScheduler.addEvent(TimedEvent({
                 minionSummonParticleBuilder.build(eyePos()
                     .add(VecUtils.yAxis.multiply(1.0))
                     .add(RandomUtils.randVec()
@@ -611,7 +613,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
         if (status == minionRageStatus) {
             doIdleAnimation = false
             doRageAnimation.flag()
-            MaelstromMod.clientEventScheduler.addEvent(TimedEvent({
+            eventScheduler.addEvent(TimedEvent({
                 animatedParticleMagicCircle(3.0, 30, 12, 0f)
                 animatedParticleMagicCircle(6.0, 60, 24, 120f)
                 animatedParticleMagicCircle(9.0, 90, 36, 240f)
@@ -620,7 +622,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
         if (status == teleportStatus) {
             doIdleAnimation = false
             doTeleportAnimation.flag()
-            MaelstromMod.clientEventScheduler.addEvent(
+            eventScheduler.addEvent(
                 TimedEvent(::spawnTeleportParticles,
                     beginTeleportParticleDelay,
                     teleportParticleDuration,
@@ -628,7 +630,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
         }
         if (status == successfulTeleportStatus) {
             doEndTeleportAnimation.flag()
-            MaelstromMod.clientEventScheduler.addEvent(
+            eventScheduler.addEvent(
                 TimedEvent(::spawnTeleportParticles, 1, teleportParticleDuration, ::shouldCancelAttackAnimation))
         }
         if (status == fireballRageStatus) {
@@ -636,12 +638,12 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
             doRageAnimation.flag()
             val numComets = getRageCometOffsets().size
             for (i in 0 until numComets) {
-                MaelstromMod.clientEventScheduler.addEvent(TimedEvent({
+                eventScheduler.addEvent(TimedEvent({
                     val cometOffset = getRageCometOffsets()[i]
                     summonCometParticleBuilder.build(cometOffset.add(eyePos()))
                 }, i * delayBetweenRageComets, initialRageCometDelay, ::shouldCancelAttackAnimation))
             }
-            MaelstromMod.clientEventScheduler.addEvent(TimedEvent({
+            eventScheduler.addEvent(TimedEvent({
                 MathUtils.circleCallback(3.0, 72, rotationVector) {
                     flameRingFactory.build(it.add(eyePos()))
                 }
@@ -652,7 +654,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
             doRageAnimation.flag()
             val numVolleys = getRageMissileVolleys().size
             for (i in 0 until numVolleys) {
-                MaelstromMod.clientEventScheduler.addEvent(TimedEvent({
+                eventScheduler.addEvent(TimedEvent({
                     for (offset in getRageMissileVolleys()[i]) {
                         summonMissileParticleBuilder.build(eyePos().add(offset))
                     }
@@ -672,7 +674,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
             doIdleAnimation = true
         }
         if (status.toInt() == 3) { // Death status
-            MaelstromMod.clientEventScheduler.addEvent(TimedEvent({
+            eventScheduler.addEvent(TimedEvent({
                 for(i in 0..4) {
                     deathParticleFactory.build(eyePos())
                 }
@@ -686,12 +688,12 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
         val circlePoints = MathUtils.circlePoints(radius, points, rotationVector)
         val timeScale = time / points.toFloat()
         circlePoints.mapIndexed { index, off ->
-            MaelstromMod.clientEventScheduler.addEvent(TimedEvent({
+            eventScheduler.addEvent(TimedEvent({
                 off.rotateY(rotationDegrees)
                 summonRingFactory.build(off.add(spellPos))
             }, (index * timeScale).toInt()))
         }
-        MaelstromMod.clientEventScheduler.addEvent(TimedEvent({
+        eventScheduler.addEvent(TimedEvent({
             circlePoints.map { summonRingCompleteFactory.build(it.add(spellPos)) }
         }, (points * timeScale).toInt()))
         return spellPos
@@ -751,9 +753,9 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
     override fun isDisallowedInPeaceful() = true
 
     override fun onDeath(source: DamageSource?) {
-        val expTicks = 20
+        val expTicks = 18
         val expPerTick = (experienceDrop / expTicks.toFloat()).toInt()
-        MaelstromMod.serverEventScheduler.addEvent(TimedEvent({
+        eventScheduler.addEvent(TimedEvent({
             VanillaCopies.awardExperience(expPerTick, eyePos(), world)
         }, 0, expTicks))
         super.onDeath(source)
