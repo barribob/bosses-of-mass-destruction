@@ -43,7 +43,7 @@ class LichMoveLogic(
         val damage = damageHistory.getAll()
         val hasBeenRapidlyDamaged = damage.size > 2 && damage.last() - damage.first() < 60
         val teleportWeight = 0.0 +
-                (if (inLineOfSight(actor.getPos(), target)) 0.0 else 4.0) +
+                (if (inLineOfSight(actor.getEyePos(), target)) 0.0 else 4.0) +
                 (if (distanceTraveled > 0.25) 0.0 else 8.0) +
                 (if (actor.getPos().distanceTo(target.getPos()) < 6.0) 8.0 else 0.0) +
                 (if (hasBeenRapidlyDamaged) 8.0 else 0.0)
