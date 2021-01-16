@@ -3,8 +3,8 @@
   "id": "bosses_of_mass_destruction",
   "version": "${version}",
 
-  "name": "Into the Maelstrom: Invasions",
-  "description": "",
+  "name": "Bosses of Mass Destruction (Alpha)",
+  "description": "Adds high threat mobs for players to take on.",
   "authors": [
     "Barribob"
   ],
@@ -27,7 +27,7 @@
     ]
   },
   "mixins": [
-    "invasions.mixins.json"
+    "bosses.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.7.1",
