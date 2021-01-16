@@ -1,6 +1,7 @@
 package net.barribob.boss.mob.mobs.lich
 
 import net.barribob.boss.Mod
+import net.barribob.boss.config.LichConfig
 import net.barribob.boss.mob.ai.BossVisibilityCache
 import net.barribob.boss.mob.ai.ValidatedTargetSelector
 import net.barribob.boss.mob.ai.VelocitySteering
@@ -33,7 +34,6 @@ import net.barribob.boss.utils.VanillaCopies.lookAtTarget
 import net.barribob.maelstrom.general.data.BooleanFlag
 import net.barribob.maelstrom.general.data.HistoricalData
 import net.barribob.maelstrom.general.event.TimedEvent
-import net.barribob.maelstrom.general.io.config.IConfig
 import net.barribob.maelstrom.general.random.ModRandom
 import net.barribob.maelstrom.static_utilities.*
 import net.minecraft.block.BlockState
@@ -48,6 +48,7 @@ import net.minecraft.entity.boss.ServerBossBar
 import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.effect.StatusEffectInstance
 import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.nbt.StringNbtReader
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvent
@@ -63,22 +64,22 @@ import software.bernie.geckolib3.core.builder.AnimationBuilder
 import software.bernie.geckolib3.core.controller.AnimationController
 import software.bernie.geckolib3.core.manager.AnimationData
 
-class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig: IConfig) : BaseEntity(
+class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig: LichConfig) : BaseEntity(
     entityType,
     world,
-    mobConfig
+    mobConfig.defaultNbt
 ) {
-    private val cometExplosionStrength = mobConfig.getFloat("comet_explosion_strength")
+    private val cometExplosionStrength = mobConfig.cometExplosionStrength
     private val missileStatusEffect =
-        Registry.STATUS_EFFECT.getOrEmpty(Identifier(mobConfig.getString("missile.status_effect_id")))
-    private val missileStatusDuration = mobConfig.getInt("missile.status_effect_duration")
-    private val missileStatusPotency = mobConfig.getInt("missile.status_effect_potency")
-    private val healingStrength = mobConfig.getFloat("idle_healing_per_tick")
-    private val summonId = mobConfig.getString("summon.mob_id")
-    private val summonNbt = NbtUtils.readDefaultNbt(Mod.LOGGER, mobConfig.getConfig("summon.summon_nbt"))
+        Registry.STATUS_EFFECT.getOrEmpty(Identifier(mobConfig.missile.statusEffectId))
+    private val missileStatusDuration = mobConfig.missile.statusEffectDuration
+    private val missileStatusPotency = mobConfig.missile.statusEffectPotency
+    private val healingStrength = mobConfig.idleHealingPerTick
+    private val summonId = mobConfig.summon.mobId
+    private val summonNbt = StringNbtReader.parse(mobConfig.summon.summonNbt)
     private val summonEntityType = Registry.ENTITY_TYPE[Identifier(summonId)]
-    val shouldSetToNighttime = mobConfig.getBoolean("eternal_nighttime")
-    private val experienceDrop = mobConfig.getInt("experience_drop")
+    val shouldSetToNighttime = mobConfig.eternalNightime
+    private val experienceDrop = mobConfig.experienceDrop
 
     val velocityHistory = HistoricalData(Vec3d.ZERO)
     private val positionalHistory = HistoricalData(Vec3d.ZERO, 10)
@@ -558,7 +559,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
     override fun serverTick(serverWorld: ServerWorld) {
         positionalHistory.set(pos)
 
-        LichUtils.cappedHeal(iEntity, this, hpPercentRageModes, healingStrength, ::heal)
+        LichUtils.cappedHeal(iEntity, EntityStats(this), hpPercentRageModes, healingStrength, ::heal)
 
         if (shouldSetToNighttime) {
             serverWorld.timeOfDay = LichUtils.timeToNighttime(serverWorld.timeOfDay)

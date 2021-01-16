@@ -1,8 +1,10 @@
 package net.barribob.boss.mob
 
+import me.sargunvohra.mcmods.autoconfig1u.AutoConfig
 import net.barribob.boss.Mod
 import net.barribob.boss.animation.IAnimationTimer
 import net.barribob.boss.animation.PauseAnimationTimer
+import net.barribob.boss.config.ModConfig
 import net.barribob.boss.mob.mobs.lich.*
 import net.barribob.boss.mob.utils.SimpleLivingGeoRenderer
 import net.barribob.boss.particle.ParticleFactories
@@ -10,9 +12,7 @@ import net.barribob.boss.projectile.MagicMissileProjectile
 import net.barribob.boss.projectile.comet.CometCodeAnimations
 import net.barribob.boss.projectile.comet.CometProjectile
 import net.barribob.boss.render.*
-import net.barribob.maelstrom.MaelstromMod
 import net.barribob.maelstrom.general.data.WeakHashPredicate
-import net.barribob.maelstrom.general.io.config.IConfig
 import net.barribob.maelstrom.static_utilities.RandomUtils
 import net.fabricmc.fabric.api.`object`.builder.v1.entity.FabricDefaultAttributeRegistry
 import net.fabricmc.fabric.api.`object`.builder.v1.entity.FabricEntityTypeBuilder
@@ -26,12 +26,14 @@ import net.minecraft.entity.EntityType
 import net.minecraft.entity.SpawnGroup
 import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.entity.mob.HostileEntity
-import net.minecraft.util.Identifier
 import net.minecraft.util.registry.Registry
 import net.minecraft.world.World
 
 object Entities {
-    val LICH: EntityType<LichEntity> = registerConfiguredMob("lich", ::LichEntity)
+    private val mobConfig = AutoConfig.getConfigHolder(ModConfig::class.java).config
+
+    val LICH: EntityType<LichEntity> = registerConfiguredMob("lich",
+        { type, world -> LichEntity(type, world, mobConfig.lichConfig) })
     { it.dimensions(EntityDimensions.fixed(1.8f, 3.0f)) }
 
     val MAGIC_MISSILE: EntityType<MagicMissileProjectile> = Registry.register(
@@ -50,17 +52,12 @@ object Entities {
 
     private fun <T : Entity> registerConfiguredMob(
         name: String,
-        factory: (EntityType<T>, World, IConfig) -> T,
+        factory: (EntityType<T>, World) -> T,
         augment: (FabricEntityTypeBuilder<T>) -> FabricEntityTypeBuilder<T>,
     ): EntityType<T> {
-        val identifier = Mod.identifier(name)
-        val mobsConfig = MaelstromMod.configRegistry.getConfig(Identifier(Mod.MODID, "mobs"))
-        if (!mobsConfig.hasPath(identifier.path)) {
-            throw Exception("The mob config is missing an entry for ${identifier.path}")
-        }
         val builder = FabricEntityTypeBuilder.create(SpawnGroup.MONSTER)
-        { type: EntityType<T>, world -> factory(type, world, mobsConfig.getConfig(identifier.path)) }
-        return Registry.register(Registry.ENTITY_TYPE, identifier, augment(builder).build())
+        { type: EntityType<T>, world -> factory(type, world) }
+        return Registry.register(Registry.ENTITY_TYPE,  Mod.identifier(name), augment(builder).build())
     }
 
     fun init() {

@@ -1,6 +1,9 @@
 package net.barribob.boss
 
+import me.sargunvohra.mcmods.autoconfig1u.AutoConfig
+import me.sargunvohra.mcmods.autoconfig1u.serializer.JanksonConfigSerializer
 import net.barribob.boss.animation.PauseAnimationTimer
+import net.barribob.boss.config.ModConfig
 import net.barribob.boss.mob.Entities
 import net.barribob.boss.particle.Particles
 import net.barribob.boss.sound.ModSounds
@@ -29,6 +32,8 @@ object Mod {
 
 @Suppress("unused")
 fun init() {
+    AutoConfig.register(ModConfig::class.java, ::JanksonConfigSerializer)
+
     MaelstromMod.testCommand.addId(InGameTests::throwProjectile.name, InGameTests::throwProjectile)
     MaelstromMod.testCommand.addId(InGameTests::axisOffset.name, InGameTests::axisOffset)
     MaelstromMod.testCommand.addId(InGameTests::spawnEntity.name, InGameTests::spawnEntity)

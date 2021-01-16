@@ -20,6 +20,7 @@ repositories {
     maven { url = "http://maven.fabricmc.net/" }
     mavenCentral()
     mavenLocal()
+    jcenter()
 }
 
 dependencies {
@@ -52,7 +53,13 @@ dependencies {
 
     implementation "com.typesafe:config:${project.config_version}"
 
-    modImplementation "software.bernie.geckolib:${geckolib_minecraft_version}-geckolib:${geckolib_version}"
+    modImplementation "software.bernie.geckolib:${project.geckolib_minecraft_version}-geckolib:${project.geckolib_version}"
+
+    modApi("me.sargunvohra.mcmods:autoconfig1u:${project.auto_config_version}") {
+        exclude(group: "net.fabricmc.fabric-api")
+    }
+
+    include "me.sargunvohra.mcmods:autoconfig1u:${project.auto_config_version}"
 }
 
 processResources {
