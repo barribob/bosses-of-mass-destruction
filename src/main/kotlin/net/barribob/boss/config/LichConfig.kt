@@ -6,11 +6,18 @@ class LichConfig {
     val experienceDrop = 1500
     val idleHealingPerTick = 0.2f
 
-    val missile = Missile("minecraft:slowness", 100, 2)
-    val summon = Summon("minecraft:phantom")
+    val missile = Missile()
+    val summon = Summon()
 
-    data class Missile(val statusEffectId: String, val statusEffectDuration: Int, val statusEffectPotency: Int)
-    data class Summon(val mobId: String, val summonNbt: String = "{}")
+    val defaultNbt =
+        """{Health: 200, Attributes: [{Name: 'generic.max_health', Base: 200.0},{Name: 'generic.follow_range', Base: 64},{Name: 'generic.attack_damage', Base: 9.0},{Name: 'generic.flying_speed', Base: 6.0}]}"""
 
-    val defaultNbt = """{Health: 200, Attributes: [{Name: 'generic.max_health', Base: 200.0},{Name: 'generic.follow_range', Base: 64},{Name: 'generic.attack_damage', Base: 9.0},{Name: 'generic.flying_speed', Base: 6.0}]}"""
+    data class Missile(
+        val statusEffectId: String = "minecraft:slowness",
+        val statusEffectDuration: Int = 100,
+        val statusEffectPotency: Int = 2
+    )
+
+    data class Summon(val mobId: String = "minecraft:phantom", val summonNbt: String = "{}")
 }
+
