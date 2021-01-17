@@ -2,6 +2,7 @@ package net.barribob.boss
 
 import me.sargunvohra.mcmods.autoconfig1u.AutoConfig
 import me.sargunvohra.mcmods.autoconfig1u.serializer.JanksonConfigSerializer
+import net.barribob.boss.Mod.networkUtils
 import net.barribob.boss.animation.PauseAnimationTimer
 import net.barribob.boss.config.ModConfig
 import net.barribob.boss.mob.Entities
@@ -13,7 +14,7 @@ import net.barribob.maelstrom.MaelstromMod
 import net.barribob.maelstrom.general.io.ConsoleLogger
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
-import net.fabricmc.fabric.api.network.ClientSidePacketRegistry
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.util.GlfwUtil
 import net.minecraft.util.Identifier
@@ -27,6 +28,8 @@ object Mod {
 
     val sounds: ModSounds = ModSounds()
 
+    val networkUtils = NetworkUtils()
+
     fun identifier(path: String) = Identifier(MODID, path)
 }
 
@@ -34,10 +37,11 @@ object Mod {
 fun init() {
     AutoConfig.register(ModConfig::class.java, ::JanksonConfigSerializer)
 
-    MaelstromMod.testCommand.addId(InGameTests::throwProjectile.name, InGameTests::throwProjectile)
-    MaelstromMod.testCommand.addId(InGameTests::axisOffset.name, InGameTests::axisOffset)
-    MaelstromMod.testCommand.addId(InGameTests::spawnEntity.name, InGameTests::spawnEntity)
-    MaelstromMod.testCommand.addId(InGameTests::testClient.name, InGameTests::testClient)
+    val inGameTests = InGameTests(MaelstromMod.debugPoints, networkUtils)
+    MaelstromMod.testCommand.addId(inGameTests::throwProjectile.name, inGameTests::throwProjectile)
+    MaelstromMod.testCommand.addId(inGameTests::axisOffset.name, inGameTests::axisOffset)
+    MaelstromMod.testCommand.addId(inGameTests::spawnEntity.name, inGameTests::spawnEntity)
+    MaelstromMod.testCommand.addId(inGameTests::testClient.name, inGameTests::testClient)
 
     GeckoLib.initialize()
 
@@ -51,8 +55,12 @@ fun init() {
 fun clientInit() {
     val animationTimer = PauseAnimationTimer({ GlfwUtil.getTime() * 20 }, { MinecraftClient.getInstance().isPaused })
 
-    ClientSidePacketRegistry.INSTANCE.register(NetworkUtils.SPAWN_ENTITY_PACKET_ID, NetworkUtils::handleSpawnClientEntity)
-    ClientSidePacketRegistry.INSTANCE.register(NetworkUtils.CLIENT_TEST_PACKET_ID, NetworkUtils::handleTestClient)
+    ClientPlayNetworking.registerGlobalReceiver(networkUtils.SPAWN_ENTITY_PACKET_ID) { client, _, buf, _ ->
+        networkUtils.handleSpawnClientEntity(client, buf)
+    }
+    ClientPlayNetworking.registerGlobalReceiver(networkUtils.CLIENT_TEST_PACKET_ID) { client, _, _, _ ->
+        networkUtils.testClientCallback(client)
+    }
 
     Entities.clientInit(animationTimer)
     Particles.clientInit()

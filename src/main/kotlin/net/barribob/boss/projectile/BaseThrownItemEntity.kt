@@ -1,6 +1,6 @@
 package net.barribob.boss.projectile
 
-import net.barribob.boss.utils.NetworkUtils
+import net.barribob.boss.Mod
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity
@@ -52,7 +52,7 @@ abstract class BaseThrownItemEntity : ThrownItemEntity {
     }
 
     override fun createSpawnPacket(): Packet<*> {
-        return NetworkUtils.createClientEntityPacket(this)
+        return Mod.networkUtils.createClientEntityPacket(this)
     }
 
     override fun onCollision(hitResult: HitResult) {

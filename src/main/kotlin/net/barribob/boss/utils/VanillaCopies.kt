@@ -1,6 +1,5 @@
 package net.barribob.boss.utils
 
-import net.fabricmc.fabric.api.network.PacketContext
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.network.ClientPlayNetworkHandler
 import net.minecraft.client.render.OverlayTexture
@@ -92,12 +91,12 @@ object VanillaCopies {
     /**
      * [ClientPlayNetworkHandler.onEntitySpawn]
      */
-    fun handleClientSpawnEntity(packetContext: PacketContext, packet: EntitySpawnS2CPacket) {
+    fun handleClientSpawnEntity(client: MinecraftClient, packet: EntitySpawnS2CPacket) {
         val d: Double = packet.x
         val e: Double = packet.y
         val f: Double = packet.z
         val entityType = packet.entityTypeId
-        val world = packetContext.player.world
+        val world = client.world ?: return
 
         val entity15 = entityType.create(world)
 
@@ -109,8 +108,7 @@ object VanillaCopies {
             entity15.yaw = (packet.yaw * 360).toFloat() / 256.0f
             entity15.entityId = i
             entity15.uuid = packet.uuid
-            val clientWorld = MinecraftClient.getInstance().world
-            clientWorld?.addEntity(i, entity15 as Entity?)
+            world.addEntity(i, entity15 as Entity?)
         }
     }
 
