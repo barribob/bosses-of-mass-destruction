@@ -37,17 +37,13 @@ object Mod {
 fun init() {
     AutoConfig.register(ModConfig::class.java, ::JanksonConfigSerializer)
 
-    val inGameTests = InGameTests(MaelstromMod.debugPoints, networkUtils)
-    MaelstromMod.testCommand.addId(inGameTests::throwProjectile.name, inGameTests::throwProjectile)
-    MaelstromMod.testCommand.addId(inGameTests::axisOffset.name, inGameTests::axisOffset)
-    MaelstromMod.testCommand.addId(inGameTests::spawnEntity.name, inGameTests::spawnEntity)
-    MaelstromMod.testCommand.addId(inGameTests::testClient.name, inGameTests::testClient)
-
     GeckoLib.initialize()
 
     Entities.init()
 
     Mod.sounds.init()
+
+    if(MaelstromMod.isDevelopmentEnvironment) initDev()
 }
 
 @Environment(EnvType.CLIENT)
@@ -58,10 +54,24 @@ fun clientInit() {
     ClientPlayNetworking.registerGlobalReceiver(networkUtils.SPAWN_ENTITY_PACKET_ID) { client, _, buf, _ ->
         networkUtils.handleSpawnClientEntity(client, buf)
     }
-    ClientPlayNetworking.registerGlobalReceiver(networkUtils.CLIENT_TEST_PACKET_ID) { client, _, _, _ ->
-        networkUtils.testClientCallback(client)
-    }
 
     Entities.clientInit(animationTimer)
     Particles.clientInit()
+
+    if(MaelstromMod.isDevelopmentEnvironment) clientInitDev()
+}
+
+private fun initDev() {
+    val inGameTests = InGameTests(MaelstromMod.debugPoints, networkUtils)
+    MaelstromMod.testCommand.addId(inGameTests::throwProjectile.name, inGameTests::throwProjectile)
+    MaelstromMod.testCommand.addId(inGameTests::axisOffset.name, inGameTests::axisOffset)
+    MaelstromMod.testCommand.addId(inGameTests::spawnEntity.name, inGameTests::spawnEntity)
+    MaelstromMod.testCommand.addId(inGameTests::testClient.name, inGameTests::testClient)
+}
+
+@Environment(EnvType.CLIENT)
+private fun clientInitDev() {
+    ClientPlayNetworking.registerGlobalReceiver(networkUtils.CLIENT_TEST_PACKET_ID) { client, _, _, _ ->
+        networkUtils.testClientCallback(client)
+    }
 }
