@@ -159,37 +159,44 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
     private val priorityMoves = mutableListOf<IActionWithCooldown>()
     override val bossBar = ServerBossBar(this.displayName, BossBar.Color.BLUE, BossBar.Style.PROGRESS)
 
-    private val summonMissileParticleBuilder = ParticleFactories.soulFlame().age { 2 }.colorVariation(0.5)
+    private val blueColorFade: (Float) -> Vec3d =
+        { MathUtils.lerpVec(it, ModColors.COMET_BLUE, ModColors.FADED_COMET_BLUE) }
+
+    private val summonMissileParticleBuilder = ParticleFactories.soulFlame().age(2).colorVariation(0.5)
     private val teleportParticleBuilder = ClientParticleBuilder(Particles.DISAPPEARING_SWIRL)
-        .color { ModColors.TELEPORT_PURPLE }
-        .age { RandomUtils.range(10, 15) }
-        .brightness { Particles.FULL_BRIGHT }
+        .color(ModColors.TELEPORT_PURPLE)
+        .age(10, 15)
+        .brightness(Particles.FULL_BRIGHT)
     private val summonCometParticleBuilder = ParticleFactories.cometTrail().colorVariation(0.5)
-    private val flameRingFactory = ClientParticleBuilder(Particles.SOUL_FLAME)
+    private val flameRingFactory = ParticleFactories.soulFlame()
         .color { MathUtils.lerpVec(it, ModColors.WHITE, ModColors.WHITE.multiply(0.5)) }
-        .brightness { Particles.FULL_BRIGHT }
-        .age { RandomUtils.range(0, 7) }
+        .age(0, 7)
     private val minionSummonParticleBuilder = ParticleFactories.soulFlame()
-        .color { ModColors.WHITE }
-        .velocity{ VecUtils.yAxis.multiply(RandomUtils.double(0.2) + 0.2) }
+        .color(ModColors.WHITE)
+        .velocity { VecUtils.yAxis.multiply(RandomUtils.double(0.2) + 0.2) }
     private val thresholdParticleBuilder = ParticleFactories.soulFlame()
-        .age { 20 }
-        .scale { 0.5f }
-        .velocity{ RandomUtils.randVec() }
-    private val summonRingFactory = ClientParticleBuilder(Particles.SOUL_FLAME)
-        .color { MathUtils.lerpVec(it, ModColors.COMET_BLUE, ModColors.FADED_COMET_BLUE) }
-        .brightness { Particles.FULL_BRIGHT }
+        .age(20)
+        .scale(0.5f)
+        .velocity { RandomUtils.randVec() }
+    private val summonRingFactory = ParticleFactories.soulFlame()
+        .color(blueColorFade)
         .colorVariation(0.5)
-        .age { 10 }
+        .age(10)
     private val summonRingCompleteFactory = ParticleFactories.soulFlame()
-        .color { ModColors.WHITE }
-        .age { RandomUtils.range(20, 30) }
+        .color(ModColors.WHITE)
+        .age(20, 30)
     private val deathParticleFactory = ParticleFactories.soulFlame()
-        .color { MathUtils.lerpVec(it, ModColors.COMET_BLUE, ModColors.FADED_COMET_BLUE) }
-        .age { RandomUtils.range(40, 80) }
+        .color(blueColorFade)
+        .age(40, 80)
         .velocity { RandomUtils.randVec() }
         .colorVariation(0.5)
         .scale { 0.5f - (it * 0.3f) }
+    private val idleParticles = ParticleFactories.soulFlame()
+        .color(blueColorFade)
+        .age(30, 40)
+        .velocity { velocity }
+        .colorVariation(0.5)
+        .scale { 0.25f - (it * 0.1f) }
 
     private val missileThrower = { offset: Vec3d ->
         ProjectileThrower {
@@ -559,6 +566,10 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
 
     override fun clientTick() {
         velocityHistory.set(velocity)
+
+        if (random.nextDouble() > 0.9) idleParticles.build(
+            pos.subtract(VecUtils.yAxis).add(RandomUtils.randVec().multiply(2.0))
+        )
     }
 
     override fun serverTick(serverWorld: ServerWorld) {

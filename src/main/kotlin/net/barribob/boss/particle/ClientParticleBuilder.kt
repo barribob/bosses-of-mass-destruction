@@ -1,5 +1,6 @@
 package net.barribob.boss.particle
 
+import net.barribob.maelstrom.static_utilities.RandomUtils
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.render.Camera
 import net.minecraft.particle.ParticleEffect
@@ -23,8 +24,13 @@ class ClientParticleBuilder(private val effect: ParticleEffect) {
         return this
     }
 
-    fun brightness(brightness: ((Float) -> Int)?): ClientParticleBuilder {
-        this.brightness = brightness
+    fun color(color: Vec3d): ClientParticleBuilder {
+        this.color = { color }
+        return this
+    }
+
+    fun brightness(brightness: Int): ClientParticleBuilder {
+        this.brightness = { brightness }
         return this
     }
 
@@ -33,8 +39,23 @@ class ClientParticleBuilder(private val effect: ParticleEffect) {
         return this
     }
 
+    fun scale(scale: Float): ClientParticleBuilder {
+        this.scale = { scale }
+        return this
+    }
+
     fun age(age: (() -> Int)?): ClientParticleBuilder {
         this.age = age
+        return this
+    }
+
+    fun age(age: Int): ClientParticleBuilder {
+        this.age = { age }
+        return this
+    }
+
+    fun age(min: Int, max: Int): ClientParticleBuilder {
+        this.age = { RandomUtils.range(min, max) }
         return this
     }
 
