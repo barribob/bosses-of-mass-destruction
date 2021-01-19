@@ -62,7 +62,11 @@ object Entities {
 
     fun init() {
         FabricDefaultAttributeRegistry.register(LICH,
-            HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_FLYING_SPEED, 4.0))
+            HostileEntity.createHostileAttributes()
+                .add(EntityAttributes.GENERIC_FLYING_SPEED, 6.0)
+                .add(EntityAttributes.GENERIC_MAX_HEALTH, mobConfig.lichConfig.health)
+                .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 64.0)
+                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, mobConfig.lichConfig.missile.damage))
     }
 
     fun clientInit(animationTimer: IAnimationTimer) {

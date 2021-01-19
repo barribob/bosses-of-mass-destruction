@@ -8,7 +8,6 @@ import net.minecraft.entity.boss.ServerBossBar
 import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.mob.PathAwareEntity
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.nbt.StringNbtReader
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.text.Text
@@ -18,7 +17,7 @@ import org.jetbrains.annotations.Nullable
 import software.bernie.geckolib3.core.IAnimatable
 import software.bernie.geckolib3.core.manager.AnimationFactory
 
-abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: World, defaultNbtString: String) :
+abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: World) :
     PathAwareEntity(entityType, world), IAnimatable {
     private val animationFactory: AnimationFactory by lazy { AnimationFactory(this) }
     override fun getFactory(): AnimationFactory = animationFactory
@@ -26,11 +25,6 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
     protected open val bossBar: ServerBossBar? = null
     protected open val damageHandler: IDamageHandler? = null
     protected val eventScheduler = EventScheduler()
-
-    init {
-        val nbt = StringNbtReader.parse(defaultNbtString)
-        fromTag(nbt)
-    }
 
     final override fun tick() {
         eventScheduler.updateEvents()

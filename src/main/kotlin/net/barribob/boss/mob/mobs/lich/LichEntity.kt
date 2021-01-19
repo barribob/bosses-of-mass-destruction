@@ -59,6 +59,7 @@ import net.minecraft.util.math.Vec3d
 import net.minecraft.util.registry.Registry
 import net.minecraft.world.Difficulty
 import net.minecraft.world.World
+import net.minecraft.world.explosion.Explosion
 import software.bernie.geckolib3.core.PlayState
 import software.bernie.geckolib3.core.builder.AnimationBuilder
 import software.bernie.geckolib3.core.controller.AnimationController
@@ -66,20 +67,20 @@ import software.bernie.geckolib3.core.manager.AnimationData
 
 class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig: LichConfig) : BaseEntity(
     entityType,
-    world,
-    mobConfig.defaultNbt
+    world
 ) {
-    private val cometExplosionStrength = mobConfig.cometExplosionStrength
+    private val cometExplosionStrength = mobConfig.comet.explosionStrength
     private val missileStatusEffect =
         Registry.STATUS_EFFECT.getOrEmpty(Identifier(mobConfig.missile.statusEffectId))
     private val missileStatusDuration = mobConfig.missile.statusEffectDuration
     private val missileStatusPotency = mobConfig.missile.statusEffectPotency
     private val healingStrength = mobConfig.idleHealingPerTick
-    private val summonId = mobConfig.summon.mobId
-    private val summonNbt = StringNbtReader.parse(mobConfig.summon.summonNbt)
+    private val summonId = "minecraft:phantom"
+    private val summonNbt = StringNbtReader.parse("{}")
     private val summonEntityType = Registry.ENTITY_TYPE[Identifier(summonId)]
-    val shouldSetToNighttime = mobConfig.eternalNightime
+    val shouldSetToNighttime = mobConfig.eternalNighttime
     private val experienceDrop = mobConfig.experienceDrop
+    private val destroysBlocks = mobConfig.comet.destroysBlocks
 
     val velocityHistory = HistoricalData(Vec3d.ZERO)
     private val positionalHistory = HistoricalData(Vec3d.ZERO, 10)
@@ -207,12 +208,16 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
     private val cometThrower = { offset: Vec3d ->
         ProjectileThrower {
             val projectile = CometProjectile(this, world, {
+                val destructionType =
+                    if(destroysBlocks) VanillaCopies.getEntityDestructionType(world) else Explosion.DestructionType.NONE
+
                 world.createExplosion(this,
                     it.x,
                     it.y,
                     it.z,
                     cometExplosionStrength,
-                    VanillaCopies.getEntityDestructionType(world))
+                    destructionType
+                )
             }, listOf(summonEntityType))
             projectile.setPos(eyePos().add(offset))
             ProjectileData(projectile, 1.6f, 0f)
