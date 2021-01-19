@@ -10,9 +10,6 @@ import net.minecraft.particle.DefaultParticleType
 import net.minecraft.util.registry.Registry
 
 object Particles {
-    val SKELETON: DefaultParticleType =
-        Registry.register(Registry.PARTICLE_TYPE, Mod.identifier("skeleton"), FabricParticleTypes.simple())
-
     val DISAPPEARING_SWIRL: DefaultParticleType = Registry.register(Registry.PARTICLE_TYPE,
         Mod.identifier("disappearing_swirl"),
         FabricParticleTypes.simple())
@@ -29,15 +26,6 @@ object Particles {
 
     fun clientInit() {
         val particleFactory = ParticleFactoryRegistry.getInstance()
-
-        particleFactory
-            .register(SKELETON) { provider: SpriteProvider ->
-                SimpleParticleFactory(provider) {
-                    SimpleParticle(it) {
-                        RandomUtils.range(15, 20)
-                    }
-                }
-            }
 
         particleFactory.register(DISAPPEARING_SWIRL) { provider: SpriteProvider ->
             SimpleParticleFactory(provider) {
