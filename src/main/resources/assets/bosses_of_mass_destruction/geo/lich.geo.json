@@ -145,6 +145,22 @@
 					]
 				},
 				{
+					"name": "leftEye",
+					"parent": "face",
+					"pivot": [0, 40, 0.5],
+					"cubes": [
+						{"origin": [1.5, 43, -4], "size": [2, 2, 0], "uv": [122, 75]}
+					]
+				},
+				{
+					"name": "rightEye",
+					"parent": "face",
+					"pivot": [0, 40, 0.5],
+					"cubes": [
+						{"origin": [-3.5, 43, -4], "size": [2, 2, 0], "uv": [122, 83]}
+					]
+				},
+				{
 					"name": "cheeks",
 					"parent": "headBase",
 					"pivot": [4.5, 43, -4],

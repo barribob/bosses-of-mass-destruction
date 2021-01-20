@@ -81,7 +81,7 @@ object Entities {
                     animationTimer,
                     LichCodeAnimations()
                 ),
-                BoundedLighting(7),
+                BoundedLighting(5),
                 LichBoneLight(),
                 EternalNightRenderer()
             )
