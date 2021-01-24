@@ -8,6 +8,7 @@ class LichConfig {
 
     val missile = Missile()
     val comet = Comet()
+    val summonMechanic = SummonMechanic()
 
     data class Missile(
         val statusEffectId: String = "minecraft:slowness",
@@ -19,5 +20,11 @@ class LichConfig {
     data class Comet(
         val explosionStrength: Float = 4.0f,
         val destroysBlocks: Boolean = true
+    )
+
+    data class SummonMechanic(
+        val isEnabled: Boolean = true,
+        val entitiesThatCountToSummonCounter: List<String> = listOf("minecraft:zombie", "minecraft:skeleton"),
+        val numEntitiesKilledToSummonLich: Int = 400
     )
 }

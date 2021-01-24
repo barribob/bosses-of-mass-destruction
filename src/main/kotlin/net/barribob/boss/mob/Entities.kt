@@ -4,6 +4,7 @@ import me.sargunvohra.mcmods.autoconfig1u.AutoConfig
 import net.barribob.boss.Mod
 import net.barribob.boss.animation.IAnimationTimer
 import net.barribob.boss.animation.PauseAnimationTimer
+import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.config.ModConfig
 import net.barribob.boss.mob.mobs.lich.*
 import net.barribob.boss.mob.utils.SimpleLivingGeoRenderer
@@ -17,6 +18,7 @@ import net.barribob.maelstrom.static_utilities.RandomUtils
 import net.fabricmc.fabric.api.`object`.builder.v1.entity.FabricDefaultAttributeRegistry
 import net.fabricmc.fabric.api.`object`.builder.v1.entity.FabricEntityTypeBuilder
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry
+import net.fabricmc.fabric.api.entity.event.v1.ServerEntityCombatEvents
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.render.RenderLayer
 import net.minecraft.client.util.GlfwUtil
@@ -61,6 +63,11 @@ object Entities {
     }
 
     fun init() {
+        if(mobConfig.lichConfig.summonMechanic.isEnabled) {
+            val killCounter = LichKillCounter(mobConfig.lichConfig.summonMechanic, ModComponents)
+            ServerEntityCombatEvents.AFTER_KILLED_OTHER_ENTITY.register(killCounter)
+        }
+
         FabricDefaultAttributeRegistry.register(LICH,
             HostileEntity.createHostileAttributes()
                 .add(EntityAttributes.GENERIC_FLYING_SPEED, 6.0)

@@ -21,6 +21,10 @@ test {
 repositories {
     maven { url 'https://repo.repsy.io/mvn/gandiber/geckolib' }
     maven { url = "http://maven.fabricmc.net/" }
+    maven {
+        name = "Ladysnake Libs"
+        url = "https://dl.bintray.com/ladysnake/libs"
+    }
     mavenCentral()
     mavenLocal()
     jcenter()
@@ -57,6 +61,18 @@ dependencies {
     }
 
     include "me.sargunvohra.mcmods:autoconfig1u:${project.auto_config_version}"
+
+    modApi "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${project.cardinal_components_version}"
+    modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${project.cardinal_components_version}"
+    include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${project.cardinal_components_version}"
+    include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${project.cardinal_components_version}"
+
+    modCompileOnly("io.github.prospector:modmenu:1.14.6+build.31") {
+        exclude module: "fabric-api"
+    }
+    modRuntime("io.github.prospector:modmenu:1.14.6+build.31") {
+        exclude module: "fabric-api"
+    }
 }
 
 processResources {

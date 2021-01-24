@@ -24,6 +24,9 @@
     ],
     "client": [
       "net.barribob.boss.MainKt::clientInit"
+    ],
+    "cardinal-components-world": [
+      "net.barribob.boss.cardinalComponents.ModComponents"
     ]
   },
   "mixins": [
@@ -34,5 +37,10 @@
     "fabric": "*",
     "fabric-language-kotlin": "*",
     "minecraft": "1.16.x"
+  },
+  "custom":  {
+    "cardinal-components": [
+      "bosses_of_mass_destruction:event_scheduler"
+    ]
   }
 }
