@@ -67,6 +67,8 @@ private fun initDev() {
     MaelstromMod.testCommand.addId(inGameTests::axisOffset.name, inGameTests::axisOffset)
     MaelstromMod.testCommand.addId(inGameTests::spawnEntity.name, inGameTests::spawnEntity)
     MaelstromMod.testCommand.addId(inGameTests::testClient.name, inGameTests::testClient)
+    MaelstromMod.testCommand.addId(inGameTests::lichSummon.name, inGameTests::lichSummon)
+    MaelstromMod.testCommand.addId(inGameTests::lichCounter.name, inGameTests::lichCounter)
 }
 
 @Environment(EnvType.CLIENT)

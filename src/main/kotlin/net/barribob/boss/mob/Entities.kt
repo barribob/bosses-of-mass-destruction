@@ -52,6 +52,8 @@ object Entities {
             .dimensions(EntityDimensions.fixed(0.25f, 0.25f)).build()
     )
 
+    val killCounter = LichKillCounter(mobConfig.lichConfig.summonMechanic, ModComponents, ModComponents)
+
     private fun <T : Entity> registerConfiguredMob(
         name: String,
         factory: (EntityType<T>, World) -> T,
@@ -64,7 +66,6 @@ object Entities {
 
     fun init() {
         if(mobConfig.lichConfig.summonMechanic.isEnabled) {
-            val killCounter = LichKillCounter(mobConfig.lichConfig.summonMechanic, ModComponents)
             ServerEntityCombatEvents.AFTER_KILLED_OTHER_ENTITY.register(killCounter)
         }
 

@@ -1,6 +1,7 @@
 package net.barribob.boss.utils
 
 import net.barribob.boss.Mod
+import net.barribob.boss.mob.Entities
 import net.barribob.boss.mob.spawn.*
 import net.barribob.boss.projectile.MagicMissileProjectile
 import net.barribob.maelstrom.general.random.ModRandom
@@ -55,5 +56,15 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler, private va
 
     fun testClient(source: ServerCommandSource) {
         networkUtils.testClient(source.world, source.position)
+    }
+
+    fun lichSummon(source: ServerCommandSource) {
+        Entities.killCounter.trySummonLich(source.player, source.world)
+    }
+
+    var calls = 0
+    fun lichCounter(source: ServerCommandSource) {
+        Entities.killCounter.onEntitiesKilledUpdate(calls, 0, source.player, source.world)
+        calls++
     }
 }

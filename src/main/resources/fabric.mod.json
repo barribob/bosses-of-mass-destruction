@@ -27,6 +27,9 @@
     ],
     "cardinal-components-world": [
       "net.barribob.boss.cardinalComponents.ModComponents"
+    ],
+    "cardinal-components-entity": [
+      "net.barribob.boss.cardinalComponents.ModComponents"
     ]
   },
   "mixins": [
@@ -40,7 +43,8 @@
   },
   "custom":  {
     "cardinal-components": [
-      "bosses_of_mass_destruction:event_scheduler"
+      "bosses_of_mass_destruction:event_scheduler",
+      "bosses_of_mass_destruction:lich_summon_counter"
     ]
   }
 }
