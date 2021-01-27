@@ -46,7 +46,7 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler, private va
         compoundTag.putString("id", Registry.ENTITY_TYPE.getId(EntityType.PHANTOM).toString())
 
         val spawner = MobPlacementLogic(
-            RangedSpawnPosition({ entity.pos }, 3.0, 6.0, ModRandom()),
+            RangedSpawnPosition(entity.pos, 3.0, 6.0, ModRandom()),
             CompoundTagEntityProvider(compoundTag, serverWorld, Mod.LOGGER),
             MobEntitySpawnPredicate(entity.world),
             SimpleMobSpawner(serverWorld)

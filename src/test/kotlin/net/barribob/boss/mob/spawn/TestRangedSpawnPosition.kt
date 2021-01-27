@@ -9,21 +9,21 @@ import org.junit.jupiter.api.Test
 class TestRangedSpawnPosition {
     @Test
     fun positionChosenCloserThanMaxRange() {
-        val spawnPosition = RangedSpawnPosition({ Vec3d.ZERO }, 1.0, 2.0, StubRandom({ VecUtils.yAxis.multiply(3.0) }, { .0 }))
+        val spawnPosition = RangedSpawnPosition(Vec3d.ZERO, 1.0, 2.0, StubRandom({ VecUtils.yAxis.multiply(3.0) }, { .0 }))
 
         Assertions.assertEquals(2.0, spawnPosition.getPos().distanceTo(Vec3d.ZERO))
     }
 
     @Test
     fun positionChosenFartherThanMinRange() {
-        val spawnPosition = RangedSpawnPosition({ Vec3d.ZERO }, 1.0, 2.0, StubRandom({ VecUtils.yAxis.multiply(0.5) }, { .0 }))
+        val spawnPosition = RangedSpawnPosition(Vec3d.ZERO, 1.0, 2.0, StubRandom({ VecUtils.yAxis.multiply(0.5) }, { .0 }))
 
         Assertions.assertEquals(1.0, spawnPosition.getPos().distanceTo(Vec3d.ZERO))
     }
 
     @Test
     fun positionChosenWithinRangeDoesNotGetAffected() {
-        val spawnPosition = RangedSpawnPosition({ Vec3d.ZERO }, 1.0, 2.0, StubRandom({ VecUtils.yAxis.multiply(1.5) }, { .0 }))
+        val spawnPosition = RangedSpawnPosition(Vec3d.ZERO, 1.0, 2.0, StubRandom({ VecUtils.yAxis.multiply(1.5) }, { .0 }))
 
         Assertions.assertEquals(1.5, spawnPosition.getPos().distanceTo(Vec3d.ZERO))
     }

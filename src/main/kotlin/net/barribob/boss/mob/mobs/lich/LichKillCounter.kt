@@ -79,7 +79,7 @@ class LichKillCounter(
                 compoundTag.putString("id", Mod.identifier("lich").toString())
 
                 val spawned = MobPlacementLogic(
-                    RangedSpawnPosition({ spawnPos }, 0.0, 10.0, ModRandom()),
+                    RangedSpawnPosition(spawnPos, 0.0, 10.0, ModRandom()),
                     CompoundTagEntityProvider(compoundTag, sWorld, Mod.LOGGER),
                     MobEntitySpawnPredicate(sWorld),
                     SimpleMobSpawner(sWorld)

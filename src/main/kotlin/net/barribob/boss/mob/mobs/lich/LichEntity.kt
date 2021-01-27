@@ -58,6 +58,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.util.registry.Registry
 import net.minecraft.world.Difficulty
+import net.minecraft.world.Heightmap
 import net.minecraft.world.World
 import net.minecraft.world.explosion.Explosion
 import software.bernie.geckolib3.core.PlayState
@@ -367,32 +368,56 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
         canContinueAttack: () -> Boolean,
         target: () -> LivingEntity?,
     ): IActionWithCooldown {
-        val spawnPredicate = MobEntitySpawnPredicate(world)
         val teleportAction = IAction {
             target()?.let {
-                MobPlacementLogic(
-                    RangedSpawnPosition({ it.pos }, tooCloseToTargetDistance, tooFarFromTargetDistance, ModRandom()),
-                    { this },
-                    { pos, entity -> spawnPredicate.canSpawn(pos, entity) && inLineOfSight(pos, EntityAdapter(it)) },
-                    { pos, entity ->
-                        world.sendEntityStatus(this, teleportStatus)
-                        eventScheduler.addEvent(TimedEvent({
-                            playBeginTeleportSound()
-                            collides = false
-                            eventScheduler.addEvent(TimedEvent({
-                                entity.refreshPositionAndAngles(pos.x, pos.y, pos.z, yaw, pitch)
-                                world.sendEntityStatus(this, successfulTeleportStatus)
-                                playTeleportSound()
-                                collides = true
-                            }, teleportDelay - teleportStartSoundDelay))
-                        }, teleportStartSoundDelay, shouldCancel = { !canContinueAttack() }))
-                    })
-                    .tryPlacement(100)
+                val spawnPredicate = MobEntitySpawnPredicate(world)
+                val entitySpawnPredicate = ISpawnPredicate { pos, entity ->
+                    spawnPredicate.canSpawn(pos, entity) && inLineOfSight(
+                        pos,
+                        EntityAdapter(it)
+                    )
+                }
+                teleport(it.pos, entitySpawnPredicate, spawnPredicate, canContinueAttack)
             }
         }
-
         return ActionWithConstantCooldown(teleportAction, teleportCooldown)
     }
+
+    private fun teleport(
+        it: Vec3d,
+        spawnPredicate: ISpawnPredicate,
+        backupPredicate: ISpawnPredicate,
+        canContinueAttack: () -> Boolean
+    ) {
+        val mobPlacementLogic = buildTeleportLogic(it, spawnPredicate, canContinueAttack)
+        val success = mobPlacementLogic.tryPlacement(100)
+        if(!success) {
+            val safePos = world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, BlockPos(it)).asVec3d()
+            buildTeleportLogic(safePos, backupPredicate, canContinueAttack).tryPlacement(100)
+        }
+    }
+
+    private fun buildTeleportLogic(
+        spawnPos: Vec3d,
+        spawnPredicate: ISpawnPredicate,
+        canContinueAttack: () -> Boolean
+    ) = MobPlacementLogic(
+        RangedSpawnPosition(spawnPos, tooCloseToTargetDistance, tooFarFromTargetDistance, ModRandom()),
+        { this },
+        spawnPredicate,
+        { pos, entity ->
+            world.sendEntityStatus(this, teleportStatus)
+            eventScheduler.addEvent(TimedEvent({
+                playBeginTeleportSound()
+                collides = false
+                eventScheduler.addEvent(TimedEvent({
+                    entity.refreshPositionAndAngles(pos.x, pos.y, pos.z, yaw, pitch)
+                    world.sendEntityStatus(this, successfulTeleportStatus)
+                    playTeleportSound()
+                    collides = true
+                }, teleportDelay - teleportStartSoundDelay))
+            }, teleportStartSoundDelay, shouldCancel = { !canContinueAttack() }))
+        })
 
     private fun inLineOfSight(pos: Vec3d, target: IEntity) = VanillaCopies.hasDirectLineOfSight(
         pos.add(newVec3d(y = standingEyeHeight.toDouble())),
@@ -445,7 +470,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
 
         target?.let {
             MobPlacementLogic(
-                RangedSpawnPosition({ it.pos }, 4.0, 8.0, ModRandom()),
+                RangedSpawnPosition(it.pos, 4.0, 8.0, ModRandom()),
                 entityProvider,
                 spawnPredicate,
                 summonCircleBeforeSpawn
