@@ -7,6 +7,7 @@ import net.barribob.boss.animation.PauseAnimationTimer
 import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.config.ModConfig
 import net.barribob.boss.mob.mobs.lich.*
+import net.barribob.boss.mob.mobs.obsidilith.ObsidilithEntity
 import net.barribob.boss.mob.utils.SimpleLivingGeoRenderer
 import net.barribob.boss.particle.ParticleFactories
 import net.barribob.boss.projectile.MagicMissileProjectile
@@ -52,6 +53,10 @@ object Entities {
             .dimensions(EntityDimensions.fixed(0.25f, 0.25f)).build()
     )
 
+    private val OBSIDILITH: EntityType<ObsidilithEntity> = registerConfiguredMob("obsidilith",
+        { type, world -> ObsidilithEntity(type, world) },
+        { it.fireImmune().dimensions(EntityDimensions.fixed(2.0f, 4.5f)) })
+
     val killCounter = LichKillCounter(mobConfig.lichConfig.summonMechanic, ModComponents, ModComponents)
 
     private fun <T : Entity> registerConfiguredMob(
@@ -74,7 +79,16 @@ object Entities {
                 .add(EntityAttributes.GENERIC_FLYING_SPEED, 6.0)
                 .add(EntityAttributes.GENERIC_MAX_HEALTH, mobConfig.lichConfig.health)
                 .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 64.0)
-                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, mobConfig.lichConfig.missile.damage))
+                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, mobConfig.lichConfig.missile.damage)
+        )
+
+        FabricDefaultAttributeRegistry.register(OBSIDILITH,
+            HostileEntity.createHostileAttributes()
+                .add(EntityAttributes.GENERIC_MAX_HEALTH, mobConfig.obsidilithConfig.health)
+                .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 64.0)
+                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 4.0)
+                .add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 10.0)
+        )
     }
 
     fun clientInit(animationTimer: IAnimationTimer) {
@@ -92,6 +106,17 @@ object Entities {
                 BoundedLighting(5),
                 LichBoneLight(),
                 EternalNightRenderer()
+            )
+        }
+
+        EntityRendererRegistry.INSTANCE.register(OBSIDILITH) { entityRenderDispatcher, _ ->
+            SimpleLivingGeoRenderer(
+                entityRenderDispatcher, GeoModel(
+                    Mod.identifier("geo/obsidilith.geo.json"),
+                    Mod.identifier("textures/entity/obsidilith.png"),
+                    Mod.identifier("animations/obsidilith.json"),
+                    animationTimer
+                )
             )
         }
 

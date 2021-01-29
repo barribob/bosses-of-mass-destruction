@@ -2,6 +2,7 @@
   "entity.bosses_of_mass_destruction.comet": "Comet",
   "entity.bosses_of_mass_destruction.lich": "Night Lich",
   "entity.bosses_of_mass_destruction.blue_fireball": "Blue Fireball",
+  "entity.bosses_of_mass_destruction.obsidilith" : "Obsidilith",
 
   "bosses_of_mass_destruction.kill_counter_update": "Undead killed: %d"
 }

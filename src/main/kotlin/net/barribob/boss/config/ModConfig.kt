@@ -7,4 +7,5 @@ import net.barribob.boss.Mod
 @Config(name = Mod.MODID)
 class ModConfig : ConfigData {
     val lichConfig = LichConfig()
+    val obsidilithConfig = ObsidilithConfig()
 }
