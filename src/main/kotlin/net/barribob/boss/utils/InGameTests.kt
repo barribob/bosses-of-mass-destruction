@@ -64,7 +64,7 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler, private va
 
     var calls = 0
     fun lichCounter(source: ServerCommandSource) {
-        Entities.killCounter.onEntitiesKilledUpdate(calls, 0, source.player, source.world)
+        Entities.killCounter.onEntitiesKilledUpdate(calls, source.player, source.world)
         calls++
     }
 }
