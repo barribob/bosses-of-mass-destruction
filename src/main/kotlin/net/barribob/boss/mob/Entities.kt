@@ -7,6 +7,7 @@ import net.barribob.boss.animation.PauseAnimationTimer
 import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.config.ModConfig
 import net.barribob.boss.mob.mobs.lich.*
+import net.barribob.boss.mob.mobs.obsidilith.ObsidilithBoneLight
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithEntity
 import net.barribob.boss.mob.utils.SimpleLivingGeoRenderer
 import net.barribob.boss.particle.ParticleFactories
@@ -110,13 +111,16 @@ object Entities {
         }
 
         EntityRendererRegistry.INSTANCE.register(OBSIDILITH) { entityRenderDispatcher, _ ->
+            val runeColorHandler = ObsidilithBoneLight()
             SimpleLivingGeoRenderer(
                 entityRenderDispatcher, GeoModel(
                     Mod.identifier("geo/obsidilith.geo.json"),
                     Mod.identifier("textures/entity/obsidilith.png"),
                     Mod.identifier("animations/obsidilith.json"),
                     animationTimer
-                )
+                ),
+                iBoneLight = runeColorHandler,
+                renderData = runeColorHandler
             )
         }
 

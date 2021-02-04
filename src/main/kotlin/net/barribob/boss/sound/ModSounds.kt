@@ -16,6 +16,7 @@ class ModSounds {
     val minionRune = newSound("minion_rune")
     val minionSummon = newSound("minion_summon")
     val ragePrepare = newSound("rage_prepare")
+    val obsidilithBurst = newSound("obsidilith_burst")
 
     fun init() {
         registerSound(cometShoot)
@@ -26,6 +27,7 @@ class ModSounds {
         registerSound(minionRune)
         registerSound(minionSummon)
         registerSound(ragePrepare)
+        registerSound(obsidilithBurst)
     }
 
     private fun registerSound(event: SoundEvent) {

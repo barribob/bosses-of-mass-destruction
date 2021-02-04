@@ -10,6 +10,7 @@ import net.barribob.boss.particle.Particles
 import net.barribob.boss.sound.ModSounds
 import net.barribob.boss.utils.InGameTests
 import net.barribob.boss.utils.NetworkUtils
+import net.barribob.boss.utils.NetworkUtils.Companion.PLAYER_VELOCITY_ID
 import net.barribob.maelstrom.MaelstromMod
 import net.barribob.maelstrom.general.io.ConsoleLogger
 import net.fabricmc.api.EnvType
@@ -54,6 +55,9 @@ fun clientInit() {
     ClientPlayNetworking.registerGlobalReceiver(networkUtils.SPAWN_ENTITY_PACKET_ID) { client, _, buf, _ ->
         networkUtils.handleSpawnClientEntity(client, buf)
     }
+    ClientPlayNetworking.registerGlobalReceiver(PLAYER_VELOCITY_ID) { client, _, buf, _ ->
+        networkUtils.handlePlayerVelocity(client, buf)
+    }
 
     Entities.clientInit(animationTimer)
     Particles.clientInit()
@@ -69,6 +73,7 @@ private fun initDev() {
     MaelstromMod.testCommand.addId(inGameTests::testClient.name, inGameTests::testClient)
     MaelstromMod.testCommand.addId(inGameTests::lichSummon.name, inGameTests::lichSummon)
     MaelstromMod.testCommand.addId(inGameTests::lichCounter.name, inGameTests::lichCounter)
+    MaelstromMod.testCommand.addId(inGameTests::burstAction.name, inGameTests::burstAction)
 }
 
 @Environment(EnvType.CLIENT)

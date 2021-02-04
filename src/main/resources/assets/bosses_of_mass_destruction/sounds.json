@@ -46,5 +46,11 @@
     "sounds": [
       "bosses_of_mass_destruction:rage_prepare"
     ]
+  },
+  "obsidilith_burst": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.obsidilith_burst",
+    "sounds": [
+      "bosses_of_mass_destruction:obsidilith_burst"
+    ]
   }
 }

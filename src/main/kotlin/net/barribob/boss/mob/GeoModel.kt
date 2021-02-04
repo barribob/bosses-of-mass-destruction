@@ -17,7 +17,7 @@ class GeoModel<T : IAnimatable>(
     override fun getModelLocation(animatable: T): Identifier = modelLocation
     override fun getTextureLocation(animatable: T): Identifier = textureLocation
     override fun getAnimationFileLocation(animatable: T): Identifier = animationLocation
-    override fun getCurrentTick(): Float = animationTimer.getCurrentTick()
+    override fun getCurrentTick(): Double = animationTimer.getCurrentTick().toDouble()
 
     override fun setLivingAnimations(entity: T, uniqueID: Int?, customPredicate: AnimationEvent<*>) {
         super.setLivingAnimations(entity, uniqueID, customPredicate)

@@ -8,7 +8,7 @@ import net.minecraft.client.particle.ParticleTextureSheet
 import net.minecraft.client.particle.SpriteBillboardParticle
 import net.minecraft.util.math.Vec3d
 
-class SimpleParticle(private val particleContext: ParticleContext, particleAge: () -> Int) :
+class SimpleParticle(private val particleContext: ParticleContext, particleAge: () -> Int, private val cycleSprites: Boolean = true) :
     SpriteBillboardParticle(
         particleContext.world,
         particleContext.pos.x,
@@ -23,11 +23,10 @@ class SimpleParticle(private val particleContext: ParticleContext, particleAge: 
 
     override fun getType(): ParticleTextureSheet = ParticleTextureSheet.PARTICLE_SHEET_OPAQUE
 
-    // Todo: unit test this logic
     override fun tick() {
         super.tick()
         if (isAlive) {
-            setSpriteForAge(particleContext.spriteProvider)
+            if(cycleSprites) setSpriteForAge(particleContext.spriteProvider)
             val ageRatio = age / maxAge.toFloat()
             setColorFromOverride(colorOverride, ageRatio)
             setScaleFromOverride(scaleOverride, ageRatio)
@@ -73,7 +72,7 @@ class SimpleParticle(private val particleContext: ParticleContext, particleAge: 
 
     init {
         this.maxAge = particleAge()
-        setSpriteForAge(particleContext.spriteProvider)
+        if(cycleSprites) setSpriteForAge(particleContext.spriteProvider) else setSprite(particleContext.spriteProvider)
         velocityX = particleContext.vel.x
         velocityY = particleContext.vel.y
         velocityZ = particleContext.vel.z

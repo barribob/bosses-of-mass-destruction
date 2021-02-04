@@ -2,6 +2,7 @@ package net.barribob.boss.utils
 
 import net.barribob.boss.Mod
 import net.barribob.boss.mob.Entities
+import net.barribob.boss.mob.mobs.obsidilith.BurstAction
 import net.barribob.boss.mob.spawn.*
 import net.barribob.boss.projectile.MagicMissileProjectile
 import net.barribob.maelstrom.general.random.ModRandom
@@ -66,5 +67,9 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler, private va
     fun lichCounter(source: ServerCommandSource) {
         Entities.killCounter.onEntitiesKilledUpdate(calls, 0, source.player, source.world)
         calls++
+    }
+
+    fun burstAction(source: ServerCommandSource) {
+        BurstAction(source.player, source.world, { }, 0).perform()
     }
 }

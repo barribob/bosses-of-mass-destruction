@@ -1,12 +1,14 @@
 package net.barribob.boss.mob.utils
 
 import net.barribob.boss.render.IBoneLight
+import net.barribob.boss.render.IRenderDataProvider
 import net.barribob.boss.render.IRenderLight
 import net.barribob.boss.render.IRenderer
 import net.minecraft.client.render.VertexConsumer
 import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.client.render.entity.EntityRenderDispatcher
 import net.minecraft.client.util.math.MatrixStack
+import net.minecraft.client.util.math.Vector4f
 import net.minecraft.entity.LivingEntity
 import net.minecraft.util.math.BlockPos
 import software.bernie.geckolib3.core.IAnimatable
@@ -18,8 +20,9 @@ class SimpleLivingGeoRenderer<T>(
     renderManager: EntityRenderDispatcher?,
     modelProvider: AnimatedGeoModel<T>?,
     private val brightness: IRenderLight<T>? = null,
-    private val brightnessByCube: IBoneLight? = null,
+    private val iBoneLight: IBoneLight? = null,
     private val renderer: IRenderer<T>? = null,
+    private val renderData: IRenderDataProvider<T>? = null
     ) : GeoEntityRenderer<T>(renderManager, modelProvider) where T : IAnimatable, T : LivingEntity {
 
     override fun getBlockLight(entity: T, blockPos: BlockPos): Int {
@@ -37,8 +40,10 @@ class SimpleLivingGeoRenderer<T>(
         blue: Float,
         alpha: Float
     ) {
-        val packedLight = brightnessByCube?.getLightForBone(bone, packedLightIn) ?: packedLightIn
-        super.renderRecursively(bone, stack, bufferIn, packedLight, packedOverlayIn, red, green, blue, alpha)
+        val packedLight = iBoneLight?.getLightForBone(bone, packedLightIn) ?: packedLightIn
+        val color = Vector4f(red, green, blue, alpha)
+        val newColor = iBoneLight?.getColorForBone(bone, color) ?: color
+        super.renderRecursively(bone, stack, bufferIn, packedLight, packedOverlayIn, newColor.x, newColor.y, newColor.z, newColor.w)
     }
 
     override fun render(
@@ -49,6 +54,7 @@ class SimpleLivingGeoRenderer<T>(
         vertexConsumers: VertexConsumerProvider,
         light: Int,
     ) {
+        renderData?.provide(entity, tickDelta)
         renderer?.render(entity, yaw, tickDelta, matrices, vertexConsumers, light)
         matrices.push()
         super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light)

@@ -8,4 +8,6 @@ object ModColors {
     val COMET_BLUE = Vec3d(0.0, 1.0, 1.0)
     val FADED_COMET_BLUE = Vec3d(0.0, 0.3, 0.3)
     val TELEPORT_PURPLE = Vec3d(1.0, 0.5, 1.0)
+    val ORANGE = Vec3d(1.0, 0.65, 0.1)
+    val RUNIC_BROWN = Vec3d(0.66, 0.34, 0.0)
 }

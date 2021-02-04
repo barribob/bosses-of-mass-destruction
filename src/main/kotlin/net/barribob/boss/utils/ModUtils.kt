@@ -1,5 +1,6 @@
 package net.barribob.boss.utils
 
+import net.minecraft.client.network.ClientPlayNetworkHandler
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket
 import net.minecraft.particle.ParticleEffect
@@ -10,8 +11,11 @@ import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 
 object ModUtils {
-    fun ServerWorld.spawnParticle(particleType: ParticleEffect, pos: Vec3d, vel: Vec3d, count: Int = 1) =
-        this.spawnParticles(particleType, pos.x, pos.y, pos.z, count, vel.x, vel.y, vel.z, vel.length())
+    /**
+     * Look at [ClientPlayNetworkHandler.onParticle]
+     */
+    fun ServerWorld.spawnParticle(particleType: ParticleEffect, pos: Vec3d, velOrOffset: Vec3d, count: Int = 0) =
+        this.spawnParticles(particleType, pos.x, pos.y, pos.z, count, velOrOffset.x, velOrOffset.y, velOrOffset.z, velOrOffset.length())
 
     fun World.playSound(
         pos: Vec3d,
