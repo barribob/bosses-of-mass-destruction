@@ -41,7 +41,7 @@ class WaveAction(val entity: LivingEntity, private val status: Byte, private val
             val direction = directionProvider().normalize().multiply(riftRadius.toDouble())
             val numRifts = 5
             val startRiftPos = entity.pos.add(direction)
-            val endRiftPos = startRiftPos.add(direction.multiply(numRifts.toDouble() * 1.7))
+            val endRiftPos = startRiftPos.add(direction.multiply(numRifts.toDouble() * 1.5))
             MathUtils.lineCallback(startRiftPos, endRiftPos, numRifts) { linePos, i ->
                 eventScheduler.addEvent(TimedEvent({
                     world.playSound(linePos, Mod.sounds.missilePrepare, SoundCategory.HOSTILE, 0.7f, range = 32.0)

@@ -2,10 +2,8 @@ package net.barribob.boss.utils
 
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.network.ClientPlayNetworkHandler
-import net.minecraft.client.render.OverlayTexture
-import net.minecraft.client.render.RenderLayer
-import net.minecraft.client.render.VertexConsumer
-import net.minecraft.client.render.VertexConsumerProvider
+import net.minecraft.client.particle.BillboardParticle
+import net.minecraft.client.render.*
 import net.minecraft.client.render.entity.DragonFireballEntityRenderer
 import net.minecraft.client.render.entity.EntityRenderDispatcher
 import net.minecraft.client.render.entity.EntityRenderer
@@ -150,8 +148,10 @@ object VanillaCopies {
         textureV: Int,
     ) {
         vertexConsumer.vertex(modelMatrix, x - 0.5f, y.toFloat() - 0.25f, 0.0f).color(255, 255, 255, 255)
-            .texture(textureU.toFloat(),
-                textureV.toFloat()).overlay(OverlayTexture.DEFAULT_UV).light(light)
+            .texture(
+                textureU.toFloat(),
+                textureV.toFloat()
+            ).overlay(OverlayTexture.DEFAULT_UV).light(light)
             .normal(normalMatrix, 0.0f, 1.0f, 0.0f).next()
     }
 
@@ -159,11 +159,15 @@ object VanillaCopies {
      * [LivingEntity.canSee]
      */
     fun hasDirectLineOfSight(to: Vec3d, from: Vec3d, world: BlockView, entity: Entity): Boolean {
-        return world.raycast(RaycastContext(to,
-            from,
-            RaycastContext.ShapeType.COLLIDER,
-            RaycastContext.FluidHandling.NONE,
-            entity)).type == HitResult.Type.MISS
+        return world.raycast(
+            RaycastContext(
+                to,
+                from,
+                RaycastContext.ShapeType.COLLIDER,
+                RaycastContext.FluidHandling.NONE,
+                entity
+            )
+        ).type == HitResult.Type.MISS
     }
 
     /**
@@ -190,5 +194,78 @@ object VanillaCopies {
             amt -= i
             world.spawnEntity(ExperienceOrbEntity(world, pos.x, pos.y, pos.z, i))
         }
+    }
+
+    /**
+     * [BillboardParticle.buildGeometry] without rotation
+     */
+    fun buildFlatGeometry(
+        camera: Camera, tickDelta: Float,
+        prevPosX: Double,
+        prevPosY: Double,
+        prevPosZ: Double,
+        x: Double,
+        y: Double,
+        z: Double,
+        scale: Float
+    ): Array<Vector3f> {
+        val vec3d = camera.pos
+        val f = (MathHelper.lerp(tickDelta.toDouble(), prevPosX, x) - vec3d.getX()).toFloat()
+        val g = (MathHelper.lerp(tickDelta.toDouble(), prevPosY, y) - vec3d.getY()).toFloat()
+        val h = (MathHelper.lerp(tickDelta.toDouble(), prevPosZ, z) - vec3d.getZ()).toFloat()
+
+        val vector3fs = arrayOf(
+            Vector3f(-1.0f, 0.0f, -1.0f),
+            Vector3f(-1.0f, 0.0f, 1.0f),
+            Vector3f(1.0f, 0.0f, 1.0f),
+            Vector3f(1.0f, 0.0f, -1.0f)
+        )
+
+        for (k in 0..3) {
+            val vector3f2 = vector3fs[k]
+            vector3f2.scale(scale)
+            vector3f2.add(f, g, h)
+        }
+
+        return vector3fs
+    }
+
+    /**
+     * [BillboardParticle.buildGeometry]
+     */
+    fun buildBillboardGeometry(
+        camera: Camera, tickDelta: Float,
+        prevPosX: Double,
+        prevPosY: Double,
+        prevPosZ: Double,
+        x: Double,
+        y: Double,
+        z: Double,
+        scale: Float
+    ): Array<Vector3f> {
+        val vec3d = camera.pos
+        val f = (MathHelper.lerp(tickDelta.toDouble(), prevPosX, x) - vec3d.getX()).toFloat()
+        val g = (MathHelper.lerp(tickDelta.toDouble(), prevPosY, y) - vec3d.getY()).toFloat()
+        val h = (MathHelper.lerp(tickDelta.toDouble(), prevPosZ, z) - vec3d.getZ()).toFloat()
+        val quaternion2: Quaternion = camera.rotation
+
+        val vector3f = Vector3f(-1.0f, -1.0f, 0.0f)
+        vector3f.rotate(quaternion2)
+        val vector3fs = arrayOf(
+            Vector3f(-1.0f, -1.0f, 0.0f),
+            Vector3f(-1.0f, 1.0f, 0.0f),
+            Vector3f(1.0f, 1.0f, 0.0f),
+            Vector3f(1.0f, -1.0f, 0.0f)
+        )
+        val j: Float = scale
+
+        for (k in 0..3) {
+            val vector3f2 = vector3fs[k]
+            vector3f2.rotate(quaternion2)
+            vector3f2.scale(j)
+            vector3f2.add(f, g, h)
+        }
+
+        return vector3fs
     }
 }

@@ -4,6 +4,7 @@ import net.barribob.boss.Mod
 import net.barribob.boss.mob.mobs.obsidilith.BurstAction
 import net.barribob.boss.mob.mobs.obsidilith.WaveAction
 import net.barribob.boss.utils.ModColors
+import net.barribob.boss.utils.VanillaCopies
 import net.barribob.maelstrom.static_utilities.MathUtils
 import net.barribob.maelstrom.static_utilities.RandomUtils
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry
@@ -71,13 +72,13 @@ object Particles {
             SimpleParticleFactory(provider) {
                 SimpleParticle(it, {
                     RandomUtils.range(15, 20)
-                })
+                }, VanillaCopies::buildBillboardGeometry)
             }
         }
 
         particleFactory.register(SOUL_FLAME) { provider: SpriteProvider ->
             SimpleParticleFactory(provider) {
-                val particle = SimpleParticle(it, { RandomUtils.range(15, 20) })
+                val particle = SimpleParticle(it, { RandomUtils.range(15, 20) }, VanillaCopies::buildBillboardGeometry)
                 particle.setColorOverride { ModColors.COMET_BLUE }
                 particle
             }
@@ -85,7 +86,7 @@ object Particles {
 
         particleFactory.register(LICH_MAGIC_CIRCLE) { provider: SpriteProvider ->
             SimpleParticleFactory(provider) {
-                val particle = SimpleParticle(it, { 40 })
+                val particle = SimpleParticle(it, { 40 }, VanillaCopies::buildBillboardGeometry)
                 particle.setBrightnessOverride { FULL_BRIGHT }
                 particle.scale(4f)
                 particle
@@ -94,7 +95,7 @@ object Particles {
 
         particleFactory.register(OBSIDILITH_BURST) { provider: SpriteProvider ->
             SimpleParticleFactory(provider) {
-                val particle = SimpleParticle(it, { RandomUtils.range(7, 15) })
+                val particle = SimpleParticle(it, { RandomUtils.range(7, 15) }, VanillaCopies::buildBillboardGeometry)
                 particle.setBrightnessOverride { FULL_BRIGHT }
                 particle.scale(4f)
                 particle.setColorOverride { age -> MathUtils.lerpVec(age, ModColors.ORANGE, ModColors.RUNIC_BROWN) }
@@ -104,7 +105,8 @@ object Particles {
 
         particleFactory.register(ENCHANT) { provider: SpriteProvider ->
             SimpleParticleFactory(provider) { context ->
-                val particle = SimpleParticle(context, { RandomUtils.range(30, 50) }, false)
+                val particle =
+                    SimpleParticle(context, { RandomUtils.range(30, 50) }, VanillaCopies::buildBillboardGeometry, false)
                 particle.setBrightnessOverride { FULL_BRIGHT }
                 particle.setScaleOverride { (sin(it.toDouble() * Math.PI) + 1f).toFloat() * 0.1f }
                 particle
@@ -113,7 +115,11 @@ object Particles {
 
         particleFactory.register(OBSIDILITH_BURST_INDICATOR) { provider: SpriteProvider ->
             SimpleParticleFactory(provider) { context ->
-                val particle = SimpleParticle(context, { BurstAction.burstDelay + RandomUtils.range(-1, 2) })
+                val particle = SimpleParticle(
+                    context,
+                    { BurstAction.burstDelay + RandomUtils.range(-1, 2) },
+                    VanillaCopies::buildFlatGeometry
+                )
                 particle.setColorOverride { ModColors.ORANGE }
                 particle.setColorVariation(0.3)
                 particle.setBrightnessOverride { FULL_BRIGHT }
@@ -124,7 +130,7 @@ object Particles {
 
         particleFactory.register(OBSIDILITH_WAVE) { provider: SpriteProvider ->
             SimpleParticleFactory(provider) {
-                val particle = SimpleParticle(it, { RandomUtils.range(7, 15) })
+                val particle = SimpleParticle(it, { RandomUtils.range(7, 15) }, VanillaCopies::buildBillboardGeometry)
                 particle.setBrightnessOverride { FULL_BRIGHT }
                 particle.scale(4f)
                 particle.setColorOverride { age -> MathUtils.lerpVec(age, ModColors.RED, ModColors.DARK_RED) }
@@ -134,7 +140,11 @@ object Particles {
 
         particleFactory.register(OBSIDILITH_WAVE_INDICATOR) { provider: SpriteProvider ->
             SimpleParticleFactory(provider) { context ->
-                val particle = SimpleParticle(context, { WaveAction.waveDelay + RandomUtils.range(-1, 2) })
+                val particle = SimpleParticle(
+                    context,
+                    { WaveAction.waveDelay + RandomUtils.range(-1, 2) },
+                    VanillaCopies::buildFlatGeometry
+                )
                 particle.setColorOverride { ModColors.RED }
                 particle.setColorVariation(0.3)
                 particle.setBrightnessOverride { FULL_BRIGHT }
