@@ -1,11 +1,10 @@
 package net.barribob.boss.mob.mobs.obsidilith
 
 import net.barribob.boss.mob.ai.action.IActionWithCooldown
-import net.barribob.boss.mob.utils.ISidedCooldownAction
 
-class ObsidilithMoveLogic(private val actions: Map<Byte, ISidedCooldownAction>) : IActionWithCooldown {
+class ObsidilithMoveLogic(private val actions: Map<Byte, IActionWithCooldown>) : IActionWithCooldown {
     private fun chooseMove(): Byte {
-        return ObsidilithUtils.burstAttackStatus
+        return ObsidilithUtils.waveAttackStatus
     }
 
     override fun perform(): Int {

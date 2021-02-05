@@ -10,4 +10,6 @@ object ModColors {
     val TELEPORT_PURPLE = Vec3d(1.0, 0.5, 1.0)
     val ORANGE = Vec3d(1.0, 0.65, 0.1)
     val RUNIC_BROWN = Vec3d(0.66, 0.34, 0.0)
+    val RED = Vec3d(0.8, 0.2, 0.4)
+    val DARK_RED = Vec3d(0.4, 0.0, 0.0)
 }

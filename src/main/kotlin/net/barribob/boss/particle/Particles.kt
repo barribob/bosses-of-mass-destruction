@@ -2,6 +2,7 @@ package net.barribob.boss.particle
 
 import net.barribob.boss.Mod
 import net.barribob.boss.mob.mobs.obsidilith.BurstAction
+import net.barribob.boss.mob.mobs.obsidilith.WaveAction
 import net.barribob.boss.utils.ModColors
 import net.barribob.maelstrom.static_utilities.MathUtils
 import net.barribob.maelstrom.static_utilities.RandomUtils
@@ -33,7 +34,7 @@ object Particles {
 
     val OBSIDILITH_BURST: DefaultParticleType = Registry.register(
         Registry.PARTICLE_TYPE,
-        Mod.identifier("split"),
+        Mod.identifier("obsidilith_burst"),
         FabricParticleTypes.simple()
     )
 
@@ -43,9 +44,21 @@ object Particles {
         FabricParticleTypes.simple()
     )
 
-    val OBSIDILITH_INDICATOR: DefaultParticleType = Registry.register(
+    val OBSIDILITH_BURST_INDICATOR: DefaultParticleType = Registry.register(
         Registry.PARTICLE_TYPE,
         Mod.identifier("obsidilith_burst_indicator"),
+        FabricParticleTypes.simple()
+    )
+
+    val OBSIDILITH_WAVE: DefaultParticleType = Registry.register(
+        Registry.PARTICLE_TYPE,
+        Mod.identifier("obsidilith_wave"),
+        FabricParticleTypes.simple()
+    )
+
+    val OBSIDILITH_WAVE_INDICATOR: DefaultParticleType = Registry.register(
+        Registry.PARTICLE_TYPE,
+        Mod.identifier("obsidilith_wave_indicator"),
         FabricParticleTypes.simple()
     )
 
@@ -98,10 +111,31 @@ object Particles {
             }
         }
 
-        particleFactory.register(OBSIDILITH_INDICATOR) { provider: SpriteProvider ->
+        particleFactory.register(OBSIDILITH_BURST_INDICATOR) { provider: SpriteProvider ->
             SimpleParticleFactory(provider) { context ->
                 val particle = SimpleParticle(context, { BurstAction.burstDelay + RandomUtils.range(-1, 2) })
                 particle.setColorOverride { ModColors.ORANGE }
+                particle.setColorVariation(0.3)
+                particle.setBrightnessOverride { FULL_BRIGHT }
+                particle.setScaleOverride { (1 + it) * 0.25f }
+                particle
+            }
+        }
+
+        particleFactory.register(OBSIDILITH_WAVE) { provider: SpriteProvider ->
+            SimpleParticleFactory(provider) {
+                val particle = SimpleParticle(it, { RandomUtils.range(7, 15) })
+                particle.setBrightnessOverride { FULL_BRIGHT }
+                particle.scale(4f)
+                particle.setColorOverride { age -> MathUtils.lerpVec(age, ModColors.RED, ModColors.DARK_RED) }
+                particle
+            }
+        }
+
+        particleFactory.register(OBSIDILITH_WAVE_INDICATOR) { provider: SpriteProvider ->
+            SimpleParticleFactory(provider) { context ->
+                val particle = SimpleParticle(context, { WaveAction.waveDelay + RandomUtils.range(-1, 2) })
+                particle.setColorOverride { ModColors.RED }
                 particle.setColorVariation(0.3)
                 particle.setBrightnessOverride { FULL_BRIGHT }
                 particle.setScaleOverride { (1 + it) * 0.25f }

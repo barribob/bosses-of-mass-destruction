@@ -4,8 +4,8 @@ import net.barribob.boss.mob.ai.action.CooldownAction
 import net.barribob.boss.mob.ai.goals.ActionGoal
 import net.barribob.boss.mob.ai.goals.FindTargetGoal
 import net.barribob.boss.mob.utils.BaseEntity
-import net.barribob.boss.mob.utils.ISidedCooldownAction
 import net.barribob.maelstrom.general.event.TimedEvent
+import net.barribob.maelstrom.static_utilities.MathUtils
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.MovementType
 import net.minecraft.entity.boss.BossBar
@@ -20,10 +20,12 @@ import software.bernie.geckolib3.core.manager.AnimationData
 class ObsidilithEntity(entityType: EntityType<out ObsidilithEntity>, world: World) : BaseEntity(entityType, world){
     override val bossBar = ServerBossBar(this.displayName, BossBar.Color.PINK, BossBar.Style.NOTCHED_12)
     var currentAttack: Byte = 0
-    private val statusRegistry = mapOf<Byte, ISidedCooldownAction>(
-        Pair(ObsidilithUtils.burstAttackStatus, BurstAction(this, world, ::sendStatus, ObsidilithUtils.burstAttackStatus))
+    private val statusRegistry = mapOf(
+        Pair(ObsidilithUtils.burstAttackStatus, BurstAction(this, ::sendStatus, ObsidilithUtils.burstAttackStatus)),
+        Pair(ObsidilithUtils.waveAttackStatus, WaveAction(this, ObsidilithUtils.waveAttackStatus, ::getAttackDirection))
     )
     private val moveLogic = ObsidilithMoveLogic(statusRegistry)
+    private val effectHandler = ObsidilithEffectHandler(this)
 
     init {
         ignoreCameraFrustum = true
@@ -37,6 +39,12 @@ class ObsidilithEntity(entityType: EntityType<out ObsidilithEntity>, world: Worl
 
     private fun sendStatus(byte: Byte) {
         world.sendEntityStatus(this, byte)
+    }
+
+    private fun getAttackDirection(): Vec3d {
+        return target?.let {
+            MathUtils.unNormedDirection(pos, it.pos)
+        } ?: throw IllegalStateException("The target should not be null when this attack is performed")
     }
 
     private fun buildAttackGoal(): ActionGoal {
@@ -57,7 +65,7 @@ class ObsidilithEntity(entityType: EntityType<out ObsidilithEntity>, world: Worl
     override fun handleStatus(status: Byte) {
         val attackStatus = statusRegistry[status]
         if(attackStatus != null) {
-            attackStatus.handleClientStatus()
+            effectHandler.handleStatus(status)
             currentAttack = status
             eventScheduler.addEvent(TimedEvent({ currentAttack = 0 }, 40))
         }
