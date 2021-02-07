@@ -1,15 +1,12 @@
 package net.barribob.boss.mob.mobs.obsidilith
 
 import net.barribob.boss.utils.ModUtils.spawnParticle
-import net.barribob.boss.utils.NetworkUtils.Companion.sendVelocity
 import net.barribob.maelstrom.general.event.EventScheduler
 import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.static_utilities.VecUtils
 import net.barribob.maelstrom.static_utilities.asVec3d
 import net.minecraft.block.SideShapeType
 import net.minecraft.entity.LivingEntity
-import net.minecraft.entity.attribute.EntityAttributes
-import net.minecraft.entity.damage.DamageSource
 import net.minecraft.item.AutomaticItemPlacementContext
 import net.minecraft.item.ItemStack
 import net.minecraft.particle.ParticleEffect
@@ -26,7 +23,8 @@ class RiftBurst(
     private val indicatorParticle: ParticleEffect,
     private val columnParticle: ParticleEffect,
     private val riftTime: Int,
-    val eventScheduler: EventScheduler
+    val eventScheduler: EventScheduler,
+    val onImpact: (LivingEntity) -> Unit
 ) {
     fun tryPlaceRift(pos: Vec3d){
         val above = BlockPos(pos.add(VecUtils.yAxis.multiply(14.0)))
@@ -47,7 +45,6 @@ class RiftBurst(
         eventScheduler.addEvent(TimedEvent({
             val rand = world.random
             val columnVel = VecUtils.yAxis.multiply(rand.nextDouble() + 1).multiply(0.25)
-            val damage = entity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE).toFloat()
             var ticks = 0
             eventScheduler.addEvent(TimedEvent({
                 val impactPos = pos.up(ticks)
@@ -62,11 +59,7 @@ class RiftBurst(
 
                 entities.forEach {
                     if (it != entity) {
-                        it.sendVelocity(Vec3d(it.velocity.x, 1.0, it.velocity.z))
-                        it.damage(
-                            DamageSource.mob(entity),
-                            damage
-                        )
+                        onImpact(it)
                     }
                 }
 

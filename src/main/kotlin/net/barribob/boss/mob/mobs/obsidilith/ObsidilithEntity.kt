@@ -22,7 +22,8 @@ class ObsidilithEntity(entityType: EntityType<out ObsidilithEntity>, world: Worl
     var currentAttack: Byte = 0
     private val statusRegistry = mapOf(
         Pair(ObsidilithUtils.burstAttackStatus, BurstAction(this, ::sendStatus, ObsidilithUtils.burstAttackStatus)),
-        Pair(ObsidilithUtils.waveAttackStatus, WaveAction(this, ObsidilithUtils.waveAttackStatus, ::getAttackDirection))
+        Pair(ObsidilithUtils.waveAttackStatus, WaveAction(this, ObsidilithUtils.waveAttackStatus, ::getAttackDirection)),
+        Pair(ObsidilithUtils.spikeAttackStatus, SpikeAction(this, ObsidilithUtils.spikeAttackStatus))
     )
     private val moveLogic = ObsidilithMoveLogic(statusRegistry)
     private val effectHandler = ObsidilithEffectHandler(this)
@@ -41,7 +42,7 @@ class ObsidilithEntity(entityType: EntityType<out ObsidilithEntity>, world: Worl
         world.sendEntityStatus(this, byte)
     }
 
-    private fun getAttackDirection(): Vec3d {
+    private fun getAttackDirection(): Vec3d { // Todo: this exception can happen - move to wave action
         return target?.let {
             MathUtils.unNormedDirection(pos, it.pos)
         } ?: throw IllegalStateException("The target should not be null when this attack is performed")

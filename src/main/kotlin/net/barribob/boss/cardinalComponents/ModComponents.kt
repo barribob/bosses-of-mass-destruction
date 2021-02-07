@@ -8,10 +8,12 @@ import dev.onyxstudios.cca.api.v3.world.WorldComponentFactoryRegistry
 import dev.onyxstudios.cca.api.v3.world.WorldComponentInitializer
 import net.barribob.boss.Mod
 import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.server.network.ServerPlayerEntity
+import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 
 class ModComponents : WorldComponentInitializer, EntityComponentInitializer {
-    companion object : IWorldEventScheduler, ILichSummonCounter {
+    companion object : IWorldEventScheduler, ILichSummonCounter, IPlayerMoveHistory {
         private val eventSchedulerComponentKey: ComponentKey<IWorldEventSchedulerComponent> =
             ComponentRegistryV3.INSTANCE.getOrCreate(
                 Mod.identifier("event_scheduler"),
@@ -24,11 +26,22 @@ class ModComponents : WorldComponentInitializer, EntityComponentInitializer {
                 ILichSummonCounterComponent::class.java
             )
 
+        private val playerMoveHistoryComponentKey: ComponentKey<IPlayerMoveHistoryComponent> =
+            ComponentRegistryV3.INSTANCE.getOrCreate(
+                Mod.identifier("player_move_history"),
+                IPlayerMoveHistoryComponent::class.java
+            )
+
         override fun getWorldEventScheduler(world: World) = eventSchedulerComponentKey.get(world).get()
-        override fun getLichSummons(playerEntity: PlayerEntity): Int = lichSummonCounterComponentKey.get(playerEntity).getValue()
+        override fun getLichSummons(playerEntity: PlayerEntity): Int =
+            lichSummonCounterComponentKey.get(playerEntity).getValue()
+
         override fun increment(playerEntity: PlayerEntity) {
             lichSummonCounterComponentKey.get(playerEntity).increment()
         }
+
+        override fun getPlayerPositions(serverPlayerEntity: ServerPlayerEntity): List<Vec3d> =
+            playerMoveHistoryComponentKey.get(serverPlayerEntity).getHistoricalPositions()
     }
 
     override fun registerWorldComponentFactories(registry: WorldComponentFactoryRegistry) {
@@ -41,5 +54,6 @@ class ModComponents : WorldComponentInitializer, EntityComponentInitializer {
 
     override fun registerEntityComponentFactories(registry: EntityComponentFactoryRegistry) {
         registry.registerFor(PlayerEntity::class.java, lichSummonCounterComponentKey, ::LichSummonCounter)
+        registry.registerFor(ServerPlayerEntity::class.java, playerMoveHistoryComponentKey, ::PlayerMoveHistory)
     }
 }

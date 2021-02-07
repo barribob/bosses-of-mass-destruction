@@ -74,6 +74,7 @@ private fun initDev() {
     MaelstromMod.testCommand.addId(inGameTests::lichSummon.name, inGameTests::lichSummon)
     MaelstromMod.testCommand.addId(inGameTests::lichCounter.name, inGameTests::lichCounter)
     MaelstromMod.testCommand.addId(inGameTests::burstAction.name, inGameTests::burstAction)
+    MaelstromMod.testCommand.addId(inGameTests::playerPosition.name, inGameTests::playerPosition)
 }
 
 @Environment(EnvType.CLIENT)

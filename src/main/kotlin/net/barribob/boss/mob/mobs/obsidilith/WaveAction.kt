@@ -5,14 +5,18 @@ import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.mob.ai.action.IActionWithCooldown
 import net.barribob.boss.particle.Particles
 import net.barribob.boss.utils.ModUtils.playSound
+import net.barribob.boss.utils.NetworkUtils.Companion.sendVelocity
 import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.static_utilities.MathUtils
 import net.minecraft.entity.LivingEntity
+import net.minecraft.entity.attribute.EntityAttributes
+import net.minecraft.entity.damage.DamageSource
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
 import net.minecraft.util.math.Vec3d
 
-class WaveAction(val entity: LivingEntity, private val status: Byte, private val directionProvider: () -> Vec3d) : IActionWithCooldown {
+class WaveAction(val entity: LivingEntity, private val status: Byte, private val directionProvider: () -> Vec3d) :
+    IActionWithCooldown {
     private val riftRadius = 4
     private val circlePoints = MathUtils.buildBlockCircle(riftRadius)
     private val world = entity.world
@@ -35,7 +39,15 @@ class WaveAction(val entity: LivingEntity, private val status: Byte, private val
             Particles.OBSIDILITH_WAVE,
             waveDelay,
             eventScheduler
-        )
+        ) {
+            val damage = entity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE).toFloat()
+            it.sendVelocity(Vec3d(it.velocity.x, 1.0, it.velocity.z))
+            it.damage(
+                DamageSource.mob(entity),
+                damage
+            )
+        }
+
         world.playSound(entity.pos, Mod.sounds.teleportPrepare, SoundCategory.HOSTILE, 0.7f, range = 32.0)
         eventScheduler.addEvent(TimedEvent({
             val direction = directionProvider().normalize().multiply(riftRadius.toDouble())
@@ -49,10 +61,10 @@ class WaveAction(val entity: LivingEntity, private val status: Byte, private val
                         world.playSound(linePos, Mod.sounds.obsidilithBurst, SoundCategory.HOSTILE, 1.2f, range = 32.0)
                     }, waveDelay, shouldCancel = { !entity.isAlive }))
 
-                    for(point in circlePoints) {
+                    for (point in circlePoints) {
                         riftBurst.tryPlaceRift(linePos.add(point))
                     }
-                },  i * 8, shouldCancel = { !entity.isAlive }))
+                }, i * 8, shouldCancel = { !entity.isAlive }))
             }
         }, attackStartDelay, shouldCancel = { !entity.isAlive }))
     }

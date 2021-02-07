@@ -18,11 +18,15 @@ class ObsidilithEffectHandler(val entity: LivingEntity) {
         .color(ModColors.RED)
         .colorVariation(0.2)
 
+    private val spikeParticleFactory = ClientParticleBuilder(Particles.ENCHANT)
+        .color(ModColors.COMET_BLUE)
+        .colorVariation(0.2)
+
     fun handleStatus(status: Byte) {
-        if(status == ObsidilithUtils.burstAttackStatus) {
-            burstEffect()
-        } else if(status == ObsidilithUtils.waveAttackStatus) {
-            waveEffect()
+        when (status) {
+            ObsidilithUtils.burstAttackStatus -> burstEffect()
+            ObsidilithUtils.waveAttackStatus -> waveEffect()
+            ObsidilithUtils.spikeAttackStatus -> spikeEffect()
         }
     }
 
@@ -39,6 +43,15 @@ class ObsidilithEffectHandler(val entity: LivingEntity) {
         for (i in 0..50) {
             val pos = entity.eyePos().add(RandomUtils.randVec().normalize().multiply(3.0))
             waveParticleFactory.velocity {
+                MathUtils.unNormedDirection(pos, entity.eyePos()).crossProduct(VecUtils.yAxis).multiply(0.1)
+            }.build(pos)
+        }
+    }
+
+    private fun spikeEffect() {
+        for (i in 0..50) {
+            val pos = entity.eyePos().add(RandomUtils.randVec().normalize().multiply(3.0))
+            spikeParticleFactory.velocity {
                 MathUtils.unNormedDirection(pos, entity.eyePos()).crossProduct(VecUtils.yAxis).multiply(0.1)
             }.build(pos)
         }

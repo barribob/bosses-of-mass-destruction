@@ -1,8 +1,10 @@
 package net.barribob.boss.utils
 
 import net.barribob.boss.Mod
+import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.mob.Entities
 import net.barribob.boss.mob.mobs.obsidilith.BurstAction
+import net.barribob.boss.mob.mobs.obsidilith.ObsidilithUtils
 import net.barribob.boss.mob.spawn.*
 import net.barribob.boss.projectile.MagicMissileProjectile
 import net.barribob.maelstrom.general.random.ModRandom
@@ -71,5 +73,17 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler, private va
 
     fun burstAction(source: ServerCommandSource) {
         BurstAction(source.player, { }, 0).perform()
+    }
+
+    fun playerPosition(source: ServerCommandSource) {
+        val points = ModComponents.getPlayerPositions(source.player)
+        debugPoints.drawDebugPoints(points, 1, source.position, source.world)
+        debugPoints.drawDebugPoints(
+            listOf(ObsidilithUtils.approximatePlayerNextPosition(points, source.player.pos)),
+            1,
+            source.position,
+            source.world,
+            listOf(1f, 0f, 1f, 1f)
+        )
     }
 }
