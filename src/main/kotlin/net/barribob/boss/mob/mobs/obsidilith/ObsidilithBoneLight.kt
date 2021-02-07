@@ -31,6 +31,8 @@ class ObsidilithBoneLight : IBoneLight, IRenderDataProvider<ObsidilithEntity> {
             return when (entity?.currentAttack) {
                 ObsidilithUtils.burstAttackStatus -> colorToVec4(ModColors.ORANGE)
                 ObsidilithUtils.waveAttackStatus -> colorToVec4(ModColors.RED)
+                ObsidilithUtils.spikeAttackStatus -> colorToVec4(ModColors.COMET_BLUE)
+                ObsidilithUtils.anvilAttackStatus -> colorToVec4(ModColors.ENDER_PURPLE)
                 else -> defaultBoneColor
             }
         }

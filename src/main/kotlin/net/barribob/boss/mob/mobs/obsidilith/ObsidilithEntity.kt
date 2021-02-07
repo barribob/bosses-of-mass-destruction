@@ -23,10 +23,11 @@ class ObsidilithEntity(entityType: EntityType<out ObsidilithEntity>, world: Worl
     private val statusRegistry = mapOf(
         Pair(ObsidilithUtils.burstAttackStatus, BurstAction(this, ::sendStatus, ObsidilithUtils.burstAttackStatus)),
         Pair(ObsidilithUtils.waveAttackStatus, WaveAction(this, ObsidilithUtils.waveAttackStatus, ::getAttackDirection)),
-        Pair(ObsidilithUtils.spikeAttackStatus, SpikeAction(this, ObsidilithUtils.spikeAttackStatus))
+        Pair(ObsidilithUtils.spikeAttackStatus, SpikeAction(this, ObsidilithUtils.spikeAttackStatus)),
+        Pair(ObsidilithUtils.anvilAttackStatus, AnvilAction(this, ObsidilithUtils.anvilAttackStatus))
     )
     private val moveLogic = ObsidilithMoveLogic(statusRegistry)
-    private val effectHandler = ObsidilithEffectHandler(this)
+    private val effectHandler = ObsidilithEffectHandler(this, eventScheduler)
 
     init {
         ignoreCameraFrustum = true
@@ -91,5 +92,9 @@ class ObsidilithEntity(entityType: EntityType<out ObsidilithEntity>, world: Worl
         else{
             super.canHaveStatusEffect(effect)
         }
+    }
+
+    override fun handleFallDamage(fallDistance: Float, damageMultiplier: Float): Boolean {
+        return false
     }
 }

@@ -63,6 +63,12 @@ object Particles {
         FabricParticleTypes.simple()
     )
 
+    val DOWNSPARKLE: DefaultParticleType = Registry.register(
+        Registry.PARTICLE_TYPE,
+        Mod.identifier("downsparkle"),
+        FabricParticleTypes.simple()
+    )
+
     const val FULL_BRIGHT = 15728880
 
     fun clientInit() {
@@ -150,6 +156,14 @@ object Particles {
                 particle.setBrightnessOverride { FULL_BRIGHT }
                 particle.setScaleOverride { (1 + it) * 0.25f }
                 particle
+            }
+        }
+
+        particleFactory.register(DOWNSPARKLE) { provider: SpriteProvider ->
+            SimpleParticleFactory(provider) {
+                SimpleParticle(it, {
+                    RandomUtils.range(15, 20)
+                }, VanillaCopies::buildBillboardGeometry)
             }
         }
     }

@@ -9,6 +9,7 @@ object ObsidilithUtils {
     const val burstAttackStatus: Byte = 5
     const val waveAttackStatus: Byte = 6
     const val spikeAttackStatus: Byte = 7
+    const val anvilAttackStatus: Byte = 8
 
     fun approximatePlayerNextPosition(previousPosition: List<Vec3d>, currentPos: Vec3d): Vec3d {
         return previousPosition

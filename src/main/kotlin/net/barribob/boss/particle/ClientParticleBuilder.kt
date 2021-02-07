@@ -14,6 +14,9 @@ class ClientParticleBuilder(private val effect: ParticleEffect) {
     private var age: (() -> Int)? = null
     private var colorVariation: Double = 0.0
 
+    // Todo: either make this not a function, or add in velocity changes over the lifetime of a particle?
+    // Right now it does function as being able to define the velocity when the builder is defined, but for the
+    // most part, I think we've just been using it at particle creation time, or as a constant velocity...
     fun velocity(velocity: () -> Vec3d): ClientParticleBuilder {
         this.getVel = velocity
         return this
