@@ -31,8 +31,8 @@ class SpikeAction(val entity: MobEntity) : IActionWithCooldown {
         val riftBurst = RiftBurst(
             entity,
             target.serverWorld,
-            Particles.OBSIDILITH_BURST_INDICATOR,
-            Particles.OBSIDILITH_BURST,
+            Particles.OBSIDILITH_SPIKE_INDICATOR,
+            Particles.OBSIDILITH_SPIKE,
             riftTime,
             eventScheduler
         ) {
@@ -49,12 +49,12 @@ class SpikeAction(val entity: MobEntity) : IActionWithCooldown {
             eventScheduler.addEvent(TimedEvent({
                 val placement =
                     ObsidilithUtils.approximatePlayerNextPosition(ModComponents.getPlayerPositions(target), target.pos)
-                entity.world.playSound(placement, Mod.sounds.missilePrepare, SoundCategory.HOSTILE, 0.7f, range = 32.0)
+                entity.world.playSound(placement, Mod.sounds.spikeIndicator, SoundCategory.HOSTILE, 1.0f, range = 32.0)
 
                 eventScheduler.addEvent(TimedEvent({
                     entity.world.playSound(
                         placement,
-                        Mod.sounds.obsidilithBurst,
+                        Mod.sounds.spike,
                         SoundCategory.HOSTILE,
                         1.2f,
                         range = 32.0

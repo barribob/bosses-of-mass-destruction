@@ -14,6 +14,7 @@ import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.mob.MobEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
+import net.minecraft.sound.SoundEvents
 import net.minecraft.util.math.Vec3d
 
 class WaveAction(val entity: MobEntity) :
@@ -40,7 +41,8 @@ class WaveAction(val entity: MobEntity) :
             eventScheduler
         ) {
             val damage = entity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE).toFloat()
-            it.sendVelocity(Vec3d(it.velocity.x, 1.0, it.velocity.z))
+            it.sendVelocity(Vec3d(it.velocity.x, 0.8, it.velocity.z))
+            it.setOnFireFor(5)
             it.damage(
                 DamageSource.mob(entity),
                 damage
@@ -55,9 +57,9 @@ class WaveAction(val entity: MobEntity) :
             val endRiftPos = startRiftPos.add(direction.multiply(numRifts.toDouble() * 1.5))
             MathUtils.lineCallback(startRiftPos, endRiftPos, numRifts) { linePos, i ->
                 eventScheduler.addEvent(TimedEvent({
-                    world.playSound(linePos, Mod.sounds.missilePrepare, SoundCategory.HOSTILE, 0.7f, range = 32.0)
+                    world.playSound(linePos, Mod.sounds.waveIndicator, SoundCategory.HOSTILE, 0.7f, range = 32.0)
                     eventScheduler.addEvent(TimedEvent({
-                        world.playSound(linePos, Mod.sounds.obsidilithBurst, SoundCategory.HOSTILE, 1.2f, range = 32.0)
+                        world.playSound(linePos, SoundEvents.ENTITY_BLAZE_SHOOT, SoundCategory.HOSTILE, 1.2f, range = 32.0)
                     }, waveDelay, shouldCancel = { !entity.isAlive }))
 
                     for (point in circlePoints) {

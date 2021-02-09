@@ -36,7 +36,7 @@ class BurstAction(val entity: LivingEntity) :
             eventScheduler
         ) {
             val damage = entity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE).toFloat()
-            it.sendVelocity(Vec3d(it.velocity.x, 1.0, it.velocity.z))
+            it.sendVelocity(Vec3d(it.velocity.x, 1.3, it.velocity.z))
             it.damage(
                 DamageSource.mob(entity),
                 damage

@@ -69,6 +69,18 @@ object Particles {
         FabricParticleTypes.simple()
     )
 
+    val OBSIDILITH_SPIKE_INDICATOR: DefaultParticleType = Registry.register(
+        Registry.PARTICLE_TYPE,
+        Mod.identifier("obsidilith_spike_indicator"),
+        FabricParticleTypes.simple()
+    )
+
+    val OBSIDILITH_SPIKE: DefaultParticleType = Registry.register(
+        Registry.PARTICLE_TYPE,
+        Mod.identifier("obsidilith_spike"),
+        FabricParticleTypes.simple()
+    )
+
     const val FULL_BRIGHT = 15728880
 
     fun clientInit() {
@@ -139,6 +151,7 @@ object Particles {
                 val particle = SimpleParticle(it, { RandomUtils.range(7, 15) }, VanillaCopies::buildBillboardGeometry)
                 particle.setBrightnessOverride { FULL_BRIGHT }
                 particle.scale(4f)
+                particle.setColorVariation(0.25)
                 particle.setColorOverride { age -> MathUtils.lerpVec(age, ModColors.RED, ModColors.DARK_RED) }
                 particle
             }
@@ -164,6 +177,33 @@ object Particles {
                 SimpleParticle(it, {
                     RandomUtils.range(15, 20)
                 }, VanillaCopies::buildBillboardGeometry)
+            }
+        }
+
+        particleFactory.register(OBSIDILITH_SPIKE_INDICATOR) { provider: SpriteProvider ->
+            SimpleParticleFactory(provider) { context ->
+                val particle = SimpleParticle(
+                    context,
+                    { WaveAction.waveDelay + RandomUtils.range(-1, 2) },
+                    VanillaCopies::buildFlatGeometry
+                )
+                particle.setColorOverride { ModColors.COMET_BLUE }
+                particle.setColorVariation(0.3)
+                particle.setBrightnessOverride { FULL_BRIGHT }
+                particle.setScaleOverride { (1 + it) * 0.25f }
+                particle
+            }
+        }
+
+        particleFactory.register(OBSIDILITH_SPIKE) { provider: SpriteProvider ->
+            SimpleParticleFactory(provider) {
+                val particle = SimpleParticle(it, {
+                    RandomUtils.range(15, 20)
+                }, VanillaCopies::buildBillboardGeometry)
+                particle.setColorOverride { age -> MathUtils.lerpVec(age, ModColors.WHITE, ModColors.COMET_BLUE) }
+                particle.setBrightnessOverride { FULL_BRIGHT }
+                particle.setColorVariation(0.25)
+                particle
             }
         }
     }

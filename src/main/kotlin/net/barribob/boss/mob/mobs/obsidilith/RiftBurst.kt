@@ -3,6 +3,7 @@ package net.barribob.boss.mob.mobs.obsidilith
 import net.barribob.boss.utils.ModUtils.spawnParticle
 import net.barribob.maelstrom.general.event.EventScheduler
 import net.barribob.maelstrom.general.event.TimedEvent
+import net.barribob.maelstrom.static_utilities.RandomUtils
 import net.barribob.maelstrom.static_utilities.VecUtils
 import net.barribob.maelstrom.static_utilities.asVec3d
 import net.minecraft.block.SideShapeType
@@ -50,7 +51,7 @@ class RiftBurst(
                 val impactPos = pos.up(ticks)
                 world.spawnParticle(
                     columnParticle,
-                    impactPos.asVec3d().add(VecUtils.unit.multiply(0.5)),
+                    impactPos.asVec3d().add(VecUtils.unit.multiply(0.5)).add(RandomUtils.randVec().multiply(0.25)),
                     columnVel
                 )
 

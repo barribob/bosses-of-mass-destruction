@@ -52,5 +52,23 @@
     "sounds": [
       "bosses_of_mass_destruction:obsidilith_burst"
     ]
+  },
+  "wave_indicator": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.wave_indicator",
+    "sounds": [
+      "bosses_of_mass_destruction:wave_indicator"
+    ]
+  },
+  "spike_indicator": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.spike_indicator",
+    "sounds": [
+      "bosses_of_mass_destruction:spike_indicator"
+    ]
+  },
+  "spike": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.spike",
+    "sounds": [
+      "bosses_of_mass_destruction:spike"
+    ]
   }
 }
