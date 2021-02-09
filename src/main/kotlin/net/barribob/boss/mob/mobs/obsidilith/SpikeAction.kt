@@ -15,14 +15,13 @@ import net.minecraft.entity.mob.MobEntity
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.sound.SoundCategory
 
-class SpikeAction(val entity: MobEntity, private val status: Byte) : IActionWithCooldown {
+class SpikeAction(val entity: MobEntity) : IActionWithCooldown {
     private val eventScheduler = ModComponents.getWorldEventScheduler(entity.world)
     private val circlePoints = MathUtils.buildBlockCircle(2)
 
     override fun perform(): Int {
         val target = entity.target
         if (target !is ServerPlayerEntity) return 80
-        entity.world.sendEntityStatus(entity, status)
         placeSpikes(target)
         return 100
     }

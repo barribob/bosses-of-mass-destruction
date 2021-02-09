@@ -13,13 +13,12 @@ import net.minecraft.entity.mob.MobEntity
 import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvents
 
-class AnvilAction(private val actor: MobEntity, private val status: Byte) : IActionWithCooldown {
+class AnvilAction(private val actor: MobEntity) : IActionWithCooldown {
     private val eventScheduler = ModComponents.getWorldEventScheduler(actor.world)
 
     override fun perform(): Int {
         val target = actor.target
         if (target !is LivingEntity) return 80
-        actor.world.sendEntityStatus(actor, status)
         performAttack(target)
         return 80
     }

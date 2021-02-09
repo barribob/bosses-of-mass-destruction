@@ -72,7 +72,7 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler, private va
     }
 
     fun burstAction(source: ServerCommandSource) {
-        BurstAction(source.player, { }, 0).perform()
+        BurstAction(source.player).perform()
     }
 
     fun playerPosition(source: ServerCommandSource) {

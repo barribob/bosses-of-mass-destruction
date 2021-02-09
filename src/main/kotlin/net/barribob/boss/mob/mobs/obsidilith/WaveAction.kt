@@ -11,11 +11,12 @@ import net.barribob.maelstrom.static_utilities.MathUtils
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.entity.damage.DamageSource
+import net.minecraft.entity.mob.MobEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
 import net.minecraft.util.math.Vec3d
 
-class WaveAction(val entity: LivingEntity, private val status: Byte, private val directionProvider: () -> Vec3d) :
+class WaveAction(val entity: MobEntity) :
     IActionWithCooldown {
     private val riftRadius = 4
     private val circlePoints = MathUtils.buildBlockCircle(riftRadius)
@@ -23,15 +24,13 @@ class WaveAction(val entity: LivingEntity, private val status: Byte, private val
     private val eventScheduler = ModComponents.getWorldEventScheduler(world)
 
     override fun perform(): Int {
-        world.sendEntityStatus(
-            entity,
-            status
-        ) // Todo: if all statuses are just sent instantly, we can move this up to the entity
-        placeRifts()
+        val target = entity.target
+        if(target !is LivingEntity) return 80
+        placeRifts(target)
         return 80
     }
 
-    private fun placeRifts() {
+    private fun placeRifts(target: LivingEntity) {
         val riftBurst = RiftBurst(
             entity,
             world as ServerWorld,
@@ -50,7 +49,7 @@ class WaveAction(val entity: LivingEntity, private val status: Byte, private val
 
         world.playSound(entity.pos, Mod.sounds.teleportPrepare, SoundCategory.HOSTILE, 0.7f, range = 32.0)
         eventScheduler.addEvent(TimedEvent({
-            val direction = directionProvider().normalize().multiply(riftRadius.toDouble())
+            val direction = MathUtils.unNormedDirection(entity.pos, target.pos).normalize().multiply(riftRadius.toDouble())
             val numRifts = 5
             val startRiftPos = entity.pos.add(direction)
             val endRiftPos = startRiftPos.add(direction.multiply(numRifts.toDouble() * 1.5))

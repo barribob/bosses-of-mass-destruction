@@ -15,18 +15,13 @@ import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
 import net.minecraft.util.math.Vec3d
 
-class BurstAction(
-    val entity: LivingEntity,
-    val sendStatus: (Byte) -> Unit,
-    private val status: Byte,
-) :
+class BurstAction(val entity: LivingEntity) :
     IActionWithCooldown {
     private val circlePoints = MathUtils.buildBlockCircle(7)
     private val world = entity.world
     private val eventScheduler = ModComponents.getWorldEventScheduler(world)
 
     override fun perform(): Int {
-        sendStatus(status)
         placeRifts()
         return 80
     }

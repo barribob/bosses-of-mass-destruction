@@ -5,7 +5,6 @@ import net.barribob.boss.mob.ai.goals.ActionGoal
 import net.barribob.boss.mob.ai.goals.FindTargetGoal
 import net.barribob.boss.mob.utils.BaseEntity
 import net.barribob.maelstrom.general.event.TimedEvent
-import net.barribob.maelstrom.static_utilities.MathUtils
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.MovementType
 import net.minecraft.entity.boss.BossBar
@@ -21,12 +20,12 @@ class ObsidilithEntity(entityType: EntityType<out ObsidilithEntity>, world: Worl
     override val bossBar = ServerBossBar(this.displayName, BossBar.Color.PINK, BossBar.Style.NOTCHED_12)
     var currentAttack: Byte = 0
     private val statusRegistry = mapOf(
-        Pair(ObsidilithUtils.burstAttackStatus, BurstAction(this, ::sendStatus, ObsidilithUtils.burstAttackStatus)),
-        Pair(ObsidilithUtils.waveAttackStatus, WaveAction(this, ObsidilithUtils.waveAttackStatus, ::getAttackDirection)),
-        Pair(ObsidilithUtils.spikeAttackStatus, SpikeAction(this, ObsidilithUtils.spikeAttackStatus)),
-        Pair(ObsidilithUtils.anvilAttackStatus, AnvilAction(this, ObsidilithUtils.anvilAttackStatus))
+        Pair(ObsidilithUtils.burstAttackStatus, BurstAction(this)),
+        Pair(ObsidilithUtils.waveAttackStatus, WaveAction(this)),
+        Pair(ObsidilithUtils.spikeAttackStatus, SpikeAction(this)),
+        Pair(ObsidilithUtils.anvilAttackStatus, AnvilAction(this))
     )
-    private val moveLogic = ObsidilithMoveLogic(statusRegistry)
+    private val moveLogic = ObsidilithMoveLogic(statusRegistry, this)
     private val effectHandler = ObsidilithEffectHandler(this, eventScheduler)
 
     init {
@@ -37,16 +36,6 @@ class ObsidilithEntity(entityType: EntityType<out ObsidilithEntity>, world: Worl
 
             targetSelector.add(2, FindTargetGoal(this, PlayerEntity::class.java, { boundingBox.expand(it) }))
         }
-    }
-
-    private fun sendStatus(byte: Byte) {
-        world.sendEntityStatus(this, byte)
-    }
-
-    private fun getAttackDirection(): Vec3d { // Todo: this exception can happen - move to wave action
-        return target?.let {
-            MathUtils.unNormedDirection(pos, it.pos)
-        } ?: throw IllegalStateException("The target should not be null when this attack is performed")
     }
 
     private fun buildAttackGoal(): ActionGoal {
