@@ -9,9 +9,12 @@ import net.minecraft.entity.EntityType
 import net.minecraft.entity.MovementType
 import net.minecraft.entity.boss.BossBar
 import net.minecraft.entity.boss.ServerBossBar
+import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.effect.StatusEffectInstance
 import net.minecraft.entity.effect.StatusEffects
 import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.sound.SoundEvent
+import net.minecraft.sound.SoundEvents
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import software.bernie.geckolib3.core.manager.AnimationData
@@ -40,14 +43,10 @@ class ObsidilithEntity(entityType: EntityType<out ObsidilithEntity>, world: Worl
 
     private fun buildAttackGoal(): ActionGoal {
         val attackAction = CooldownAction(moveLogic, 80)
-        val onCancel = {
-            world.sendEntityStatus(this, ObsidilithUtils.stopAttackStatus)
-            attackAction.stop()
-        }
         return ActionGoal(
             ::canContinueAttack,
             tickAction = attackAction,
-            endAction = onCancel
+            endAction = attackAction
         )
     }
 
@@ -62,6 +61,9 @@ class ObsidilithEntity(entityType: EntityType<out ObsidilithEntity>, world: Worl
         }
         super.handleStatus(status)
     }
+
+    override fun getHurtSound(source: DamageSource?): SoundEvent = SoundEvents.BLOCK_BASALT_HIT
+    override fun getDeathSound(): SoundEvent = SoundEvents.BLOCK_BASALT_HIT
 
     override fun registerControllers(p0: AnimationData?) {
     }

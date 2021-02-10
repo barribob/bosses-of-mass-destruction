@@ -42,7 +42,7 @@ class BurstAction(val entity: LivingEntity) :
                 damage
             )
         }
-        world.playSound(entity.pos, Mod.sounds.teleportPrepare, SoundCategory.HOSTILE, 1.0f, range = 64.0)
+        world.playSound(entity.pos, Mod.sounds.obsidilithPrepareAttack, SoundCategory.HOSTILE, 3.0f, range = 64.0)
 
         eventScheduler.addEvent(TimedEvent({
             world.playSound(entity.pos, Mod.sounds.obsidilithBurst, SoundCategory.HOSTILE, 1.2f, range = 64.0)

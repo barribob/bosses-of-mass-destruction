@@ -5,7 +5,6 @@ import net.barribob.maelstrom.static_utilities.planeProject
 import net.minecraft.util.math.Vec3d
 
 object ObsidilithUtils {
-    const val stopAttackStatus: Byte = 4
     const val burstAttackStatus: Byte = 5
     const val waveAttackStatus: Byte = 6
     const val spikeAttackStatus: Byte = 7

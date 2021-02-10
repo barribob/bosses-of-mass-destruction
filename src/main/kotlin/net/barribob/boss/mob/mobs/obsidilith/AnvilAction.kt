@@ -24,7 +24,7 @@ class AnvilAction(private val actor: MobEntity) : IActionWithCooldown {
     }
 
     private fun performAttack(target: LivingEntity) {
-        actor.world.playSound(actor.pos, Mod.sounds.teleportPrepare, SoundCategory.HOSTILE, 1.0f, range = 64.0)
+        actor.world.playSound(actor.pos, Mod.sounds.obsidilithPrepareAttack, SoundCategory.HOSTILE, 3.0f, range = 64.0)
 
         eventScheduler.addEvent(TimedEvent({
             val teleportPos = target.pos.add(VecUtils.yAxis.multiply(24.0))

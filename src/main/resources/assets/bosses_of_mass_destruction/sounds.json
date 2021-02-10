@@ -70,5 +70,11 @@
     "sounds": [
       "bosses_of_mass_destruction:spike"
     ]
+  },
+  "obsidilith_prepare_attack": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.obsidilith_prepare_attack",
+    "sounds": [
+      "bosses_of_mass_destruction:obsidilith_prepare_attack"
+    ]
   }
 }

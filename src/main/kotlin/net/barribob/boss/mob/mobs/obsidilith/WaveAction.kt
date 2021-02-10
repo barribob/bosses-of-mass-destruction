@@ -49,7 +49,7 @@ class WaveAction(val entity: MobEntity) :
             )
         }
 
-        world.playSound(entity.pos, Mod.sounds.teleportPrepare, SoundCategory.HOSTILE, 0.7f, range = 32.0)
+        world.playSound(entity.pos, Mod.sounds.obsidilithPrepareAttack, SoundCategory.HOSTILE, 3.0f, range = 64.0)
         eventScheduler.addEvent(TimedEvent({
             val direction = MathUtils.unNormedDirection(entity.pos, target.pos).normalize().multiply(riftRadius.toDouble())
             val numRifts = 5
