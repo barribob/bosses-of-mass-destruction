@@ -5,10 +5,7 @@ import net.barribob.boss.particle.Particles
 import net.barribob.boss.utils.ModColors
 import net.barribob.maelstrom.general.event.EventScheduler
 import net.barribob.maelstrom.general.event.TimedEvent
-import net.barribob.maelstrom.static_utilities.MathUtils
-import net.barribob.maelstrom.static_utilities.RandomUtils
-import net.barribob.maelstrom.static_utilities.VecUtils
-import net.barribob.maelstrom.static_utilities.eyePos
+import net.barribob.maelstrom.static_utilities.*
 import net.minecraft.entity.LivingEntity
 
 class ObsidilithEffectHandler(val entity: LivingEntity, val eventScheduler: EventScheduler) {
@@ -31,7 +28,7 @@ class ObsidilithEffectHandler(val entity: LivingEntity, val eventScheduler: Even
     private val teleportFactory = ClientParticleBuilder(Particles.DOWNSPARKLE)
         .color(ModColors.ENDER_PURPLE)
         .brightness(Particles.FULL_BRIGHT)
-        .age{ RandomUtils.range(25, 30) }
+        .age { RandomUtils.range(25, 30) }
         .colorVariation(0.2)
 
     fun handleStatus(status: Byte) {
@@ -44,44 +41,61 @@ class ObsidilithEffectHandler(val entity: LivingEntity, val eventScheduler: Even
     }
 
     private fun burstEffect() {
+        val entityPos = entity.eyePos()
         for (i in 0..50) {
-            val pos = entity.eyePos().add(RandomUtils.randVec().normalize().multiply(3.0))
-            burstParticleFactory.velocity {
-                MathUtils.unNormedDirection(pos, entity.eyePos()).crossProduct(VecUtils.yAxis).multiply(0.1)
-            }.build(pos)
+            val pos = entityPos.add(RandomUtils.randVec().normalize().multiply(3.0))
+            val vel = MathUtils.unNormedDirection(pos, entityPos).crossProduct(VecUtils.yAxis).multiply(0.1)
+            burstParticleFactory.build(pos, vel)
         }
     }
 
     private fun waveEffect() {
+        val entityPos = entity.pos
         for (i in 0..50) {
-            val pos = entity.eyePos().add(RandomUtils.randVec().normalize().multiply(3.0))
-            waveParticleFactory.velocity {
-                MathUtils.unNormedDirection(pos, entity.eyePos()).crossProduct(VecUtils.yAxis).multiply(0.1)
+            val randomYOffset = VecUtils.yAxis.multiply(entity.random.nextDouble())
+            val randomYVel = VecUtils.yAxis.multiply(entity.random.nextDouble())
+            val pos = entityPos.add(
+                RandomUtils.randVec()
+                    .planeProject(VecUtils.yAxis)
+                    .normalize().multiply(3.0)
+            )
+                .add(randomYOffset)
+
+            waveParticleFactory.continuousVelocity {
+                MathUtils.unNormedDirection(it.getPos(), entityPos)
+                    .crossProduct(VecUtils.yAxis).negate()
+                    .add(randomYVel).multiply(0.1)
             }.build(pos)
         }
     }
 
     private fun spikeEffect() {
         for (i in 0..50) {
-            val pos = entity.eyePos().add(RandomUtils.randVec().normalize().multiply(3.0))
-            spikeParticleFactory.velocity {
-                MathUtils.unNormedDirection(pos, entity.eyePos()).crossProduct(VecUtils.yAxis).multiply(0.1)
+            val entityPos = entity.pos
+            val pos = entityPos.add(
+                RandomUtils.randVec()
+                    .planeProject(VecUtils.yAxis)
+                    .normalize().multiply(3.0)
+            )
+            spikeParticleFactory.continuousVelocity {
+                MathUtils.unNormedDirection(it.getPos(), entityPos).crossProduct(VecUtils.yAxis).add(VecUtils.yAxis)
+                    .multiply(0.1)
             }.build(pos)
         }
     }
 
     private fun anvilEffect() {
         for (i in 0..50) {
-            val pos = entity.eyePos().add(RandomUtils.randVec().normalize().multiply(3.0))
-            anvilParticleFactory.velocity {
-                MathUtils.unNormedDirection(pos, entity.eyePos()).crossProduct(VecUtils.yAxis).multiply(0.1)
-            }.build(pos)
+            val entityPos = entity.eyePos()
+            val pos = entityPos.add(RandomUtils.randVec().normalize().multiply(3.0))
+            val vel = MathUtils.unNormedDirection(pos, entityPos).crossProduct(VecUtils.yAxis).multiply(0.1)
+            anvilParticleFactory.build(pos, vel)
         }
 
         eventScheduler.addEvent(TimedEvent({
             val particlePos = entity.pos.add(RandomUtils.randVec().multiply(3.0))
             val velocity = entity.velocity.multiply(0.7)
-            teleportFactory.velocity { velocity }.build(particlePos)
+            teleportFactory.build(particlePos, velocity)
         }, 0, 80, { !entity.isAlive }))
     }
 }

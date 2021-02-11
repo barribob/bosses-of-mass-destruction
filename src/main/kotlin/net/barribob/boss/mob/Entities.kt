@@ -87,7 +87,7 @@ object Entities {
             HostileEntity.createHostileAttributes()
                 .add(EntityAttributes.GENERIC_MAX_HEALTH, mobConfig.obsidilithConfig.health)
                 .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 64.0)
-                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 4.0)
+                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, mobConfig.obsidilithConfig.attack)
                 .add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 10.0)
         )
     }

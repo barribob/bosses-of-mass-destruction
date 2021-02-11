@@ -7,17 +7,14 @@ import net.minecraft.particle.ParticleEffect
 import net.minecraft.util.math.Vec3d
 
 class ClientParticleBuilder(private val effect: ParticleEffect) {
-    private var getVel: () -> Vec3d = { Vec3d.ZERO }
+    private var getVel: ((SimpleParticle) -> Vec3d)? = null
     private var color: ((Float) -> Vec3d)? = null
     private var brightness: ((Float) -> Int)? = null
     private var scale: ((Float) -> Float)? = null
     private var age: (() -> Int)? = null
     private var colorVariation: Double = 0.0
 
-    // Todo: either make this not a function, or add in velocity changes over the lifetime of a particle?
-    // Right now it does function as being able to define the velocity when the builder is defined, but for the
-    // most part, I think we've just been using it at particle creation time, or as a constant velocity...
-    fun velocity(velocity: () -> Vec3d): ClientParticleBuilder {
+    fun continuousVelocity(velocity: (SimpleParticle) -> Vec3d): ClientParticleBuilder {
         this.getVel = velocity
         return this
     }
@@ -67,11 +64,10 @@ class ClientParticleBuilder(private val effect: ParticleEffect) {
         return this
     }
 
-    fun build(pos: Vec3d) {
+    fun build(pos: Vec3d, vel: Vec3d = Vec3d.ZERO) {
         val client = MinecraftClient.getInstance()
         val camera: Camera = client.gameRenderer.camera
         if (client != null && camera.isReady && client.particleManager != null) {
-            val vel = getVel()
             val particle = client.particleManager.addParticle(effect, pos.x, pos.y, pos.z, vel.x, vel.y, vel.z)
                 ?: return
 
@@ -86,6 +82,7 @@ class ClientParticleBuilder(private val effect: ParticleEffect) {
                 brightness?.let { particle.setBrightnessOverride(brightness) }
                 color?.let { particle.setColorOverride(color) }
                 scale?.let { particle.setScaleOverride(scale) }
+                getVel?.let { particle.setVelocityOverride(it) }
                 particle.setColorVariation(colorVariation)
             }
         }

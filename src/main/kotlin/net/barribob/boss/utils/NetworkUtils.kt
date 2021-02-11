@@ -5,10 +5,7 @@ import net.barribob.boss.Mod
 import net.barribob.boss.particle.ParticleFactories
 import net.barribob.maelstrom.MaelstromMod
 import net.barribob.maelstrom.general.event.TimedEvent
-import net.barribob.maelstrom.static_utilities.MathUtils
-import net.barribob.maelstrom.static_utilities.RandomUtils
-import net.barribob.maelstrom.static_utilities.readVec3d
-import net.barribob.maelstrom.static_utilities.writeVec3d
+import net.barribob.maelstrom.static_utilities.*
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup
@@ -80,13 +77,15 @@ class NetworkUtils {
         val deathParticleFactory = ParticleFactories.soulFlame()
             .color { MathUtils.lerpVec(it, ModColors.COMET_BLUE, ModColors.FADED_COMET_BLUE) }
             .age { RandomUtils.range(40, 80) }
-            .velocity { RandomUtils.randVec() }
             .colorVariation(0.5)
             .scale { 0.5f - (it * 0.3f) }
 
         MaelstromMod.clientEventScheduler.addEvent(TimedEvent({
             for(i in 0..4) {
-                deathParticleFactory.build(pos)
+                val particlePos = pos.add(RandomUtils.randVec())
+                deathParticleFactory.continuousVelocity {
+                    MathUtils.unNormedDirection(it.getPos(), pos).crossProduct(VecUtils.yAxis).multiply(0.1)
+                }.build(particlePos)
             }
         }, 0, 10))
     }

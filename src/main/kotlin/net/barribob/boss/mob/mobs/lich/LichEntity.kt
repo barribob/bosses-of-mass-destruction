@@ -174,11 +174,9 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
         .age(0, 7)
     private val minionSummonParticleBuilder = ParticleFactories.soulFlame()
         .color(ModColors.WHITE)
-        .velocity { VecUtils.yAxis.multiply(RandomUtils.double(0.2) + 0.2) }
     private val thresholdParticleBuilder = ParticleFactories.soulFlame()
         .age(20)
         .scale(0.5f)
-        .velocity { RandomUtils.randVec() }
     private val summonRingFactory = ParticleFactories.soulFlame()
         .color(blueColorFade)
         .colorVariation(0.5)
@@ -189,13 +187,11 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
     private val deathParticleFactory = ParticleFactories.soulFlame()
         .color(blueColorFade)
         .age(40, 80)
-        .velocity { RandomUtils.randVec() }
         .colorVariation(0.5)
         .scale { 0.5f - (it * 0.3f) }
     private val idleParticles = ParticleFactories.soulFlame()
         .color(blueColorFade)
         .age(30, 40)
-        .velocity { velocity }
         .colorVariation(0.5)
         .scale { 0.25f - (it * 0.1f) }
 
@@ -593,7 +589,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
         velocityHistory.set(velocity)
 
         if (random.nextDouble() > 0.9) idleParticles.build(
-            pos.subtract(VecUtils.yAxis).add(RandomUtils.randVec().multiply(2.0))
+            pos.subtract(VecUtils.yAxis).add(RandomUtils.randVec().multiply(2.0)), velocity
         )
     }
 
@@ -639,7 +635,8 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
                     .add(RandomUtils.randVec()
                         .planeProject(VecUtils.yAxis)
                         .normalize()
-                        .multiply(getRandom().nextGaussian())))
+                        .multiply(getRandom().nextGaussian())),
+                    VecUtils.yAxis.multiply(RandomUtils.double(0.2) + 0.2))
             },
                 minionSummonParticleDelay,
                 minionSummonDelay - minionSummonParticleDelay,
@@ -702,7 +699,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
         if (status == hpBelowThresholdStatus) {
             for (i in 0 until 20) {
                 thresholdParticleBuilder
-                    .build(eyePos())
+                    .build(eyePos(), RandomUtils.randVec())
             }
         }
         if (status == stopAttackStatus) {
@@ -711,7 +708,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
         if (status.toInt() == 3) { // Death status
             eventScheduler.addEvent(TimedEvent({
                 for(i in 0..4) {
-                    deathParticleFactory.build(eyePos())
+                    deathParticleFactory.build(eyePos(), RandomUtils.randVec())
                 }
             }, 0, 10))
         }
