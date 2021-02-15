@@ -1,10 +1,17 @@
 package net.barribob.boss.mob.mobs.obsidilith
 
+import net.barribob.boss.block.ModBlocks
 import net.barribob.boss.mob.ai.action.CooldownAction
 import net.barribob.boss.mob.ai.goals.ActionGoal
 import net.barribob.boss.mob.ai.goals.FindTargetGoal
+import net.barribob.boss.mob.damage.CompositeDamageHandler
 import net.barribob.boss.mob.utils.BaseEntity
+import net.barribob.boss.particle.Particles
+import net.barribob.boss.utils.ModUtils.spawnParticle
 import net.barribob.maelstrom.general.event.TimedEvent
+import net.barribob.maelstrom.static_utilities.MathUtils
+import net.barribob.maelstrom.static_utilities.asVec3d
+import net.barribob.maelstrom.static_utilities.eyePos
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.MovementType
 import net.minecraft.entity.boss.BossBar
@@ -13,23 +20,29 @@ import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.effect.StatusEffectInstance
 import net.minecraft.entity.effect.StatusEffects
 import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundEvent
 import net.minecraft.sound.SoundEvents
+import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import software.bernie.geckolib3.core.manager.AnimationData
 
-class ObsidilithEntity(entityType: EntityType<out ObsidilithEntity>, world: World) : BaseEntity(entityType, world){
+class ObsidilithEntity(entityType: EntityType<out ObsidilithEntity>, world: World) : BaseEntity(entityType, world) {
     override val bossBar = ServerBossBar(this.displayName, BossBar.Color.PINK, BossBar.Style.NOTCHED_12)
     var currentAttack: Byte = 0
     private val statusRegistry = mapOf(
         Pair(ObsidilithUtils.burstAttackStatus, BurstAction(this)),
         Pair(ObsidilithUtils.waveAttackStatus, WaveAction(this)),
         Pair(ObsidilithUtils.spikeAttackStatus, SpikeAction(this)),
-        Pair(ObsidilithUtils.anvilAttackStatus, AnvilAction(this))
+        Pair(ObsidilithUtils.anvilAttackStatus, AnvilAction(this)),
+        Pair(ObsidilithUtils.pillarDefenseStatus, PillarAction(this))
     )
     private val moveLogic = ObsidilithMoveLogic(statusRegistry, this)
     private val effectHandler = ObsidilithEffectHandler(this, eventScheduler)
+    override val damageHandler = CompositeDamageHandler(listOf(moveLogic, ShieldDamageHandler(::isShielded)))
+    private val activePillars = mutableSetOf<BlockPos>()
 
     init {
         ignoreCameraFrustum = true
@@ -50,16 +63,42 @@ class ObsidilithEntity(entityType: EntityType<out ObsidilithEntity>, world: Worl
         )
     }
 
+    override fun serverTick(serverWorld: ServerWorld) {
+        super.serverTick(serverWorld)
+        activePillars.removeIf {
+            world.getBlockState(it).block != ModBlocks.obsidilithRune || !it.isWithinDistance(
+                blockPos,
+                64.0
+            )
+        }
+        getDataTracker().set(ObsidilithUtils.isShielded, activePillars.any())
+
+        if(this.age % 40 == 0) {
+            activePillars.randomOrNull()?.let {
+                MathUtils.lineCallback(it.asVec3d().add(0.5, 0.5, 0.5), eyePos(), 15) { vec3d, i ->
+                    eventScheduler.addEvent(TimedEvent({
+                        serverWorld.spawnParticle(Particles.PILLAR_RUNE, vec3d, Vec3d.ZERO)
+                    }, i))
+                }
+            }
+        }
+    }
+
     private fun canContinueAttack() = isAlive && target != null
 
     override fun handleStatus(status: Byte) {
         val attackStatus = statusRegistry[status]
-        if(attackStatus != null) {
+        if (attackStatus != null) {
             effectHandler.handleStatus(status)
             currentAttack = status
             eventScheduler.addEvent(TimedEvent({ currentAttack = 0 }, 40))
         }
         super.handleStatus(status)
+    }
+
+    override fun initDataTracker() {
+        super.initDataTracker()
+        dataTracker.startTracking(ObsidilithUtils.isShielded, false)
     }
 
     override fun getHurtSound(source: DamageSource?): SoundEvent = SoundEvents.BLOCK_BASALT_HIT
@@ -79,13 +118,31 @@ class ObsidilithEntity(entityType: EntityType<out ObsidilithEntity>, world: Worl
     override fun canHaveStatusEffect(effect: StatusEffectInstance): Boolean {
         return if (effect.effectType === StatusEffects.WITHER || effect.effectType === StatusEffects.POISON) {
             false
-        }
-        else{
+        } else {
             super.canHaveStatusEffect(effect)
         }
     }
 
     override fun handleFallDamage(fallDistance: Float, damageMultiplier: Float): Boolean {
         return false
+    }
+
+    fun isShielded(): Boolean = getDataTracker().get(ObsidilithUtils.isShielded)
+
+    fun addActivePillar(pos: BlockPos) {
+        activePillars.add(pos)
+    }
+
+    override fun toTag(tag: CompoundTag): CompoundTag {
+        tag.putIntArray(::activePillars.name, activePillars.flatMap { listOf(it.x, it.y, it.z) })
+        return super.toTag(tag)
+    }
+
+    override fun fromTag(tag: CompoundTag) {
+        super.fromTag(tag)
+        if (tag.contains(::activePillars.name)) {
+            activePillars.addAll(
+                tag.getIntArray(::activePillars.name).asIterable().chunked(3).map { BlockPos(it[0], it[1], it[2]) })
+        }
     }
 }

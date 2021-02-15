@@ -7,6 +7,7 @@ import net.barribob.boss.animation.PauseAnimationTimer
 import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.config.ModConfig
 import net.barribob.boss.mob.mobs.lich.*
+import net.barribob.boss.mob.mobs.obsidilith.ObsidilithArmorRenderer
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithBoneLight
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithEntity
 import net.barribob.boss.mob.utils.SimpleLivingGeoRenderer
@@ -54,7 +55,7 @@ object Entities {
             .dimensions(EntityDimensions.fixed(0.25f, 0.25f)).build()
     )
 
-    private val OBSIDILITH: EntityType<ObsidilithEntity> = registerConfiguredMob("obsidilith",
+    val OBSIDILITH: EntityType<ObsidilithEntity> = registerConfiguredMob("obsidilith",
         { type, world -> ObsidilithEntity(type, world) },
         { it.fireImmune().dimensions(EntityDimensions.fixed(2.0f, 4.5f)) })
 
@@ -112,7 +113,7 @@ object Entities {
 
         EntityRendererRegistry.INSTANCE.register(OBSIDILITH) { entityRenderDispatcher, _ ->
             val runeColorHandler = ObsidilithBoneLight()
-            SimpleLivingGeoRenderer(
+            val obsidilithRenderer = SimpleLivingGeoRenderer(
                 entityRenderDispatcher, GeoModel(
                     Mod.identifier("geo/obsidilith.geo.json"),
                     Mod.identifier("textures/entity/obsidilith.png"),
@@ -122,6 +123,8 @@ object Entities {
                 iBoneLight = runeColorHandler,
                 renderData = runeColorHandler
             )
+            obsidilithRenderer.addLayer(ObsidilithArmorRenderer(obsidilithRenderer))
+            obsidilithRenderer
         }
 
         val missileTexture = Mod.identifier("textures/entity/blue_magic_missile.png")

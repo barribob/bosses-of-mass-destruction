@@ -76,5 +76,11 @@
     "sounds": [
       "bosses_of_mass_destruction:obsidilith_prepare_attack"
     ]
+  },
+  "energy_shield": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.energy_shield",
+    "sounds": [
+      "bosses_of_mass_destruction:energy_shield"
+    ]
   }
 }

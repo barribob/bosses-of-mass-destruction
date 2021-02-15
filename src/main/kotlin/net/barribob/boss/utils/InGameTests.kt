@@ -5,6 +5,7 @@ import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.mob.Entities
 import net.barribob.boss.mob.mobs.obsidilith.BurstAction
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithUtils
+import net.barribob.boss.mob.mobs.obsidilith.PillarAction
 import net.barribob.boss.mob.spawn.*
 import net.barribob.boss.projectile.MagicMissileProjectile
 import net.barribob.maelstrom.general.random.ModRandom
@@ -85,5 +86,10 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler, private va
             source.world,
             listOf(1f, 0f, 1f, 1f)
         )
+    }
+
+    fun placePillars(source: ServerCommandSource) {
+        val entity = source.player
+        PillarAction(entity).perform()
     }
 }

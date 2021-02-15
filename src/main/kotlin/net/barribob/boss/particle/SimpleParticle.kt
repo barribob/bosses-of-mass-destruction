@@ -12,7 +12,7 @@ import net.minecraft.util.math.Vec3d
 
 class SimpleParticle(
     private val particleContext: ParticleContext,
-    particleAge: () -> Int,
+    particleAge: Int,
     private val particleGeometry: IParticleGeometry,
     private val cycleSprites: Boolean = true
 ) :
@@ -129,7 +129,7 @@ class SimpleParticle(
     }
 
     init {
-        this.maxAge = particleAge()
+        this.maxAge = particleAge
         if (cycleSprites) setSpriteForAge(particleContext.spriteProvider) else setSprite(particleContext.spriteProvider)
         velocityX = particleContext.vel.x
         velocityY = particleContext.vel.y

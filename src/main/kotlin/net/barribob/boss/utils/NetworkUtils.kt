@@ -2,10 +2,11 @@ package net.barribob.boss.utils
 
 import io.netty.buffer.Unpooled
 import net.barribob.boss.Mod
-import net.barribob.boss.particle.ParticleFactories
+import net.barribob.boss.mob.mobs.obsidilith.ObsidilithEffectHandler
+import net.barribob.boss.mob.mobs.obsidilith.ObsidilithUtils
 import net.barribob.maelstrom.MaelstromMod
-import net.barribob.maelstrom.general.event.TimedEvent
-import net.barribob.maelstrom.static_utilities.*
+import net.barribob.maelstrom.static_utilities.readVec3d
+import net.barribob.maelstrom.static_utilities.writeVec3d
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup
@@ -73,20 +74,7 @@ class NetworkUtils {
 
     @Environment(EnvType.CLIENT)
     fun testClientCallback(client: MinecraftClient) {
-        val pos = client.player?.pos ?: return
-        val deathParticleFactory = ParticleFactories.soulFlame()
-            .color { MathUtils.lerpVec(it, ModColors.COMET_BLUE, ModColors.FADED_COMET_BLUE) }
-            .age { RandomUtils.range(40, 80) }
-            .colorVariation(0.5)
-            .scale { 0.5f - (it * 0.3f) }
-
-        MaelstromMod.clientEventScheduler.addEvent(TimedEvent({
-            for(i in 0..4) {
-                val particlePos = pos.add(RandomUtils.randVec())
-                deathParticleFactory.continuousVelocity {
-                    MathUtils.unNormedDirection(it.getPos(), pos).crossProduct(VecUtils.yAxis).multiply(0.1)
-                }.build(particlePos)
-            }
-        }, 0, 10))
+        val player = client.player ?: return
+        ObsidilithEffectHandler(player, MaelstromMod.clientEventScheduler).handleStatus(ObsidilithUtils.pillarDefenseStatus)
     }
 }

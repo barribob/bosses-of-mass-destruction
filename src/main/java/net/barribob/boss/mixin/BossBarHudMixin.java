@@ -1,6 +1,7 @@
 package net.barribob.boss.mixin;
 
 import net.barribob.boss.mob.mobs.lich.LichUtils;
+import net.barribob.boss.mob.mobs.obsidilith.ObsidilithUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.BossBarHud;
 import net.minecraft.client.util.math.MatrixStack;
@@ -29,7 +30,8 @@ public abstract class BossBarHudMixin {
             cancellable = true
     )
     private void renderCustomBossBar(MatrixStack matrices, int x, int y, BossBar bossBar, CallbackInfo ci) {
-        LichUtils.INSTANCE.renderBossBar(matrices, x, y, bossBar, ci);
+        LichUtils.INSTANCE.getLichBossBarRenderer().renderBossBar(matrices, x, y, bossBar, ci);
+        ObsidilithUtils.INSTANCE.getObsidilithBossBarRenderer().renderBossBar(matrices, x, y, bossBar, ci);
         this.client.getTextureManager().bindTexture(BARS_TEXTURE);
     }
 }

@@ -1,5 +1,6 @@
 package net.barribob.boss.utils
 
+import net.minecraft.block.SideShapeType
 import net.minecraft.client.network.ClientPlayNetworkHandler
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket
@@ -7,8 +8,12 @@ import net.minecraft.particle.ParticleEffect
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvent
+import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.Direction
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
+import kotlin.random.Random
+import kotlin.random.asKotlinRandom
 
 object ModUtils {
     /**
@@ -24,15 +29,16 @@ object ModUtils {
             velOrOffset.x,
             velOrOffset.y,
             velOrOffset.z,
-            velOrOffset.length()
+            0.0
         )
 
+    // Todo: make this serverworld
     fun World.playSound(
         pos: Vec3d,
         soundEvent: SoundEvent,
         soundCategory: SoundCategory,
         volume: Float,
-        pitch: Float = (random.nextFloat() - random.nextFloat()) * 0.2f + 1.0f,
+        pitch: Float = this.random.asKotlinRandom().randomPitch(),
         range: Double = if (volume > 1.0f) (16.0f * volume).toDouble() else 16.0,
         playerEntity: PlayerEntity? = null,
     ) =
@@ -45,4 +51,19 @@ object ModUtils {
             registryKey,
             PlaySoundS2CPacket(soundEvent, soundCategory, pos.x, pos.y, pos.z, volume, pitch)
         )
+
+    fun Random.randomPitch() = (this.nextFloat() - this.nextFloat()) * 0.2f + 1.0f
+
+    /**
+     * From Maelstrom Mod ModUtils.java
+     */
+    fun World.findGroundBelow(pos: BlockPos): BlockPos {
+        for (i in pos.y downTo 1) {
+            val tempPos = BlockPos(pos.x, i, pos.z)
+            if (this.getBlockState(tempPos).isSideSolid(this, tempPos, Direction.UP, SideShapeType.FULL)) {
+                return tempPos
+            }
+        }
+        return BlockPos(pos.x, 0, pos.z)
+    }
 }

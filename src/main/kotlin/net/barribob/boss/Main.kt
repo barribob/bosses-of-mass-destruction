@@ -4,6 +4,7 @@ import me.sargunvohra.mcmods.autoconfig1u.AutoConfig
 import me.sargunvohra.mcmods.autoconfig1u.serializer.JanksonConfigSerializer
 import net.barribob.boss.Mod.networkUtils
 import net.barribob.boss.animation.PauseAnimationTimer
+import net.barribob.boss.block.ModBlocks
 import net.barribob.boss.config.ModConfig
 import net.barribob.boss.mob.Entities
 import net.barribob.boss.particle.Particles
@@ -40,6 +41,7 @@ fun init() {
 
     GeckoLib.initialize()
 
+    ModBlocks.init()
     Entities.init()
 
     Mod.sounds.init()
@@ -75,6 +77,7 @@ private fun initDev() {
     MaelstromMod.testCommand.addId(inGameTests::lichCounter.name, inGameTests::lichCounter)
     MaelstromMod.testCommand.addId(inGameTests::burstAction.name, inGameTests::burstAction)
     MaelstromMod.testCommand.addId(inGameTests::playerPosition.name, inGameTests::playerPosition)
+    MaelstromMod.testCommand.addId(inGameTests::placePillars.name, inGameTests::placePillars)
 }
 
 @Environment(EnvType.CLIENT)

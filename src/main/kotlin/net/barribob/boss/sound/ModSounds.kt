@@ -21,6 +21,7 @@ class ModSounds {
     val spikeIndicator = newSound("spike_indicator")
     val spike = newSound("spike")
     val obsidilithPrepareAttack = newSound("obsidilith_prepare_attack")
+    val energyShield = newSound("energy_shield")
 
     fun init() {
         registerSound(cometShoot)
@@ -36,6 +37,7 @@ class ModSounds {
         registerSound(spikeIndicator)
         registerSound(spike)
         registerSound(obsidilithPrepareAttack)
+        registerSound(energyShield)
     }
 
     private fun registerSound(event: SoundEvent) {
