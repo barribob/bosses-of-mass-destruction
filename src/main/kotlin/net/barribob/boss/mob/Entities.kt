@@ -56,7 +56,7 @@ object Entities {
     )
 
     val OBSIDILITH: EntityType<ObsidilithEntity> = registerConfiguredMob("obsidilith",
-        { type, world -> ObsidilithEntity(type, world) },
+        { type, world -> ObsidilithEntity(type, world, mobConfig.obsidilithConfig) },
         { it.fireImmune().dimensions(EntityDimensions.fixed(2.0f, 4.5f)) })
 
     val killCounter = LichKillCounter(mobConfig.lichConfig.summonMechanic, ModComponents, ModComponents)
@@ -87,9 +87,10 @@ object Entities {
         FabricDefaultAttributeRegistry.register(OBSIDILITH,
             HostileEntity.createHostileAttributes()
                 .add(EntityAttributes.GENERIC_MAX_HEALTH, mobConfig.obsidilithConfig.health)
-                .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 64.0)
+                .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 32.0)
                 .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, mobConfig.obsidilithConfig.attack)
                 .add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 10.0)
+                .add(EntityAttributes.GENERIC_ARMOR, mobConfig.obsidilithConfig.armor)
         )
     }
 

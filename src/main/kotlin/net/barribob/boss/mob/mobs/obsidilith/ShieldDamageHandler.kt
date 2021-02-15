@@ -20,7 +20,7 @@ class ShieldDamageHandler(val isShielded: () -> Boolean) : IDamageHandler {
      * Shield mechanic of [LivingEntity.damage]
      */
     override fun shouldDamage(actor: LivingEntity, damageSource: DamageSource, amount: Float): Boolean {
-        if(isShielded()) {
+        if(isShielded() && !damageSource.isOutOfWorld) {
             if (!damageSource.isProjectile) {
                 val entity: Entity? = damageSource.source
                 if (entity is LivingEntity) {

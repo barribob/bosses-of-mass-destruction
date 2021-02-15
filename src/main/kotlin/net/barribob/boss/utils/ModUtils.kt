@@ -2,6 +2,7 @@ package net.barribob.boss.utils
 
 import net.minecraft.block.SideShapeType
 import net.minecraft.client.network.ClientPlayNetworkHandler
+import net.minecraft.entity.mob.MobEntity
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket
 import net.minecraft.particle.ParticleEffect
@@ -11,6 +12,7 @@ import net.minecraft.sound.SoundEvent
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Direction
 import net.minecraft.util.math.Vec3d
+import net.minecraft.world.Difficulty
 import net.minecraft.world.World
 import kotlin.random.Random
 import kotlin.random.asKotlinRandom
@@ -65,5 +67,13 @@ object ModUtils {
             }
         }
         return BlockPos(pos.x, 0, pos.z)
+    }
+
+    fun preventDespawnExceptPeaceful(entity: MobEntity, world: World) {
+        if (world.difficulty == Difficulty.PEACEFUL) {
+            entity.remove()
+        } else {
+            entity.despawnCounter = 0
+        }
     }
 }

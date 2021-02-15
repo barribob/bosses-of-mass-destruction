@@ -1,12 +1,18 @@
 package net.barribob.boss.mob.mobs.obsidilith
 
 import net.barribob.boss.block.ModBlocks
+import net.barribob.boss.config.ObsidilithConfig
+import net.barribob.boss.mob.ai.BossVisibilityCache
 import net.barribob.boss.mob.ai.action.CooldownAction
 import net.barribob.boss.mob.ai.goals.ActionGoal
 import net.barribob.boss.mob.ai.goals.FindTargetGoal
 import net.barribob.boss.mob.damage.CompositeDamageHandler
+import net.barribob.boss.mob.mobs.lich.LichUtils
 import net.barribob.boss.mob.utils.BaseEntity
+import net.barribob.boss.mob.utils.EntityAdapter
+import net.barribob.boss.mob.utils.EntityStats
 import net.barribob.boss.particle.Particles
+import net.barribob.boss.utils.ModUtils
 import net.barribob.boss.utils.ModUtils.spawnParticle
 import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.static_utilities.MathUtils
@@ -29,7 +35,7 @@ import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import software.bernie.geckolib3.core.manager.AnimationData
 
-class ObsidilithEntity(entityType: EntityType<out ObsidilithEntity>, world: World) : BaseEntity(entityType, world) {
+class ObsidilithEntity(entityType: EntityType<out ObsidilithEntity>, world: World, val mobConfig: ObsidilithConfig) : BaseEntity(entityType, world) {
     override val bossBar = ServerBossBar(this.displayName, BossBar.Color.PINK, BossBar.Style.NOTCHED_12)
     var currentAttack: Byte = 0
     private val statusRegistry = mapOf(
@@ -43,6 +49,8 @@ class ObsidilithEntity(entityType: EntityType<out ObsidilithEntity>, world: Worl
     private val effectHandler = ObsidilithEffectHandler(this, eventScheduler)
     override val damageHandler = CompositeDamageHandler(listOf(moveLogic, ShieldDamageHandler(::isShielded)))
     private val activePillars = mutableSetOf<BlockPos>()
+    private val visibilityCache = BossVisibilityCache(this)
+    private val iEntity = EntityAdapter(this)
 
     init {
         ignoreCameraFrustum = true
@@ -65,6 +73,15 @@ class ObsidilithEntity(entityType: EntityType<out ObsidilithEntity>, world: Worl
 
     override fun serverTick(serverWorld: ServerWorld) {
         super.serverTick(serverWorld)
+
+        LichUtils.cappedHeal(
+            iEntity,
+            EntityStats(this),
+            ObsidilithUtils.hpPillarShieldMilestones,
+            mobConfig.idleHealingPerTick,
+            ::heal
+        )
+
         activePillars.removeIf {
             world.getBlockState(it).block != ModBlocks.obsidilithRune || !it.isWithinDistance(
                 blockPos,
@@ -96,6 +113,8 @@ class ObsidilithEntity(entityType: EntityType<out ObsidilithEntity>, world: Worl
         super.handleStatus(status)
     }
 
+    override fun getVisibilityCache() = visibilityCache
+
     override fun initDataTracker() {
         super.initDataTracker()
         dataTracker.startTracking(ObsidilithUtils.isShielded, false)
@@ -122,6 +141,10 @@ class ObsidilithEntity(entityType: EntityType<out ObsidilithEntity>, world: Worl
             super.canHaveStatusEffect(effect)
         }
     }
+
+    override fun getArmor(): Int = if(target != null) super.getArmor() else 24
+
+    override fun checkDespawn() = ModUtils.preventDespawnExceptPeaceful(this, world)
 
     override fun handleFallDamage(fallDistance: Float, damageMultiplier: Float): Boolean {
         return false

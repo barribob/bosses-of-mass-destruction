@@ -27,6 +27,7 @@ import net.barribob.boss.projectile.MagicMissileProjectile
 import net.barribob.boss.projectile.comet.CometProjectile
 import net.barribob.boss.utils.AnimationUtils
 import net.barribob.boss.utils.ModColors
+import net.barribob.boss.utils.ModUtils
 import net.barribob.boss.utils.ModUtils.playSound
 import net.barribob.boss.utils.ModUtils.spawnParticle
 import net.barribob.boss.utils.VanillaCopies
@@ -57,7 +58,6 @@ import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.util.registry.Registry
-import net.minecraft.world.Difficulty
 import net.minecraft.world.Heightmap
 import net.minecraft.world.World
 import net.minecraft.world.explosion.Explosion
@@ -781,8 +781,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
     override fun handleFallDamage(fallDistance: Float, damageMultiplier: Float): Boolean = false
     override fun getGroup(): EntityGroup = EntityGroup.UNDEAD
 
-    override fun checkDespawn() = preventDespawnExceptPeaceful()
-    override fun isDisallowedInPeaceful() = true
+    override fun checkDespawn() = ModUtils.preventDespawnExceptPeaceful(this, world)
 
     override fun onDeath(source: DamageSource?) {
         val expTicks = 18
@@ -791,14 +790,6 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
             VanillaCopies.awardExperience(expPerTick, eyePos(), world)
         }, 0, expTicks))
         super.onDeath(source)
-    }
-
-    private fun preventDespawnExceptPeaceful() {
-        if (world.difficulty == Difficulty.PEACEFUL && this.isDisallowedInPeaceful) {
-            this.remove()
-        } else {
-            this.despawnCounter = 0
-        }
     }
 
     override fun getHurtSound(source: DamageSource): SoundEvent = SoundEvents.ENTITY_WITHER_SKELETON_HURT
