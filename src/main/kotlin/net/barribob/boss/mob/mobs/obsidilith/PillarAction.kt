@@ -1,5 +1,6 @@
 package net.barribob.boss.mob.mobs.obsidilith
 
+import net.barribob.boss.Mod
 import net.barribob.boss.block.ModBlocks
 import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.mob.ai.action.IActionWithCooldown
@@ -24,6 +25,7 @@ class PillarAction(val entity: LivingEntity) : IActionWithCooldown {
         val serverWorld = entity.world
         if(serverWorld !is ServerWorld) return 80
         val pillarPositions = getPillarPositions()
+        serverWorld.playSound(entity.pos, Mod.sounds.obsidilithPrepareAttack, SoundCategory.HOSTILE, 3.0f, 1.4f, 64.0)
 
         pillarPositions.forEach {
             MathUtils.lineCallback(entity.eyePos(), it.asVec3d().add(0.5, 0.5, 0.5), pillarXzDistance.toInt()) { pos, _ ->
@@ -33,7 +35,7 @@ class PillarAction(val entity: LivingEntity) : IActionWithCooldown {
         }
 
         eventScheduler.addEvent(TimedEvent({
-            pillarPositions.forEach (::buildPillar)
+            pillarPositions.forEach {buildPillar(it, serverWorld)}
         }, pillarDelay, shouldCancel = { !entity.isAlive }))
         return 100
     }
@@ -49,20 +51,20 @@ class PillarAction(val entity: LivingEntity) : IActionWithCooldown {
 
             if (up.y - ground.y > maxYDistance) continue
 
-            entity.world.playSound(ground.asVec3d(), SoundEvents.BLOCK_BASALT_PLACE, SoundCategory.HOSTILE, 1.0f)
             pillars.add(ground)
         }
 
         return pillars
     }
 
-    private fun buildPillar(pos: BlockPos) {
+    private fun buildPillar(pos: BlockPos, serverWorld: ServerWorld) {
         val pillarHeight = RandomUtils.range(2, 5)
         for (i in 0 until pillarHeight) {
             entity.world.setBlockState(pos.up(i), Blocks.OBSIDIAN.defaultState)
         }
         val pillarTop = pos.up(pillarHeight)
         entity.world.setBlockState(pillarTop, ModBlocks.obsidilithRune.defaultState)
+        serverWorld.playSound(pos.asVec3d(), SoundEvents.BLOCK_BASALT_PLACE, SoundCategory.HOSTILE, 1.0f)
     }
 
     companion object {

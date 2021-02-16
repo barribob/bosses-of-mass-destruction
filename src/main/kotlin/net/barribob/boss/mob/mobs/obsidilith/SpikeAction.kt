@@ -41,7 +41,7 @@ class SpikeAction(val entity: MobEntity) : IActionWithCooldown {
             it.addStatusEffect(StatusEffectInstance(StatusEffects.SLOWNESS, 120, 2))
         }
 
-        entity.world.playSound(entity.pos, Mod.sounds.obsidilithPrepareAttack, SoundCategory.HOSTILE, 3.0f, range = 64.0)
+        entity.world.playSound(entity.pos, Mod.sounds.obsidilithPrepareAttack, SoundCategory.HOSTILE, 3.0f, 1.2f, 64.0)
 
         for (i in 0 until 3) {
             val timeBetweenRifts = 30
