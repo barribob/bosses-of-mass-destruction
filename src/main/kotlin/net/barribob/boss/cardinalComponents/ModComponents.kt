@@ -47,8 +47,8 @@ class ModComponents : WorldComponentInitializer, EntityComponentInitializer {
     override fun registerWorldComponentFactories(registry: WorldComponentFactoryRegistry) {
         registry.register(
             eventSchedulerComponentKey,
-            ServerWorldEventScheduler::class.java,
-            ::ServerWorldEventScheduler
+            WorldEventScheduler::class.java,
+            ::WorldEventScheduler
         )
     }
 

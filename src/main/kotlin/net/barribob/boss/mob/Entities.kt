@@ -119,10 +119,11 @@ object Entities {
                     Mod.identifier("geo/obsidilith.geo.json"),
                     Mod.identifier("textures/entity/obsidilith.png"),
                     Mod.identifier("animations/obsidilith.json"),
-                    animationTimer
+                    animationTimer,
                 ),
                 iBoneLight = runeColorHandler,
-                renderData = runeColorHandler
+                renderData = runeColorHandler,
+                deathRotation = false
             )
             obsidilithRenderer.addLayer(ObsidilithArmorRenderer(obsidilithRenderer))
             obsidilithRenderer

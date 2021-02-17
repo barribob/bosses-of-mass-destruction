@@ -78,6 +78,8 @@ private fun initDev() {
     MaelstromMod.testCommand.addId(inGameTests::burstAction.name, inGameTests::burstAction)
     MaelstromMod.testCommand.addId(inGameTests::playerPosition.name, inGameTests::playerPosition)
     MaelstromMod.testCommand.addId(inGameTests::placePillars.name, inGameTests::placePillars)
+    MaelstromMod.testCommand.addId(inGameTests::placeObsidian.name, inGameTests::placeObsidian)
+    MaelstromMod.testCommand.addId(inGameTests::obsidilithDeath.name, inGameTests::obsidilithDeath)
 }
 
 @Environment(EnvType.CLIENT)

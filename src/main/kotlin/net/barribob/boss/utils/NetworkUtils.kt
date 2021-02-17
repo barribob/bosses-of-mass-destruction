@@ -75,6 +75,6 @@ class NetworkUtils {
     @Environment(EnvType.CLIENT)
     fun testClientCallback(client: MinecraftClient) {
         val player = client.player ?: return
-        ObsidilithEffectHandler(player, MaelstromMod.clientEventScheduler).handleStatus(ObsidilithUtils.pillarDefenseStatus)
+        ObsidilithEffectHandler(player, MaelstromMod.clientEventScheduler).handleStatus(ObsidilithUtils.deathStatus)
     }
 }

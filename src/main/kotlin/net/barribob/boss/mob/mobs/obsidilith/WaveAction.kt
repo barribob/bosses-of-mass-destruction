@@ -19,7 +19,7 @@ import net.minecraft.util.math.Vec3d
 
 class WaveAction(val entity: MobEntity) :
     IActionWithCooldown {
-    private val riftRadius = 4
+    private val riftRadius = 4.0
     private val circlePoints = MathUtils.buildBlockCircle(riftRadius)
     private val world = entity.world
     private val eventScheduler = ModComponents.getWorldEventScheduler(world)
@@ -51,7 +51,7 @@ class WaveAction(val entity: MobEntity) :
 
         world.playSound(entity.pos, Mod.sounds.obsidilithPrepareAttack, SoundCategory.HOSTILE, 3.0f, 0.8f, 64.0)
         eventScheduler.addEvent(TimedEvent({
-            val direction = MathUtils.unNormedDirection(entity.pos, target.pos).normalize().multiply(riftRadius.toDouble())
+            val direction = MathUtils.unNormedDirection(entity.pos, target.pos).normalize().multiply(riftRadius)
             val numRifts = 5
             val startRiftPos = entity.pos.add(direction)
             val endRiftPos = startRiftPos.add(direction.multiply(numRifts.toDouble() * 1.5))

@@ -17,7 +17,7 @@ import net.minecraft.util.math.Vec3d
 
 class BurstAction(val entity: LivingEntity) :
     IActionWithCooldown {
-    private val circlePoints = MathUtils.buildBlockCircle(7)
+    private val circlePoints = MathUtils.buildBlockCircle(7.0)
     private val world = entity.world
     private val eventScheduler = ModComponents.getWorldEventScheduler(world)
 

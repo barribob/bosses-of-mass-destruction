@@ -1,11 +1,12 @@
 package net.barribob.boss.cardinalComponents
 
+import dev.onyxstudios.cca.api.v3.component.tick.ClientTickingComponent
 import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent
 import net.barribob.maelstrom.general.event.EventScheduler
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.World
 
-class ServerWorldEventScheduler(val world: World): IWorldEventSchedulerComponent, ServerTickingComponent {
+class WorldEventScheduler(val world: World): IWorldEventSchedulerComponent, ServerTickingComponent, ClientTickingComponent {
     private val eventScheduler = EventScheduler()
 
     override fun get(): EventScheduler = eventScheduler
@@ -19,5 +20,9 @@ class ServerWorldEventScheduler(val world: World): IWorldEventSchedulerComponent
     }
 
     override fun writeToNbt(p0: CompoundTag) {
+    }
+
+    override fun clientTick() {
+        eventScheduler.updateEvents()
     }
 }

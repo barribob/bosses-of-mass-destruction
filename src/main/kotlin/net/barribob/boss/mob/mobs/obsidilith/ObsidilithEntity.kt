@@ -1,6 +1,7 @@
 package net.barribob.boss.mob.mobs.obsidilith
 
 import net.barribob.boss.block.ModBlocks
+import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.config.ObsidilithConfig
 import net.barribob.boss.mob.ai.BossVisibilityCache
 import net.barribob.boss.mob.ai.action.CooldownAction
@@ -46,7 +47,7 @@ class ObsidilithEntity(entityType: EntityType<out ObsidilithEntity>, world: Worl
         Pair(ObsidilithUtils.pillarDefenseStatus, PillarAction(this))
     )
     private val moveLogic = ObsidilithMoveLogic(statusRegistry, this)
-    private val effectHandler = ObsidilithEffectHandler(this, eventScheduler)
+    private val effectHandler = ObsidilithEffectHandler(this, ModComponents.getWorldEventScheduler(world))
     override val damageHandler = CompositeDamageHandler(listOf(moveLogic, ShieldDamageHandler(::isShielded)))
     private val activePillars = mutableSetOf<BlockPos>()
     private val visibilityCache = BossVisibilityCache(this)
@@ -99,6 +100,17 @@ class ObsidilithEntity(entityType: EntityType<out ObsidilithEntity>, world: Worl
                 }
             }
         }
+
+        ObsidilithUtils.placeObsidianBelow(this)
+    }
+
+    override fun onDeath(source: DamageSource?) {
+        if(mobConfig.spawnPillarOnDeath) {
+            ObsidilithUtils.onDeath(this, mobConfig.experienceDrop)
+            effectHandler.handleStatus(ObsidilithUtils.deathStatus)
+        }
+
+        super.onDeath(source)
     }
 
     private fun canContinueAttack() = isAlive && target != null

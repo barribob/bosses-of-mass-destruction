@@ -22,7 +22,8 @@ class SimpleLivingGeoRenderer<T>(
     private val brightness: IRenderLight<T>? = null,
     private val iBoneLight: IBoneLight? = null,
     private val renderer: IRenderer<T>? = null,
-    private val renderData: IRenderDataProvider<T>? = null
+    private val renderData: IRenderDataProvider<T>? = null,
+    private val deathRotation: Boolean = true
     ) : GeoEntityRenderer<T>(renderManager, modelProvider) where T : IAnimatable, T : LivingEntity {
 
     override fun getBlockLight(entity: T, blockPos: BlockPos): Int {
@@ -60,4 +61,6 @@ class SimpleLivingGeoRenderer<T>(
         super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light)
         matrices.pop()
     }
+
+    override fun getDeathMaxRotation(entityLivingBaseIn: T): Float = if(deathRotation) 90f else 0f
 }

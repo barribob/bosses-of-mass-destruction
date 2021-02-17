@@ -17,7 +17,7 @@ import net.minecraft.sound.SoundCategory
 
 class SpikeAction(val entity: MobEntity) : IActionWithCooldown {
     private val eventScheduler = ModComponents.getWorldEventScheduler(entity.world)
-    private val circlePoints = MathUtils.buildBlockCircle(2)
+    private val circlePoints = MathUtils.buildBlockCircle(2.0)
 
     override fun perform(): Int {
         val target = entity.target

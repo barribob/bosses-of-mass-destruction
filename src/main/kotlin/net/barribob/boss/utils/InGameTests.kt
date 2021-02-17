@@ -92,4 +92,14 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler, private va
         val entity = source.player
         PillarAction(entity).perform()
     }
+
+    fun placeObsidian(source: ServerCommandSource){
+        val entity = source.player
+        ObsidilithUtils.placeObsidianBelow(entity)
+    }
+
+    fun obsidilithDeath(source: ServerCommandSource){
+        val entity = source.player
+        ObsidilithUtils.onDeath(entity, 100)
+    }
 }
