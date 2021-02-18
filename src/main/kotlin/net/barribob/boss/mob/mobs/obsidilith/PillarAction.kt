@@ -58,7 +58,7 @@ class PillarAction(val entity: LivingEntity) : IActionWithCooldown {
     }
 
     private fun buildPillar(pos: BlockPos, serverWorld: ServerWorld) {
-        val pillarHeight = RandomUtils.range(2, 5)
+        val pillarHeight = 2
         for (i in 0 until pillarHeight) {
             entity.world.setBlockState(pos.up(i), Blocks.OBSIDIAN.defaultState)
         }

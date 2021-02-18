@@ -79,23 +79,28 @@ class ObsidilithEffectHandler(val entity: LivingEntity, val eventScheduler: Even
     }
 
     private fun spikeEffect() {
+        val entityPos = entity.pos
         for (i in 0..50) {
-            val entityPos = entity.pos
+            val randomYOffset = VecUtils.yAxis.multiply(entity.random.nextDouble())
+            val randomYVel = VecUtils.yAxis.multiply(entity.random.nextDouble())
             val pos = entityPos.add(
                 RandomUtils.randVec()
                     .planeProject(VecUtils.yAxis)
                     .normalize().multiply(3.0)
             )
+                .add(randomYOffset)
+
             spikeParticleFactory.continuousVelocity {
-                MathUtils.unNormedDirection(it.getPos(), entityPos).crossProduct(VecUtils.yAxis).add(VecUtils.yAxis)
-                    .multiply(0.1)
+                MathUtils.unNormedDirection(it.getPos(), entityPos)
+                    .crossProduct(VecUtils.yAxis)
+                    .add(randomYVel).multiply(0.1)
             }.build(pos)
         }
     }
 
     private fun anvilEffect() {
+        val entityPos = entity.eyePos()
         for (i in 0..50) {
-            val entityPos = entity.eyePos()
             val pos = entityPos.add(RandomUtils.randVec().normalize().multiply(3.0))
             val vel = MathUtils.unNormedDirection(pos, entityPos).crossProduct(VecUtils.yAxis).multiply(0.1)
             anvilParticleFactory.build(pos, vel)

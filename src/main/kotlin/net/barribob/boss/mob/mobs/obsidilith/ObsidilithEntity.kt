@@ -36,14 +36,14 @@ import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import software.bernie.geckolib3.core.manager.AnimationData
 
-class ObsidilithEntity(entityType: EntityType<out ObsidilithEntity>, world: World, val mobConfig: ObsidilithConfig) : BaseEntity(entityType, world) {
+class ObsidilithEntity(entityType: EntityType<out ObsidilithEntity>, world: World, private val mobConfig: ObsidilithConfig) : BaseEntity(entityType, world) {
     override val bossBar = ServerBossBar(this.displayName, BossBar.Color.PINK, BossBar.Style.NOTCHED_12)
     var currentAttack: Byte = 0
     private val statusRegistry = mapOf(
         Pair(ObsidilithUtils.burstAttackStatus, BurstAction(this)),
         Pair(ObsidilithUtils.waveAttackStatus, WaveAction(this)),
         Pair(ObsidilithUtils.spikeAttackStatus, SpikeAction(this)),
-        Pair(ObsidilithUtils.anvilAttackStatus, AnvilAction(this)),
+        Pair(ObsidilithUtils.anvilAttackStatus, AnvilAction(this, mobConfig.anvilAttackExplosionStrength)),
         Pair(ObsidilithUtils.pillarDefenseStatus, PillarAction(this))
     )
     private val moveLogic = ObsidilithMoveLogic(statusRegistry, this)

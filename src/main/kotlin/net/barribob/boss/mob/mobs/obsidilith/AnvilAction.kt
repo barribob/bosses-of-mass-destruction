@@ -13,7 +13,7 @@ import net.minecraft.entity.mob.MobEntity
 import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvents
 
-class AnvilAction(private val actor: MobEntity) : IActionWithCooldown {
+class AnvilAction(private val actor: MobEntity, val explosionPower: Float) : IActionWithCooldown {
     private val eventScheduler = ModComponents.getWorldEventScheduler(actor.world)
 
     override fun perform(): Int {
@@ -38,7 +38,7 @@ class AnvilAction(private val actor: MobEntity) : IActionWithCooldown {
                     actor.x,
                     actor.y,
                     actor.z,
-                    4.0f,
+                    explosionPower,
                     VanillaCopies.getEntityDestructionType(actor.world)
                 )
                 eventScheduler.addEvent(TimedEvent({

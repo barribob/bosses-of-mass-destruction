@@ -7,4 +7,5 @@ class ObsidilithConfig {
     val idleHealingPerTick = 0.5f
     val experienceDrop = 1000
     val spawnPillarOnDeath = true
+    val anvilAttackExplosionStrength = 4.0f
 }
