@@ -3,6 +3,25 @@
 	"animations": {
 		"placeholder": {
 			"loop": true
+		},
+		"death": {
+			"loop": true
+		},
+		"summon": {
+			"animation_length": 1.52,
+			"bones": {
+				"root": {
+					"position": {
+						"0.0": {
+							"vector": [0, -70, 0]
+						},
+						"1.52": {
+							"vector": [0, 0, 0],
+							"easing": "easeOutQuad"
+						}
+					}
+				}
+			}
 		}
 	},
 	"geckolib_format_version": 2

@@ -68,7 +68,7 @@ class PillarAction(val entity: LivingEntity) : IActionWithCooldown {
     }
 
     companion object {
-        const val pillarXzDistance = 15.0
+        const val pillarXzDistance = 13.0
         const val maxYDistance = 15.0
         const val pillarDelay = 40
     }

@@ -1,0 +1,6 @@
+{
+    "variants": {
+        "eye=false": { "model": "bosses_of_mass_destruction:block/obsidilith_end_frame" },
+        "eye=true": { "model": "bosses_of_mass_destruction:block/obsidilith_end_frame_filled" }
+    }
+}

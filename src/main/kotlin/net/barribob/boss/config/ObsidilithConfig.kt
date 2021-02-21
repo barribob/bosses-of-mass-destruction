@@ -8,4 +8,13 @@ class ObsidilithConfig {
     val experienceDrop = 1000
     val spawnPillarOnDeath = true
     val anvilAttackExplosionStrength = 4.0f
+
+    val arenaGeneration = ArenaGeneration()
+
+    data class ArenaGeneration(
+        val generationHeight: Int = 90,
+        val generationSpacing: Int = 32,
+        val generationSeparation: Int = 24,
+        val generationEnabled: Boolean = true
+    )
 }

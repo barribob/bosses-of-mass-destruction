@@ -118,7 +118,7 @@ object Entities {
                 entityRenderDispatcher, GeoModel(
                     Mod.identifier("geo/obsidilith.geo.json"),
                     Mod.identifier("textures/entity/obsidilith.png"),
-                    Mod.identifier("animations/obsidilith.json"),
+                    Mod.identifier("animations/obsidilith.animation.json"),
                     animationTimer,
                 ),
                 iBoneLight = runeColorHandler,

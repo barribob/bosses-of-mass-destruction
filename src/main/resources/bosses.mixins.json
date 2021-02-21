@@ -3,7 +3,8 @@
   "package": "net.barribob.boss.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "BossBarHudMixin"
+    "BossBarHudMixin",
+    "EnderEyeUseMixin"
   ],
   "injectors": {
     "defaultRequire": 1

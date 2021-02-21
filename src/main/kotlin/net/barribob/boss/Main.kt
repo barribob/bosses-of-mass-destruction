@@ -10,6 +10,7 @@ import net.barribob.boss.mob.Entities
 import net.barribob.boss.particle.Particles
 import net.barribob.boss.sound.ModSounds
 import net.barribob.boss.utils.InGameTests
+import net.barribob.boss.utils.ModStructures
 import net.barribob.boss.utils.NetworkUtils
 import net.barribob.boss.utils.NetworkUtils.Companion.PLAYER_VELOCITY_ID
 import net.barribob.maelstrom.MaelstromMod
@@ -43,6 +44,7 @@ fun init() {
 
     ModBlocks.init()
     Entities.init()
+    ModStructures.init()
 
     Mod.sounds.init()
 

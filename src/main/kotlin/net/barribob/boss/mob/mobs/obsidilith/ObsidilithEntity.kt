@@ -1,5 +1,6 @@
 package net.barribob.boss.mob.mobs.obsidilith
 
+import net.barribob.boss.Mod
 import net.barribob.boss.block.ModBlocks
 import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.config.ObsidilithConfig
@@ -12,8 +13,10 @@ import net.barribob.boss.mob.mobs.lich.LichUtils
 import net.barribob.boss.mob.utils.BaseEntity
 import net.barribob.boss.mob.utils.EntityAdapter
 import net.barribob.boss.mob.utils.EntityStats
+import net.barribob.boss.mob.utils.animation.AnimationPredicate
 import net.barribob.boss.particle.Particles
 import net.barribob.boss.utils.ModUtils
+import net.barribob.boss.utils.ModUtils.playSound
 import net.barribob.boss.utils.ModUtils.spawnParticle
 import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.static_utilities.MathUtils
@@ -29,14 +32,22 @@ import net.minecraft.entity.effect.StatusEffects
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.world.ServerWorld
+import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvent
 import net.minecraft.sound.SoundEvents
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
+import software.bernie.geckolib3.core.PlayState
+import software.bernie.geckolib3.core.builder.AnimationBuilder
+import software.bernie.geckolib3.core.controller.AnimationController
 import software.bernie.geckolib3.core.manager.AnimationData
 
-class ObsidilithEntity(entityType: EntityType<out ObsidilithEntity>, world: World, private val mobConfig: ObsidilithConfig) : BaseEntity(entityType, world) {
+class ObsidilithEntity(
+    entityType: EntityType<out ObsidilithEntity>,
+    world: World,
+    private val mobConfig: ObsidilithConfig
+) : BaseEntity(entityType, world) {
     override val bossBar = ServerBossBar(this.displayName, BossBar.Color.PINK, BossBar.Style.NOTCHED_12)
     var currentAttack: Byte = 0
     private val statusRegistry = mapOf(
@@ -60,6 +71,10 @@ class ObsidilithEntity(entityType: EntityType<out ObsidilithEntity>, world: Worl
             goalSelector.add(1, buildAttackGoal())
 
             targetSelector.add(2, FindTargetGoal(this, PlayerEntity::class.java, { boundingBox.expand(it) }))
+
+            eventScheduler.addEvent(TimedEvent({
+                world.playSound(pos, Mod.sounds.waveIndicator, SoundCategory.HOSTILE, 1.5f, 0.7f)
+            }, 1))
         }
     }
 
@@ -91,7 +106,7 @@ class ObsidilithEntity(entityType: EntityType<out ObsidilithEntity>, world: Worl
         }
         getDataTracker().set(ObsidilithUtils.isShielded, activePillars.any())
 
-        if(this.age % 40 == 0) {
+        if (this.age % 40 == 0) {
             activePillars.randomOrNull()?.let {
                 MathUtils.lineCallback(it.asVec3d().add(0.5, 0.5, 0.5), eyePos(), 15) { vec3d, i ->
                     eventScheduler.addEvent(TimedEvent({
@@ -105,7 +120,7 @@ class ObsidilithEntity(entityType: EntityType<out ObsidilithEntity>, world: Worl
     }
 
     override fun onDeath(source: DamageSource?) {
-        if(mobConfig.spawnPillarOnDeath) {
+        if (mobConfig.spawnPillarOnDeath) {
             ObsidilithUtils.onDeath(this, mobConfig.experienceDrop)
             effectHandler.handleStatus(ObsidilithUtils.deathStatus)
         }
@@ -135,7 +150,13 @@ class ObsidilithEntity(entityType: EntityType<out ObsidilithEntity>, world: Worl
     override fun getHurtSound(source: DamageSource?): SoundEvent = SoundEvents.BLOCK_BASALT_HIT
     override fun getDeathSound(): SoundEvent = SoundEvents.BLOCK_BASALT_HIT
 
-    override fun registerControllers(p0: AnimationData?) {
+    override fun registerControllers(data: AnimationData) {
+        data.addAnimationController(AnimationController(this, "summon", 0f, AnimationPredicate<ObsidilithEntity> {
+                it.controller.setAnimation(
+                    AnimationBuilder().addAnimation("summon", false)
+                )
+                PlayState.CONTINUE
+        }))
     }
 
     override fun move(type: MovementType, movement: Vec3d) {
@@ -154,7 +175,7 @@ class ObsidilithEntity(entityType: EntityType<out ObsidilithEntity>, world: Worl
         }
     }
 
-    override fun getArmor(): Int = if(target != null) super.getArmor() else 24
+    override fun getArmor(): Int = if (target != null) super.getArmor() else 24
 
     override fun checkDespawn() = ModUtils.preventDespawnExceptPeaceful(this, world)
 
