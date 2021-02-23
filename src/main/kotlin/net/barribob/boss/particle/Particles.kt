@@ -100,6 +100,12 @@ object Particles {
         FabricParticleTypes.simple()
     )
 
+    val OBSIDILITH_ANVIL_INDICATOR: DefaultParticleType = Registry.register(
+        Registry.PARTICLE_TYPE,
+        Mod.identifier("obsidilith_anvil_indicator"),
+        FabricParticleTypes.simple()
+    )
+
     const val FULL_BRIGHT = 15728880
 
     fun clientInit() {
@@ -249,6 +255,21 @@ object Particles {
                 particle.setScaleOverride { (sin(it.toDouble() * Math.PI) + 1f).toFloat() * 0.1f }
                 particle.setColorOverride { age -> MathUtils.lerpVec(age, ModColors.WHITE, ModColors.ENDER_PURPLE) }
                 particle.setColorVariation(0.2)
+                particle
+            }
+        }
+
+        particleFactory.register(OBSIDILITH_ANVIL_INDICATOR) { provider: SpriteProvider ->
+            SimpleParticleFactory(provider) { context ->
+                val particle = SimpleParticle(
+                    context,
+                    RandomUtils.range(25, 27),
+                    VanillaCopies::buildFlatGeometry
+                )
+                particle.setColorOverride { ModColors.ENDER_PURPLE }
+                particle.setColorVariation(0.3)
+                particle.setBrightnessOverride { FULL_BRIGHT }
+                particle.setScaleOverride { (1 + it) * 0.25f }
                 particle
             }
         }
