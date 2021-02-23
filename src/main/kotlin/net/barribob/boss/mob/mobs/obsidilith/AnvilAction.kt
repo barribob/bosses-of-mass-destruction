@@ -32,7 +32,9 @@ class AnvilAction(private val actor: MobEntity, val explosionPower: Float) : IAc
             actor.refreshPositionAndAngles(teleportPos.x, teleportPos.y, teleportPos.z, actor.yaw, actor.pitch)
             actor.world.playSound(teleportPos, SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.HOSTILE, 3.0f, range = 64.0)
 
-            eventScheduler.addEvent(Event({ actor.isOnGround }, {
+            val shouldLand = { actor.isOnGround || actor.y < 0 }
+            val shouldCancelLand = { !actor.isAlive || shouldLand() }
+            eventScheduler.addEvent(Event(shouldLand, {
                 actor.world.createExplosion(
                     actor,
                     actor.x,
@@ -45,7 +47,7 @@ class AnvilAction(private val actor: MobEntity, val explosionPower: Float) : IAc
                     actor.refreshPositionAndAngles(originalPos.x, originalPos.y, originalPos.z, actor.yaw, actor.pitch)
                     actor.world.playSound(actor.pos, SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.HOSTILE, 1.0f, range = 64.0)
                 }, 20, shouldCancel = { !actor.isAlive}))
-            }, shouldCancel = { !actor.isAlive || actor.isOnGround }))
+            }, shouldCancel = shouldCancelLand))
 
         }, 20, shouldCancel = { !actor.isAlive }))
     }

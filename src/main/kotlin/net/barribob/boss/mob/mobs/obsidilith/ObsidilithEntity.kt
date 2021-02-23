@@ -48,7 +48,7 @@ class ObsidilithEntity(
     world: World,
     private val mobConfig: ObsidilithConfig
 ) : BaseEntity(entityType, world) {
-    override val bossBar = ServerBossBar(this.displayName, BossBar.Color.PINK, BossBar.Style.NOTCHED_12)
+    override val bossBar = ServerBossBar(this.displayName, BossBar.Color.PURPLE, BossBar.Style.NOTCHED_12)
     var currentAttack: Byte = 0
     private val statusRegistry = mapOf(
         Pair(ObsidilithUtils.burstAttackStatus, BurstAction(this)),

@@ -4,7 +4,8 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "BossBarHudMixin",
-    "EnderEyeUseMixin"
+    "EnderEyeUseMixin",
+    "SpawnEntryMixin"
   ],
   "injectors": {
     "defaultRequire": 1

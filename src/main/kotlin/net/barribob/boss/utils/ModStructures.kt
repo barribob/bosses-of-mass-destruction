@@ -23,7 +23,7 @@ object ModStructures {
         Registry.STRUCTURE_PIECE,
         Mod.identifier("piece"),
         StructurePieceType { m, t -> ModPiece(m, t) })
-    private val obsidilithArenaStructure =
+    val obsidilithArenaStructure =
         ObsidilithArenaStructureFeature(DefaultFeatureConfig.CODEC, mobConfig.obsidilithConfig)
     private val configuredArenaStructure = obsidilithArenaStructure.configure(DefaultFeatureConfig.DEFAULT)
 
