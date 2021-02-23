@@ -38,24 +38,26 @@ class LichKillCounter(
 
     override fun afterKilledOtherEntity(sWorld: ServerWorld, entity: Entity, killedEntity: LivingEntity) {
         if (entity is ServerPlayerEntity && killedEntity.type in countedEntities) {
-            val entitiesKilled = getUndeadKilled(entity)
             val previouslySummoned = summonCounter.getLichSummons(entity)
 
-            onEntitiesKilledUpdate(entitiesKilled, previouslySummoned, entity, sWorld)
+            if(previouslySummoned == 0) {
+                val entitiesKilled = getUndeadKilled(entity)
+
+                onEntitiesKilledUpdate(entitiesKilled, entity, sWorld)
+            }
         }
     }
 
     fun onEntitiesKilledUpdate(
         entitiesKilled: Int,
-        numPreviouslySummoned: Int,
         player: ServerPlayerEntity,
         sWorld: ServerWorld
     ) {
-        if (entitiesKilled > 0 && entitiesKilled % config.numEntitiesKilledToShowCounter == 0 && numPreviouslySummoned == 0) {
+        if (entitiesKilled > 0 && entitiesKilled % config.numEntitiesKilledToShowCounter == 0) {
             displayCount(entitiesKilled, player, sWorld)
         }
 
-        if (entitiesKilled >= config.numEntitiesKilledToSummonLich && numPreviouslySummoned == 0) {
+        if (entitiesKilled >= config.numEntitiesKilledToSummonLich) {
             trySummonLich(player, sWorld)
         }
     }
