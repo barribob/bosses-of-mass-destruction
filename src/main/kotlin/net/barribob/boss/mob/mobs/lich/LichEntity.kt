@@ -236,9 +236,9 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
     private val volleyRageAction = buildVolleyRageAction(::canContinueAttack)
     private val minionRageAction = buildMinionRageAction(::canContinueAttack)
 
-    private fun playCometLaunchSound() = playSound(Mod.sounds.cometShoot, 0.4f)
-    private fun playCometPrepareSound() = playSound(Mod.sounds.cometPrepare, 0.4f)
-    private fun playVolleyShootSound() = playSound(Mod.sounds.missileShoot, 1.0f)
+    private fun playCometLaunchSound() = playSound(Mod.sounds.cometShoot, 3.0f)
+    private fun playCometPrepareSound() = playSound(Mod.sounds.cometPrepare, 3.0f)
+    private fun playVolleyShootSound() = playSound(Mod.sounds.missileShoot, 3.0f)
     private fun playVolleyPrepareSound() = playSound(Mod.sounds.missilePrepare, 4.0f)
     private fun playBeginTeleportSound() = playSound(Mod.sounds.teleportPrepare, 3.0f)
     private fun playTeleportSound() = playSound(SoundEvents.ENTITY_ILLUSIONER_MIRROR_MOVE, 2.0f)
