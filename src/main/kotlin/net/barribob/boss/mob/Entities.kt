@@ -57,7 +57,7 @@ object Entities {
 
     val OBSIDILITH: EntityType<ObsidilithEntity> = registerConfiguredMob("obsidilith",
         { type, world -> ObsidilithEntity(type, world, mobConfig.obsidilithConfig) },
-        { it.fireImmune().dimensions(EntityDimensions.fixed(2.0f, 4.5f)) })
+        { it.fireImmune().dimensions(EntityDimensions.fixed(2.0f, 4.4f)) })
 
     val killCounter = LichKillCounter(mobConfig.lichConfig.summonMechanic, ModComponents, ModComponents)
 

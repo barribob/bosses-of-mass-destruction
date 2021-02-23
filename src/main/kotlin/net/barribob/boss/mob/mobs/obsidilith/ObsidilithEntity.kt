@@ -18,10 +18,12 @@ import net.barribob.boss.particle.Particles
 import net.barribob.boss.utils.ModUtils
 import net.barribob.boss.utils.ModUtils.playSound
 import net.barribob.boss.utils.ModUtils.spawnParticle
+import net.barribob.boss.utils.VanillaCopies
 import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.static_utilities.MathUtils
 import net.barribob.maelstrom.static_utilities.asVec3d
 import net.barribob.maelstrom.static_utilities.eyePos
+import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.MovementType
 import net.minecraft.entity.boss.BossBar
@@ -117,6 +119,11 @@ class ObsidilithEntity(
         }
 
         ObsidilithUtils.placeObsidianBelow(this)
+    }
+
+    override fun isCollidable(): Boolean = true
+
+    override fun pushAwayFrom(entity: Entity) {
     }
 
     override fun onDeath(source: DamageSource?) {
