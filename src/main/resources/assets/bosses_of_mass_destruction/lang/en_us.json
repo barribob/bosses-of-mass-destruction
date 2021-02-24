@@ -4,5 +4,8 @@
   "entity.bosses_of_mass_destruction.blue_fireball": "Blue Fireball",
   "entity.bosses_of_mass_destruction.obsidilith" : "Obsidilith",
 
+  "block.bosses_of_mass_destruction.obsidilith_end_frame" : "Obsidian Altar",
+  "block.bosses_of_mass_destruction.obsidilith_rune" : "Obsidian Rune",
+
   "bosses_of_mass_destruction.kill_counter_update": "Undead killed: %d"
 }

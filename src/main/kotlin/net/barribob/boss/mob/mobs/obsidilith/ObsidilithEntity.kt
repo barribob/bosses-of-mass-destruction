@@ -129,7 +129,7 @@ class ObsidilithEntity(
     override fun onDeath(source: DamageSource?) {
         if (mobConfig.spawnPillarOnDeath) {
             ObsidilithUtils.onDeath(this, mobConfig.experienceDrop)
-            effectHandler.handleStatus(ObsidilithUtils.deathStatus)
+            if(world.isClient) effectHandler.handleStatus(ObsidilithUtils.deathStatus)
         }
 
         super.onDeath(source)
