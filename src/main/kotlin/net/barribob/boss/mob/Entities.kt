@@ -6,6 +6,7 @@ import net.barribob.boss.animation.IAnimationTimer
 import net.barribob.boss.animation.PauseAnimationTimer
 import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.config.ModConfig
+import net.barribob.boss.mob.mobs.gauntlet.GauntletEntity
 import net.barribob.boss.mob.mobs.lich.*
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithArmorRenderer
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithBoneLight
@@ -59,6 +60,10 @@ object Entities {
         { type, world -> ObsidilithEntity(type, world, mobConfig.obsidilithConfig) },
         { it.fireImmune().dimensions(EntityDimensions.fixed(2.0f, 4.4f)) })
 
+    val GAUNTLET: EntityType<GauntletEntity> = registerConfiguredMob("gauntlet",
+        { type, world -> GauntletEntity(type, world) },
+        { it.fireImmune().dimensions(EntityDimensions.fixed(2.0f, 4.0f)) })
+
     val killCounter = LichKillCounter(mobConfig.lichConfig.summonMechanic, ModComponents, ModComponents)
 
     private fun <T : Entity> registerConfiguredMob(
@@ -92,6 +97,9 @@ object Entities {
                 .add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 10.0)
                 .add(EntityAttributes.GENERIC_ARMOR, mobConfig.obsidilithConfig.armor)
         )
+
+        FabricDefaultAttributeRegistry.register(GAUNTLET, HostileEntity.createHostileAttributes()
+            .add(EntityAttributes.GENERIC_MAX_HEALTH, 20.0))
     }
 
     fun clientInit(animationTimer: IAnimationTimer) {
@@ -161,6 +169,17 @@ object Entities {
                         ParticleFactories.cometTrail().build(it.add(RandomUtils.randVec().multiply(0.5)))
                     }),
                 FullRenderLight()
+            )
+        }
+
+        EntityRendererRegistry.INSTANCE.register(GAUNTLET) { entityRenderDispatcher, _ ->
+            SimpleLivingGeoRenderer(
+                entityRenderDispatcher, GeoModel(
+                    Mod.identifier("geo/gauntlet.geo.json"),
+                    Mod.identifier("textures/entity/gauntlet.png"),
+                    Mod.identifier("animations/gauntlet.animation.json"),
+                    animationTimer
+                )
             )
         }
     }

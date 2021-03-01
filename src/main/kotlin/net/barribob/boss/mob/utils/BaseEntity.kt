@@ -23,7 +23,7 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
     override fun getFactory(): AnimationFactory = animationFactory
     var idlePosition: Vec3d = Vec3d.ZERO // TODO: I don't actually know if this implementation works
     protected open val bossBar: ServerBossBar? = null
-    protected abstract val damageHandler: IDamageHandler
+    protected open val damageHandler: IDamageHandler? = null
     protected val eventScheduler = EventScheduler()
 
     final override fun tick() {
@@ -73,12 +73,17 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
 
     final override fun damage(source: DamageSource, amount: Float): Boolean {
         val stats = EntityStats(this)
+        val handler = damageHandler
         if (!world.isClient) {
-            damageHandler.beforeDamage(stats, source, amount)
+            handler?.beforeDamage(stats, source, amount)
         }
-        val result = damageHandler.shouldDamage(this, source, amount) && super.damage(source, amount)
+        val result = if (handler != null) {
+            handler.shouldDamage(this, source, amount) && super.damage(source, amount)
+        } else {
+            super.damage(source, amount)
+        }
         if (!world.isClient) {
-            damageHandler.afterDamage(stats, source, amount)
+            handler?.afterDamage(stats, source, amount)
         }
         return result
     }
