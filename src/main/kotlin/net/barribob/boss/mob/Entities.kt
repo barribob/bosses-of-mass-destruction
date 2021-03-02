@@ -6,6 +6,7 @@ import net.barribob.boss.animation.IAnimationTimer
 import net.barribob.boss.animation.PauseAnimationTimer
 import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.config.ModConfig
+import net.barribob.boss.mob.mobs.gauntlet.GauntletCodeAnimations
 import net.barribob.boss.mob.mobs.gauntlet.GauntletEntity
 import net.barribob.boss.mob.mobs.lich.*
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithArmorRenderer
@@ -99,6 +100,8 @@ object Entities {
         )
 
         FabricDefaultAttributeRegistry.register(GAUNTLET, HostileEntity.createHostileAttributes()
+            .add(EntityAttributes.GENERIC_FLYING_SPEED, 5.0)
+            .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 64.0)
             .add(EntityAttributes.GENERIC_MAX_HEALTH, 20.0))
     }
 
@@ -178,7 +181,8 @@ object Entities {
                     Mod.identifier("geo/gauntlet.geo.json"),
                     Mod.identifier("textures/entity/gauntlet.png"),
                     Mod.identifier("animations/gauntlet.animation.json"),
-                    animationTimer
+                    animationTimer,
+                    GauntletCodeAnimations()
                 )
             )
         }
