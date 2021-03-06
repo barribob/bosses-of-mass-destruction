@@ -63,7 +63,7 @@ object Entities {
 
     val GAUNTLET: EntityType<GauntletEntity> = registerConfiguredMob("gauntlet",
         { type, world -> GauntletEntity(type, world) },
-        { it.fireImmune().dimensions(EntityDimensions.fixed(2.0f, 4.0f)) })
+        { it.fireImmune().dimensions(EntityDimensions.fixed(5.0f, 4.0f)) })
 
     val killCounter = LichKillCounter(mobConfig.lichConfig.summonMechanic, ModComponents, ModComponents)
 
