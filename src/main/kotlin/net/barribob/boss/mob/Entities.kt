@@ -100,7 +100,7 @@ object Entities {
         )
 
         FabricDefaultAttributeRegistry.register(GAUNTLET, HostileEntity.createHostileAttributes()
-            .add(EntityAttributes.GENERIC_FLYING_SPEED, 5.0)
+            .add(EntityAttributes.GENERIC_FLYING_SPEED, 0.1)
             .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 64.0)
             .add(EntityAttributes.GENERIC_MAX_HEALTH, 20.0))
     }

@@ -2,6 +2,7 @@ package net.barribob.boss.utils
 
 import io.netty.buffer.Unpooled
 import net.barribob.boss.Mod
+import net.barribob.boss.mob.mobs.gauntlet.GauntletEntity
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithEffectHandler
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithUtils
 import net.barribob.maelstrom.MaelstromMod
@@ -24,6 +25,7 @@ import net.minecraft.util.math.Vec3d
 class NetworkUtils {
     val SPAWN_ENTITY_PACKET_ID = Mod.identifier("spawn_entity")
     val CLIENT_TEST_PACKET_ID = Mod.identifier("client_test")
+    val CHANGE_HITBOX_PACKET_ID = Mod.identifier("change_hitbox")
 
     companion object {
         val PLAYER_VELOCITY_ID = Mod.identifier("player_velocity")
@@ -76,5 +78,27 @@ class NetworkUtils {
     fun testClientCallback(client: MinecraftClient) {
         val player = client.player ?: return
         ObsidilithEffectHandler(player, MaelstromMod.clientEventScheduler).handleStatus(ObsidilithUtils.deathStatus)
+    }
+
+    fun changeHitbox(gauntletEntity: GauntletEntity, open: Boolean) {
+        val packet = PacketByteBuf(Unpooled.buffer())
+        packet.writeInt(gauntletEntity.entityId)
+        packet.writeBoolean(open)
+        PlayerLookup.tracking(gauntletEntity).forEach {
+            ServerPlayNetworking.send(it, CHANGE_HITBOX_PACKET_ID, packet)
+        }
+    }
+
+    @Environment(EnvType.CLIENT)
+    fun handleChangeHitbox(client: MinecraftClient, buf: PacketByteBuf) {
+        val entityId = buf.readInt()
+        val open = buf.readBoolean()
+
+        client.execute {
+            val entity = client.world?.getEntityById(entityId)
+            if(entity is GauntletEntity) {
+                if(open) entity.hitboxHelper.setOpenHandHitbox() else entity.hitboxHelper.setClosedFistHitbox()
+            }
+        }
     }
 }

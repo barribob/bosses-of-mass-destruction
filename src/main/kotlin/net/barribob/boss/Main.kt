@@ -62,6 +62,9 @@ fun clientInit() {
     ClientPlayNetworking.registerGlobalReceiver(PLAYER_VELOCITY_ID) { client, _, buf, _ ->
         networkUtils.handlePlayerVelocity(client, buf)
     }
+    ClientPlayNetworking.registerGlobalReceiver(networkUtils.CHANGE_HITBOX_PACKET_ID) { client, _, buf, _ ->
+        networkUtils.handleChangeHitbox(client, buf)
+    }
 
     Entities.clientInit(animationTimer)
     Particles.clientInit()

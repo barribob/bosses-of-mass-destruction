@@ -1,5 +1,7 @@
 package net.barribob.boss.utils
 
+import net.minecraft.block.BlockState
+import net.minecraft.block.Material
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.network.ClientPlayNetworkHandler
 import net.minecraft.client.particle.BillboardParticle
@@ -18,6 +20,7 @@ import net.minecraft.entity.mob.CreeperEntity
 import net.minecraft.entity.mob.FlyingEntity
 import net.minecraft.entity.mob.MobEntity
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket
+import net.minecraft.tag.BlockTags
 import net.minecraft.util.hit.HitResult
 import net.minecraft.util.math.*
 import net.minecraft.world.*
@@ -267,5 +270,38 @@ object VanillaCopies {
         }
 
         return vector3fs
+    }
+
+    /**
+     * [EnderDragonEntity.destroyBlocks]
+     */
+    fun Entity.destroyBlocks(box: Box): Boolean {
+        val i = MathHelper.floor(box.minX)
+        val j = MathHelper.floor(box.minY)
+        val k = MathHelper.floor(box.minZ)
+        val l = MathHelper.floor(box.maxX)
+        val m = MathHelper.floor(box.maxY)
+        val n = MathHelper.floor(box.maxZ)
+        var bl = false
+        var bl2 = false
+        for (o in i..l) {
+            for (p in j..m) {
+                for (q in k..n) {
+                    val blockPos = BlockPos(o, p, q)
+                    val blockState: BlockState = this.world.getBlockState(blockPos)
+                    val block = blockState.block
+                    if (!blockState.isAir && blockState.material != Material.FIRE) {
+                        if (this.world.gameRules.getBoolean(GameRules.DO_MOB_GRIEFING)
+                            && !BlockTags.WITHER_IMMUNE.contains(block)
+                        ) {
+                            bl2 = this.world.removeBlock(blockPos, false) || bl2
+                        } else {
+                            bl = true
+                        }
+                    }
+                }
+            }
+        }
+        return bl
     }
 }

@@ -48,8 +48,9 @@ class ObsidilithMoveLogic(private val actions: Map<Byte, IActionWithCooldown>, v
 
     override fun perform(): Int {
         val moveByte = chooseMove()
+        val action = actions[moveByte] ?: error("$moveByte action not registered as an attack")
         entity.world.sendEntityStatus(entity, moveByte)
-        return (actions[moveByte] ?: error("$moveByte action not registered as an attack")).perform()
+        return action.perform()
     }
 
     override fun beforeDamage(stats: IEntityStats, damageSource: DamageSource, amount: Float) {

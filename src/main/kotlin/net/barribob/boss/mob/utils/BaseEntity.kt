@@ -24,6 +24,7 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
     var idlePosition: Vec3d = Vec3d.ZERO // TODO: I don't actually know if this implementation works
     protected open val bossBar: ServerBossBar? = null
     protected open val damageHandler: IDamageHandler? = null
+    protected open val statusHandler: IStatusHandler? = null
     protected val eventScheduler = EventScheduler()
 
     final override fun tick() {
@@ -69,6 +70,12 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
 
     final override fun readCustomDataFromTag(tag: CompoundTag?) {
         super.readCustomDataFromTag(tag)
+    }
+
+    // Todo: make final
+    override fun handleStatus(status: Byte) {
+        statusHandler?.handleClientStatus(status)
+        super.handleStatus(status)
     }
 
     final override fun damage(source: DamageSource, amount: Float): Boolean {
