@@ -4,7 +4,7 @@ import net.barribob.boss.mob.ai.action.IActionWithCooldown
 
 class GauntletMoveLogic(private val actions: Map<Byte, IActionWithCooldown>, val entity: GauntletEntity) : IActionWithCooldown {
     private fun chooseMove(): Byte {
-        return GauntletAttacks.punchAttack
+        return GauntletAttacks.poundAttack
     }
 
     override fun perform(): Int {

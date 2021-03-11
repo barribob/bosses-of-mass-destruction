@@ -18,7 +18,6 @@ import net.barribob.boss.particle.Particles
 import net.barribob.boss.utils.ModUtils
 import net.barribob.boss.utils.ModUtils.playSound
 import net.barribob.boss.utils.ModUtils.spawnParticle
-import net.barribob.boss.utils.VanillaCopies
 import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.static_utilities.MathUtils
 import net.barribob.maelstrom.static_utilities.asVec3d
@@ -74,7 +73,7 @@ class ObsidilithEntity(
 
             targetSelector.add(2, FindTargetGoal(this, PlayerEntity::class.java, { boundingBox.expand(it) }))
 
-            eventScheduler.addEvent(TimedEvent({
+            preTickEvents.addEvent(TimedEvent({
                 world.playSound(pos, Mod.sounds.waveIndicator, SoundCategory.HOSTILE, 1.5f, 0.7f)
             }, 1))
         }
@@ -111,7 +110,7 @@ class ObsidilithEntity(
         if (this.age % 40 == 0) {
             activePillars.randomOrNull()?.let {
                 MathUtils.lineCallback(it.asVec3d().add(0.5, 0.5, 0.5), eyePos(), 15) { vec3d, i ->
-                    eventScheduler.addEvent(TimedEvent({
+                    preTickEvents.addEvent(TimedEvent({
                         serverWorld.spawnParticle(Particles.PILLAR_RUNE, vec3d, Vec3d.ZERO)
                     }, i))
                 }
@@ -142,7 +141,7 @@ class ObsidilithEntity(
         if (attackStatus != null) {
             effectHandler.handleStatus(status)
             currentAttack = status
-            eventScheduler.addEvent(TimedEvent({ currentAttack = 0 }, 40))
+            preTickEvents.addEvent(TimedEvent({ currentAttack = 0 }, 40))
         }
         super.handleStatus(status)
     }

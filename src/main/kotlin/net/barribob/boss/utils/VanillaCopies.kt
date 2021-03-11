@@ -30,7 +30,7 @@ object VanillaCopies {
     /**
      * [FlyingEntity.travel]
      */
-    fun travel(movementInput: Vec3d, entity: LivingEntity) {
+    fun travel(movementInput: Vec3d, entity: LivingEntity, baseFrictionCoefficient: Float = 0.91f) {
         when {
             entity.isTouchingWater -> {
                 entity.updateVelocity(0.02f, movementInput)
@@ -43,7 +43,6 @@ object VanillaCopies {
                 entity.velocity = entity.velocity.multiply(0.5)
             }
             else -> {
-                val baseFrictionCoefficient = 0.91f
                 val friction = if (entity.isOnGround) {
                     entity.world.getBlockState(BlockPos(entity.x, entity.y - 1.0, entity.z)).block
                         .slipperiness * baseFrictionCoefficient

@@ -7,12 +7,14 @@ import software.bernie.geckolib3.core.builder.AnimationBuilder
 import software.bernie.geckolib3.core.controller.AnimationController
 import software.bernie.geckolib3.core.manager.AnimationData
 
-class GauntletAnimations(val entity: GauntletEntity): IStatusHandler {
+class GauntletAnimations(val entity: GauntletEntity) : IStatusHandler {
     private var nextAnimation: Animation? = null
     private var doIdleAnimation = true
     private val animationStatusFlags = mapOf(
         Pair(GauntletAttacks.punchAttack, Animation("punch_start", "punch_loop")),
-        Pair(GauntletAttacks.stopPunchAnimation, Animation("punch_stop", "idle"))
+        Pair(GauntletAttacks.stopPunchAnimation, Animation("punch_stop", "idle")),
+        Pair(GauntletAttacks.poundAttack, Animation("pound_start", "pound_loop")),
+        Pair(GauntletAttacks.stopPoundAnimation, Animation("pound_stop", "idle")),
     )
 
     fun registerControllers(data: AnimationData) {

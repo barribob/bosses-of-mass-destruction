@@ -25,10 +25,11 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
     protected open val bossBar: ServerBossBar? = null
     protected open val damageHandler: IDamageHandler? = null
     protected open val statusHandler: IStatusHandler? = null
-    protected val eventScheduler = EventScheduler()
+    protected val preTickEvents = EventScheduler()
+    protected val postTickEvents = EventScheduler()
 
     final override fun tick() {
-        eventScheduler.updateEvents()
+        preTickEvents.updateEvents()
         if (idlePosition == Vec3d.ZERO) idlePosition = pos
         if (world.isClient) {
             clientTick()
@@ -36,6 +37,7 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
             serverTick(world as ServerWorld)
         }
         super.tick()
+        postTickEvents.updateEvents()
     }
 
     open fun clientTick() {} // Todo: this may not be the best pattern to use

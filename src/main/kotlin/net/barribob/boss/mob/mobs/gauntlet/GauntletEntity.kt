@@ -22,7 +22,7 @@ class GauntletEntity(entityType: EntityType<out PathAwareEntity>, world: World) 
     MultipartAwareEntity {
     private val movementHelper = GauntletMovement(this)
     val hitboxHelper = GauntletHitboxes(this)
-    private val attackHelper = GauntletAttacks(this, this.eventScheduler)
+    private val attackHelper = GauntletAttacks(this, this.postTickEvents)
     private val animationHandler = GauntletAnimations(this)
     override val damageHandler = hitboxHelper
     override val statusHandler = animationHandler
@@ -51,7 +51,7 @@ class GauntletEntity(entityType: EntityType<out PathAwareEntity>, world: World) 
     }
 
     override fun travel(movementInput: Vec3d) {
-        VanillaCopies.travel(movementInput, this)
+        VanillaCopies.travel(movementInput, this, 0.85f)
     }
 
     override fun setNextDamagedPart(part: String?) {
