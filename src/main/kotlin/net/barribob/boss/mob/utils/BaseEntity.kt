@@ -2,10 +2,12 @@ package net.barribob.boss.mob.utils
 
 import net.barribob.boss.mob.damage.IDamageHandler
 import net.barribob.maelstrom.general.event.EventScheduler
+import net.minecraft.client.world.ClientWorld
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.boss.ServerBossBar
 import net.minecraft.entity.damage.DamageSource
+import net.minecraft.entity.data.TrackedData
 import net.minecraft.entity.mob.PathAwareEntity
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.network.ServerPlayerEntity
@@ -25,16 +27,20 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
     protected open val bossBar: ServerBossBar? = null
     protected open val damageHandler: IDamageHandler? = null
     protected open val statusHandler: IStatusHandler? = null
+    protected open val clientTick: IEntityTick<ClientWorld>? = null
+    protected open val trackedDataHandler: ITrackedDataHandler? = null
     protected val preTickEvents = EventScheduler()
     protected val postTickEvents = EventScheduler()
 
     final override fun tick() {
         preTickEvents.updateEvents()
         if (idlePosition == Vec3d.ZERO) idlePosition = pos
-        if (world.isClient) {
+        val sidedWorld = world
+        if (sidedWorld.isClient && sidedWorld is ClientWorld) {
             clientTick()
-        } else {
-            serverTick(world as ServerWorld)
+            clientTick?.tick(sidedWorld)
+        } else if (sidedWorld is ServerWorld) {
+            serverTick(sidedWorld)
         }
         super.tick()
         postTickEvents.updateEvents()
@@ -78,6 +84,12 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
     override fun handleStatus(status: Byte) {
         statusHandler?.handleClientStatus(status)
         super.handleStatus(status)
+    }
+
+    // Todo: make final
+    override fun onTrackedDataSet(data: TrackedData<*>) {
+        super.onTrackedDataSet(data)
+        trackedDataHandler?.onTrackedDataSet(data)
     }
 
     final override fun damage(source: DamageSource, amount: Float): Boolean {

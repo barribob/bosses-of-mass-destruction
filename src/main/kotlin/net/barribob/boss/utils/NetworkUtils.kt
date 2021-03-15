@@ -10,6 +10,7 @@ import net.barribob.maelstrom.static_utilities.readVec3d
 import net.barribob.maelstrom.static_utilities.writeVec3d
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking
 import net.minecraft.client.MinecraftClient
@@ -22,26 +23,57 @@ import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.Vec3d
 
-class NetworkUtils {
-    val SPAWN_ENTITY_PACKET_ID = Mod.identifier("spawn_entity")
-    val CLIENT_TEST_PACKET_ID = Mod.identifier("client_test")
-    val CHANGE_HITBOX_PACKET_ID = Mod.identifier("change_hitbox")
+class NetworkUtils(private val isDevEnvironment: Boolean) {
 
     companion object {
-        val PLAYER_VELOCITY_ID = Mod.identifier("player_velocity")
+        private val spawnEntityPacketId = Mod.identifier("spawn_entity")
+        private val clientTestPacketId = Mod.identifier("client_test")
+        private val changeHitboxPacketId = Mod.identifier("change_hitbox")
+        private val playerVelocityPacketId = Mod.identifier("player_velocity")
 
         fun LivingEntity.sendVelocity(velocity: Vec3d) {
             this.velocity = velocity
             if(this is ServerPlayerEntity) {
                 val packet = PacketByteBuf(Unpooled.buffer())
                 packet.writeVec3d(velocity)
-                ServerPlayNetworking.send(this, PLAYER_VELOCITY_ID, packet)
+                ServerPlayNetworking.send(this, playerVelocityPacketId, packet)
+            }
+        }
+
+        fun GauntletEntity.changeHitbox(open: Boolean) {
+            val packet = PacketByteBuf(Unpooled.buffer())
+            packet.writeInt(this.entityId)
+            packet.writeBoolean(open)
+            PlayerLookup.tracking(this).forEach {
+                ServerPlayNetworking.send(it, changeHitboxPacketId, packet)
             }
         }
     }
 
     @Environment(EnvType.CLIENT)
-    fun handlePlayerVelocity(client: MinecraftClient, buf: PacketByteBuf) {
+    fun registerClientHandlers() {
+        ClientPlayNetworking.registerGlobalReceiver(spawnEntityPacketId) { client, _, buf, _ ->
+            handleSpawnClientEntity(client, buf)
+        }
+        ClientPlayNetworking.registerGlobalReceiver(playerVelocityPacketId) { client, _, buf, _ ->
+            handlePlayerVelocity(client, buf)
+        }
+        ClientPlayNetworking.registerGlobalReceiver(changeHitboxPacketId) { client, _, buf, _ ->
+            handleChangeHitbox(client, buf)
+        }
+
+        if(isDevEnvironment) clientInitDev()
+    }
+
+    @Environment(EnvType.CLIENT)
+    private fun clientInitDev() {
+        ClientPlayNetworking.registerGlobalReceiver(clientTestPacketId) { client, _, _, _ ->
+            Mod.networkUtils.testClientCallback(client)
+        }
+    }
+
+    @Environment(EnvType.CLIENT)
+    private fun handlePlayerVelocity(client: MinecraftClient, buf: PacketByteBuf) {
         val velocity = buf.readVec3d()
         client.execute {
             client.player?.velocity = velocity
@@ -55,12 +87,12 @@ class NetworkUtils {
     }
 
     fun createClientEntityPacket(entity: Entity): Packet<*> {
-        return ServerPlayNetworking.createS2CPacket(SPAWN_ENTITY_PACKET_ID, packSpawnClientEntity(
+        return ServerPlayNetworking.createS2CPacket(spawnEntityPacketId, packSpawnClientEntity(
             EntitySpawnS2CPacket(entity)))
     }
 
     @Environment(EnvType.CLIENT)
-    fun handleSpawnClientEntity(client: MinecraftClient, buf: PacketByteBuf) {
+    private fun handleSpawnClientEntity(client: MinecraftClient, buf: PacketByteBuf) {
         val packet = EntitySpawnS2CPacket()
         packet.read(buf)
 
@@ -70,27 +102,18 @@ class NetworkUtils {
     fun testClient(world: ServerWorld, watchPoint: Vec3d) {
         val packetData = PacketByteBuf(Unpooled.buffer())
         PlayerLookup.around(world, watchPoint, 100.0).forEach {
-            ServerPlayNetworking.send(it, CLIENT_TEST_PACKET_ID, packetData)
+            ServerPlayNetworking.send(it, clientTestPacketId, packetData)
         }
     }
 
     @Environment(EnvType.CLIENT)
-    fun testClientCallback(client: MinecraftClient) {
+    private fun testClientCallback(client: MinecraftClient) {
         val player = client.player ?: return
         ObsidilithEffectHandler(player, MaelstromMod.clientEventScheduler).handleStatus(ObsidilithUtils.deathStatus)
     }
 
-    fun changeHitbox(gauntletEntity: GauntletEntity, open: Boolean) {
-        val packet = PacketByteBuf(Unpooled.buffer())
-        packet.writeInt(gauntletEntity.entityId)
-        packet.writeBoolean(open)
-        PlayerLookup.tracking(gauntletEntity).forEach {
-            ServerPlayNetworking.send(it, CHANGE_HITBOX_PACKET_ID, packet)
-        }
-    }
-
     @Environment(EnvType.CLIENT)
-    fun handleChangeHitbox(client: MinecraftClient, buf: PacketByteBuf) {
+    private fun handleChangeHitbox(client: MinecraftClient, buf: PacketByteBuf) {
         val entityId = buf.readInt()
         val open = buf.readBoolean()
 

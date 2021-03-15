@@ -8,6 +8,7 @@ class GauntletAttacks(val entity: GauntletEntity, eventScheduler: EventScheduler
     private val statusRegistry = mapOf(
         Pair(punchAttack, PunchAction(entity, eventScheduler)),
         Pair(poundAttack, PoundAction(entity, eventScheduler)),
+        Pair(laserAttack, LaserAction(entity, eventScheduler)),
     )
     private val moveLogic = GauntletMoveLogic(statusRegistry, entity)
 
@@ -32,5 +33,7 @@ class GauntletAttacks(val entity: GauntletEntity, eventScheduler: EventScheduler
         const val stopAttackAnimation: Byte = 6
         const val poundAttack: Byte = 7
         const val stopPoundAnimation: Byte = 8
+        const val laserAttack: Byte = 9
+        const val laserAttackStop: Byte = 10
     }
 }

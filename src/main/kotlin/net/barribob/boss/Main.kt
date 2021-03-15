@@ -12,12 +12,10 @@ import net.barribob.boss.sound.ModSounds
 import net.barribob.boss.utils.InGameTests
 import net.barribob.boss.utils.ModStructures
 import net.barribob.boss.utils.NetworkUtils
-import net.barribob.boss.utils.NetworkUtils.Companion.PLAYER_VELOCITY_ID
 import net.barribob.maelstrom.MaelstromMod
 import net.barribob.maelstrom.general.io.ConsoleLogger
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.util.GlfwUtil
 import net.minecraft.util.Identifier
@@ -31,7 +29,7 @@ object Mod {
 
     val sounds: ModSounds = ModSounds()
 
-    val networkUtils = NetworkUtils()
+    val networkUtils = NetworkUtils(MaelstromMod.isDevelopmentEnvironment)
 
     fun identifier(path: String) = Identifier(MODID, path)
 }
@@ -56,20 +54,10 @@ fun init() {
 fun clientInit() {
     val animationTimer = PauseAnimationTimer({ GlfwUtil.getTime() * 20 }, { MinecraftClient.getInstance().isPaused })
 
-    ClientPlayNetworking.registerGlobalReceiver(networkUtils.SPAWN_ENTITY_PACKET_ID) { client, _, buf, _ ->
-        networkUtils.handleSpawnClientEntity(client, buf)
-    }
-    ClientPlayNetworking.registerGlobalReceiver(PLAYER_VELOCITY_ID) { client, _, buf, _ ->
-        networkUtils.handlePlayerVelocity(client, buf)
-    }
-    ClientPlayNetworking.registerGlobalReceiver(networkUtils.CHANGE_HITBOX_PACKET_ID) { client, _, buf, _ ->
-        networkUtils.handleChangeHitbox(client, buf)
-    }
+    networkUtils.registerClientHandlers()
 
     Entities.clientInit(animationTimer)
     Particles.clientInit()
-
-    if(MaelstromMod.isDevelopmentEnvironment) clientInitDev()
 }
 
 private fun initDev() {
@@ -85,11 +73,4 @@ private fun initDev() {
     MaelstromMod.testCommand.addId(inGameTests::placePillars.name, inGameTests::placePillars)
     MaelstromMod.testCommand.addId(inGameTests::placeObsidian.name, inGameTests::placeObsidian)
     MaelstromMod.testCommand.addId(inGameTests::obsidilithDeath.name, inGameTests::obsidilithDeath)
-}
-
-@Environment(EnvType.CLIENT)
-private fun clientInitDev() {
-    ClientPlayNetworking.registerGlobalReceiver(networkUtils.CLIENT_TEST_PACKET_ID) { client, _, _, _ ->
-        networkUtils.testClientCallback(client)
-    }
 }

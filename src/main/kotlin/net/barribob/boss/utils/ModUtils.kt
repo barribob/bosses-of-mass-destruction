@@ -2,6 +2,7 @@ package net.barribob.boss.utils
 
 import net.minecraft.block.SideShapeType
 import net.minecraft.client.network.ClientPlayNetworkHandler
+import net.minecraft.entity.Entity
 import net.minecraft.entity.mob.MobEntity
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket
@@ -10,6 +11,7 @@ import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvent
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.Box
 import net.minecraft.util.math.Direction
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.Difficulty
@@ -76,4 +78,10 @@ object ModUtils {
             entity.despawnCounter = 0
         }
     }
+
+    /**
+     * From Maelstrom Mod ModUtils.java
+     */
+    fun World.findEntitiesInLine(start: Vec3d, end: Vec3d, toExclude: Entity?): List<Entity> =
+        this.getOtherEntities(toExclude, Box(start, end)) { it.boundingBox.raycast(start, end).isPresent }
 }

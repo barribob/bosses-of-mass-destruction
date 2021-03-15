@@ -1,8 +1,8 @@
 package net.barribob.boss.mob.mobs.gauntlet
 
 import io.github.stuff_stuffs.multipart_entities.common.entity.EntityBounds
-import net.barribob.boss.Mod
 import net.barribob.boss.mob.damage.IDamageHandler
+import net.barribob.boss.utils.NetworkUtils.Companion.changeHitbox
 import net.barribob.maelstrom.static_utilities.MathUtils
 import net.barribob.maelstrom.static_utilities.eyePos
 import net.minecraft.entity.LivingEntity
@@ -35,12 +35,12 @@ class GauntletHitboxes(val entity: GauntletEntity) : IDamageHandler {
     private var currentHitbox = hitboxes
 
     fun setOpenHandHitbox(){
-        if(!entity.world.isClient && currentHitbox != hitboxes) Mod.networkUtils.changeHitbox(entity, true)
+        if(!entity.world.isClient && currentHitbox != hitboxes) entity.changeHitbox(true)
         currentHitbox = hitboxes
     }
 
     fun setClosedFistHitbox(){
-        if(!entity.world.isClient && currentHitbox != clampedHitboxes) Mod.networkUtils.changeHitbox(entity, false)
+        if(!entity.world.isClient && currentHitbox != clampedHitboxes) entity.changeHitbox(false)
         currentHitbox = clampedHitboxes
     }
 

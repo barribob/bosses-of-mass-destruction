@@ -8,6 +8,8 @@ import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.config.ModConfig
 import net.barribob.boss.mob.mobs.gauntlet.GauntletCodeAnimations
 import net.barribob.boss.mob.mobs.gauntlet.GauntletEntity
+import net.barribob.boss.mob.mobs.gauntlet.GauntletLaserRenderer
+import net.barribob.boss.mob.mobs.gauntlet.LaserParticleRenderer
 import net.barribob.boss.mob.mobs.lich.*
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithArmorRenderer
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithBoneLight
@@ -145,14 +147,14 @@ object Entities {
         EntityRendererRegistry.INSTANCE.register(MAGIC_MISSILE) { entityRenderDispatcher, _ ->
             SimpleEntityRenderer(
                 entityRenderDispatcher,
-                CompositeRenderer(listOf(
+                CompositeRenderer(
                     BillboardRenderer(entityRenderDispatcher, magicMissileRenderLayer) { 0.5f },
                     ConditionalRenderer(
                         WeakHashPredicate<MagicMissileProjectile> { FrameLimiter(20f, pauseSecondTimer)::canDoFrame },
                         LerpedPosRenderer {
                             ParticleFactories.soulFlame().build(it.add(RandomUtils.randVec().multiply(0.25)))
                         })
-                )),
+                ),
                 { missileTexture },
                 FullRenderLight()
             )
@@ -183,6 +185,13 @@ object Entities {
                     Mod.identifier("animations/gauntlet.animation.json"),
                     animationTimer,
                     GauntletCodeAnimations()
+                ),
+                renderer = CompositeRenderer(
+                    GauntletLaserRenderer(),
+                    ConditionalRenderer(
+                        WeakHashPredicate { FrameLimiter(20f, pauseSecondTimer)::canDoFrame },
+                        LaserParticleRenderer()
+                    )
                 )
             )
         }

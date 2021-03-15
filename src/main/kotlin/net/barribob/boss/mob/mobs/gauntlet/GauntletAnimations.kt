@@ -15,10 +15,12 @@ class GauntletAnimations(val entity: GauntletEntity) : IStatusHandler {
         Pair(GauntletAttacks.stopPunchAnimation, Animation("punch_stop", "idle")),
         Pair(GauntletAttacks.poundAttack, Animation("pound_start", "pound_loop")),
         Pair(GauntletAttacks.stopPoundAnimation, Animation("pound_stop", "idle")),
+        Pair(GauntletAttacks.laserAttack, Animation("laser_eye_start", "laser_eye_loop")),
+        Pair(GauntletAttacks.laserAttackStop, Animation("laser_eye_stop", "idle")),
     )
 
     fun registerControllers(data: AnimationData) {
-        data.addAnimationController(AnimationController(entity, "attack", 0f, attack))
+        data.addAnimationController(AnimationController(entity, "attack", 5f, attack))
     }
 
     override fun handleClientStatus(status: Byte) {
