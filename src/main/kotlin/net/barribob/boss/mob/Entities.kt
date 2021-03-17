@@ -6,10 +6,7 @@ import net.barribob.boss.animation.IAnimationTimer
 import net.barribob.boss.animation.PauseAnimationTimer
 import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.config.ModConfig
-import net.barribob.boss.mob.mobs.gauntlet.GauntletCodeAnimations
-import net.barribob.boss.mob.mobs.gauntlet.GauntletEntity
-import net.barribob.boss.mob.mobs.gauntlet.GauntletLaserRenderer
-import net.barribob.boss.mob.mobs.gauntlet.LaserParticleRenderer
+import net.barribob.boss.mob.mobs.gauntlet.*
 import net.barribob.boss.mob.mobs.lich.*
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithArmorRenderer
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithBoneLight
@@ -178,21 +175,25 @@ object Entities {
         }
 
         EntityRendererRegistry.INSTANCE.register(GAUNTLET) { entityRenderDispatcher, _ ->
+            val modelProvider = GeoModel(
+                Mod.identifier("geo/gauntlet.geo.json"),
+                Mod.identifier("textures/entity/gauntlet.png"),
+                Mod.identifier("animations/gauntlet.animation.json"),
+                animationTimer,
+                GauntletCodeAnimations()
+            )
+            val energyRenderer = GauntletEnergyRenderer(modelProvider)
             SimpleLivingGeoRenderer(
-                entityRenderDispatcher, GeoModel(
-                    Mod.identifier("geo/gauntlet.geo.json"),
-                    Mod.identifier("textures/entity/gauntlet.png"),
-                    Mod.identifier("animations/gauntlet.animation.json"),
-                    animationTimer,
-                    GauntletCodeAnimations()
-                ),
+                entityRenderDispatcher, modelProvider,
                 renderer = CompositeRenderer(
                     GauntletLaserRenderer(),
                     ConditionalRenderer(
                         WeakHashPredicate { FrameLimiter(20f, pauseSecondTimer)::canDoFrame },
                         LaserParticleRenderer()
-                    )
-                )
+                    ),
+                    energyRenderer
+                ),
+                renderWithModel = energyRenderer
             )
         }
     }

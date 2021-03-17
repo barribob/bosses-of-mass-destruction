@@ -10,6 +10,6 @@ class GauntletCodeAnimations: ICodeAnimations<GauntletEntity> {
         val headPitch = MathHelper.lerp(data.partialTick, animatable.prevPitch, animatable.pitch)
         val model = geoModel.getModel(geoModel.getModelLocation(animatable))
 
-        model.getBone("allX").ifPresent { it.rotationX = -Math.toRadians(headPitch.toDouble()).toFloat() }
+        model.getBone("codeRoot").ifPresent { it.rotationX = -Math.toRadians(headPitch.toDouble()).toFloat() }
     }
 }

@@ -12,7 +12,12 @@
 			},
 			"bones": [
 				{
+					"name": "codeRoot",
+					"pivot": [-1, 21, -2]
+				},
+				{
 					"name": "allX",
+					"parent": "codeRoot",
 					"pivot": [-1, 21, -2]
 				},
 				{

@@ -7,6 +7,7 @@ import net.barribob.boss.mob.ai.goals.CompositeGoal
 import net.barribob.boss.mob.ai.goals.FindTargetGoal
 import net.barribob.boss.mob.utils.BaseEntity
 import net.barribob.boss.mob.utils.CompositeStatusHandler
+import net.barribob.boss.mob.utils.CompositeTrackedDataHandler
 import net.barribob.boss.utils.VanillaCopies
 import net.minecraft.block.BlockState
 import net.minecraft.entity.EntityDimensions
@@ -24,16 +25,18 @@ class GauntletEntity(entityType: EntityType<out PathAwareEntity>, world: World) 
     private val movementHelper = GauntletMovement(this)
     val hitboxHelper = GauntletHitboxes(this)
     val laserHandler = GauntletClientLaserHandler(this, postTickEvents)
+    val energyShieldHandler = GauntletClientEnergyShieldHandler(this, postTickEvents)
     private val attackHelper = GauntletAttacks(this, this.postTickEvents)
     private val animationHandler = GauntletAnimations(this)
     override val damageHandler = hitboxHelper
     override val statusHandler = CompositeStatusHandler(animationHandler, laserHandler)
-    override val trackedDataHandler = laserHandler
+    override val trackedDataHandler = CompositeTrackedDataHandler(laserHandler, energyShieldHandler)
     override val clientTick = laserHandler
 
     init {
         ignoreCameraFrustum = true
         laserHandler.initDataTracker()
+        energyShieldHandler.initDataTracker()
 
         if (!world.isClient) {
             goalSelector.add(2, CompositeGoal(listOf())) // Idle goal
