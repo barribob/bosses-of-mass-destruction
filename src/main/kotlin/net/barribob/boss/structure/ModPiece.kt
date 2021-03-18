@@ -1,11 +1,7 @@
 package net.barribob.boss.structure
 
-import net.barribob.boss.utils.ModStructures
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.structure.SimpleStructurePiece
-import net.minecraft.structure.Structure
-import net.minecraft.structure.StructureManager
-import net.minecraft.structure.StructurePlacementData
+import net.minecraft.structure.*
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor
 import net.minecraft.util.BlockMirror
 import net.minecraft.util.BlockRotation
@@ -22,8 +18,8 @@ class ModPiece : SimpleStructurePiece {
     private val rot: BlockRotation
     private val template: Identifier
 
-    constructor(structureManager: StructureManager, compoundTag: CompoundTag) : super(
-        ModStructures.obsidilithArenaPiece,
+    constructor(structureManager: StructureManager, compoundTag: CompoundTag, type: StructurePieceType) : super(
+        type,
         compoundTag
     ) {
         template = Identifier(compoundTag.getString("Template"))
@@ -35,8 +31,9 @@ class ModPiece : SimpleStructurePiece {
         structureManager: StructureManager,
         pos: BlockPos,
         template: Identifier,
-        rotation: BlockRotation
-    ) : super(ModStructures.obsidilithArenaPiece, 0) {
+        rotation: BlockRotation,
+        type: StructurePieceType
+    ) : super(type, 0) {
         this.pos = pos
         this.rot = rotation
         this.template = template
