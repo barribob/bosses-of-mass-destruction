@@ -7,8 +7,13 @@ import net.barribob.maelstrom.static_utilities.MathUtils
 import net.barribob.maelstrom.static_utilities.eyePos
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.damage.DamageSource
+import net.minecraft.util.math.Box
+import net.minecraft.util.math.Vec3d
+
 
 class GauntletHitboxes(val entity: GauntletEntity) : IDamageHandler {
+    private val collisionHitbox = Box(Vec3d.ZERO, Vec3d(2.0, 4.0, 2.0))
+    private val clampedCollisionHitbox = Box(Vec3d.ZERO, Vec3d(2.0, 2.0, 2.0))
     private val rootBoxPitch = "rootPitch"
     private val rootBoxYaw = "rootYaw"
     private var nextDamagedPart: String? = null
@@ -23,24 +28,24 @@ class GauntletHitboxes(val entity: GauntletEntity) : IDamageHandler {
         .add(fingersBox).setBounds(1.5, 2.0, 0.5).setOffset(0.0, 1.8, 0.5).setParent(rootBoxPitch).build()
         .add(thumbBox).setBounds(0.3, 1.6, 0.3).setOffset(1.0, 0.6, 0.7).setParent(rootBoxPitch).build()
         .add(pinkyBox).setBounds(0.25, 1.0, 0.25).setOffset(-0.9, 1.7, 0.5).setParent(rootBoxPitch).build()
-        .setVoxelShapeResolution(1.5)
+        .overrideCollisionBox(collisionHitbox)
         .factory.create()
     private val rootFistBox = "rootFist"
     private val rootFistBoxYaw = "rootFistYaw"
     private val clampedHitboxes: EntityBounds = EntityBounds.builder()
         .add(rootFistBoxYaw).setBounds(0.0, 0.0, 0.0).build()
         .add(rootFistBox).setBounds(2.0, 1.5, 2.0).setOffset(0.0, 1.0, 0.0).setParent(rootFistBoxYaw).build()
-        .setVoxelShapeResolution(1.5)
+        .overrideCollisionBox(clampedCollisionHitbox)
         .factory.create()
     private var currentHitbox = hitboxes
 
-    fun setOpenHandHitbox(){
-        if(!entity.world.isClient && currentHitbox != hitboxes) entity.changeHitbox(true)
+    fun setOpenHandHitbox() {
+        if (!entity.world.isClient && currentHitbox != hitboxes) entity.changeHitbox(true)
         currentHitbox = hitboxes
     }
 
-    fun setClosedFistHitbox(){
-        if(!entity.world.isClient && currentHitbox != clampedHitboxes) entity.changeHitbox(false)
+    fun setClosedFistHitbox() {
+        if (!entity.world.isClient && currentHitbox != clampedHitboxes) entity.changeHitbox(false)
         currentHitbox = clampedHitboxes
     }
 
@@ -72,6 +77,13 @@ class GauntletHitboxes(val entity: GauntletEntity) : IDamageHandler {
         fistYaw.setX(entity.x)
         fistYaw.setY(entity.y)
         fistYaw.setZ(entity.z)
+
+        val overrideBox = hitboxes.overrideBox
+        if (overrideBox != null) overrideBox.box = collisionHitbox.offset(entity.pos).offset(-1.0, 0.0, -1.0)
+
+        val overrideClampedHitbox = clampedHitboxes.overrideBox
+        if (overrideClampedHitbox != null) overrideClampedHitbox.box =
+            clampedCollisionHitbox.offset(entity.pos).offset(-1.0, 0.0, -1.0)
     }
 
     fun setNextDamagedPart(part: String?) {
