@@ -28,6 +28,7 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
     protected open val damageHandler: IDamageHandler? = null
     protected open val statusHandler: IStatusHandler? = null
     protected open val clientTick: IEntityTick<ClientWorld>? = null
+    protected open val serverTick: IEntityTick<ServerWorld>? = null
     protected open val trackedDataHandler: ITrackedDataHandler? = null
     protected val preTickEvents = EventScheduler()
     protected val postTickEvents = EventScheduler()
@@ -41,6 +42,7 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
             clientTick?.tick(sidedWorld)
         } else if (sidedWorld is ServerWorld) {
             serverTick(sidedWorld)
+            serverTick?.tick(sidedWorld)
         }
         super.tick()
         postTickEvents.updateEvents()

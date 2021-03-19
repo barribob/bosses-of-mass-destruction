@@ -17,8 +17,8 @@ import net.minecraft.util.math.Vec3d
 class GauntletMovement(val entity: GauntletEntity) {
     private val reactionDistance = 4.0
     private val iEntity = EntityAdapter(entity)
-    private val tooFarFromTargetDistance = 30.0
-    private val tooCloseToTargetDistance = 15.0
+    private val tooFarFromTargetDistance = 25.0
+    private val tooCloseToTargetDistance = 5.0
 
     fun buildAttackMovement(): VelocityGoal {
         val targetPos = { entity.target!!.pos }

@@ -19,7 +19,8 @@ class SwirlPunchAction(val entity: GauntletEntity, val eventScheduler: EventSche
 
     override fun perform(): Int {
         val target = entity.target ?: return 40
-        val targetPos = target.boundingBox.center
+        val targetDirection = MathUtils.unNormedDirection(entity.eyePos(), target.boundingBox.center)
+        val targetPos = entity.eyePos().add(targetDirection.multiply(1.2))
         val accelerateStartTime = 30
         val unclenchTime = 60
         val closeFistAnimationTime = 7
@@ -27,7 +28,13 @@ class SwirlPunchAction(val entity: GauntletEntity, val eventScheduler: EventSche
         entity.addVelocity(0.0, 0.7, 0.0)
         entity.dataTracker.set(isEnergized, true)
         eventScheduler.addEvent(TimedEvent(entity.hitboxHelper::setClosedFistHitbox, closeFistAnimationTime))
-        eventScheduler.addEvent(TimedEvent({accelerateTowardsTarget(targetPos)}, accelerateStartTime, 9))
+        eventScheduler.addEvent(
+            TimedEvent(
+                { accelerateTowardsTarget(targetPos) },
+                accelerateStartTime,
+                15,
+                { entity.pos.squaredDistanceTo(targetPos) < 9 })
+        )
         eventScheduler.addEvent(TimedEvent(::whilePunchActive, accelerateStartTime, unclenchTime - accelerateStartTime))
         eventScheduler.addEvent(TimedEvent({
             entity.hitboxHelper.setOpenHandHitbox()

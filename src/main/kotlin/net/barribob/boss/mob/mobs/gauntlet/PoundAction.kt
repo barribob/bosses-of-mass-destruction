@@ -18,7 +18,6 @@ class PoundAction(val entity: GauntletEntity, val eventScheduler: EventScheduler
         val targetPos = target.pos
         val accelerateStartTime = 16
         val unclenchTime = 60
-        var doFirePunch = false
 
         entity.addVelocity(0.0, 0.9, 0.0)
         val accelerateHorizontally = TimedEvent(
@@ -32,22 +31,16 @@ class PoundAction(val entity: GauntletEntity, val eventScheduler: EventScheduler
             15,
             { (entity.eyeY - targetPos.y).absoluteValue < 1 })
         eventScheduler.addEvent(
-            TimedEvent(
-                { whilePunchActive(doFirePunch) },
-                accelerateStartTime,
-                unclenchTime - accelerateStartTime
-            )
+            TimedEvent(::whilePunchActive, accelerateStartTime, unclenchTime - accelerateStartTime)
         )
         eventScheduler.addEvent(
             EventSeries(
                 accelerateHorizontally,
-                TimedEvent(::lookDown, 0, 14),
-                TimedEvent({
-                    doFirePunch = true
-                    lookDown()
-                }, 0),
+                TimedEvent({entity.dataTracker.set(SwirlPunchAction.isEnergized, true)}, 0),
+                TimedEvent(::lookDown, 0, 20),
                 accelerateVertically,
-                TimedEvent(::lookDown, 0, 5)
+                TimedEvent(::lookDown, 0, 5),
+                TimedEvent({entity.dataTracker.set(SwirlPunchAction.isEnergized, false)}, 0)
             )
         )
         val closeFistAnimationTime = 7
@@ -62,19 +55,23 @@ class PoundAction(val entity: GauntletEntity, val eventScheduler: EventScheduler
         return 100
     }
 
-    private fun whilePunchActive(doFirePunch: Boolean) {
-        testBlockPhysicalImpact(doFirePunch)
+    private fun whilePunchActive() {
+        testBlockPhysicalImpact()
         val speed = entity.velocity.length()
 //        if(speed > 0.25) entity.destroyBlocks(Box(entity.pos, entity.pos).expand(1.0).offset(0.0, -0.5, 0.0))
         previousSpeed = speed
     }
 
-    private fun testBlockPhysicalImpact(doFirePunch: Boolean) {
+    private fun testBlockPhysicalImpact() {
         if((entity.horizontalCollision || entity.verticalCollision) && previousSpeed > 0.55f) {
             val pos: Vec3d = entity.pos
             val flag = VanillaCopies.getEntityDestructionType(entity.world)
-            val size = if (doFirePunch) 4f else (previousSpeed * 1.5).toFloat()
-            entity.world.createExplosion(entity, pos.x, pos.y, pos.z, size, doFirePunch, flag)
+            if(entity.dataTracker.get(SwirlPunchAction.isEnergized)) {
+                entity.world.createExplosion(entity, pos.x, pos.y, pos.z, 4.0f, true, flag)
+                entity.dataTracker.set(SwirlPunchAction.isEnergized, false)
+            } else {
+                entity.world.createExplosion(entity, pos.x, pos.y, pos.z, (previousSpeed * 1.5).toFloat(), flag)
+            }
         }
     }
 

@@ -6,7 +6,7 @@ import net.barribob.maelstrom.general.event.EventScheduler
 
 class GauntletAttacks(val entity: GauntletEntity, eventScheduler: EventScheduler) {
     private val statusRegistry = mapOf(
-        Pair(punchAttack, SwirlPunchAction(entity, eventScheduler)),
+        Pair(punchAttack, PunchAction(entity, eventScheduler)),
         Pair(poundAttack, PoundAction(entity, eventScheduler)),
         Pair(laserAttack, LaserAction(entity, eventScheduler)),
         Pair(swirlPunchAttack, SwirlPunchAction(entity, eventScheduler))

@@ -3,24 +3,32 @@ package net.barribob.boss.mob.mobs.gauntlet
 import io.github.stuff_stuffs.multipart_entities.common.entity.EntityBounds
 import io.github.stuff_stuffs.multipart_entities.common.entity.MultipartAwareEntity
 import io.github.stuff_stuffs.multipart_entities.common.util.CompoundOrientedBox
+import net.barribob.boss.Mod
+import net.barribob.boss.config.GauntletConfig
+import net.barribob.boss.mob.ai.BossVisibilityCache
 import net.barribob.boss.mob.ai.goals.CompositeGoal
 import net.barribob.boss.mob.ai.goals.FindTargetGoal
 import net.barribob.boss.mob.utils.BaseEntity
 import net.barribob.boss.mob.utils.CompositeStatusHandler
 import net.barribob.boss.mob.utils.CompositeTrackedDataHandler
+import net.barribob.boss.mob.utils.IEntityTick
 import net.barribob.boss.utils.VanillaCopies
 import net.minecraft.block.BlockState
 import net.minecraft.entity.EntityDimensions
 import net.minecraft.entity.EntityPose
 import net.minecraft.entity.EntityType
+import net.minecraft.entity.boss.BossBar
+import net.minecraft.entity.boss.ServerBossBar
+import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.mob.PathAwareEntity
 import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import software.bernie.geckolib3.core.manager.AnimationData
 
-class GauntletEntity(entityType: EntityType<out PathAwareEntity>, world: World) : BaseEntity(entityType, world),
+class GauntletEntity(entityType: EntityType<out PathAwareEntity>, world: World, mobConfig: GauntletConfig) : BaseEntity(entityType, world),
     MultipartAwareEntity {
     private val movementHelper = GauntletMovement(this)
     val hitboxHelper = GauntletHitboxes(this)
@@ -28,10 +36,13 @@ class GauntletEntity(entityType: EntityType<out PathAwareEntity>, world: World) 
     val energyShieldHandler = GauntletClientEnergyShieldHandler(this, postTickEvents)
     private val attackHelper = GauntletAttacks(this, this.postTickEvents)
     private val animationHandler = GauntletAnimations(this)
+    private val visibilityCache = BossVisibilityCache(this)
     override val damageHandler = hitboxHelper
     override val statusHandler = CompositeStatusHandler(animationHandler, laserHandler)
     override val trackedDataHandler = CompositeTrackedDataHandler(laserHandler, energyShieldHandler)
     override val clientTick = laserHandler
+    override val serverTick = IEntityTick<ServerWorld> { if(target == null) heal(mobConfig.idleHealingPerTick) }
+    override val bossBar: ServerBossBar = ServerBossBar(displayName, BossBar.Color.RED, BossBar.Style.NOTCHED_6)
 
     init {
         ignoreCameraFrustum = true
@@ -78,4 +89,9 @@ class GauntletEntity(entityType: EntityType<out PathAwareEntity>, world: World) 
     override fun getBounds(): EntityBounds = hitboxHelper.getHitbox()
     override fun getActiveEyeHeight(pose: EntityPose, dimensions: EntityDimensions) = dimensions.height * 0.4f
     override fun isInsideWall(): Boolean  = false
+    override fun getArmor(): Int = if (target != null) super.getArmor() else 24
+    override fun getAmbientSound() = Mod.sounds.gauntletIdle
+    override fun getHurtSound(source: DamageSource?) = Mod.sounds.gauntletHurt
+    override fun getSoundVolume() = 2.0f
+    override fun getVisibilityCache() = visibilityCache
 }

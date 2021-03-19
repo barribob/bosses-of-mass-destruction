@@ -63,7 +63,7 @@ object ModStructures {
             .register()
 
         FabricStructureBuilder.create(Mod.identifier("gauntlet_arena"), gauntletArenaStructure)
-            .step(GenerationStep.Feature.SURFACE_STRUCTURES)
+            .step(GenerationStep.Feature.UNDERGROUND_DECORATION)
             .defaultConfig(
                 gauntletArenaGeneration.generationSpacing,
                 gauntletArenaGeneration.generationSeparation,

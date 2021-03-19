@@ -61,7 +61,7 @@ object Entities {
         { it.fireImmune().dimensions(EntityDimensions.fixed(2.0f, 4.4f)) })
 
     val GAUNTLET: EntityType<GauntletEntity> = registerConfiguredMob("gauntlet",
-        { type, world -> GauntletEntity(type, world) },
+        { type, world -> GauntletEntity(type, world, mobConfig.gauntletConfig) },
         { it.fireImmune().dimensions(EntityDimensions.fixed(5.0f, 4.0f)) })
 
     val killCounter = LichKillCounter(mobConfig.lichConfig.summonMechanic, ModComponents, ModComponents)
@@ -99,9 +99,11 @@ object Entities {
         )
 
         FabricDefaultAttributeRegistry.register(GAUNTLET, HostileEntity.createHostileAttributes()
-            .add(EntityAttributes.GENERIC_FLYING_SPEED, 0.1)
+            .add(EntityAttributes.GENERIC_FLYING_SPEED, 4.0)
             .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 64.0)
-            .add(EntityAttributes.GENERIC_MAX_HEALTH, 20.0))
+            .add(EntityAttributes.GENERIC_MAX_HEALTH, mobConfig.gauntletConfig.health)
+            .add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 10.0)
+            .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, mobConfig.gauntletConfig.attack))
     }
 
     fun clientInit(animationTimer: IAnimationTimer) {

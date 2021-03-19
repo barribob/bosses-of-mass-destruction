@@ -82,5 +82,17 @@
     "sounds": [
       "bosses_of_mass_destruction:energy_shield"
     ]
+  },
+  "gauntlet_idle": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.gauntlet_idle",
+    "sounds": [
+      "bosses_of_mass_destruction:gauntlet_idle"
+    ]
+  },
+  "gauntlet_hurt": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.gauntlet_hurt",
+    "sounds": [
+      "bosses_of_mass_destruction:gauntlet_hurt"
+    ]
   }
 }
