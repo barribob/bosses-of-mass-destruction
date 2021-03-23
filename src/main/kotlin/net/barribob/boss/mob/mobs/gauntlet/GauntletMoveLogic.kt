@@ -7,7 +7,7 @@ import net.minecraft.entity.LivingEntity
 
 class GauntletMoveLogic(private val actions: Map<Byte, IActionWithCooldown>, val entity: GauntletEntity) :
     IActionWithCooldown {
-    private val moveHistory = HistoricalData<Byte>(0)
+    private val moveHistory = HistoricalData<Byte>(0, 4)
 
     private fun chooseMove(): Byte {
         val target = entity.target
@@ -18,10 +18,12 @@ class GauntletMoveLogic(private val actions: Map<Byte, IActionWithCooldown>, val
         val punchWeight = 1.0
         val laserWeight = if (moveHistory.get(0) == GauntletAttacks.laserAttack) 0.0 else 0.7
         val swirlPunchWeight = if (moveHistory.get(0) == GauntletAttacks.swirlPunchAttack) 0.0 else 0.7
+        val blindnessWeight = if(moveHistory.getAll().contains(GauntletAttacks.blindnessAttack)) 0.0 else 1.0
 
         random.add(punchWeight, GauntletAttacks.punchAttack)
         random.add(laserWeight, GauntletAttacks.laserAttack)
         random.add(swirlPunchWeight, GauntletAttacks.swirlPunchAttack)
+        random.add(blindnessWeight, GauntletAttacks.blindnessAttack)
 
         val nextMove = random.next()
         moveHistory.set(nextMove)

@@ -1,6 +1,7 @@
 package net.barribob.boss.mob.mobs.gauntlet
 
 import net.barribob.boss.mob.ai.action.IActionWithCooldown
+import net.barribob.boss.utils.ModUtils.playSound
 import net.barribob.boss.utils.VanillaCopies
 import net.barribob.maelstrom.general.event.EventScheduler
 import net.barribob.maelstrom.general.event.TimedEvent
@@ -9,6 +10,8 @@ import net.barribob.maelstrom.static_utilities.addVelocity
 import net.barribob.maelstrom.static_utilities.eyePos
 import net.barribob.maelstrom.static_utilities.planeProject
 import net.minecraft.entity.LivingEntity
+import net.minecraft.sound.SoundCategory
+import net.minecraft.sound.SoundEvents
 import net.minecraft.util.math.Vec3d
 
 class PunchAction(val entity: GauntletEntity, val eventScheduler: EventScheduler) : IActionWithCooldown {
@@ -21,6 +24,16 @@ class PunchAction(val entity: GauntletEntity, val eventScheduler: EventScheduler
         val unclenchTime = 56
 
         entity.addVelocity(0.0, 0.7, 0.0)
+        eventScheduler.addEvent(TimedEvent({
+            entity.world.playSound(
+                entity.pos,
+                SoundEvents.ENTITY_BLAZE_HURT,
+                SoundCategory.HOSTILE,
+                3.0f,
+                1.0f,
+                64.0
+            )
+        }, 12))
         eventScheduler.addEvent(
             TimedEvent(
                 { accelerateTowardsTarget(targetPos) },

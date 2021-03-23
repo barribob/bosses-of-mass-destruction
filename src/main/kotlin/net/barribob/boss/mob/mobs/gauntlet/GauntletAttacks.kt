@@ -9,7 +9,8 @@ class GauntletAttacks(val entity: GauntletEntity, eventScheduler: EventScheduler
         Pair(punchAttack, PunchAction(entity, eventScheduler)),
         Pair(poundAttack, PoundAction(entity, eventScheduler)),
         Pair(laserAttack, LaserAction(entity, eventScheduler)),
-        Pair(swirlPunchAttack, SwirlPunchAction(entity, eventScheduler))
+        Pair(swirlPunchAttack, SwirlPunchAction(entity, eventScheduler)),
+        Pair(blindnessAttack, BlindnessAction(entity, eventScheduler))
     )
     private val moveLogic = GauntletMoveLogic(statusRegistry, entity)
 
@@ -37,5 +38,6 @@ class GauntletAttacks(val entity: GauntletEntity, eventScheduler: EventScheduler
         const val laserAttack: Byte = 9
         const val laserAttackStop: Byte = 10
         const val swirlPunchAttack: Byte = 11
+        const val blindnessAttack: Byte = 12
     }
 }

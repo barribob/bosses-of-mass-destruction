@@ -28,12 +28,15 @@ class SimpleParticle(
     private var scaleOverride: ((Float) -> Float)? = null
     private var colorVariation: Vec3d = Vec3d.ZERO
     private var velocityOverride: ((SimpleParticle) -> Vec3d)? = null
+    private var positionOverride: ((SimpleParticle) -> Vec3d)? = null
 
     override fun getType(): ParticleTextureSheet = ParticleTextureSheet.PARTICLE_SHEET_OPAQUE
 
     fun getPos(): Vec3d{
         return Vec3d(x, y, z)
     }
+
+    fun getAge(): Int = age
 
     override fun tick() {
         super.tick()
@@ -43,6 +46,7 @@ class SimpleParticle(
             setColorFromOverride(colorOverride, ageRatio)
             setScaleFromOverride(scaleOverride, ageRatio)
             setVelocityFromOverride(velocityOverride)
+            setPositionFromOverride(positionOverride)
         }
     }
 
@@ -52,6 +56,13 @@ class SimpleParticle(
             velocityX = velocity.x
             velocityY = velocity.y
             velocityZ = velocity.z
+        }
+    }
+
+    private fun setPositionFromOverride(positionOverride: ((SimpleParticle) -> Vec3d)?) {
+        if (positionOverride != null) {
+            val pos = positionOverride(this)
+            setPos(pos.x, pos.y, pos.z)
         }
     }
 
@@ -91,6 +102,10 @@ class SimpleParticle(
 
     fun setVelocityOverride(override: ((SimpleParticle) -> Vec3d)?) {
         velocityOverride = override
+    }
+
+    fun setPositionOverride(override: ((SimpleParticle) -> Vec3d)?) {
+        positionOverride = override
     }
 
     override fun getColorMultiplier(tint: Float): Int =

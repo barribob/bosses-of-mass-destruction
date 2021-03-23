@@ -8,6 +8,7 @@ import net.minecraft.util.math.Vec3d
 
 class ClientParticleBuilder(private val effect: ParticleEffect) {
     private var getVel: ((SimpleParticle) -> Vec3d)? = null
+    private var continuousPos: ((SimpleParticle) -> Vec3d)? = null
     private var color: ((Float) -> Vec3d)? = null
     private var brightness: ((Float) -> Int)? = null
     private var scale: ((Float) -> Float)? = null
@@ -16,6 +17,11 @@ class ClientParticleBuilder(private val effect: ParticleEffect) {
 
     fun continuousVelocity(velocity: (SimpleParticle) -> Vec3d): ClientParticleBuilder {
         this.getVel = velocity
+        return this
+    }
+
+    fun continuousPosition(positionProvider: (SimpleParticle) -> Vec3d): ClientParticleBuilder {
+        this.continuousPos = positionProvider
         return this
     }
 
@@ -83,6 +89,7 @@ class ClientParticleBuilder(private val effect: ParticleEffect) {
                 color?.let { particle.setColorOverride(color) }
                 scale?.let { particle.setScaleOverride(scale) }
                 getVel?.let { particle.setVelocityOverride(it) }
+                particle.setPositionOverride(continuousPos)
                 particle.setColorVariation(colorVariation)
             }
         }

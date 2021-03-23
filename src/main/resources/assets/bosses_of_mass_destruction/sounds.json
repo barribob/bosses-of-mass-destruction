@@ -94,5 +94,11 @@
     "sounds": [
       "bosses_of_mass_destruction:gauntlet_hurt"
     ]
+  },
+  "gauntlet_cast": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.gauntlet_cast",
+    "sounds": [
+      "bosses_of_mass_destruction:gauntlet_cast"
+    ]
   }
 }

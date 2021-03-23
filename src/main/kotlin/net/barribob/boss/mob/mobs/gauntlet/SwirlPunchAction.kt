@@ -1,6 +1,8 @@
 package net.barribob.boss.mob.mobs.gauntlet
 
+import net.barribob.boss.Mod
 import net.barribob.boss.mob.ai.action.IActionWithCooldown
+import net.barribob.boss.utils.ModUtils.playSound
 import net.barribob.boss.utils.VanillaCopies
 import net.barribob.maelstrom.general.event.EventScheduler
 import net.barribob.maelstrom.general.event.TimedEvent
@@ -12,6 +14,7 @@ import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.data.DataTracker
 import net.minecraft.entity.data.TrackedData
 import net.minecraft.entity.data.TrackedDataHandlerRegistry
+import net.minecraft.sound.SoundCategory
 import net.minecraft.util.math.Vec3d
 
 class SwirlPunchAction(val entity: GauntletEntity, val eventScheduler: EventScheduler) : IActionWithCooldown {
@@ -26,6 +29,14 @@ class SwirlPunchAction(val entity: GauntletEntity, val eventScheduler: EventSche
         val closeFistAnimationTime = 7
 
         entity.addVelocity(0.0, 0.7, 0.0)
+        entity.world.playSound(
+            entity.pos,
+            Mod.sounds.cometPrepare,
+            SoundCategory.HOSTILE,
+            3.0f,
+            1.0f,
+            64.0
+        )
         entity.dataTracker.set(isEnergized, true)
         eventScheduler.addEvent(TimedEvent(entity.hitboxHelper::setClosedFistHitbox, closeFistAnimationTime))
         eventScheduler.addEvent(

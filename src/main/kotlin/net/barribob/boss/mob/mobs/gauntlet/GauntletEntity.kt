@@ -34,11 +34,12 @@ class GauntletEntity(entityType: EntityType<out PathAwareEntity>, world: World, 
     val hitboxHelper = GauntletHitboxes(this)
     val laserHandler = GauntletClientLaserHandler(this, postTickEvents)
     val energyShieldHandler = GauntletClientEnergyShieldHandler(this, postTickEvents)
+    val clientBlindnessHandler = GauntletBlindnessIndicatorParticles(this, preTickEvents)
     private val attackHelper = GauntletAttacks(this, this.postTickEvents)
     private val animationHandler = GauntletAnimations(this)
     private val visibilityCache = BossVisibilityCache(this)
     override val damageHandler = hitboxHelper
-    override val statusHandler = CompositeStatusHandler(animationHandler, laserHandler)
+    override val statusHandler = CompositeStatusHandler(animationHandler, laserHandler, clientBlindnessHandler)
     override val trackedDataHandler = CompositeTrackedDataHandler(laserHandler, energyShieldHandler)
     override val clientTick = laserHandler
     override val serverTick = IEntityTick<ServerWorld> { if(target == null) heal(mobConfig.idleHealingPerTick) }
