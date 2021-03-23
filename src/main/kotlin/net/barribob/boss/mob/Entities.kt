@@ -106,7 +106,8 @@ object Entities {
             .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, mobConfig.gauntletConfig.attack))
     }
 
-    fun clientInit(animationTimer: IAnimationTimer) {
+    fun clientInit() {
+        val animationTimer = PauseAnimationTimer({ GlfwUtil.getTime() * 20 }, { MinecraftClient.getInstance().isPaused })
         val pauseSecondTimer = PauseAnimationTimer({ GlfwUtil.getTime() }, { MinecraftClient.getInstance().isPaused })
 
         EntityRendererRegistry.INSTANCE.register(LICH) { entityRenderDispatcher, _ ->

@@ -266,6 +266,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
     override fun getVisibilityCache() = visibilityCache
 
     override fun registerControllers(data: AnimationData) {
+        data.shouldPlayWhilePaused = true
         data.addAnimationController(AnimationController(this, "attack", 0f, attack))
         data.addAnimationController(AnimationController(this,
             "skull_float",

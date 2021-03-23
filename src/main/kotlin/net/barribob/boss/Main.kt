@@ -3,7 +3,6 @@ package net.barribob.boss
 import me.sargunvohra.mcmods.autoconfig1u.AutoConfig
 import me.sargunvohra.mcmods.autoconfig1u.serializer.JanksonConfigSerializer
 import net.barribob.boss.Mod.networkUtils
-import net.barribob.boss.animation.PauseAnimationTimer
 import net.barribob.boss.block.ModBlocks
 import net.barribob.boss.config.ModConfig
 import net.barribob.boss.mob.Entities
@@ -16,8 +15,6 @@ import net.barribob.maelstrom.MaelstromMod
 import net.barribob.maelstrom.general.io.ConsoleLogger
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
-import net.minecraft.client.MinecraftClient
-import net.minecraft.client.util.GlfwUtil
 import net.minecraft.util.Identifier
 import org.apache.logging.log4j.LogManager
 import software.bernie.geckolib3.GeckoLib
@@ -52,11 +49,8 @@ fun init() {
 @Environment(EnvType.CLIENT)
 @Suppress("unused")
 fun clientInit() {
-    val animationTimer = PauseAnimationTimer({ GlfwUtil.getTime() * 20 }, { MinecraftClient.getInstance().isPaused })
-
     networkUtils.registerClientHandlers()
-
-    Entities.clientInit(animationTimer)
+    Entities.clientInit()
     Particles.clientInit()
 }
 
