@@ -13,7 +13,6 @@ class GauntletAnimations(val entity: GauntletEntity) : IStatusHandler {
     private val animationStatusFlags = mapOf(
         Pair(GauntletAttacks.punchAttack, Animation("punch_start", "punch_loop")),
         Pair(GauntletAttacks.stopPunchAnimation, Animation("punch_stop", "idle")),
-        Pair(GauntletAttacks.poundAttack, Animation("pound_start", "pound_loop")),
         Pair(GauntletAttacks.stopPoundAnimation, Animation("pound_stop", "idle")),
         Pair(GauntletAttacks.laserAttack, Animation("laser_eye_start", "laser_eye_loop")),
         Pair(GauntletAttacks.laserAttackStop, Animation("laser_eye_stop", "idle")),

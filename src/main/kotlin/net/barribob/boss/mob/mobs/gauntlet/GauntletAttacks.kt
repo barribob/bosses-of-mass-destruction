@@ -7,7 +7,6 @@ import net.barribob.maelstrom.general.event.EventScheduler
 class GauntletAttacks(val entity: GauntletEntity, eventScheduler: EventScheduler) {
     private val statusRegistry = mapOf(
         Pair(punchAttack, PunchAction(entity, eventScheduler)),
-        Pair(poundAttack, PoundAction(entity, eventScheduler)),
         Pair(laserAttack, LaserAction(entity, eventScheduler)),
         Pair(swirlPunchAttack, SwirlPunchAction(entity, eventScheduler)),
         Pair(blindnessAttack, BlindnessAction(entity, eventScheduler))
@@ -33,11 +32,10 @@ class GauntletAttacks(val entity: GauntletEntity, eventScheduler: EventScheduler
         const val punchAttack: Byte = 4
         const val stopPunchAnimation: Byte = 5
         const val stopAttackAnimation: Byte = 6
-        const val poundAttack: Byte = 7
-        const val stopPoundAnimation: Byte = 8
-        const val laserAttack: Byte = 9
-        const val laserAttackStop: Byte = 10
-        const val swirlPunchAttack: Byte = 11
-        const val blindnessAttack: Byte = 12
+        const val stopPoundAnimation: Byte = 7
+        const val laserAttack: Byte = 8
+        const val laserAttackStop: Byte = 9
+        const val swirlPunchAttack: Byte = 10
+        const val blindnessAttack: Byte = 11
     }
 }
