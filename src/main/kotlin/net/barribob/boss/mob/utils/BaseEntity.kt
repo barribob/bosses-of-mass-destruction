@@ -51,6 +51,11 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
     open fun clientTick() {} // Todo: this may not be the best pattern to use
     open fun serverTick(serverWorld: ServerWorld) {}
 
+    override fun tickMovement() {
+        super.tickMovement()
+        visibilityCache.clear()
+    }
+
     override fun mobTick() {
         super.mobTick()
         bossBar?.percent = this.health / this.maxHealth
