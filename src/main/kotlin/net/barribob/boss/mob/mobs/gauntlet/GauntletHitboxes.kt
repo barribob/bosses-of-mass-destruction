@@ -27,7 +27,7 @@ class GauntletHitboxes(val entity: GauntletEntity) : IDamageHandler {
     private val pinkyBox = "pinky"
     private val hitboxes: EntityBounds = EntityBounds.builder()
         .add(rootBoxYaw).setBounds(0.0, 0.0, 0.0).build()
-        .add(rootBoxPitch).setBounds(2.0, 2.6, 0.6).setOffset(0.0, 1.3, 0.0).setParent(rootBoxYaw).build()
+        .add(rootBoxPitch).setBounds(2.0, 2.6, 0.6).setOffset(0.0, 1.3, 0.0).setPivot(0.0, -0.2, 0.0).setParent(rootBoxYaw).build()
         .add(eyeBox).setBounds(0.85, 0.9, 0.2).setOffset(-0.025, 0.375, 0.4).setParent(rootBoxPitch).build()
         .add(fingersBox).setBounds(1.5, 2.0, 0.5).setOffset(0.0, 1.8, 0.5).setParent(rootBoxPitch).build()
         .add(thumbBox).setBounds(0.3, 1.6, 0.3).setOffset(1.0, 0.6, 0.7).setParent(rootBoxPitch).build()
@@ -98,7 +98,7 @@ class GauntletHitboxes(val entity: GauntletEntity) : IDamageHandler {
         val part = nextDamagedPart
         nextDamagedPart = null
 
-        if (part == eyeBox || damageSource.isUnblockable) return true
+        if (part == eyeBox || damageSource.isOutOfWorld) return true
 
         if (damageSource.isExplosive) {
             val pos = damageSource.position

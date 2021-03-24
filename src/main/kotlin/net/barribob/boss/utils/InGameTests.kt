@@ -41,7 +41,9 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler, private va
         val arrow = ItemStack(Items.ARROW)
         val apples = ItemStack(Items.GOLDEN_APPLE, 8)
         val food = ItemStack(Items.COOKED_PORKCHOP, 64)
-        listOf(sword, bow, apples, food, arrow).forEach { entity.giveItemStack(it) }
+        val shield = ItemStack(Items.SHIELD)
+        shield.addEnchantment(Enchantments.UNBREAKING, 3)
+        listOf(sword, bow, apples, food, arrow, shield).forEach { entity.giveItemStack(it) }
         armor.forEach { entity.giveItemStack(it) }
     }
 
