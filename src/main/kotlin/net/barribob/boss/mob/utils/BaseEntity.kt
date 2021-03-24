@@ -8,6 +8,7 @@ import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.boss.ServerBossBar
 import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.data.TrackedData
+import net.minecraft.entity.effect.StatusEffectInstance
 import net.minecraft.entity.mob.PathAwareEntity
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.network.ServerPlayerEntity
@@ -30,6 +31,7 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
     protected open val clientTick: IEntityTick<ClientWorld>? = null
     protected open val serverTick: IEntityTick<ServerWorld>? = null
     protected open val trackedDataHandler: ITrackedDataHandler? = null
+    protected open val statusEffectHandler: IStatusEffectFilter? = null
     protected val preTickEvents = EventScheduler()
     protected val postTickEvents = EventScheduler()
 
@@ -97,6 +99,12 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
     override fun onTrackedDataSet(data: TrackedData<*>) {
         super.onTrackedDataSet(data)
         trackedDataHandler?.onTrackedDataSet(data)
+    }
+
+    final override fun canHaveStatusEffect(effect: StatusEffectInstance): Boolean {
+        val statusEffectHandler = statusEffectHandler
+        if(statusEffectHandler != null) return statusEffectHandler.canHaveStatusEffect(effect)
+        return super.canHaveStatusEffect(effect)
     }
 
     final override fun damage(source: DamageSource, amount: Float): Boolean {

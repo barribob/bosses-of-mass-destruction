@@ -2,7 +2,6 @@ package net.barribob.boss.mob
 
 import me.sargunvohra.mcmods.autoconfig1u.AutoConfig
 import net.barribob.boss.Mod
-import net.barribob.boss.animation.IAnimationTimer
 import net.barribob.boss.animation.PauseAnimationTimer
 import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.config.ModConfig
@@ -103,7 +102,8 @@ object Entities {
             .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 64.0)
             .add(EntityAttributes.GENERIC_MAX_HEALTH, mobConfig.gauntletConfig.health)
             .add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 10.0)
-            .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, mobConfig.gauntletConfig.attack))
+            .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, mobConfig.gauntletConfig.attack)
+            .add(EntityAttributes.GENERIC_ARMOR, mobConfig.gauntletConfig.armor))
     }
 
     fun clientInit() {
@@ -114,7 +114,7 @@ object Entities {
             SimpleLivingGeoRenderer(
                 entityRenderDispatcher, GeoModel(
                     Mod.identifier("geo/lich.geo.json"),
-                    Mod.identifier("textures/entity/lich.png"),
+                    { Mod.identifier("textures/entity/lich.png") },
                     Mod.identifier("animations/lich.animation.json"),
                     animationTimer,
                     LichCodeAnimations()
@@ -130,7 +130,7 @@ object Entities {
             val obsidilithRenderer = SimpleLivingGeoRenderer(
                 entityRenderDispatcher, GeoModel(
                     Mod.identifier("geo/obsidilith.geo.json"),
-                    Mod.identifier("textures/entity/obsidilith.png"),
+                    { Mod.identifier("textures/entity/obsidilith.png") },
                     Mod.identifier("animations/obsidilith.animation.json"),
                     animationTimer,
                 ),
@@ -163,7 +163,7 @@ object Entities {
         EntityRendererRegistry.INSTANCE.register(COMET) { entityRenderDispatcher, _ ->
             ModGeoRenderer(entityRenderDispatcher, GeoModel(
                 Mod.identifier("geo/comet.geo.json"),
-                Mod.identifier("textures/entity/comet.png"),
+                { Mod.identifier("textures/entity/comet.png") },
                 Mod.identifier("animations/comet.animation.json"),
                 animationTimer,
                 CometCodeAnimations()
@@ -180,7 +180,7 @@ object Entities {
         EntityRendererRegistry.INSTANCE.register(GAUNTLET) { entityRenderDispatcher, _ ->
             val modelProvider = GeoModel(
                 Mod.identifier("geo/gauntlet.geo.json"),
-                Mod.identifier("textures/entity/gauntlet.png"),
+                GauntletTextureProvider(),
                 Mod.identifier("animations/gauntlet.animation.json"),
                 animationTimer,
                 GauntletCodeAnimations()

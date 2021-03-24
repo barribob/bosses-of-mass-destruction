@@ -13,6 +13,7 @@ import net.barribob.boss.mob.mobs.lich.LichUtils
 import net.barribob.boss.mob.utils.BaseEntity
 import net.barribob.boss.mob.utils.EntityAdapter
 import net.barribob.boss.mob.utils.EntityStats
+import net.barribob.boss.mob.utils.StatusImmunity
 import net.barribob.boss.mob.utils.animation.AnimationPredicate
 import net.barribob.boss.particle.Particles
 import net.barribob.boss.utils.ModUtils
@@ -28,7 +29,6 @@ import net.minecraft.entity.MovementType
 import net.minecraft.entity.boss.BossBar
 import net.minecraft.entity.boss.ServerBossBar
 import net.minecraft.entity.damage.DamageSource
-import net.minecraft.entity.effect.StatusEffectInstance
 import net.minecraft.entity.effect.StatusEffects
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.nbt.CompoundTag
@@ -64,6 +64,7 @@ class ObsidilithEntity(
     private val activePillars = mutableSetOf<BlockPos>()
     private val visibilityCache = BossVisibilityCache(this)
     private val iEntity = EntityAdapter(this)
+    override val statusEffectHandler = StatusImmunity(StatusEffects.WITHER, StatusEffects.POISON)
 
     init {
         ignoreCameraFrustum = true
@@ -172,14 +173,6 @@ class ObsidilithEntity(
 
     override fun isOnFire(): Boolean {
         return false
-    }
-
-    override fun canHaveStatusEffect(effect: StatusEffectInstance): Boolean {
-        return if (effect.effectType === StatusEffects.WITHER || effect.effectType === StatusEffects.POISON) {
-            false
-        } else {
-            super.canHaveStatusEffect(effect)
-        }
     }
 
     override fun getArmor(): Int = if (target != null) super.getArmor() else 24
