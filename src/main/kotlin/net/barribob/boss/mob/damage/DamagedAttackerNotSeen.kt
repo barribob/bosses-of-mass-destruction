@@ -9,7 +9,8 @@ class DamagedAttackerNotSeen(private val actor: IEntity, private val callback: (
     override fun beforeDamage(stats: IEntityStats, damageSource: DamageSource, amount: Float) {
     }
 
-    override fun afterDamage(stats: IEntityStats, damageSource: DamageSource, amount: Float) {
+    // Todo: should this only happen if the lich actually takes damage?
+    override fun afterDamage(stats: IEntityStats, damageSource: DamageSource, amount: Float, result: Boolean) {
         if (actor.target() == null) {
             val attacker = damageSource.attacker
             if (attacker is LivingEntity) {

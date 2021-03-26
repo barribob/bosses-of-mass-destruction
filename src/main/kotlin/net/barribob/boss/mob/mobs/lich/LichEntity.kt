@@ -149,14 +149,14 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
     private val iEntity = EntityAdapter(this)
 
     private val visibilityCache = BossVisibilityCache(this)
-    override val damageHandler = CompositeDamageHandler(listOf(
+    override val damageHandler = CompositeDamageHandler(
         StagedDamageHandler(hpPercentRageModes) {
             priorityMoves.addAll(listOf(
                 cometRageAction, volleyRageAction, minionRageAction
             ))
             world.sendEntityStatus(this, hpBelowThresholdStatus)
         },
-        DamagedAttackerNotSeen(iEntity) { buildTeleportAction({ isAlive }, { it }) }))
+        DamagedAttackerNotSeen(iEntity) { buildTeleportAction({ isAlive }, { it }) })
     private val priorityMoves = mutableListOf<IActionWithCooldown>()
     override val bossBar = ServerBossBar(this.displayName, BossBar.Color.BLUE, BossBar.Style.PROGRESS)
 

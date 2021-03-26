@@ -60,7 +60,7 @@ class ObsidilithEntity(
     )
     private val moveLogic = ObsidilithMoveLogic(statusRegistry, this)
     private val effectHandler = ObsidilithEffectHandler(this, ModComponents.getWorldEventScheduler(world))
-    override val damageHandler = CompositeDamageHandler(listOf(moveLogic, ShieldDamageHandler(::isShielded)))
+    override val damageHandler = CompositeDamageHandler(moveLogic, ShieldDamageHandler(::isShielded))
     private val activePillars = mutableSetOf<BlockPos>()
     private val visibilityCache = BossVisibilityCache(this)
     private val iEntity = EntityAdapter(this)

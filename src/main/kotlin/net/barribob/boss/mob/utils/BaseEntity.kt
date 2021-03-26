@@ -5,6 +5,7 @@ import net.barribob.maelstrom.general.event.EventScheduler
 import net.minecraft.client.world.ClientWorld
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.LivingEntity
+import net.minecraft.entity.MovementType
 import net.minecraft.entity.boss.ServerBossBar
 import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.data.TrackedData
@@ -32,6 +33,8 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
     protected open val serverTick: IEntityTick<ServerWorld>? = null
     protected open val trackedDataHandler: ITrackedDataHandler? = null
     protected open val statusEffectHandler: IStatusEffectFilter? = null
+    protected open val moveHandler: IMoveHandler? = null
+    protected open val nbtHandler: INbtHandler? = null
     protected val preTickEvents = EventScheduler()
     protected val postTickEvents = EventScheduler()
 
@@ -68,6 +71,7 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
         if (hasCustomName()) {
             bossBar?.name = this.displayName
         }
+        nbtHandler?.fromTag(tag)
     }
 
     final override fun setCustomName(@Nullable name: Text?) {
@@ -89,13 +93,12 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
         super.readCustomDataFromTag(tag)
     }
 
-    // Todo: make final
+    // Todo: Make handler hooks final [handleStatus, onTrackedDataSet, move, fromTag, toTag]
     override fun handleStatus(status: Byte) {
         statusHandler?.handleClientStatus(status)
         super.handleStatus(status)
     }
 
-    // Todo: make final
     override fun onTrackedDataSet(data: TrackedData<*>) {
         super.onTrackedDataSet(data)
         trackedDataHandler?.onTrackedDataSet(data)
@@ -119,7 +122,7 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
             super.damage(source, amount)
         }
         if (!world.isClient) {
-            handler?.afterDamage(stats, source, amount)
+            handler?.afterDamage(stats, source, amount, result)
         }
         return result
     }
@@ -127,5 +130,15 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
     final override fun setTarget(target: LivingEntity?) {
         if (target == null) idlePosition = pos
         super.setTarget(target)
+    }
+
+    override fun move(type: MovementType, movement: Vec3d) {
+        val shouldDoDefault = moveHandler?.canMove(type, movement) == true
+        if(moveHandler == null || shouldDoDefault) super.move(type, movement)
+    }
+
+    override fun toTag(tag: CompoundTag): CompoundTag {
+        val superTag = super.toTag(tag)
+        return nbtHandler?.toTag(superTag) ?: superTag
     }
 }

@@ -57,7 +57,7 @@ class ObsidilithMoveLogic(private val actions: Map<Byte, IActionWithCooldown>, v
         damageHandler.beforeDamage(stats, damageSource, amount)
     }
 
-    override fun afterDamage(stats: IEntityStats, damageSource: DamageSource, amount: Float) {
-        damageHandler.afterDamage(stats, damageSource, amount)
+    override fun afterDamage(stats: IEntityStats, damageSource: DamageSource, amount: Float, result: Boolean) {
+        damageHandler.afterDamage(stats, damageSource, amount, result)
     }
 }

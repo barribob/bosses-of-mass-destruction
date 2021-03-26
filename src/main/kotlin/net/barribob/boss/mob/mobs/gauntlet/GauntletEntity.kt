@@ -6,8 +6,7 @@ import io.github.stuff_stuffs.multipart_entities.common.util.CompoundOrientedBox
 import net.barribob.boss.Mod
 import net.barribob.boss.config.GauntletConfig
 import net.barribob.boss.mob.ai.BossVisibilityCache
-import net.barribob.boss.mob.ai.goals.CompositeGoal
-import net.barribob.boss.mob.ai.goals.FindTargetGoal
+import net.barribob.boss.mob.damage.CompositeDamageHandler
 import net.barribob.boss.mob.utils.*
 import net.barribob.boss.utils.ModUtils
 import net.barribob.boss.utils.VanillaCopies
@@ -20,7 +19,6 @@ import net.minecraft.entity.boss.ServerBossBar
 import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.effect.StatusEffects
 import net.minecraft.entity.mob.PathAwareEntity
-import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
@@ -30,33 +28,27 @@ import software.bernie.geckolib3.core.manager.AnimationData
 class GauntletEntity(entityType: EntityType<out PathAwareEntity>, world: World, mobConfig: GauntletConfig) :
     BaseEntity(entityType, world),
     MultipartAwareEntity {
-    private val movementHelper = GauntletMovement(this)
     val hitboxHelper = GauntletHitboxes(this)
     val laserHandler = GauntletClientLaserHandler(this, postTickEvents)
     val energyShieldHandler = GauntletClientEnergyShieldHandler(this, postTickEvents)
     val clientBlindnessHandler = GauntletBlindnessIndicatorParticles(this, preTickEvents)
-    private val attackHelper = GauntletAttacks(this, this.postTickEvents)
+    private val gauntletGoalHandler = GauntletGoalHandler(this, goalSelector, targetSelector, postTickEvents)
     private val animationHandler = GauntletAnimations(this)
     private val visibilityCache = BossVisibilityCache(this)
-    override val damageHandler = hitboxHelper
+    override val damageHandler = CompositeDamageHandler(hitboxHelper, gauntletGoalHandler)
     override val statusHandler = CompositeStatusHandler(animationHandler, laserHandler, clientBlindnessHandler)
     override val trackedDataHandler = CompositeTrackedDataHandler(laserHandler, energyShieldHandler)
     override val clientTick = laserHandler
     override val serverTick = IEntityTick<ServerWorld> { if (target == null) heal(mobConfig.idleHealingPerTick) }
     override val bossBar: ServerBossBar = ServerBossBar(displayName, BossBar.Color.RED, BossBar.Style.NOTCHED_6)
     override val statusEffectHandler = StatusImmunity(StatusEffects.WITHER, StatusEffects.POISON)
+    override val moveHandler = gauntletGoalHandler
+    override val nbtHandler = gauntletGoalHandler
 
     init {
         ignoreCameraFrustum = true
         laserHandler.initDataTracker()
         energyShieldHandler.initDataTracker()
-
-        if (!world.isClient) {
-            goalSelector.add(2, CompositeGoal(listOf())) // Idle goal
-            goalSelector.add(3, CompositeGoal(listOf(movementHelper.buildAttackMovement(), attackHelper.buildAttackGoal())))
-
-            targetSelector.add(2, FindTargetGoal(this, PlayerEntity::class.java, { boundingBox.expand(it) }))
-        }
     }
 
     override fun registerControllers(data: AnimationData) {
