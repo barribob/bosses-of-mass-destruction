@@ -44,7 +44,7 @@ object ModStructures {
         StructureFactories.gauntletArena
     )
     private val gauntletArenaStructure =
-        GauntletArenaStructureFeature(DefaultFeatureConfig.CODEC, mobConfig.gauntletConfig)
+        GauntletArenaStructureFeature(DefaultFeatureConfig.CODEC)
     private val configuredGauntletStructure = gauntletArenaStructure.configure(DefaultFeatureConfig.DEFAULT)
 
     private val emptyStructureSpawn = IStructureSpawns { listOf() }
@@ -55,7 +55,7 @@ object ModStructures {
 
     fun init() {
         val arenaGeneration = mobConfig.obsidilithConfig.arenaGeneration
-        val gauntletArenaGeneration = mobConfig.obsidilithConfig.arenaGeneration
+        val gauntletArenaGeneration = mobConfig.gauntletConfig.arenaGeneration
 
         FabricStructureBuilder.create(Mod.identifier("obsidilith_arena"), obsidilithArenaStructure)
             .step(GenerationStep.Feature.SURFACE_STRUCTURES)

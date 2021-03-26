@@ -17,6 +17,7 @@ import java.util.*
 class ModPiece : SimpleStructurePiece {
     private val rot: BlockRotation
     private val template: Identifier
+    private val metadataHandler: IMetadataHandler?
 
     constructor(structureManager: StructureManager, compoundTag: CompoundTag, type: StructurePieceType) : super(
         type,
@@ -24,6 +25,7 @@ class ModPiece : SimpleStructurePiece {
     ) {
         template = Identifier(compoundTag.getString("Template"))
         this.rot = BlockRotation.valueOf(compoundTag.getString("Rot"))
+        metadataHandler = null
         initializeStructureData(structureManager)
     }
 
@@ -32,11 +34,13 @@ class ModPiece : SimpleStructurePiece {
         pos: BlockPos,
         template: Identifier,
         rotation: BlockRotation,
-        type: StructurePieceType
+        type: StructurePieceType,
+        metadataHandler: IMetadataHandler? = null
     ) : super(type, 0) {
         this.pos = pos
         this.rot = rotation
         this.template = template
+        this.metadataHandler = metadataHandler
         initializeStructureData(structureManager)
     }
 
@@ -56,8 +60,8 @@ class ModPiece : SimpleStructurePiece {
     }
 
     override fun handleMetadata(
-        metadata: String?, pos: BlockPos?, serverWorldAccess: ServerWorldAccess?, random: Random?,
-        boundingBox: BlockBox?
+        metadata: String, pos: BlockPos, serverWorldAccess: ServerWorldAccess, random: Random, boundingBox: BlockBox
     ) {
+        metadataHandler?.handleMetadata(metadata, pos, serverWorldAccess, random, boundingBox)
     }
 }

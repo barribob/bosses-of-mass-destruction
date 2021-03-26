@@ -79,7 +79,7 @@ class LaserAction(val entity: GauntletEntity, val eventScheduler: EventScheduler
         val entitiesHit = entity.world.findEntitiesInLine(entity.eyePos(), laserTargetPos, entity)
             .filterIsInstance<LivingEntity>()
         for (hitEntity in entitiesHit) {
-            entity.tryAttack(hitEntity) // Todo needs better damage control
+            entity.tryAttack(hitEntity)
         }
     }
 

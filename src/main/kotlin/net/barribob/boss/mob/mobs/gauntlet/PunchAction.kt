@@ -82,7 +82,7 @@ class PunchAction(val entity: GauntletEntity, val eventScheduler: EventScheduler
         val collidedEntities =
             entity.world.getEntitiesByClass(LivingEntity::class.java, entity.boundingBox) { it != entity }
         for (target in collidedEntities) {
-            entity.tryAttack(target) // Todo: customize attack interactions
+            entity.tryAttack(target)
             target.addVelocity(entity.velocity.multiply(0.5))
         }
     }

@@ -59,7 +59,6 @@ class SwirlPunchAction(val entity: GauntletEntity, val eventScheduler: EventSche
         testBlockPhysicalImpact()
         testEntityImpact()
         val speed = entity.velocity.length()
-//        if(speed > 0.25) entity.destroyBlocks(Box(entity.pos, entity.pos).expand(1.0).offset(0.0, -0.5, 0.0))
         previousSpeed = speed
     }
 
@@ -85,7 +84,7 @@ class SwirlPunchAction(val entity: GauntletEntity, val eventScheduler: EventSche
     private fun testEntityImpact(){
         val collidedEntities = entity.world.getEntitiesByClass(LivingEntity::class.java, entity.boundingBox) { it != entity }
         for(target in collidedEntities){
-            entity.tryAttack(target) // Todo: customize attack interactions
+            entity.tryAttack(target)
             target.addVelocity(entity.velocity.multiply(0.5))
         }
     }
