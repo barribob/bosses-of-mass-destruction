@@ -39,7 +39,9 @@ class GauntletEntity(entityType: EntityType<out PathAwareEntity>, world: World, 
     override val statusHandler = CompositeStatusHandler(animationHandler, laserHandler, clientBlindnessHandler)
     override val trackedDataHandler = CompositeTrackedDataHandler(laserHandler, energyShieldHandler)
     override val clientTick = laserHandler
-    override val serverTick = IEntityTick<ServerWorld> { if (target == null) heal(mobConfig.idleHealingPerTick) }
+    override val serverTick = CompositeTickHandler(
+        IEntityTick { if (target == null) heal(mobConfig.idleHealingPerTick) },
+        MovementGuard(this))
     override val bossBar: ServerBossBar = ServerBossBar(displayName, BossBar.Color.RED, BossBar.Style.NOTCHED_6)
     override val statusEffectHandler = StatusImmunity(StatusEffects.WITHER, StatusEffects.POISON)
     override val moveHandler = gauntletGoalHandler
@@ -75,6 +77,13 @@ class GauntletEntity(entityType: EntityType<out PathAwareEntity>, world: World, 
     override fun setPos(x: Double, y: Double, z: Double) {
         super.setPos(x, y, z)
         if (hitboxHelper != null) hitboxHelper.updatePosition()
+    }
+
+    override fun remove() {
+        if(!world.isClient) {
+            println("Server remove?!?!")
+        }
+        super.remove()
     }
 
     override fun isClimbing(): Boolean = false
