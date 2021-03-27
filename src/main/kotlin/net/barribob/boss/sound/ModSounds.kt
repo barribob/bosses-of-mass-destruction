@@ -25,6 +25,8 @@ class ModSounds {
     val gauntletIdle = newSound("gauntlet_idle")
     val gauntletHurt = newSound("gauntlet_hurt")
     val gauntletCast = newSound("gauntlet_cast")
+    val gauntletSpinPunch = newSound("gauntlet_spin_punch")
+    val gauntletLaserCharge = newSound("gauntlet_laser_charge")
 
     fun init() {
         registerSound(cometShoot)
@@ -44,6 +46,8 @@ class ModSounds {
         registerSound(gauntletIdle)
         registerSound(gauntletHurt)
         registerSound(gauntletCast)
+        registerSound(gauntletSpinPunch)
+        registerSound(gauntletLaserCharge)
     }
 
     private fun registerSound(event: SoundEvent) {

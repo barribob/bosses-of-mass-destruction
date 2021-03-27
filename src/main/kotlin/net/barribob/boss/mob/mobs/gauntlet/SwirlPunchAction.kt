@@ -2,6 +2,7 @@ package net.barribob.boss.mob.mobs.gauntlet
 
 import net.barribob.boss.Mod
 import net.barribob.boss.mob.ai.action.IActionWithCooldown
+import net.barribob.boss.mob.mobs.gauntlet.PunchAction.Companion.accelerateTowardsTarget
 import net.barribob.boss.utils.ModUtils.playSound
 import net.barribob.boss.utils.VanillaCopies
 import net.barribob.maelstrom.general.event.EventScheduler
@@ -9,7 +10,6 @@ import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.static_utilities.MathUtils
 import net.barribob.maelstrom.static_utilities.addVelocity
 import net.barribob.maelstrom.static_utilities.eyePos
-import net.barribob.maelstrom.static_utilities.planeProject
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.data.DataTracker
 import net.minecraft.entity.data.TrackedData
@@ -31,17 +31,22 @@ class SwirlPunchAction(val entity: GauntletEntity, val eventScheduler: EventSche
         entity.addVelocity(0.0, 0.7, 0.0)
         entity.world.playSound(
             entity.pos,
-            Mod.sounds.cometPrepare,
+            Mod.sounds.gauntletSpinPunch,
             SoundCategory.HOSTILE,
-            3.0f,
+            2.0f,
             1.0f,
             64.0
         )
         entity.dataTracker.set(isEnergized, true)
         eventScheduler.addEvent(TimedEvent(entity.hitboxHelper::setClosedFistHitbox, closeFistAnimationTime))
+
+        var velocityStack = 0.6
         eventScheduler.addEvent(
             TimedEvent(
-                { accelerateTowardsTarget(targetPos) },
+                {
+                    entity.accelerateTowardsTarget(targetPos, velocityStack)
+                    velocityStack = 0.40
+                },
                 accelerateStartTime,
                 15,
                 { entity.pos.squaredDistanceTo(targetPos) < 9 })
@@ -60,12 +65,6 @@ class SwirlPunchAction(val entity: GauntletEntity, val eventScheduler: EventSche
         testEntityImpact()
         val speed = entity.velocity.length()
         previousSpeed = speed
-    }
-
-    private fun accelerateTowardsTarget(target: Vec3d){
-        val dir: Vec3d = MathUtils.unNormedDirection(entity.eyePos(), target).normalize()
-        val velocityCorrection: Vec3d = entity.velocity.planeProject(dir)
-        entity.addVelocity(dir.subtract(velocityCorrection).multiply(0.40))
     }
 
     private fun testBlockPhysicalImpact() {

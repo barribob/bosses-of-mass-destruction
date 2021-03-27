@@ -2,6 +2,7 @@ package net.barribob.boss.mob.mobs.gauntlet
 
 import net.barribob.boss.mob.ai.action.IActionWithCooldown
 import net.barribob.boss.utils.ModUtils.playSound
+import net.barribob.boss.utils.ModUtils.randomPitch
 import net.barribob.boss.utils.VanillaCopies
 import net.barribob.maelstrom.general.event.EventScheduler
 import net.barribob.maelstrom.general.event.TimedEvent
@@ -9,10 +10,12 @@ import net.barribob.maelstrom.static_utilities.MathUtils
 import net.barribob.maelstrom.static_utilities.addVelocity
 import net.barribob.maelstrom.static_utilities.eyePos
 import net.barribob.maelstrom.static_utilities.planeProject
+import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvents
 import net.minecraft.util.math.Vec3d
+import kotlin.random.asKotlinRandom
 
 class PunchAction(val entity: GauntletEntity, val eventScheduler: EventScheduler) : IActionWithCooldown {
     private var previousSpeed = 0.0
@@ -29,14 +32,18 @@ class PunchAction(val entity: GauntletEntity, val eventScheduler: EventScheduler
                 entity.pos,
                 SoundEvents.ENTITY_BLAZE_HURT,
                 SoundCategory.HOSTILE,
-                3.0f,
-                1.0f,
-                64.0
+                2.0f,
+                pitch = entity.random.asKotlinRandom().randomPitch()  * 0.8f
             )
         }, 12))
+
+        var velocityStack = 0.6
         eventScheduler.addEvent(
             TimedEvent(
-                { accelerateTowardsTarget(targetPos) },
+                {
+                    entity.accelerateTowardsTarget(targetPos, velocityStack)
+                    velocityStack = 0.32
+                },
                 accelerateStartTime,
                 15,
                 { entity.pos.squaredDistanceTo(targetPos) < 9 })
@@ -64,12 +71,6 @@ class PunchAction(val entity: GauntletEntity, val eventScheduler: EventScheduler
         previousSpeed = speed
     }
 
-    private fun accelerateTowardsTarget(target: Vec3d) {
-        val dir: Vec3d = MathUtils.unNormedDirection(entity.eyePos(), target).normalize()
-        val velocityCorrection: Vec3d = entity.velocity.planeProject(dir)
-        entity.addVelocity(dir.subtract(velocityCorrection).multiply(0.32))
-    }
-
     private fun testBlockPhysicalImpact() {
         if ((entity.horizontalCollision || entity.verticalCollision) && previousSpeed > 0.55f) {
             val pos: Vec3d = entity.pos
@@ -84,6 +85,14 @@ class PunchAction(val entity: GauntletEntity, val eventScheduler: EventScheduler
         for (target in collidedEntities) {
             entity.tryAttack(target)
             target.addVelocity(entity.velocity.multiply(0.5))
+        }
+    }
+
+    companion object {
+        fun Entity.accelerateTowardsTarget(target: Vec3d, velocity: Double) {
+            val dir: Vec3d = MathUtils.unNormedDirection(this.eyePos(), target).normalize()
+            val velocityCorrection: Vec3d = this.velocity.planeProject(dir)
+            this.addVelocity(dir.subtract(velocityCorrection).multiply(velocity))
         }
     }
 }

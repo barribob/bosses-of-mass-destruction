@@ -13,6 +13,7 @@ import net.barribob.maelstrom.static_utilities.MathUtils
 import net.barribob.maelstrom.static_utilities.eyePos
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
+import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.entity.data.DataTracker
 import net.minecraft.entity.data.TrackedData
 import net.minecraft.entity.data.TrackedDataHandlerRegistry
@@ -28,7 +29,7 @@ class LaserAction(val entity: GauntletEntity, val eventScheduler: EventScheduler
 
         val laserRenderPositions = HistoricalData<Vec3d>(Vec3d.ZERO, laserLagTicks)
 
-        entity.world.playSound(entity.pos, Mod.sounds.obsidilithPrepareAttack, SoundCategory.HOSTILE, 3.0f, 1.0f, 64.0)
+        entity.world.playSound(entity.pos, Mod.sounds.gauntletLaserCharge, SoundCategory.HOSTILE, 3.0f, 1.0f, 64.0)
 
         val sendStartToClient = TimedEvent({
             entity.dataTracker.set(laserTarget, target.entityId)
@@ -79,7 +80,10 @@ class LaserAction(val entity: GauntletEntity, val eventScheduler: EventScheduler
         val entitiesHit = entity.world.findEntitiesInLine(entity.eyePos(), laserTargetPos, entity)
             .filterIsInstance<LivingEntity>()
         for (hitEntity in entitiesHit) {
+            val originalAttack = entity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)
+            entity.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE)?.baseValue = originalAttack * 0.75
             entity.tryAttack(hitEntity)
+            entity.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE)?.baseValue = originalAttack
         }
     }
 

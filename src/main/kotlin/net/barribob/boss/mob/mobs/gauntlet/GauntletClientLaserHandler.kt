@@ -122,7 +122,7 @@ class GauntletClientLaserHandler(val entity: GauntletEntity, val eventScheduler:
                     val position = entity.eyePos().add(circularOffset).add(lookVec.multiply(0.5))
                     laserChargeParticles.build(position, velocity)
                 }
-            }, 0, 20))
+            }, 0, 85))
         }
     }
 }
