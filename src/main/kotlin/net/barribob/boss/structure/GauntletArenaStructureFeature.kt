@@ -61,26 +61,7 @@ class GauntletArenaStructureFeature(codec: Codec<DefaultFeatureConfig>) :
             val y = 15
             val pos = BlockPos(x, y, z)
             val rotation = BlockRotation.random(random)
-            children.add(
-                ModPiece(
-                    manager,
-                    pos,
-                    template,
-                    rotation,
-                    ModStructures.gauntletArenaPiece,
-                    { s: String, blockPos: BlockPos, serverWorldAccess: ServerWorldAccess, _: Random, _: BlockBox ->
-                        if (s.contains("gauntlet")) {
-                            val spawnPos = blockPos.asVec3d().add(VecUtils.unit.multiply(0.5))
-                            val entity = Entities.GAUNTLET.create(serverWorldAccess.toServerWorld())
-                            if (entity != null) {
-                                entity.updateTrackedPosition(spawnPos)
-                                entity.updatePosition(spawnPos.x, spawnPos.y, spawnPos.z)
-                                serverWorldAccess.spawnEntity(entity)
-                            }
-                            serverWorldAccess.setBlockState(blockPos, Blocks.AIR.defaultState, 0)
-                        }
-                    })
-            )
+            children.add(ModPiece(manager, pos, template, rotation, ModStructures.gauntletArenaPiece))
             setBoundingBoxFromChildren()
         }
     }

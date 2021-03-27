@@ -1,6 +1,5 @@
 package net.barribob.boss.mob.mobs.lich
 
-import net.barribob.boss.Mod
 import net.barribob.boss.mob.utils.IEntity
 import net.barribob.boss.mob.utils.IEntityStats
 import net.barribob.maelstrom.static_utilities.MathUtils
@@ -9,7 +8,6 @@ import net.minecraft.server.world.ServerWorld
 object LichUtils {
     val hpPercentRageModes = listOf(0.0f, 0.25f, 0.5f, 0.75f, 1.0f)
     const val textureSize = 256
-    val bossBarDividerTexture = Mod.identifier("textures/gui/lich_boss_bar_dividers.png")
 
     /**
      * Info from [ServerWorld.tick]

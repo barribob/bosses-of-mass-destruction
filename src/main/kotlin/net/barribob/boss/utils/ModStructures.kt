@@ -43,8 +43,7 @@ object ModStructures {
         Mod.identifier("gauntlet_arena_piece"),
         StructureFactories.gauntletArena
     )
-    private val gauntletArenaStructure =
-        GauntletArenaStructureFeature(DefaultFeatureConfig.CODEC)
+    private val gauntletArenaStructure = GauntletArenaStructureFeature(DefaultFeatureConfig.CODEC)
     private val configuredGauntletStructure = gauntletArenaStructure.configure(DefaultFeatureConfig.DEFAULT)
 
     private val emptyStructureSpawn = IStructureSpawns { listOf() }
