@@ -46,6 +46,8 @@ class GauntletEntity(entityType: EntityType<out PathAwareEntity>, world: World, 
     override val statusEffectHandler = StatusImmunity(StatusEffects.WITHER, StatusEffects.POISON)
     override val moveHandler = gauntletGoalHandler
     override val nbtHandler = gauntletGoalHandler
+    override val deathClientTick = ClientGauntletDeathHandler(this)
+    override val deathServerTick = ServerGauntletDeathHandler(this)
 
     init {
         ignoreCameraFrustum = true
@@ -96,6 +98,7 @@ class GauntletEntity(entityType: EntityType<out PathAwareEntity>, world: World, 
     override fun getArmor(): Int = if (target != null) super.getArmor() else 24
     override fun getAmbientSound() = Mod.sounds.gauntletIdle
     override fun getHurtSound(source: DamageSource?) = Mod.sounds.gauntletHurt
+    override fun getDeathSound() = Mod.sounds.gauntletDeath
     override fun getSoundVolume() = 2.0f
     override fun getVisibilityCache() = visibilityCache
     override fun checkDespawn() = ModUtils.preventDespawnExceptPeaceful(this, world)

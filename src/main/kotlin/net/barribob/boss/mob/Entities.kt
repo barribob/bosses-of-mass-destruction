@@ -186,6 +186,7 @@ object Entities {
                 GauntletCodeAnimations()
             )
             val energyRenderer = GauntletEnergyRenderer(modelProvider)
+            val overlayOverride = GauntletOverlay()
             SimpleLivingGeoRenderer(
                 entityRenderDispatcher, modelProvider,
                 renderer = CompositeRenderer(
@@ -194,9 +195,12 @@ object Entities {
                         WeakHashPredicate { FrameLimiter(20f, pauseSecondTimer)::canDoFrame },
                         LaserParticleRenderer()
                     ),
-                    energyRenderer
+                    energyRenderer,
+                    overlayOverride
                 ),
-                renderWithModel = energyRenderer
+                renderWithModel = energyRenderer,
+                deathRotation = false,
+                overlayOverride = overlayOverride
             )
         }
     }

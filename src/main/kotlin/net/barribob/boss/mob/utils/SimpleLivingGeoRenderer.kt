@@ -24,8 +24,9 @@ class SimpleLivingGeoRenderer<T>(
     private val brightness: IRenderLight<T>? = null,
     private val iBoneLight: IBoneLight? = null,
     private val renderer: IRenderer<T>? = null,
-    private val renderData: IRenderDataProvider<T>? = null,
+    private val renderData: IRenderDataProvider<T>? = null, // Todo: this is unnecessary with IRenderer<T>
     private val renderWithModel: IRendererWithModel? = null,
+    private val overlayOverride: IOverlayOverride? = null,
     private val deathRotation: Boolean = true
     ) : GeoEntityRenderer<T>(renderManager, modelProvider) where T : IAnimatable, T : LivingEntity {
     private val renderHelper = GeoRenderer(modelProvider, ::getTexture)
@@ -82,8 +83,9 @@ class SimpleLivingGeoRenderer<T>(
         alpha: Float
     ) {
         // Calling super here causes a noSuchMethodError for some reason
-        renderHelper.render(model, animatable, partialTicks, type, matrixStackIn, renderTypeBuffer, vertexBuilder, packedLightIn, packedOverlayIn, red, green, blue, alpha)
-        renderWithModel?.render(model, partialTicks, type, matrixStackIn, renderTypeBuffer, packedLightIn, packedOverlayIn, red, green, blue, alpha)
+        val packetOverlay = overlayOverride?.getOverlay() ?: packedOverlayIn
+        renderHelper.render(model, animatable, partialTicks, type, matrixStackIn, renderTypeBuffer, vertexBuilder, packedLightIn, packetOverlay, red, green, blue, alpha)
+        renderWithModel?.render(model, partialTicks, type, matrixStackIn, renderTypeBuffer, packedLightIn, packetOverlay, red, green, blue, alpha)
     }
 
     override fun getDeathMaxRotation(entityLivingBaseIn: T): Float = if(deathRotation) 90f else 0f

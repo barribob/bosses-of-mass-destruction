@@ -35,6 +35,8 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
     protected open val statusEffectHandler: IStatusEffectFilter? = null
     protected open val moveHandler: IMoveHandler? = null
     protected open val nbtHandler: INbtHandler? = null
+    protected open val deathClientTick: IEntityTick<ClientWorld>? = null
+    protected open val deathServerTick: IEntityTick<ServerWorld>? = null
     protected val preTickEvents = EventScheduler()
     protected val postTickEvents = EventScheduler()
 
@@ -51,6 +53,19 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
         }
         super.tick()
         postTickEvents.updateEvents()
+    }
+
+    override fun updatePostDeath() {
+        val sidedWorld = world
+        if (sidedWorld is ClientWorld && deathClientTick != null) {
+            deathClientTick?.tick(sidedWorld)
+        }
+        else if(sidedWorld is ServerWorld && deathServerTick != null) {
+            deathServerTick?.tick(sidedWorld)
+        }
+        else {
+            super.updatePostDeath()
+        }
     }
 
     open fun clientTick() {} // Todo: this may not be the best pattern to use

@@ -17,7 +17,8 @@ class GauntletAnimations(val entity: GauntletEntity) : IStatusHandler {
         Pair(GauntletAttacks.laserAttack, Animation("laser_eye_start", "laser_eye_loop")),
         Pair(GauntletAttacks.laserAttackStop, Animation("laser_eye_stop", "idle")),
         Pair(GauntletAttacks.swirlPunchAttack, Animation("swirl_punch", "idle")),
-        Pair(GauntletAttacks.blindnessAttack, Animation("cast", "idle"))
+        Pair(GauntletAttacks.blindnessAttack, Animation("cast", "idle")),
+        Pair(3, Animation("death", "idle"))
     )
 
     fun registerControllers(data: AnimationData) {
