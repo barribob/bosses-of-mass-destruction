@@ -12,7 +12,6 @@ import net.minecraft.entity.damage.DamageSource
 import net.minecraft.sound.SoundEvents
 import net.minecraft.util.math.Box
 import net.minecraft.util.math.Vec3d
-import kotlin.random.asKotlinRandom
 
 
 class GauntletHitboxes(val entity: GauntletEntity) : IDamageHandler {
@@ -28,7 +27,7 @@ class GauntletHitboxes(val entity: GauntletEntity) : IDamageHandler {
     private val hitboxes: EntityBounds = EntityBounds.builder()
         .add(rootBoxYaw).setBounds(0.0, 0.0, 0.0).build()
         .add(rootBoxPitch).setBounds(2.0, 2.6, 0.6).setOffset(0.0, 1.3, 0.0).setPivot(0.0, -0.2, 0.0).setParent(rootBoxYaw).build()
-        .add(eyeBox).setBounds(0.85, 0.95, 0.2).setOffset(-0.025, 0.35, 0.4).setParent(rootBoxPitch).build()
+        .add(eyeBox).setBounds(0.9, 1.0, 0.2).setOffset(-0.025, 0.35, 0.4).setParent(rootBoxPitch).build()
         .add(fingersBox).setBounds(1.5, 2.0, 0.5).setOffset(0.0, 1.8, 0.5).setParent(rootBoxPitch).build()
         .add(thumbBox).setBounds(0.3, 1.6, 0.3).setOffset(1.0, 0.6, 0.7).setParent(rootBoxPitch).build()
         .add(pinkyBox).setBounds(0.25, 1.0, 0.25).setOffset(-0.9, 1.7, 0.5).setParent(rootBoxPitch).build()
@@ -116,7 +115,7 @@ class GauntletHitboxes(val entity: GauntletEntity) : IDamageHandler {
                 entity.takeKnockback(0.5f, actor.x - entity.getX(), actor.z - entity.getZ())
             }
         }
-        entity.playSound(SoundEvents.ENTITY_BLAZE_HURT, 1.0f, actor.random.asKotlinRandom().randomPitch())
+        entity.playSound(SoundEvents.ENTITY_BLAZE_HURT, 1.0f, actor.random.randomPitch())
 
         return false
     }

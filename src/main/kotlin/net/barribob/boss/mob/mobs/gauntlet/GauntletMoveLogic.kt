@@ -40,8 +40,8 @@ class GauntletMoveLogic(private val actions: Map<Byte, IActionWithCooldown>, val
     }
 
     companion object {
-        const val laserPercentage = 0.9
-        const val swirlPunchPercentage = 0.8
-        const val blindnessPercentage = 0.6
+        const val laserPercentage = 0.85
+        const val swirlPunchPercentage = 0.7
+        const val blindnessPercentage = 0.5
     }
 }

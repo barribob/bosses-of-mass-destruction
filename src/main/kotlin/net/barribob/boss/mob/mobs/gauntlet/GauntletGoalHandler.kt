@@ -1,5 +1,6 @@
 package net.barribob.boss.mob.mobs.gauntlet
 
+import net.barribob.boss.config.GauntletConfig
 import net.barribob.boss.mob.ai.goals.CompositeGoal
 import net.barribob.boss.mob.ai.goals.FindTargetGoal
 import net.barribob.boss.mob.damage.IDamageHandler
@@ -18,11 +19,12 @@ class GauntletGoalHandler(
     val entity: GauntletEntity,
     private val goalSelector: GoalSelector,
     private val targetSelector: GoalSelector,
-    eventScheduler: EventScheduler
+    eventScheduler: EventScheduler,
+    mobConfig: GauntletConfig
 ) : INbtHandler, IMoveHandler, IDamageHandler {
     private var isAggroed = false
     private val movementHelper = GauntletMovement(entity)
-    private val attackHelper = GauntletAttacks(entity, eventScheduler)
+    private val attackHelper = GauntletAttacks(entity, eventScheduler, mobConfig)
 
     private fun addGoals() {
         goalSelector.add(2, CompositeGoal(listOf())) // Idle goal

@@ -1,5 +1,6 @@
 package net.barribob.boss.mob.mobs.gauntlet
 
+import net.barribob.boss.config.GauntletConfig
 import net.barribob.boss.mob.ai.action.IActionWithCooldown
 import net.barribob.boss.utils.ModUtils.playSound
 import net.barribob.boss.utils.ModUtils.randomPitch
@@ -15,9 +16,13 @@ import net.minecraft.entity.LivingEntity
 import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvents
 import net.minecraft.util.math.Vec3d
-import kotlin.random.asKotlinRandom
 
-class PunchAction(val entity: GauntletEntity, val eventScheduler: EventScheduler) : IActionWithCooldown {
+class PunchAction(
+    val entity: GauntletEntity,
+    val eventScheduler: EventScheduler,
+    private val mobConfig: GauntletConfig,
+    private val cancelAction: () -> Boolean
+) : IActionWithCooldown {
     private var previousSpeed = 0.0
 
     override fun perform(): Int {
@@ -33,9 +38,9 @@ class PunchAction(val entity: GauntletEntity, val eventScheduler: EventScheduler
                 SoundEvents.ENTITY_BLAZE_HURT,
                 SoundCategory.HOSTILE,
                 2.0f,
-                pitch = entity.random.asKotlinRandom().randomPitch()  * 0.8f
+                pitch = entity.random.randomPitch() * 0.8f
             )
-        }, 12))
+        }, 12, shouldCancel = cancelAction))
 
         var velocityStack = 0.6
         eventScheduler.addEvent(
@@ -46,19 +51,19 @@ class PunchAction(val entity: GauntletEntity, val eventScheduler: EventScheduler
                 },
                 accelerateStartTime,
                 15,
-                { entity.pos.squaredDistanceTo(targetPos) < 9 })
+                { entity.pos.squaredDistanceTo(targetPos) < 9 || cancelAction() })
         )
-        eventScheduler.addEvent(TimedEvent(::whilePunchActive, accelerateStartTime, unclenchTime - accelerateStartTime))
+        eventScheduler.addEvent(TimedEvent(::whilePunchActive, accelerateStartTime, unclenchTime - accelerateStartTime, cancelAction))
 
         val closeFistAnimationTime = 7
-        eventScheduler.addEvent(TimedEvent(entity.hitboxHelper::setClosedFistHitbox, closeFistAnimationTime))
+        eventScheduler.addEvent(TimedEvent(entity.hitboxHelper::setClosedFistHitbox, closeFistAnimationTime, shouldCancel = cancelAction))
 
         eventScheduler.addEvent(TimedEvent({
             entity.world.sendEntityStatus(
                 entity,
                 GauntletAttacks.stopPunchAnimation
             )
-        }, unclenchTime))
+        }, unclenchTime, shouldCancel = cancelAction))
         eventScheduler.addEvent(TimedEvent(entity.hitboxHelper::setOpenHandHitbox, unclenchTime + 8))
 
         return 80
@@ -75,7 +80,14 @@ class PunchAction(val entity: GauntletEntity, val eventScheduler: EventScheduler
         if ((entity.horizontalCollision || entity.verticalCollision) && previousSpeed > 0.55f) {
             val pos: Vec3d = entity.pos
             val flag = VanillaCopies.getEntityDestructionType(entity.world)
-            entity.world.createExplosion(entity, pos.x, pos.y, pos.z, (previousSpeed * 1.5).toFloat(), flag)
+            entity.world.createExplosion(
+                entity,
+                pos.x,
+                pos.y,
+                pos.z,
+                (previousSpeed * mobConfig.normalPunchExplosionMultiplier).toFloat(),
+                flag
+            )
         }
     }
 

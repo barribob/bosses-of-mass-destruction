@@ -16,8 +16,7 @@ import net.minecraft.util.math.Direction
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.Difficulty
 import net.minecraft.world.World
-import kotlin.random.Random
-import kotlin.random.asKotlinRandom
+import java.util.*
 
 object ModUtils {
     /**
@@ -42,7 +41,7 @@ object ModUtils {
         soundEvent: SoundEvent,
         soundCategory: SoundCategory,
         volume: Float,
-        pitch: Float = this.random.asKotlinRandom().randomPitch(),
+        pitch: Float = this.random.randomPitch(),
         range: Double = if (volume > 1.0f) (16.0f * volume).toDouble() else 16.0,
         playerEntity: PlayerEntity? = null,
     ) =

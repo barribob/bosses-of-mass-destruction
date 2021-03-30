@@ -27,7 +27,7 @@ class GauntletClientEnergyShieldHandler(
     fun getRenderAlpha() = energizedRenderAlpha
 
     override fun onTrackedDataSet(data: TrackedData<*>) {
-        if (SwirlPunchAction.isEnergized == data && entity.dataTracker.get(SwirlPunchAction.isEnergized)) {
+        if (SwirlPunchAction.isEnergized == data && entity.dataTracker.get(SwirlPunchAction.isEnergized) && entity.world.isClient) {
             eventScheduler.addEvent(TimedEvent({ energizedRenderAlpha += 0.1f }, 0, 10))
             eventScheduler.addEvent(
                 Event(

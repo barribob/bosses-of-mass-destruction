@@ -1,21 +1,31 @@
 package net.barribob.boss.mob.mobs.gauntlet
 
+import net.barribob.boss.config.GauntletConfig
 import net.barribob.boss.mob.utils.IEntityTick
 import net.barribob.boss.utils.VanillaCopies
+import net.barribob.maelstrom.general.event.EventScheduler
+import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.static_utilities.MathUtils
 import net.barribob.maelstrom.static_utilities.RandomUtils
+import net.barribob.maelstrom.static_utilities.VecUtils
+import net.barribob.maelstrom.static_utilities.planeProject
 import net.minecraft.block.Blocks
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 
-class ServerGauntletDeathHandler(val entity: GauntletEntity) : IEntityTick<ServerWorld> {
+class ServerGauntletDeathHandler(
+    val entity: GauntletEntity,
+    private val eventScheduler: EventScheduler,
+    private val mobConfig: GauntletConfig
+) : IEntityTick<ServerWorld> {
     override fun tick(world: ServerWorld) {
         ++entity.deathTime
         if (entity.deathTime == deathAnimationTime) {
             val destructionType = VanillaCopies.getEntityDestructionType(entity.world)
             world.createExplosion(null, entity.pos.x, entity.pos.y, entity.pos.z, 4.0f, destructionType)
-            createLoot(world)
+            if (mobConfig.spawnAncientDebrisOnDeath) createLoot(world)
+            dropExp()
             entity.remove()
         }
     }
@@ -35,7 +45,20 @@ class ServerGauntletDeathHandler(val entity: GauntletEntity) : IEntityTick<Serve
         }
     }
 
+    private fun dropExp() {
+        val expTicks = 20
+        val expPerTick = (mobConfig.experienceDrop / expTicks.toFloat()).toInt()
+        val pos = entity.pos
+        eventScheduler.addEvent(TimedEvent({
+            VanillaCopies.awardExperience(
+                expPerTick,
+                pos.add(RandomUtils.randVec().planeProject(VecUtils.yAxis).multiply(2.0)),
+                entity.world
+            )
+        }, 0, expTicks))
+    }
+
     companion object {
-        const val deathAnimationTime = 40
+        const val deathAnimationTime = 50
     }
 }

@@ -23,7 +23,7 @@ import net.minecraft.util.math.Box
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.RaycastContext
 
-class LaserAction(val entity: GauntletEntity, val eventScheduler: EventScheduler) : IActionWithCooldown {
+class LaserAction(val entity: GauntletEntity, val eventScheduler: EventScheduler, private val cancelAction: () -> Boolean) : IActionWithCooldown {
     override fun perform(): Int {
         val target = entity.target ?: return 40
 
@@ -33,14 +33,14 @@ class LaserAction(val entity: GauntletEntity, val eventScheduler: EventScheduler
 
         val sendStartToClient = TimedEvent({
             entity.dataTracker.set(laserTarget, target.entityId)
-        }, 25)
+        }, 25, shouldCancel = cancelAction)
 
         val applyLaser = TimedEvent({
             laserRenderPositions.set(target.boundingBox.center)
             if (laserRenderPositions.getSize() == laserRenderPositions.maxHistory) {
                 applyLaser(laserRenderPositions)
             }
-        }, 0, 60, { entity.target == null })
+        }, 0, 60, cancelAction)
 
         val stop = TimedEvent({
             laserRenderPositions.clear()

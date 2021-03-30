@@ -23,7 +23,6 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.explosion.Explosion
 import kotlin.math.pow
-import kotlin.random.asKotlinRandom
 
 object ObsidilithUtils {
     private const val textureSize = 256
@@ -77,7 +76,7 @@ object ObsidilithUtils {
 
             for (y in 0..deathPillarHeight) {
                 eventScheduler.addEvent(TimedEvent({
-                    actor.playSound(SoundEvents.BLOCK_STONE_PLACE, 1.0f, actor.random.asKotlinRandom().randomPitch())
+                    actor.playSound(SoundEvents.BLOCK_STONE_PLACE, 1.0f, actor.random.randomPitch())
                     for (pos in circlePos) {
                         world.setBlockState(
                             BlockPos(pos.x.toInt(), y, pos.z.toInt()).add(blockPos),

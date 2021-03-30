@@ -57,7 +57,7 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
 
     override fun updatePostDeath() {
         val sidedWorld = world
-        if (sidedWorld is ClientWorld && deathClientTick != null) {
+        if (sidedWorld.isClient && sidedWorld is ClientWorld && deathClientTick != null) {
             deathClientTick?.tick(sidedWorld)
         }
         else if(sidedWorld is ServerWorld && deathServerTick != null) {

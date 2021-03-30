@@ -13,7 +13,11 @@ import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.sound.SoundCategory
 import net.minecraft.util.math.Box
 
-class BlindnessAction(val entity: GauntletEntity, val eventScheduler: EventScheduler) : IActionWithCooldown {
+class BlindnessAction(
+    val entity: GauntletEntity,
+    val eventScheduler: EventScheduler,
+    private val cancelAction: () -> Boolean
+) : IActionWithCooldown {
     override fun perform(): Int {
         entity.world.playSound(
             entity.pos,
@@ -24,7 +28,7 @@ class BlindnessAction(val entity: GauntletEntity, val eventScheduler: EventSched
             64.0
         )
 
-        eventScheduler.addEvent(TimedEvent(entity.hitboxHelper::setClosedFistHitbox, 10))
+        eventScheduler.addEvent(TimedEvent(entity.hitboxHelper::setClosedFistHitbox, 10, shouldCancel = cancelAction))
         eventScheduler.addEvent(TimedEvent(entity.hitboxHelper::setOpenHandHitbox, 43))
 
         eventScheduler.addEvent(TimedEvent({
@@ -46,10 +50,10 @@ class BlindnessAction(val entity: GauntletEntity, val eventScheduler: EventSched
                                 )
                             )
                         }
-                    }, 50)
+                    }, 50, shouldCancel = cancelAction)
                 )
             }
-        }, 30))
+        }, 30, shouldCancel = cancelAction))
 
         return 80
     }

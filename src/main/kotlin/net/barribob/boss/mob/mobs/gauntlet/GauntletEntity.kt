@@ -4,6 +4,7 @@ import io.github.stuff_stuffs.multipart_entities.common.entity.EntityBounds
 import io.github.stuff_stuffs.multipart_entities.common.entity.MultipartAwareEntity
 import io.github.stuff_stuffs.multipart_entities.common.util.CompoundOrientedBox
 import net.barribob.boss.Mod
+import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.config.GauntletConfig
 import net.barribob.boss.mob.ai.BossVisibilityCache
 import net.barribob.boss.mob.damage.CompositeDamageHandler
@@ -19,7 +20,6 @@ import net.minecraft.entity.boss.ServerBossBar
 import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.effect.StatusEffects
 import net.minecraft.entity.mob.PathAwareEntity
-import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
@@ -32,7 +32,7 @@ class GauntletEntity(entityType: EntityType<out PathAwareEntity>, world: World, 
     val laserHandler = GauntletClientLaserHandler(this, postTickEvents)
     val energyShieldHandler = GauntletClientEnergyShieldHandler(this, postTickEvents)
     val clientBlindnessHandler = GauntletBlindnessIndicatorParticles(this, preTickEvents)
-    private val gauntletGoalHandler = GauntletGoalHandler(this, goalSelector, targetSelector, postTickEvents)
+    private val gauntletGoalHandler = GauntletGoalHandler(this, goalSelector, targetSelector, postTickEvents, mobConfig)
     private val animationHandler = GauntletAnimations(this)
     private val visibilityCache = BossVisibilityCache(this)
     override val damageHandler = CompositeDamageHandler(hitboxHelper, gauntletGoalHandler)
@@ -47,7 +47,7 @@ class GauntletEntity(entityType: EntityType<out PathAwareEntity>, world: World, 
     override val moveHandler = gauntletGoalHandler
     override val nbtHandler = gauntletGoalHandler
     override val deathClientTick = ClientGauntletDeathHandler(this)
-    override val deathServerTick = ServerGauntletDeathHandler(this)
+    override val deathServerTick = ServerGauntletDeathHandler(this, ModComponents.getWorldEventScheduler(world), mobConfig)
 
     init {
         ignoreCameraFrustum = true

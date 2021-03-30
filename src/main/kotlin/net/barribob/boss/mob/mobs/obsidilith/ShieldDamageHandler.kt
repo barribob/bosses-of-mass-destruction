@@ -6,7 +6,6 @@ import net.barribob.boss.utils.ModUtils.randomPitch
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.damage.DamageSource
-import kotlin.random.asKotlinRandom
 
 class ShieldDamageHandler(val isShielded: () -> Boolean) : IDamageHandler {
     /**
@@ -20,7 +19,7 @@ class ShieldDamageHandler(val isShielded: () -> Boolean) : IDamageHandler {
                     entity.takeKnockback(0.5f, actor.x - entity.getX(), actor.z - entity.getZ())
                 }
             }
-            actor.playSound(Mod.sounds.energyShield, 1.0f, actor.random.asKotlinRandom().randomPitch())
+            actor.playSound(Mod.sounds.energyShield, 1.0f, actor.random.randomPitch())
             return false
         }
         return true

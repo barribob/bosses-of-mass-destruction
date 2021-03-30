@@ -3,9 +3,12 @@
   "entity.bosses_of_mass_destruction.lich": "Night Lich",
   "entity.bosses_of_mass_destruction.blue_fireball": "Blue Fireball",
   "entity.bosses_of_mass_destruction.obsidilith" : "Obsidilith",
+  "entity.bosses_of_mass_destruction.gauntlet" : "Nether Gauntlet",
 
   "block.bosses_of_mass_destruction.obsidilith_end_frame" : "Obsidian Altar",
   "block.bosses_of_mass_destruction.obsidilith_rune" : "Obsidian Rune",
+  "block.bosses_of_mass_destruction.sealed_blackstone" : "Sealed Blackstone Bricks",
+  "block.bosses_of_mass_destruction.gauntlet_blackstone" : "Ancient Carved Blackstone",
 
   "bosses_of_mass_destruction.kill_counter_update": "Undead killed: %d"
 }
