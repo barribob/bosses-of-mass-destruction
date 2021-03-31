@@ -20,6 +20,7 @@ import net.minecraft.entity.boss.ServerBossBar
 import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.effect.StatusEffects
 import net.minecraft.entity.mob.PathAwareEntity
+import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
