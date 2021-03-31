@@ -13,12 +13,12 @@ import net.barribob.boss.mob.mobs.lich.LichUtils
 import net.barribob.boss.mob.utils.BaseEntity
 import net.barribob.boss.mob.utils.EntityAdapter
 import net.barribob.boss.mob.utils.EntityStats
+import net.barribob.boss.mob.utils.StatusImmunity
 import net.barribob.boss.mob.utils.animation.AnimationPredicate
 import net.barribob.boss.particle.Particles
 import net.barribob.boss.utils.ModUtils
 import net.barribob.boss.utils.ModUtils.playSound
 import net.barribob.boss.utils.ModUtils.spawnParticle
-import net.barribob.boss.utils.VanillaCopies
 import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.static_utilities.MathUtils
 import net.barribob.maelstrom.static_utilities.asVec3d
@@ -29,7 +29,6 @@ import net.minecraft.entity.MovementType
 import net.minecraft.entity.boss.BossBar
 import net.minecraft.entity.boss.ServerBossBar
 import net.minecraft.entity.damage.DamageSource
-import net.minecraft.entity.effect.StatusEffectInstance
 import net.minecraft.entity.effect.StatusEffects
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.nbt.CompoundTag
@@ -61,10 +60,11 @@ class ObsidilithEntity(
     )
     private val moveLogic = ObsidilithMoveLogic(statusRegistry, this)
     private val effectHandler = ObsidilithEffectHandler(this, ModComponents.getWorldEventScheduler(world))
-    override val damageHandler = CompositeDamageHandler(listOf(moveLogic, ShieldDamageHandler(::isShielded)))
+    override val damageHandler = CompositeDamageHandler(moveLogic, ShieldDamageHandler(::isShielded))
     private val activePillars = mutableSetOf<BlockPos>()
     private val visibilityCache = BossVisibilityCache(this)
     private val iEntity = EntityAdapter(this)
+    override val statusEffectHandler = StatusImmunity(StatusEffects.WITHER, StatusEffects.POISON)
 
     init {
         ignoreCameraFrustum = true
@@ -74,7 +74,7 @@ class ObsidilithEntity(
 
             targetSelector.add(2, FindTargetGoal(this, PlayerEntity::class.java, { boundingBox.expand(it) }))
 
-            eventScheduler.addEvent(TimedEvent({
+            preTickEvents.addEvent(TimedEvent({
                 world.playSound(pos, Mod.sounds.waveIndicator, SoundCategory.HOSTILE, 1.5f, 0.7f)
             }, 1))
         }
@@ -111,7 +111,7 @@ class ObsidilithEntity(
         if (this.age % 40 == 0) {
             activePillars.randomOrNull()?.let {
                 MathUtils.lineCallback(it.asVec3d().add(0.5, 0.5, 0.5), eyePos(), 15) { vec3d, i ->
-                    eventScheduler.addEvent(TimedEvent({
+                    preTickEvents.addEvent(TimedEvent({
                         serverWorld.spawnParticle(Particles.PILLAR_RUNE, vec3d, Vec3d.ZERO)
                     }, i))
                 }
@@ -142,7 +142,7 @@ class ObsidilithEntity(
         if (attackStatus != null) {
             effectHandler.handleStatus(status)
             currentAttack = status
-            eventScheduler.addEvent(TimedEvent({ currentAttack = 0 }, 40))
+            preTickEvents.addEvent(TimedEvent({ currentAttack = 0 }, 40))
         }
         super.handleStatus(status)
     }
@@ -158,6 +158,7 @@ class ObsidilithEntity(
     override fun getDeathSound(): SoundEvent = SoundEvents.BLOCK_BASALT_HIT
 
     override fun registerControllers(data: AnimationData) {
+        data.shouldPlayWhilePaused = true
         data.addAnimationController(AnimationController(this, "summon", 0f, AnimationPredicate<ObsidilithEntity> {
                 it.controller.setAnimation(
                     AnimationBuilder().addAnimation("summon", false)
@@ -172,14 +173,6 @@ class ObsidilithEntity(
 
     override fun isOnFire(): Boolean {
         return false
-    }
-
-    override fun canHaveStatusEffect(effect: StatusEffectInstance): Boolean {
-        return if (effect.effectType === StatusEffects.WITHER || effect.effectType === StatusEffects.POISON) {
-            false
-        } else {
-            super.canHaveStatusEffect(effect)
-        }
     }
 
     override fun getArmor(): Int = if (target != null) super.getArmor() else 24

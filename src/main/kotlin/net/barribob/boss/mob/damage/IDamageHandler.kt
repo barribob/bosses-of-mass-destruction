@@ -5,7 +5,7 @@ import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.damage.DamageSource
 
 interface IDamageHandler {
-    fun beforeDamage(stats: IEntityStats, damageSource: DamageSource, amount: Float)
-    fun afterDamage(stats: IEntityStats, damageSource: DamageSource, amount: Float)
+    fun beforeDamage(stats: IEntityStats, damageSource: DamageSource, amount: Float) {}
+    fun afterDamage(stats: IEntityStats, damageSource: DamageSource, amount: Float, result: Boolean) {}
     fun shouldDamage(actor: LivingEntity, damageSource: DamageSource, amount: Float): Boolean = true
 }

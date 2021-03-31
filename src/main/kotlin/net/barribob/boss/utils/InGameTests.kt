@@ -12,8 +12,11 @@ import net.barribob.maelstrom.general.random.ModRandom
 import net.barribob.maelstrom.static_utilities.DebugPointsNetworkHandler
 import net.barribob.maelstrom.static_utilities.MathUtils
 import net.barribob.maelstrom.static_utilities.VecUtils
+import net.minecraft.enchantment.Enchantments
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.LivingEntity
+import net.minecraft.item.ItemStack
+import net.minecraft.item.Items
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.server.world.ServerWorld
@@ -21,6 +24,29 @@ import net.minecraft.util.math.Vec3d
 import net.minecraft.util.registry.Registry
 
 class InGameTests(private val debugPoints: DebugPointsNetworkHandler, private val networkUtils: NetworkUtils) {
+    fun provideGear(source: ServerCommandSource) {
+        val entity = source.player
+        val armor = listOf(ItemStack(Items.NETHERITE_HELMET), ItemStack(Items.NETHERITE_CHESTPLATE), ItemStack(Items.NETHERITE_LEGGINGS), ItemStack(Items.NETHERITE_BOOTS))
+        armor.forEach {
+            it.addEnchantment(Enchantments.PROTECTION, 3)
+            it.addEnchantment(Enchantments.UNBREAKING, 3)
+        }
+        val sword = ItemStack(Items.NETHERITE_SWORD)
+        sword.addEnchantment(Enchantments.SHARPNESS, 4)
+        sword.addEnchantment(Enchantments.UNBREAKING, 3)
+        val bow = ItemStack(Items.BOW)
+        bow.addEnchantment(Enchantments.POWER, 4)
+        bow.addEnchantment(Enchantments.INFINITY, 1)
+        bow.addEnchantment(Enchantments.UNBREAKING, 3)
+        val arrow = ItemStack(Items.ARROW)
+        val apples = ItemStack(Items.GOLDEN_APPLE, 8)
+        val food = ItemStack(Items.COOKED_PORKCHOP, 64)
+        val shield = ItemStack(Items.SHIELD)
+        shield.addEnchantment(Enchantments.UNBREAKING, 3)
+        listOf(sword, bow, apples, food, arrow, shield).forEach { entity.giveItemStack(it) }
+        armor.forEach { entity.giveItemStack(it) }
+    }
+
     fun throwProjectile(source: ServerCommandSource) {
         val entity = source.entityOrThrow
         if (entity is LivingEntity) {

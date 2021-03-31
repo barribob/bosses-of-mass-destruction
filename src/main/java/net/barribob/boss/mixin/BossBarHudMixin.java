@@ -1,5 +1,6 @@
 package net.barribob.boss.mixin;
 
+import net.barribob.boss.Mod;
 import net.barribob.boss.mob.Entities;
 import net.barribob.boss.mob.mobs.lich.LichUtils;
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithUtils;
@@ -28,7 +29,7 @@ public abstract class BossBarHudMixin {
     private static final NodeBossBarRenderer lichBossBarRenderer =
             new NodeBossBarRenderer(Entities.INSTANCE.getLICH().getTranslationKey(),
             LichUtils.INSTANCE.getHpPercentRageModes(),
-            LichUtils.INSTANCE.getBossBarDividerTexture(),
+                    Mod.INSTANCE.identifier("textures/gui/lich_boss_bar_dividers.png"),
                     LichUtils.textureSize);
 
     @Inject(

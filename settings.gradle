@@ -17,4 +17,5 @@ pluginManagement {
 
 if(!doBuild.toBoolean()) {
     includeBuild("../maelstrom-library")
+    includeBuild("../MultipartEntities")
 }

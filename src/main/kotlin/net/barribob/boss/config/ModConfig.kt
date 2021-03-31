@@ -8,4 +8,5 @@ import net.barribob.boss.Mod
 class ModConfig : ConfigData {
     val lichConfig = LichConfig()
     val obsidilithConfig = ObsidilithConfig()
+    val gauntletConfig = GauntletConfig()
 }

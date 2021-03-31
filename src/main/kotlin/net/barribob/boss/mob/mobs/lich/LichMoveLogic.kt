@@ -51,10 +51,7 @@ class LichMoveLogic(
         return Pair(teleportWeight, minionWeight)
     }
 
-    override fun beforeDamage(stats: IEntityStats, damageSource: DamageSource, amount: Float) {
-    }
-
-    override fun afterDamage(stats: IEntityStats, damageSource: DamageSource, amount: Float) {
+    override fun afterDamage(stats: IEntityStats, damageSource: DamageSource, amount: Float, result: Boolean) {
         damageHistory.set(actor.getAge())
     }
 }

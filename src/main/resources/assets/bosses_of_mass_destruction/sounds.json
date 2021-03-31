@@ -82,5 +82,41 @@
     "sounds": [
       "bosses_of_mass_destruction:energy_shield"
     ]
+  },
+  "gauntlet_idle": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.gauntlet_idle",
+    "sounds": [
+      "bosses_of_mass_destruction:gauntlet_idle"
+    ]
+  },
+  "gauntlet_hurt": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.gauntlet_hurt",
+    "sounds": [
+      "bosses_of_mass_destruction:gauntlet_hurt"
+    ]
+  },
+  "gauntlet_cast": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.gauntlet_cast",
+    "sounds": [
+      "bosses_of_mass_destruction:gauntlet_cast"
+    ]
+  },
+  "gauntlet_spin_punch": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.gauntlet_spin_punch",
+    "sounds": [
+      "bosses_of_mass_destruction:gauntlet_spin_punch"
+    ]
+  },
+  "gauntlet_laser_charge": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.gauntlet_laser_charge",
+    "sounds": [
+      "bosses_of_mass_destruction:gauntlet_laser_charge"
+    ]
+  },
+  "gauntlet_death": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.gauntlet_death",
+    "sounds": [
+      "bosses_of_mass_destruction:gauntlet_death"
+    ]
   }
 }

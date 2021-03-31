@@ -48,11 +48,14 @@ dependencies {
 
     if(project.doBuild.toBoolean()) {
         modImplementation "net.barribob:maelstrom-library:${project.maelstrom_version}-${project.minecraft_version}"
+        modImplementation "io.github.stuff_stuffs.multipart_entities:MultipartEntities:${project.multipart_version}"
     } else {
         implementation "net.barribob:maelstrom-library:${project.maelstrom_version}-${project.minecraft_version}"
+        implementation "io.github.stuff_stuffs.multipart_entities:MultipartEntities:${project.multipart_version}"
     }
 
     include "net.barribob:maelstrom-library:${project.maelstrom_version}-${project.minecraft_version}"
+    include "io.github.stuff_stuffs.multipart_entities:MultipartEntities:${project.multipart_version}"
 
     modImplementation "software.bernie.geckolib:geckolib-${project.geckolib_minecraft_version}:${project.geckolib_version}"
 

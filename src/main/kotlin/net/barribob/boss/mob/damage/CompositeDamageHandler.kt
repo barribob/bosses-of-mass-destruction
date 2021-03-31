@@ -4,16 +4,18 @@ import net.barribob.boss.mob.utils.IEntityStats
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.damage.DamageSource
 
-class CompositeDamageHandler(private val handlers: List<IDamageHandler>): IDamageHandler {
+class CompositeDamageHandler(vararg handlers: IDamageHandler): IDamageHandler {
+    private val handlerList = handlers.toList()
+
     override fun beforeDamage(stats: IEntityStats, damageSource: DamageSource, amount: Float) {
-        handlers.forEach { it.beforeDamage(stats, damageSource, amount) }
+        handlerList.forEach { it.beforeDamage(stats, damageSource, amount) }
     }
 
-    override fun afterDamage(stats: IEntityStats, damageSource: DamageSource, amount: Float) {
-        handlers.forEach { it.afterDamage(stats, damageSource, amount) }
+    override fun afterDamage(stats: IEntityStats, damageSource: DamageSource, amount: Float, result: Boolean) {
+        handlerList.forEach { it.afterDamage(stats, damageSource, amount, result) }
     }
 
     override fun shouldDamage(actor: LivingEntity, damageSource: DamageSource, amount: Float): Boolean {
-        return handlers.all { it.shouldDamage(actor, damageSource, amount) }
+        return handlerList.all { it.shouldDamage(actor, damageSource, amount) }
     }
 }

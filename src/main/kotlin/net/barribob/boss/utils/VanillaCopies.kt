@@ -1,5 +1,8 @@
 package net.barribob.boss.utils
 
+import net.barribob.maelstrom.static_utilities.MathUtils
+import net.minecraft.block.BlockState
+import net.minecraft.block.Material
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.network.ClientPlayNetworkHandler
 import net.minecraft.client.particle.BillboardParticle
@@ -7,6 +10,7 @@ import net.minecraft.client.render.*
 import net.minecraft.client.render.entity.DragonFireballEntityRenderer
 import net.minecraft.client.render.entity.EntityRenderDispatcher
 import net.minecraft.client.render.entity.EntityRenderer
+import net.minecraft.client.render.entity.GuardianEntityRenderer
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.client.util.math.Vector3f
 import net.minecraft.entity.Entity
@@ -18,16 +22,19 @@ import net.minecraft.entity.mob.CreeperEntity
 import net.minecraft.entity.mob.FlyingEntity
 import net.minecraft.entity.mob.MobEntity
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket
+import net.minecraft.tag.BlockTags
 import net.minecraft.util.hit.HitResult
 import net.minecraft.util.math.*
 import net.minecraft.world.*
 import net.minecraft.world.explosion.Explosion.DestructionType
+import kotlin.math.acos
+import kotlin.math.atan2
 
 object VanillaCopies {
     /**
      * [FlyingEntity.travel]
      */
-    fun travel(movementInput: Vec3d, entity: LivingEntity) {
+    fun travel(movementInput: Vec3d, entity: LivingEntity, baseFrictionCoefficient: Float = 0.91f) {
         when {
             entity.isTouchingWater -> {
                 entity.updateVelocity(0.02f, movementInput)
@@ -40,7 +47,6 @@ object VanillaCopies {
                 entity.velocity = entity.velocity.multiply(0.5)
             }
             else -> {
-                val baseFrictionCoefficient = 0.91f
                 val friction = if (entity.isOnGround) {
                     entity.world.getBlockState(BlockPos(entity.x, entity.y - 1.0, entity.z)).block
                         .slipperiness * baseFrictionCoefficient
@@ -267,5 +273,148 @@ object VanillaCopies {
         }
 
         return vector3fs
+    }
+
+    /**
+     * [EnderDragonEntity.destroyBlocks]
+     */
+    fun Entity.destroyBlocks(box: Box): Boolean {
+        val i = MathHelper.floor(box.minX)
+        val j = MathHelper.floor(box.minY)
+        val k = MathHelper.floor(box.minZ)
+        val l = MathHelper.floor(box.maxX)
+        val m = MathHelper.floor(box.maxY)
+        val n = MathHelper.floor(box.maxZ)
+        var bl = false
+        var bl2 = false
+        for (o in i..l) {
+            for (p in j..m) {
+                for (q in k..n) {
+                    val blockPos = BlockPos(o, p, q)
+                    val blockState: BlockState = this.world.getBlockState(blockPos)
+                    val block = blockState.block
+                    if (!blockState.isAir && blockState.material != Material.FIRE) {
+                        if (this.world.gameRules.getBoolean(GameRules.DO_MOB_GRIEFING)
+                            && !BlockTags.WITHER_IMMUNE.contains(block)
+                        ) {
+                            bl2 = this.world.breakBlock(blockPos, false) || bl2
+                        } else {
+                            bl = true
+                        }
+                    }
+                }
+            }
+        }
+        return bl
+    }
+
+    /**
+     * [GuardianEntityRenderer.render]
+     */
+    fun renderBeam(actor: LivingEntity, target: Vec3d, prevTarget: Vec3d, tickDelta: Float, color: Vec3d, matrixStack: MatrixStack, vertexConsumerProvider: VertexConsumerProvider, layer: RenderLayer) {
+            val j: Float = actor.world.time.toFloat() + tickDelta
+            val k = j % 1.0f
+            val l: Float = actor.standingEyeHeight
+            matrixStack.push()
+            matrixStack.translate(0.0, l.toDouble(), 0.0)
+            val vec3d: Vec3d = MathUtils.lerpVec(tickDelta, prevTarget, target)
+            val vec3d2: Vec3d = this.fromLerpedPosition(actor, l.toDouble(), tickDelta)
+            var vec3d3 = vec3d.subtract(vec3d2)
+            val m = vec3d3.length().toFloat()
+            vec3d3 = vec3d3.normalize()
+            val n = acos(vec3d3.y).toFloat()
+            val o = atan2(vec3d3.z, vec3d3.x).toFloat()
+            matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion((1.5707964f - o) * 57.295776f))
+            matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(n * 57.295776f))
+            val q = j * 0.05f * -1.5f
+            val red = (color.x * 255).toInt()
+            val green = (color.y * 255).toInt()
+            val blue = (color.z * 255).toInt()
+            val x = MathHelper.cos(q + 2.3561945f) * 0.282f
+            val y = MathHelper.sin(q + 2.3561945f) * 0.282f
+            val z = MathHelper.cos(q + 0.7853982f) * 0.282f
+            val aa = MathHelper.sin(q + 0.7853982f) * 0.282f
+            val ab = MathHelper.cos(q + 3.926991f) * 0.282f
+            val ac = MathHelper.sin(q + 3.926991f) * 0.282f
+            val ad = MathHelper.cos(q + 5.4977875f) * 0.282f
+            val ae = MathHelper.sin(q + 5.4977875f) * 0.282f
+            val af = MathHelper.cos(q + 3.1415927f) * 0.2f
+            val ag = MathHelper.sin(q + 3.1415927f) * 0.2f
+            val ah = MathHelper.cos(q + 0.0f) * 0.2f
+            val ai = MathHelper.sin(q + 0.0f) * 0.2f
+            val aj = MathHelper.cos(q + 1.5707964f) * 0.2f
+            val ak = MathHelper.sin(q + 1.5707964f) * 0.2f
+            val al = MathHelper.cos(q + 4.712389f) * 0.2f
+            val am = MathHelper.sin(q + 4.712389f) * 0.2f
+            val aq = -1.0f - k // Negated K to reverse direction of laser movement
+            val ar = m * 2.5f + aq
+            val vertexConsumer: VertexConsumer = vertexConsumerProvider.getBuffer(layer)
+            val entry: MatrixStack.Entry = matrixStack.peek()
+            val matrix4f = entry.model
+            val matrix3f = entry.normal
+            method_23173(vertexConsumer, matrix4f, matrix3f, af, m, ag, red, green, blue, 0.4999f, ar)
+            method_23173(vertexConsumer, matrix4f, matrix3f, af, 0.0f, ag, red, green, blue, 0.4999f, aq)
+            method_23173(vertexConsumer, matrix4f, matrix3f, ah, 0.0f, ai, red, green, blue, 0.0f, aq)
+            method_23173(vertexConsumer, matrix4f, matrix3f, ah, m, ai, red, green, blue, 0.0f, ar)
+            method_23173(vertexConsumer, matrix4f, matrix3f, aj, m, ak, red, green, blue, 0.4999f, ar)
+            method_23173(vertexConsumer, matrix4f, matrix3f, aj, 0.0f, ak, red, green, blue, 0.4999f, aq)
+            method_23173(vertexConsumer, matrix4f, matrix3f, al, 0.0f, am, red, green, blue, 0.0f, aq)
+            method_23173(vertexConsumer, matrix4f, matrix3f, al, m, am, red, green, blue, 0.0f, ar)
+            var `as` = 0.0f
+            if (actor.age % 2 == 0) {
+                `as` = 0.5f
+            }
+            method_23173(vertexConsumer, matrix4f, matrix3f, x, m, y, red, green, blue, 0.5f, `as` + 0.5f)
+            method_23173(
+                vertexConsumer,
+                matrix4f,
+                matrix3f,
+                z,
+                m,
+                aa,
+                red,
+                green,
+                blue,
+                1.0f,
+                `as` + 0.5f
+            )
+            method_23173(vertexConsumer, matrix4f, matrix3f, ad, m, ae, red, green, blue, 1.0f, `as`)
+            method_23173(vertexConsumer, matrix4f, matrix3f, ab, m, ac, red, green, blue, 0.5f, `as`)
+            matrixStack.pop()
+    }
+
+    /**
+     * [GuardianEntityRenderer.method_23173]
+     */
+    private fun method_23173(
+        vertexConsumer: VertexConsumer,
+        matrix4f: Matrix4f,
+        matrix3f: Matrix3f,
+        f: Float,
+        g: Float,
+        h: Float,
+        i: Int,
+        j: Int,
+        k: Int,
+        l: Float,
+        m: Float
+    ) {
+        vertexConsumer.vertex(matrix4f, f, g, h)
+            .color(i, j, k, 255)
+            .texture(l, m)
+            .overlay(OverlayTexture.DEFAULT_UV)
+            .light(15728800)
+            .normal(matrix3f, 0.0f, 0.0f, -1.0f) // Changed from normal(0, 1, 0) because that brightened it for some reason that I cannot fathom with my pathetic opengl knowledge
+            .next()
+    }
+
+    /**
+     * [GuardianEntityRenderer.fromLerpedPosition]
+     */
+    private fun fromLerpedPosition(entity: LivingEntity, yOffset: Double, delta: Float): Vec3d {
+        val d = MathHelper.lerp(delta.toDouble(), entity.lastRenderX, entity.x)
+        val e = MathHelper.lerp(delta.toDouble(), entity.lastRenderY, entity.y) + yOffset
+        val f = MathHelper.lerp(delta.toDouble(), entity.lastRenderZ, entity.z)
+        return Vec3d(d, e, f)
     }
 }

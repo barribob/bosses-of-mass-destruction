@@ -2,10 +2,10 @@ package net.barribob.boss.mob
 
 import me.sargunvohra.mcmods.autoconfig1u.AutoConfig
 import net.barribob.boss.Mod
-import net.barribob.boss.animation.IAnimationTimer
 import net.barribob.boss.animation.PauseAnimationTimer
 import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.config.ModConfig
+import net.barribob.boss.mob.mobs.gauntlet.*
 import net.barribob.boss.mob.mobs.lich.*
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithArmorRenderer
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithBoneLight
@@ -59,6 +59,10 @@ object Entities {
         { type, world -> ObsidilithEntity(type, world, mobConfig.obsidilithConfig) },
         { it.fireImmune().dimensions(EntityDimensions.fixed(2.0f, 4.4f)) })
 
+    val GAUNTLET: EntityType<GauntletEntity> = registerConfiguredMob("gauntlet",
+        { type, world -> GauntletEntity(type, world, mobConfig.gauntletConfig) },
+        { it.fireImmune().dimensions(EntityDimensions.fixed(5.0f, 4.0f)) })
+
     val killCounter = LichKillCounter(mobConfig.lichConfig.summonMechanic, ModComponents, ModComponents)
 
     private fun <T : Entity> registerConfiguredMob(
@@ -92,16 +96,25 @@ object Entities {
                 .add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 10.0)
                 .add(EntityAttributes.GENERIC_ARMOR, mobConfig.obsidilithConfig.armor)
         )
+
+        FabricDefaultAttributeRegistry.register(GAUNTLET, HostileEntity.createHostileAttributes()
+            .add(EntityAttributes.GENERIC_FLYING_SPEED, 4.0)
+            .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 48.0)
+            .add(EntityAttributes.GENERIC_MAX_HEALTH, mobConfig.gauntletConfig.health)
+            .add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 10.0)
+            .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, mobConfig.gauntletConfig.attack)
+            .add(EntityAttributes.GENERIC_ARMOR, mobConfig.gauntletConfig.armor))
     }
 
-    fun clientInit(animationTimer: IAnimationTimer) {
+    fun clientInit() {
+        val animationTimer = PauseAnimationTimer({ GlfwUtil.getTime() * 20 }, { MinecraftClient.getInstance().isPaused })
         val pauseSecondTimer = PauseAnimationTimer({ GlfwUtil.getTime() }, { MinecraftClient.getInstance().isPaused })
 
         EntityRendererRegistry.INSTANCE.register(LICH) { entityRenderDispatcher, _ ->
             SimpleLivingGeoRenderer(
                 entityRenderDispatcher, GeoModel(
                     Mod.identifier("geo/lich.geo.json"),
-                    Mod.identifier("textures/entity/lich.png"),
+                    { Mod.identifier("textures/entity/lich.png") },
                     Mod.identifier("animations/lich.animation.json"),
                     animationTimer,
                     LichCodeAnimations()
@@ -117,7 +130,7 @@ object Entities {
             val obsidilithRenderer = SimpleLivingGeoRenderer(
                 entityRenderDispatcher, GeoModel(
                     Mod.identifier("geo/obsidilith.geo.json"),
-                    Mod.identifier("textures/entity/obsidilith.png"),
+                    { Mod.identifier("textures/entity/obsidilith.png") },
                     Mod.identifier("animations/obsidilith.animation.json"),
                     animationTimer,
                 ),
@@ -134,14 +147,14 @@ object Entities {
         EntityRendererRegistry.INSTANCE.register(MAGIC_MISSILE) { entityRenderDispatcher, _ ->
             SimpleEntityRenderer(
                 entityRenderDispatcher,
-                CompositeRenderer(listOf(
+                CompositeRenderer(
                     BillboardRenderer(entityRenderDispatcher, magicMissileRenderLayer) { 0.5f },
                     ConditionalRenderer(
                         WeakHashPredicate<MagicMissileProjectile> { FrameLimiter(20f, pauseSecondTimer)::canDoFrame },
                         LerpedPosRenderer {
                             ParticleFactories.soulFlame().build(it.add(RandomUtils.randVec().multiply(0.25)))
                         })
-                )),
+                ),
                 { missileTexture },
                 FullRenderLight()
             )
@@ -150,7 +163,7 @@ object Entities {
         EntityRendererRegistry.INSTANCE.register(COMET) { entityRenderDispatcher, _ ->
             ModGeoRenderer(entityRenderDispatcher, GeoModel(
                 Mod.identifier("geo/comet.geo.json"),
-                Mod.identifier("textures/entity/comet.png"),
+                { Mod.identifier("textures/entity/comet.png") },
                 Mod.identifier("animations/comet.animation.json"),
                 animationTimer,
                 CometCodeAnimations()
@@ -161,6 +174,33 @@ object Entities {
                         ParticleFactories.cometTrail().build(it.add(RandomUtils.randVec().multiply(0.5)))
                     }),
                 FullRenderLight()
+            )
+        }
+
+        EntityRendererRegistry.INSTANCE.register(GAUNTLET) { entityRenderDispatcher, _ ->
+            val modelProvider = GeoModel(
+                Mod.identifier("geo/gauntlet.geo.json"),
+                GauntletTextureProvider(),
+                Mod.identifier("animations/gauntlet.animation.json"),
+                animationTimer,
+                GauntletCodeAnimations()
+            )
+            val energyRenderer = GauntletEnergyRenderer(modelProvider)
+            val overlayOverride = GauntletOverlay()
+            SimpleLivingGeoRenderer(
+                entityRenderDispatcher, modelProvider,
+                renderer = CompositeRenderer(
+                    GauntletLaserRenderer(),
+                    ConditionalRenderer(
+                        WeakHashPredicate { FrameLimiter(20f, pauseSecondTimer)::canDoFrame },
+                        LaserParticleRenderer()
+                    ),
+                    energyRenderer,
+                    overlayOverride
+                ),
+                renderWithModel = energyRenderer,
+                deathRotation = false,
+                overlayOverride = overlayOverride
             )
         }
     }

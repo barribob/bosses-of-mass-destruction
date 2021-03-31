@@ -22,6 +22,12 @@ class ModSounds {
     val spike = newSound("spike")
     val obsidilithPrepareAttack = newSound("obsidilith_prepare_attack")
     val energyShield = newSound("energy_shield")
+    val gauntletIdle = newSound("gauntlet_idle")
+    val gauntletHurt = newSound("gauntlet_hurt")
+    val gauntletCast = newSound("gauntlet_cast")
+    val gauntletSpinPunch = newSound("gauntlet_spin_punch")
+    val gauntletLaserCharge = newSound("gauntlet_laser_charge")
+    val gauntletDeath = newSound("gauntlet_death")
 
     fun init() {
         registerSound(cometShoot)
@@ -38,6 +44,12 @@ class ModSounds {
         registerSound(spike)
         registerSound(obsidilithPrepareAttack)
         registerSound(energyShield)
+        registerSound(gauntletIdle)
+        registerSound(gauntletHurt)
+        registerSound(gauntletCast)
+        registerSound(gauntletSpinPunch)
+        registerSound(gauntletLaserCharge)
+        registerSound(gauntletDeath)
     }
 
     private fun registerSound(event: SoundEvent) {

@@ -3,9 +3,7 @@ package net.barribob.boss.structure
 import com.mojang.serialization.Codec
 import net.barribob.boss.Mod
 import net.barribob.boss.config.ObsidilithConfig
-import net.barribob.boss.utils.ModStructures.obsidilithArenaStructure
-import net.minecraft.entity.SpawnGroup
-import net.minecraft.server.world.ServerWorld
+import net.barribob.boss.utils.ModStructures
 import net.minecraft.structure.StructureManager
 import net.minecraft.structure.StructureStart
 import net.minecraft.util.BlockRotation
@@ -14,13 +12,10 @@ import net.minecraft.util.math.BlockBox
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.registry.DynamicRegistryManager
 import net.minecraft.world.biome.Biome
-import net.minecraft.world.biome.SpawnSettings.SpawnEntry
-import net.minecraft.world.gen.StructureAccessor
 import net.minecraft.world.gen.chunk.ChunkGenerator
 import net.minecraft.world.gen.feature.DefaultFeatureConfig
 import net.minecraft.world.gen.feature.StructureFeature
 import net.minecraft.world.gen.feature.StructureFeature.StructureStartFactory
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
 
 
 class ObsidilithArenaStructureFeature(
@@ -39,23 +34,6 @@ class ObsidilithArenaStructureFeature(
                 seed,
                 obsidilithConfig
             )
-        }
-    }
-
-    companion object {
-        fun onGetSpawnEntries(
-            serverWorld: ServerWorld,
-            structureAccessor: StructureAccessor,
-            spawnGroup: SpawnGroup,
-            blockPos: BlockPos,
-            cir: CallbackInfoReturnable<List<SpawnEntry>>
-        ) {
-            if (spawnGroup == SpawnGroup.MONSTER &&
-                !serverWorld.getBlockState(blockPos.down()).isAir &&
-                structureAccessor.getStructureAt(blockPos, false, obsidilithArenaStructure).hasChildren()
-            ) {
-                cir.returnValue = mutableListOf()
-            }
         }
     }
 
@@ -84,7 +62,7 @@ class ObsidilithArenaStructureFeature(
             val y = obsidilithConfig.arenaGeneration.generationHeight
             val pos = BlockPos(x, y, z)
             val rotation = BlockRotation.random(random)
-            children.add(ModPiece(manager, pos, template, rotation))
+            children.add(ModPiece(manager, pos, template, rotation, ModStructures.obsidilithArenaPiece))
             setBoundingBoxFromChildren()
         }
     }
