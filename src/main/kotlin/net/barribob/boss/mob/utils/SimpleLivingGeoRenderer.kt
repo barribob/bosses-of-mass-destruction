@@ -29,7 +29,7 @@ class SimpleLivingGeoRenderer<T>(
     private val overlayOverride: IOverlayOverride? = null,
     private val deathRotation: Boolean = true
     ) : GeoEntityRenderer<T>(renderManager, modelProvider) where T : IAnimatable, T : LivingEntity {
-    private val renderHelper = GeoRenderer(modelProvider, ::getTexture)
+    private val renderHelper = GeoRenderer(modelProvider, ::getTexture, this)
 
     override fun getBlockLight(entity: T, blockPos: BlockPos): Int {
         return brightness?.getBlockLight(entity, blockPos) ?: super.getBlockLight(entity, blockPos)
@@ -90,8 +90,26 @@ class SimpleLivingGeoRenderer<T>(
 
     override fun getDeathMaxRotation(entityLivingBaseIn: T): Float = if(deathRotation) 90f else 0f
 
-    class GeoRenderer<T>(val geoModel: AnimatedGeoModel<T>, private val textureLocation: (T) -> Identifier) : IGeoRenderer<T>  where T : IAnimatable, T : LivingEntity  {
+    class GeoRenderer<T>(
+        val geoModel: AnimatedGeoModel<T>,
+        private val textureLocation: (T) -> Identifier,
+        val renderer: SimpleLivingGeoRenderer<T>
+    ) :
+        IGeoRenderer<T> where T : IAnimatable, T : LivingEntity {
         override fun getGeoModelProvider(): GeoModelProvider<*> = geoModel
         override fun getTextureLocation(p0: T): Identifier = textureLocation(p0)
+        override fun renderRecursively(
+            bone: GeoBone,
+            stack: MatrixStack,
+            bufferIn: VertexConsumer,
+            packedLightIn: Int,
+            packedOverlayIn: Int,
+            red: Float,
+            green: Float,
+            blue: Float,
+            alpha: Float
+        ) {
+            renderer.renderRecursively(bone, stack, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha)
+        }
     }
 }

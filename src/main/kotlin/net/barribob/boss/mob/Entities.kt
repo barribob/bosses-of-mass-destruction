@@ -127,18 +127,22 @@ object Entities {
 
         EntityRendererRegistry.INSTANCE.register(OBSIDILITH) { entityRenderDispatcher, _ ->
             val runeColorHandler = ObsidilithBoneLight()
+            val modelProvider = GeoModel<ObsidilithEntity>(
+                Mod.identifier("geo/obsidilith.geo.json"),
+                { Mod.identifier("textures/entity/obsidilith.png") },
+                Mod.identifier("animations/obsidilith.animation.json"),
+                animationTimer,
+            )
+            val armorRenderer = ObsidilithArmorRenderer(modelProvider)
             val obsidilithRenderer = SimpleLivingGeoRenderer(
-                entityRenderDispatcher, GeoModel(
-                    Mod.identifier("geo/obsidilith.geo.json"),
-                    { Mod.identifier("textures/entity/obsidilith.png") },
-                    Mod.identifier("animations/obsidilith.animation.json"),
-                    animationTimer,
-                ),
+                entityRenderDispatcher,
+                modelProvider,
+                renderer = armorRenderer,
+                renderWithModel = armorRenderer,
                 iBoneLight = runeColorHandler,
                 renderData = runeColorHandler,
                 deathRotation = false
             )
-            obsidilithRenderer.addLayer(ObsidilithArmorRenderer(obsidilithRenderer))
             obsidilithRenderer
         }
 

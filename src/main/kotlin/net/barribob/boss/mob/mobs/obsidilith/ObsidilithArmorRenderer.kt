@@ -1,56 +1,95 @@
 package net.barribob.boss.mob.mobs.obsidilith
 
 import net.barribob.boss.Mod
-import net.barribob.boss.model.ObsidilithArmor
+import net.barribob.boss.render.IRenderer
+import net.barribob.boss.render.IRendererWithModel
 import net.minecraft.client.render.OverlayTexture
 import net.minecraft.client.render.RenderLayer
 import net.minecraft.client.render.VertexConsumer
 import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.util.Identifier
-import software.bernie.geckolib3.renderer.geo.GeoLayerRenderer
+import software.bernie.geckolib3.geo.render.built.GeoCube
+import software.bernie.geckolib3.geo.render.built.GeoModel
+import software.bernie.geckolib3.model.AnimatedGeoModel
+import software.bernie.geckolib3.model.provider.GeoModelProvider
 import software.bernie.geckolib3.renderer.geo.IGeoRenderer
 import kotlin.random.Random
 
-class ObsidilithArmorRenderer(entityRendererIn: IGeoRenderer<ObsidilithEntity>) : GeoLayerRenderer<ObsidilithEntity>(
-    entityRendererIn
-) {
-    private val model = ObsidilithArmor()
+class ObsidilithArmorRenderer(geoModel: AnimatedGeoModel<ObsidilithEntity>) : IRendererWithModel, IRenderer<ObsidilithEntity> {
+    private val armorTexture = Mod.identifier("textures/entity/obsidilith_armor.png")
+    private val geoModelProvider = RenderHelper(geoModel)
+
+    private var energyBuffer: VertexConsumer? = null
+    private var gauntletEntity: ObsidilithEntity? = null
+    private var layer: RenderLayer? = null
 
     override fun render(
-        stack: MatrixStack,
-        buffer: VertexConsumerProvider,
-        packedLight: Int,
-        entity: ObsidilithEntity,
-        limbSwing: Float,
-        lastLimbDistance: Float,
+        model: GeoModel,
         partialTicks: Float,
-        animationProgress: Float,
-        netHeadYaw: Float,
-        headPitch: Float
+        type: RenderLayer,
+        matrixStackIn: MatrixStack,
+        renderTypeBuffer: VertexConsumerProvider,
+        packedLightIn: Int,
+        packedOverlayIn: Int,
+        red: Float,
+        green: Float,
+        blue: Float,
+        alpha: Float
     ) {
+        val buffer = energyBuffer ?: return
+        val entity = gauntletEntity ?: return
+        val renderType = layer ?: return
         if (entity.isShielded()) {
-            val f: Float = entity.age.toFloat() + partialTicks
-            val entityModel = model
-            stack.scale(1.0f, -1.0f, 1.0f)
-            stack.translate(0.0, -1.5010000467300415, 0.0)
-
-            val vertexConsumer: VertexConsumer = buffer.getBuffer(
-                RenderLayer.getEnergySwirl(
-                    this.getEnergySwirlTexture(),
-                    this.getEnergySwirlX(f),
-                    f * 0.01f
-                )
+            geoModelProvider.render(
+                model,
+                entity,
+                partialTicks,
+                renderType,
+                matrixStackIn,
+                renderTypeBuffer,
+                buffer,
+                packedLightIn,
+                OverlayTexture.DEFAULT_UV,
+                0.5f, 0.5f, 0.5f, 1.0f
             )
-            entityModel.render(stack, vertexConsumer, packedLight, OverlayTexture.DEFAULT_UV, 0.5f, 0.5f, 0.5f, 1.0f)
         }
     }
 
-    private fun getEnergySwirlX(partialAge: Float): Float {
-        return partialAge * Random.nextFloat()
+    override fun render(
+        entity: ObsidilithEntity,
+        yaw: Float,
+        partialTicks: Float,
+        matrices: MatrixStack,
+        vertexConsumers: VertexConsumerProvider,
+        light: Int
+    ) {
+        val renderAge: Float = entity.age + partialTicks
+        val textureOffset = renderAge * Random.nextFloat()
+        gauntletEntity = entity
+        layer = RenderLayer.getEnergySwirl(armorTexture, textureOffset, textureOffset)
+        energyBuffer = vertexConsumers.getBuffer(layer)
     }
 
-    private fun getEnergySwirlTexture(): Identifier {
-        return Mod.identifier("textures/entity/obsidilith_armor.png")
+    private class RenderHelper(val geoModel: AnimatedGeoModel<ObsidilithEntity>) : IGeoRenderer<ObsidilithEntity> {
+        override fun getGeoModelProvider(): GeoModelProvider<*> = geoModel
+        override fun getTextureLocation(p0: ObsidilithEntity?): Identifier = Identifier("unused")
+
+        override fun renderCube(
+            cube: GeoCube,
+            matrixStack: MatrixStack,
+            bufferIn: VertexConsumer,
+            packedLightIn: Int,
+            packedOverlayIn: Int,
+            red: Float,
+            green: Float,
+            blue: Float,
+            alpha: Float
+        ) {
+            matrixStack.push()
+            matrixStack.scale(1.1f, 1.05f, 1.1f)
+            super.renderCube(cube, matrixStack, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha)
+            matrixStack.pop()
+        }
     }
 }
