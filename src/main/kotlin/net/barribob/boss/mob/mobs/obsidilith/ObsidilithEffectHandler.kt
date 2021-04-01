@@ -101,9 +101,17 @@ class ObsidilithEffectHandler(val entity: LivingEntity, val eventScheduler: Even
     private fun anvilEffect() {
         val entityPos = entity.eyePos()
         for (i in 0..50) {
-            val pos = entityPos.add(RandomUtils.randVec().normalize().multiply(3.0))
-            val vel = MathUtils.unNormedDirection(pos, entityPos).crossProduct(VecUtils.yAxis).multiply(0.1)
-            anvilParticleFactory.build(pos, vel)
+            val pos = entityPos.add(
+                RandomUtils.randVec()
+                    .planeProject(VecUtils.yAxis)
+                    .normalize().multiply(3.0)
+            )
+
+            anvilParticleFactory.continuousVelocity {
+                MathUtils.unNormedDirection(it.getPos(), entityPos)
+                    .crossProduct(VecUtils.yAxis)
+                    .add(VecUtils.yAxis.multiply(0.4)).multiply(0.1)
+            }.build(pos)
         }
 
         eventScheduler.addEvent(TimedEvent({
