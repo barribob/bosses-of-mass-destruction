@@ -3,6 +3,8 @@ package net.barribob.boss.mob.mobs.obsidilith
 import net.barribob.boss.Mod
 import net.barribob.boss.render.IRenderer
 import net.barribob.boss.render.IRendererWithModel
+import net.barribob.boss.utils.ModColors
+import net.barribob.maelstrom.static_utilities.VecUtils
 import net.minecraft.client.render.OverlayTexture
 import net.minecraft.client.render.RenderLayer
 import net.minecraft.client.render.VertexConsumer
@@ -21,7 +23,7 @@ class ObsidilithArmorRenderer(geoModel: AnimatedGeoModel<ObsidilithEntity>) : IR
     private val geoModelProvider = RenderHelper(geoModel)
 
     private var energyBuffer: VertexConsumer? = null
-    private var gauntletEntity: ObsidilithEntity? = null
+    private var entity: ObsidilithEntity? = null
     private var layer: RenderLayer? = null
 
     override fun render(
@@ -38,9 +40,19 @@ class ObsidilithArmorRenderer(geoModel: AnimatedGeoModel<ObsidilithEntity>) : IR
         alpha: Float
     ) {
         val buffer = energyBuffer ?: return
-        val entity = gauntletEntity ?: return
+        val entity = entity ?: return
         val renderType = layer ?: return
         if (entity.isShielded()) {
+
+            val color = when (entity.currentAttack) {
+                ObsidilithUtils.burstAttackStatus -> ModColors.ORANGE
+                ObsidilithUtils.waveAttackStatus -> ModColors.RED
+                ObsidilithUtils.spikeAttackStatus -> ModColors.COMET_BLUE
+                ObsidilithUtils.anvilAttackStatus -> ModColors.ENDER_PURPLE
+                ObsidilithUtils.pillarDefenseStatus -> ModColors.WHITE
+                else -> ModColors.WHITE
+            }.add(VecUtils.unit).normalize().multiply(0.8)
+
             geoModelProvider.render(
                 model,
                 entity,
@@ -51,7 +63,7 @@ class ObsidilithArmorRenderer(geoModel: AnimatedGeoModel<ObsidilithEntity>) : IR
                 buffer,
                 packedLightIn,
                 OverlayTexture.DEFAULT_UV,
-                0.5f, 0.5f, 0.5f, 1.0f
+                color.x.toFloat(), color.y.toFloat(), color.z.toFloat(), 1.0f
             )
         }
     }
@@ -66,7 +78,7 @@ class ObsidilithArmorRenderer(geoModel: AnimatedGeoModel<ObsidilithEntity>) : IR
     ) {
         val renderAge: Float = entity.age + partialTicks
         val textureOffset = renderAge * Random.nextFloat()
-        gauntletEntity = entity
+        this.entity = entity
         layer = RenderLayer.getEnergySwirl(armorTexture, textureOffset, textureOffset)
         energyBuffer = vertexConsumers.getBuffer(layer)
     }
