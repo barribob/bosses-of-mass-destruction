@@ -3,18 +3,18 @@
   "id": "bosses_of_mass_destruction",
   "version": "${version}",
 
-  "name": "Bosses of Mass Destruction (Alpha)",
+  "name": "Bosses of Mass Destruction (Beta)",
   "description": "Adds high threat mobs for players to take on.",
   "authors": [
     "Barribob"
   ],
   "contact": {
-    "homepage": "",
-    "sources": "",
-    "issues": ""
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/bosses-of-mass-destruction-alpha",
+    "sources": "https://github.com/miyo6032/bosses-of-mass-destruction",
+    "issues": "https://github.com/miyo6032/bosses-of-mass-destruction/issues"
   },
 
-  "license": "",
+  "license": "GNU LESSER GENERAL PUBLIC LICENSE",
   "icon": "assets/bosses_of_mass_destruction/icon.png",
 
   "environment": "*",
