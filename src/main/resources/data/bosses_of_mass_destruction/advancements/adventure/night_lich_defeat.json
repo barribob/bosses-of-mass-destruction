@@ -1,0 +1,30 @@
+{
+  "parent": "minecraft:adventure/kill_a_mob",
+  "display": {
+    "title": {
+      "translate": "advancements.adventure.night_lich_defeat.title",
+      "color": "white"
+    },
+    "description": {
+      "translate": "advancements.adventure.night_lich_defeat.description"
+    },
+    "icon": {
+      "item": "minecraft:bone_block"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false,
+    "background": "minecraft:textures/gui/advancements/backgrounds/adventure.png"
+  },
+  "criteria": {
+    "bosses_of_mass_destruction:lich": {
+      "trigger": "minecraft:player_killed_entity",
+      "conditions": {
+        "entity": {
+          "type": "bosses_of_mass_destruction:lich"
+        }
+      }
+    }
+  }
+}

@@ -10,5 +10,14 @@
   "block.bosses_of_mass_destruction.sealed_blackstone" : "Sealed Blackstone Bricks",
   "block.bosses_of_mass_destruction.gauntlet_blackstone" : "Ancient Carved Blackstone",
 
-  "bosses_of_mass_destruction.kill_counter_update": "Undead killed: %d"
+  "bosses_of_mass_destruction.kill_counter_update": "Undead killed: %d",
+
+  "advancements.nether.gauntlet_defeat.title": "Through the Gauntlet",
+  "advancements.nether.gauntlet_defeat.description" : "Defeat the Nether Gauntlet Boss",
+
+  "advancements.end.obsidilith_defeat.title": "Obsidian Obliterator",
+  "advancements.end.obsidilith_defeat.description" : "Defeat the Obsidilith Boss",
+
+  "advancements.adventure.night_lich_defeat.title": "Night Vanquisher",
+  "advancements.adventure.night_lich_defeat.description" : "Defeat the Night Lich Boss"
 }
