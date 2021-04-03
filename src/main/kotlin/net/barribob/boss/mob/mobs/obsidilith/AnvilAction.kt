@@ -34,14 +34,14 @@ class AnvilAction(private val actor: MobEntity, val explosionPower: Float) : IAc
     }
 
     private fun performAttack(target: LivingEntity, serverWorld: ServerWorld) {
-        actor.world.playSound(actor.pos, Mod.sounds.obsidilithPrepareAttack, SoundCategory.HOSTILE, 3.0f, 1.0f, 64.0)
+        serverWorld.playSound(actor.pos, Mod.sounds.obsidilithPrepareAttack, SoundCategory.HOSTILE, 3.0f, 1.0f, 64.0)
 
         eventScheduler.addEvent(TimedEvent({
             val targetPos = target.pos
             val teleportPos = targetPos.add(VecUtils.yAxis.multiply(24.0))
             val originalPos = actor.pos
             actor.refreshPositionAndAngles(teleportPos.x, teleportPos.y, teleportPos.z, actor.yaw, actor.pitch)
-            actor.world.playSound(teleportPos, SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.HOSTILE, 3.0f, range = 64.0)
+            serverWorld.playSound(teleportPos, SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.HOSTILE, 3.0f, range = 64.0)
 
             for(pos in circlePoints) {
                 val particlePos = actor.world.findGroundBelow(BlockPos(pos.add(targetPos)).up(3)).up()
@@ -63,7 +63,7 @@ class AnvilAction(private val actor: MobEntity, val explosionPower: Float) : IAc
                 )
                 eventScheduler.addEvent(TimedEvent({
                     actor.refreshPositionAndAngles(originalPos.x, originalPos.y, originalPos.z, actor.yaw, actor.pitch)
-                    actor.world.playSound(actor.pos, SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.HOSTILE, 1.0f, range = 64.0)
+                    serverWorld.playSound(actor.pos, SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.HOSTILE, 1.0f, range = 64.0)
                 }, 20, shouldCancel = { !actor.isAlive}))
             }, shouldCancel = shouldCancelLand))
 

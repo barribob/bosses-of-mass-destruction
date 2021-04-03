@@ -13,6 +13,7 @@ import net.barribob.maelstrom.static_utilities.eyePos
 import net.barribob.maelstrom.static_utilities.planeProject
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
+import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvents
 import net.minecraft.util.math.Vec3d
@@ -21,7 +22,8 @@ class PunchAction(
     val entity: GauntletEntity,
     val eventScheduler: EventScheduler,
     private val mobConfig: GauntletConfig,
-    private val cancelAction: () -> Boolean
+    private val cancelAction: () -> Boolean,
+    private val serverWorld: ServerWorld
 ) : IActionWithCooldown {
     private var previousSpeed = 0.0
 
@@ -33,7 +35,7 @@ class PunchAction(
 
         entity.addVelocity(0.0, 0.7, 0.0)
         eventScheduler.addEvent(TimedEvent({
-            entity.world.playSound(
+            serverWorld.playSound(
                 entity.pos,
                 SoundEvents.ENTITY_BLAZE_HURT,
                 SoundCategory.HOSTILE,

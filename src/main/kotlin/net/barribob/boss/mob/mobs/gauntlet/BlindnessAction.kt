@@ -10,16 +10,18 @@ import net.minecraft.entity.ai.TargetPredicate
 import net.minecraft.entity.effect.StatusEffectInstance
 import net.minecraft.entity.effect.StatusEffects
 import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
 import net.minecraft.util.math.Box
 
 class BlindnessAction(
     val entity: GauntletEntity,
     val eventScheduler: EventScheduler,
-    private val cancelAction: () -> Boolean
+    private val cancelAction: () -> Boolean,
+    private val serverWorld: ServerWorld
 ) : IActionWithCooldown {
     override fun perform(): Int {
-        entity.world.playSound(
+        serverWorld.playSound(
             entity.pos,
             Mod.sounds.gauntletCast,
             SoundCategory.HOSTILE,

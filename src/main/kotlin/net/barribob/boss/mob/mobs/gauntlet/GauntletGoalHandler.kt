@@ -13,24 +13,30 @@ import net.minecraft.entity.ai.goal.GoalSelector
 import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.Vec3d
 
 class GauntletGoalHandler(
     val entity: GauntletEntity,
     private val goalSelector: GoalSelector,
     private val targetSelector: GoalSelector,
-    eventScheduler: EventScheduler,
-    mobConfig: GauntletConfig
+    private val eventScheduler: EventScheduler,
+    private val mobConfig: GauntletConfig
 ) : INbtHandler, IMoveHandler, IDamageHandler {
     private var isAggroed = false
     private val movementHelper = GauntletMovement(entity)
-    private val attackHelper = GauntletAttacks(entity, eventScheduler, mobConfig)
 
     private fun addGoals() {
-        goalSelector.add(2, CompositeGoal(listOf())) // Idle goal
-        goalSelector.add(3, CompositeGoal(listOf(movementHelper.buildAttackMovement(), attackHelper.buildAttackGoal())))
+        val serverWorld = entity.world
+        if (serverWorld is ServerWorld) {
+            val attackHelper = GauntletAttacks(entity, eventScheduler, mobConfig, serverWorld)
+            val attackGoal = CompositeGoal(listOf(movementHelper.buildAttackMovement(), attackHelper.buildAttackGoal()))
 
-        targetSelector.add(2, FindTargetGoal(entity, PlayerEntity::class.java, { entity.boundingBox.expand(it) }))
+            goalSelector.add(2, CompositeGoal(listOf())) // Idle goal
+            goalSelector.add(3, attackGoal)
+
+            targetSelector.add(2, FindTargetGoal(entity, PlayerEntity::class.java, { entity.boundingBox.expand(it) }))
+        }
     }
 
     override fun toTag(tag: CompoundTag): CompoundTag {

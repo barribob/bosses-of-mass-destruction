@@ -147,6 +147,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
     private val tooCloseToTargetDistance = 20.0
     private val idleWanderDistance = 50.0
     private val iEntity = EntityAdapter(this)
+    private val serverWorld = if (world is ServerWorld) world else null
 
     private val visibilityCache = BossVisibilityCache(this)
     override val damageHandler = CompositeDamageHandler(
@@ -244,11 +245,11 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
     private fun playTeleportSound() = playSound(SoundEvents.ENTITY_ILLUSIONER_MIRROR_MOVE, 2.0f)
     private fun playRageBeginSound() = playSound(Mod.sounds.ragePrepare, 1.0f)
     private fun playMinionRuneSound(pos: Vec3d) =
-        world.playSound(pos, Mod.sounds.minionRune, SoundCategory.HOSTILE, 1.0f, range = 64.0)
+        serverWorld?.playSound(pos, Mod.sounds.minionRune, SoundCategory.HOSTILE, 1.0f, range = 64.0)
 
     private fun playMinionSummonSound(entity: Entity) = entity.playSound(Mod.sounds.minionSummon, 0.7f, 1.0f)
     private fun playSound(soundEvent: SoundEvent, volume: Float) =
-        world.playSound(pos, soundEvent, SoundCategory.HOSTILE, volume, range = 64.0)
+        serverWorld?.playSound(pos, soundEvent, SoundCategory.HOSTILE, volume, range = 64.0)
 
     init {
         ignoreCameraFrustum = true
@@ -498,7 +499,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
     }
 
     private fun buildCometAction(canContinueAttack: () -> Boolean): ActionWithConstantCooldown {
-        val throwCometAction = {
+        val throwCometAction: () -> Unit = {
             ThrowProjectileAction(this, cometThrower(getCometLaunchPosition())).perform()
             playCometLaunchSound()
         }

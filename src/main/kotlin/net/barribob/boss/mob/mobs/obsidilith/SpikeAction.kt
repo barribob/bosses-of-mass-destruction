@@ -41,7 +41,7 @@ class SpikeAction(val entity: MobEntity) : IActionWithCooldown {
             it.addStatusEffect(StatusEffectInstance(StatusEffects.SLOWNESS, 120, 2))
         }
 
-        entity.world.playSound(entity.pos, Mod.sounds.obsidilithPrepareAttack, SoundCategory.HOSTILE, 3.0f, 1.2f, 64.0)
+        target.serverWorld.playSound(entity.pos, Mod.sounds.obsidilithPrepareAttack, SoundCategory.HOSTILE, 3.0f, 1.2f, 64.0)
 
         for (i in 0 until 3) {
             val timeBetweenRifts = 30
@@ -49,10 +49,10 @@ class SpikeAction(val entity: MobEntity) : IActionWithCooldown {
             eventScheduler.addEvent(TimedEvent({
                 val placement =
                     ObsidilithUtils.approximatePlayerNextPosition(ModComponents.getPlayerPositions(target), target.pos)
-                entity.world.playSound(placement, Mod.sounds.spikeIndicator, SoundCategory.HOSTILE, 1.0f, range = 32.0)
+                target.serverWorld.playSound(placement, Mod.sounds.spikeIndicator, SoundCategory.HOSTILE, 1.0f, range = 32.0)
 
                 eventScheduler.addEvent(TimedEvent({
-                    entity.world.playSound(
+                    target.serverWorld.playSound(
                         placement,
                         Mod.sounds.spike,
                         SoundCategory.HOSTILE,

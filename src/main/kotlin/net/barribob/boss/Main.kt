@@ -26,7 +26,7 @@ object Mod {
 
     val sounds: ModSounds = ModSounds()
 
-    val networkUtils = NetworkUtils(MaelstromMod.isDevelopmentEnvironment)
+    val networkUtils = NetworkUtils()
 
     fun identifier(path: String) = Identifier(MODID, path)
 }
@@ -52,10 +52,12 @@ fun clientInit() {
     networkUtils.registerClientHandlers()
     Entities.clientInit()
     Particles.clientInit()
+
+    if(MaelstromMod.isDevelopmentEnvironment) initClientDev()
 }
 
 private fun initDev() {
-    val inGameTests = InGameTests(MaelstromMod.debugPoints, networkUtils)
+    val inGameTests = InGameTests(MaelstromMod.debugPoints)
     MaelstromMod.testCommand.addId(inGameTests::throwProjectile.name, inGameTests::throwProjectile)
     MaelstromMod.testCommand.addId(inGameTests::axisOffset.name, inGameTests::axisOffset)
     MaelstromMod.testCommand.addId(inGameTests::spawnEntity.name, inGameTests::spawnEntity)
@@ -68,4 +70,10 @@ private fun initDev() {
     MaelstromMod.testCommand.addId(inGameTests::placeObsidian.name, inGameTests::placeObsidian)
     MaelstromMod.testCommand.addId(inGameTests::obsidilithDeath.name, inGameTests::obsidilithDeath)
     MaelstromMod.testCommand.addId(inGameTests::provideGear.name, inGameTests::provideGear)
+}
+
+@Environment(EnvType.CLIENT)
+private fun initClientDev() {
+    val inGameTests = InGameTests(MaelstromMod.debugPoints)
+    inGameTests.registerClientHandlers()
 }

@@ -17,19 +17,25 @@ import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.entity.data.DataTracker
 import net.minecraft.entity.data.TrackedData
 import net.minecraft.entity.data.TrackedDataHandlerRegistry
+import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
 import net.minecraft.util.hit.HitResult
 import net.minecraft.util.math.Box
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.RaycastContext
 
-class LaserAction(val entity: GauntletEntity, val eventScheduler: EventScheduler, private val cancelAction: () -> Boolean) : IActionWithCooldown {
+class LaserAction(
+    val entity: GauntletEntity,
+    val eventScheduler: EventScheduler,
+    private val cancelAction: () -> Boolean,
+    private val serverWorld: ServerWorld
+) : IActionWithCooldown {
     override fun perform(): Int {
         val target = entity.target ?: return 40
 
         val laserRenderPositions = HistoricalData<Vec3d>(Vec3d.ZERO, laserLagTicks)
 
-        entity.world.playSound(entity.pos, Mod.sounds.gauntletLaserCharge, SoundCategory.HOSTILE, 3.0f, 1.0f, 64.0)
+        serverWorld.playSound(entity.pos, Mod.sounds.gauntletLaserCharge, SoundCategory.HOSTILE, 3.0f, 1.0f, 64.0)
 
         val sendStartToClient = TimedEvent({
             entity.dataTracker.set(laserTarget, target.entityId)

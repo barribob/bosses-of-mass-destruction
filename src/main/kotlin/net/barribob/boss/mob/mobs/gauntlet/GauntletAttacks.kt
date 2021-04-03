@@ -4,14 +4,15 @@ import net.barribob.boss.config.GauntletConfig
 import net.barribob.boss.mob.ai.action.CooldownAction
 import net.barribob.boss.mob.ai.goals.ActionGoal
 import net.barribob.maelstrom.general.event.EventScheduler
+import net.minecraft.server.world.ServerWorld
 
-class GauntletAttacks(val entity: GauntletEntity, eventScheduler: EventScheduler, mobConfig: GauntletConfig) {
+class GauntletAttacks(val entity: GauntletEntity, eventScheduler: EventScheduler, mobConfig: GauntletConfig, serverWorld: ServerWorld) {
     private val cancelAttackAction: () -> Boolean = { entity.isDead || entity.target == null }
     private val statusRegistry = mapOf(
-        Pair(punchAttack, PunchAction(entity, eventScheduler, mobConfig, cancelAttackAction)),
-        Pair(laserAttack, LaserAction(entity, eventScheduler, cancelAttackAction)),
-        Pair(swirlPunchAttack, SwirlPunchAction(entity, eventScheduler, mobConfig, cancelAttackAction)),
-        Pair(blindnessAttack, BlindnessAction(entity, eventScheduler, cancelAttackAction))
+        Pair(punchAttack, PunchAction(entity, eventScheduler, mobConfig, cancelAttackAction, serverWorld)),
+        Pair(laserAttack, LaserAction(entity, eventScheduler, cancelAttackAction, serverWorld)),
+        Pair(swirlPunchAttack, SwirlPunchAction(entity, eventScheduler, mobConfig, cancelAttackAction, serverWorld)),
+        Pair(blindnessAttack, BlindnessAction(entity, eventScheduler, cancelAttackAction, serverWorld))
     )
     private val moveLogic = GauntletMoveLogic(statusRegistry, entity)
 

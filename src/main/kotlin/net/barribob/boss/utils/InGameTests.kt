@@ -1,5 +1,6 @@
 package net.barribob.boss.utils
 
+import io.netty.buffer.Unpooled
 import net.barribob.boss.Mod
 import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.mob.Entities
@@ -7,23 +8,35 @@ import net.barribob.boss.mob.mobs.obsidilith.BurstAction
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithUtils
 import net.barribob.boss.mob.mobs.obsidilith.PillarAction
 import net.barribob.boss.mob.spawn.*
+import net.barribob.boss.particle.ClientParticleBuilder
+import net.barribob.boss.particle.Particles
 import net.barribob.boss.projectile.MagicMissileProjectile
 import net.barribob.maelstrom.general.random.ModRandom
 import net.barribob.maelstrom.static_utilities.DebugPointsNetworkHandler
 import net.barribob.maelstrom.static_utilities.MathUtils
 import net.barribob.maelstrom.static_utilities.VecUtils
+import net.fabricmc.api.EnvType
+import net.fabricmc.api.Environment
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking
+import net.minecraft.client.MinecraftClient
 import net.minecraft.enchantment.Enchantments
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.LivingEntity
 import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.network.PacketByteBuf
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.Vec3d
 import net.minecraft.util.registry.Registry
+import kotlin.random.Random
 
-class InGameTests(private val debugPoints: DebugPointsNetworkHandler, private val networkUtils: NetworkUtils) {
+class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
+    private val clientTestPacketId = Mod.identifier("client_test")
+
     fun provideGear(source: ServerCommandSource) {
         val entity = source.player
         val armor = listOf(ItemStack(Items.NETHERITE_HELMET), ItemStack(Items.NETHERITE_CHESTPLATE), ItemStack(Items.NETHERITE_LEGGINGS), ItemStack(Items.NETHERITE_BOOTS))
@@ -84,10 +97,6 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler, private va
         spawner.tryPlacement(10)
     }
 
-    fun testClient(source: ServerCommandSource) {
-        networkUtils.testClient(source.world, source.position)
-    }
-
     fun lichSummon(source: ServerCommandSource) {
         Entities.killCounter.trySummonLich(source.player, source.world)
     }
@@ -127,5 +136,30 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler, private va
     fun obsidilithDeath(source: ServerCommandSource){
         val entity = source.player
         ObsidilithUtils.onDeath(entity, 100)
+    }
+
+    @Environment(EnvType.CLIENT)
+    fun registerClientHandlers(){
+        ClientPlayNetworking.registerGlobalReceiver(clientTestPacketId) { client, _, _, _ ->
+            testClientCallback(client)
+        }
+    }
+
+    fun testClient(source: ServerCommandSource) {
+        val packetData = PacketByteBuf(Unpooled.buffer())
+        PlayerLookup.around(source.world, source.position, 100.0).forEach {
+            ServerPlayNetworking.send(it, clientTestPacketId, packetData)
+        }
+    }
+
+    @Environment(EnvType.CLIENT)
+    private fun testClientCallback(client: MinecraftClient) {
+        val player = client.player ?: return
+        for(i in 0..10) {
+            val startingRotation = Random.nextInt(360)
+            ClientParticleBuilder(Particles.EYE)
+                .continuousPosition { player.pos.add(VecUtils.yAxis.multiply(i * 0.2)).add(VecUtils.xAxis.rotateY(Math.toRadians((it.getAge() * 2 + startingRotation).toDouble()).toFloat())) }
+                .build(player.pos.add(VecUtils.yAxis.multiply(i * 0.2)).add(VecUtils.xAxis.rotateY(Math.toRadians(startingRotation.toDouble()).toFloat())))
+        }
     }
 }

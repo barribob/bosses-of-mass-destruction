@@ -137,10 +137,9 @@ object Entities {
             val obsidilithRenderer = SimpleLivingGeoRenderer(
                 entityRenderDispatcher,
                 modelProvider,
-                renderer = armorRenderer,
+                renderer = CompositeRenderer(armorRenderer, runeColorHandler),
                 renderWithModel = armorRenderer,
                 iBoneLight = runeColorHandler,
-                renderData = runeColorHandler,
                 deathRotation = false
             )
             obsidilithRenderer

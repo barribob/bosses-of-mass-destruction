@@ -15,6 +15,7 @@ import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.data.DataTracker
 import net.minecraft.entity.data.TrackedData
 import net.minecraft.entity.data.TrackedDataHandlerRegistry
+import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
 import net.minecraft.util.math.Vec3d
 
@@ -22,7 +23,8 @@ class SwirlPunchAction(
     val entity: GauntletEntity,
     val eventScheduler: EventScheduler,
     private val mobConfig: GauntletConfig,
-    private val cancelAction: () -> Boolean
+    private val cancelAction: () -> Boolean,
+    private val serverWorld: ServerWorld
 ) : IActionWithCooldown {
     private var previousSpeed = 0.0
 
@@ -35,7 +37,7 @@ class SwirlPunchAction(
         val closeFistAnimationTime = 7
 
         entity.addVelocity(0.0, 0.7, 0.0)
-        entity.world.playSound(
+        serverWorld.playSound(
             entity.pos,
             Mod.sounds.gauntletSpinPunch,
             SoundCategory.HOSTILE,

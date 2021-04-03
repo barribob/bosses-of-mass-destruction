@@ -35,8 +35,7 @@ object ModUtils {
             0.0
         )
 
-    // Todo: make this serverworld
-    fun World.playSound(
+    fun ServerWorld.playSound(
         pos: Vec3d,
         soundEvent: SoundEvent,
         soundCategory: SoundCategory,
@@ -45,7 +44,7 @@ object ModUtils {
         range: Double = if (volume > 1.0f) (16.0f * volume).toDouble() else 16.0,
         playerEntity: PlayerEntity? = null,
     ) =
-        this.server!!.playerManager.sendToAround(
+        this.server.playerManager.sendToAround(
             playerEntity,
             pos.x,
             pos.y,

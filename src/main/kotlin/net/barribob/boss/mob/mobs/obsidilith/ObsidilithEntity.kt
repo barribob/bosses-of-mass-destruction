@@ -69,7 +69,7 @@ class ObsidilithEntity(
     init {
         ignoreCameraFrustum = true
 
-        if (!world.isClient) {
+        if (!world.isClient && world is ServerWorld) {
             goalSelector.add(1, buildAttackGoal())
 
             targetSelector.add(2, FindTargetGoal(this, PlayerEntity::class.java, { boundingBox.expand(it) }))

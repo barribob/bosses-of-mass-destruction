@@ -24,7 +24,6 @@ class SimpleLivingGeoRenderer<T>(
     private val brightness: IRenderLight<T>? = null,
     private val iBoneLight: IBoneLight? = null,
     private val renderer: IRenderer<T>? = null,
-    private val renderData: IRenderDataProvider<T>? = null, // Todo: this is unnecessary with IRenderer<T>
     private val renderWithModel: IRendererWithModel? = null,
     private val overlayOverride: IOverlayOverride? = null,
     private val deathRotation: Boolean = true
@@ -60,7 +59,6 @@ class SimpleLivingGeoRenderer<T>(
         vertexConsumers: VertexConsumerProvider,
         light: Int,
     ) {
-        renderData?.provide(entity, tickDelta)
         renderer?.render(entity, yaw, tickDelta, matrices, vertexConsumers, light)
         matrices.push()
         super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light)
