@@ -24,10 +24,30 @@
       ]
     },
     {
-      "rolls": {
-        "min": 2,
-        "max": 3
-      },
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:diamond",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 4,
+                "max": 6
+              }
+            }
+          ]
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:killed_by_player"
+        }
+      ]
+    },
+    {
+      "rolls": 3,
       "entries": [
         {
           "type": "minecraft:item",
@@ -35,10 +55,7 @@
           "functions": [
             {
               "function": "minecraft:enchant_with_levels",
-              "levels": {
-                "min": 25,
-                "max": 30
-              },
+              "levels": 30,
               "treasure": true
             }
           ]

@@ -56,7 +56,9 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
         val food = ItemStack(Items.COOKED_PORKCHOP, 64)
         val shield = ItemStack(Items.SHIELD)
         shield.addEnchantment(Enchantments.UNBREAKING, 3)
-        listOf(sword, bow, apples, food, arrow, shield).forEach { entity.giveItemStack(it) }
+        val pickaxe = ItemStack(Items.NETHERITE_PICKAXE)
+        pickaxe.addEnchantment(Enchantments.EFFICIENCY, 4)
+        listOf(sword, bow, apples, food, arrow, shield, pickaxe).forEach { entity.giveItemStack(it) }
         armor.forEach { entity.giveItemStack(it) }
     }
 
