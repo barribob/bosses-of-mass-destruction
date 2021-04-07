@@ -16,6 +16,7 @@ class MobEntitySpawnPredicate(private val worldView: WorldView) : ISpawnPredicat
         val blockPos = BlockPos(pos)
         val blockState = worldView.getBlockState(blockPos)
         val fluidState = worldView.getFluidState(blockPos)
+        entity.updatePosition(pos.x, pos.y, pos.z)
 
         return !worldView.containsFluid(entity.boundingBox) &&
                 worldView.intersectsEntities(entity) &&
