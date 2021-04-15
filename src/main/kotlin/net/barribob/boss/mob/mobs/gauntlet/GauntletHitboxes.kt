@@ -1,6 +1,7 @@
 package net.barribob.boss.mob.mobs.gauntlet
 
 import io.github.stuff_stuffs.multipart_entities.common.entity.EntityBounds
+import net.barribob.boss.Mod
 import net.barribob.boss.mob.damage.IDamageHandler
 import net.barribob.boss.utils.ModUtils.randomPitch
 import net.barribob.boss.utils.NetworkUtils.Companion.changeHitbox
@@ -9,7 +10,6 @@ import net.barribob.maelstrom.static_utilities.eyePos
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.damage.DamageSource
-import net.minecraft.sound.SoundEvents
 import net.minecraft.util.math.Box
 import net.minecraft.util.math.Vec3d
 
@@ -115,7 +115,7 @@ class GauntletHitboxes(val entity: GauntletEntity) : IDamageHandler {
                 entity.takeKnockback(0.5f, actor.x - entity.getX(), actor.z - entity.getZ())
             }
         }
-        entity.playSound(SoundEvents.ENTITY_BLAZE_HURT, 1.0f, actor.random.randomPitch())
+        entity.playSound(Mod.sounds.gauntletClink, 1.0f, actor.random.randomPitch())
 
         return false
     }

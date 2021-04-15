@@ -53,7 +53,6 @@ import net.minecraft.nbt.StringNbtReader
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvent
-import net.minecraft.sound.SoundEvents
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
@@ -242,7 +241,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
     private fun playVolleyShootSound() = playSound(Mod.sounds.missileShoot, 3.0f)
     private fun playVolleyPrepareSound() = playSound(Mod.sounds.missilePrepare, 4.0f)
     private fun playBeginTeleportSound() = playSound(Mod.sounds.teleportPrepare, 3.0f)
-    private fun playTeleportSound() = playSound(SoundEvents.ENTITY_ILLUSIONER_MIRROR_MOVE, 2.0f)
+    private fun playTeleportSound() = playSound(Mod.sounds.lichTeleport, 2.0f)
     private fun playRageBeginSound() = playSound(Mod.sounds.ragePrepare, 1.0f)
     private fun playMinionRuneSound(pos: Vec3d) =
         serverWorld?.playSound(pos, Mod.sounds.minionRune, SoundCategory.HOSTILE, 1.0f, range = 64.0)
@@ -794,8 +793,8 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
         super.onDeath(source)
     }
 
-    override fun getHurtSound(source: DamageSource): SoundEvent = SoundEvents.ENTITY_WITHER_SKELETON_HURT
-    override fun getDeathSound(): SoundEvent = SoundEvents.ENTITY_WITHER_SKELETON_DEATH
+    override fun getHurtSound(source: DamageSource) = Mod.sounds.lichHurt
+    override fun getDeathSound(): SoundEvent = Mod.sounds.lichDeath
     override fun getSoundVolume(): Float = 5.0f
 
     override fun fall(

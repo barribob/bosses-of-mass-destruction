@@ -1,5 +1,6 @@
 package net.barribob.boss.projectile
 
+import net.barribob.boss.Mod
 import net.barribob.boss.mob.Entities
 import net.barribob.boss.projectile.util.ExemptEntities
 import net.minecraft.entity.EntityType
@@ -7,7 +8,6 @@ import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity
-import net.minecraft.sound.SoundEvents
 import net.minecraft.util.hit.BlockHitResult
 import net.minecraft.util.hit.EntityHitResult
 import net.minecraft.world.World
@@ -50,7 +50,7 @@ class MagicMissileProjectile : BaseThrownItemEntity {
 
     override fun onBlockHit(blockHitResult: BlockHitResult?) {
         super.onBlockHit(blockHitResult)
-        playSound(SoundEvents.BLOCK_BASALT_BREAK, 1.0f, 1.0f)
+        playSound(Mod.sounds.blueFireballLand, 1.0f, 1.0f)
         remove()
     }
 }

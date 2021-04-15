@@ -1,5 +1,6 @@
 package net.barribob.boss.mob.mobs.gauntlet
 
+import net.barribob.boss.Mod
 import net.barribob.boss.config.GauntletConfig
 import net.barribob.boss.mob.ai.action.IActionWithCooldown
 import net.barribob.boss.utils.ModUtils.playSound
@@ -15,7 +16,6 @@ import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
-import net.minecraft.sound.SoundEvents
 import net.minecraft.util.math.Vec3d
 
 class PunchAction(
@@ -37,7 +37,7 @@ class PunchAction(
         eventScheduler.addEvent(TimedEvent({
             serverWorld.playSound(
                 entity.pos,
-                SoundEvents.ENTITY_BLAZE_HURT,
+                Mod.sounds.gauntletClink,
                 SoundCategory.HOSTILE,
                 2.0f,
                 pitch = entity.random.randomPitch() * 0.8f

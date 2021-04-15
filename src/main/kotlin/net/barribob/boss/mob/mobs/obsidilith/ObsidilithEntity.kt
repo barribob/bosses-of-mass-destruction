@@ -154,8 +154,8 @@ class ObsidilithEntity(
         dataTracker.startTracking(ObsidilithUtils.isShielded, false)
     }
 
-    override fun getHurtSound(source: DamageSource?): SoundEvent = SoundEvents.BLOCK_BASALT_HIT
-    override fun getDeathSound(): SoundEvent = SoundEvents.BLOCK_BASALT_HIT
+    override fun getHurtSound(source: DamageSource?) = Mod.sounds.obsidilithHurt
+    override fun getDeathSound(): SoundEvent = Mod.sounds.obsidilithDeath
 
     override fun registerControllers(data: AnimationData) {
         data.shouldPlayWhilePaused = true

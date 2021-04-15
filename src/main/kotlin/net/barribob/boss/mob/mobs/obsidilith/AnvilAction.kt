@@ -17,7 +17,6 @@ import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.mob.MobEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
-import net.minecraft.sound.SoundEvents
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 
@@ -41,7 +40,7 @@ class AnvilAction(private val actor: MobEntity, val explosionPower: Float) : IAc
             val teleportPos = targetPos.add(VecUtils.yAxis.multiply(24.0))
             val originalPos = actor.pos
             actor.refreshPositionAndAngles(teleportPos.x, teleportPos.y, teleportPos.z, actor.yaw, actor.pitch)
-            serverWorld.playSound(teleportPos, SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.HOSTILE, 3.0f, range = 64.0)
+            serverWorld.playSound(teleportPos, Mod.sounds.obsidilithTeleport, SoundCategory.HOSTILE, 3.0f, range = 64.0)
 
             for(pos in circlePoints) {
                 val particlePos = actor.world.findGroundBelow(BlockPos(pos.add(targetPos)).up(3)).up()
@@ -63,7 +62,7 @@ class AnvilAction(private val actor: MobEntity, val explosionPower: Float) : IAc
                 )
                 eventScheduler.addEvent(TimedEvent({
                     actor.refreshPositionAndAngles(originalPos.x, originalPos.y, originalPos.z, actor.yaw, actor.pitch)
-                    serverWorld.playSound(actor.pos, SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.HOSTILE, 1.0f, range = 64.0)
+                    serverWorld.playSound(actor.pos, Mod.sounds.obsidilithTeleport, SoundCategory.HOSTILE, 1.0f, range = 64.0)
                 }, 20, shouldCancel = { !actor.isAlive}))
             }, shouldCancel = shouldCancelLand))
 

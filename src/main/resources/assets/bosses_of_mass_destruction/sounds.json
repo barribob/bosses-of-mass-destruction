@@ -118,5 +118,91 @@
     "sounds": [
       "bosses_of_mass_destruction:gauntlet_death"
     ]
+  },
+  "gauntlet_clink": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.gauntlet_clink",
+    "category": "hostile",
+    "sounds": [
+      "mob/blaze/hit1",
+      "mob/blaze/hit2",
+      "mob/blaze/hit3",
+      "mob/blaze/hit4"
+    ]
+  },
+  "lich_death": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.lich_death",
+    "category": "hostile",
+    "sounds": [
+      "mob/wither_skeleton/death1",
+      "mob/wither_skeleton/death2"
+    ]
+  },
+  "lich_hurt": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.lich_hurt",
+    "category": "hostile",
+    "sounds": [
+      "mob/wither_skeleton/hurt1",
+      "mob/wither_skeleton/hurt2",
+      "mob/wither_skeleton/hurt3",
+      "mob/wither_skeleton/hurt4"
+    ]
+  },
+  "lich_teleport": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.lich_teleport",
+    "category": "hostile",
+    "sounds": [
+      "mob/illusion_illager/mirror_move1",
+      "mob/illusion_illager/mirror_move2"
+    ]
+  },
+  "blue_fireball_land": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.blue_fireball_land",
+    "category": "hostile",
+    "sounds": [
+      "block/basalt/break1",
+      "block/basalt/break2",
+      "block/basalt/break3",
+      "block/basalt/break4",
+      "block/basalt/break5"
+    ]
+  },
+  "obsidilith_teleport": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.obsidilith_teleport",
+    "category": "hostile",
+    "sounds": [
+      "mob/endermen/portal",
+      "mob/endermen/portal2"
+    ]
+  },
+  "obsidilith_death": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.obsidilith_death",
+    "category": "hostile",
+    "sounds": [
+      "block/basalt/step1",
+      "block/basalt/step2",
+      "block/basalt/step3",
+      "block/basalt/step4",
+      "block/basalt/step5",
+      "block/basalt/step6"
+    ]
+  },
+  "obsidilith_hurt": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.obsidilith_hurt",
+    "category": "hostile",
+    "sounds": [
+      "block/basalt/step1",
+      "block/basalt/step2",
+      "block/basalt/step3",
+      "block/basalt/step4",
+      "block/basalt/step5",
+      "block/basalt/step6"
+    ]
+  },
+  "obsidilith_wave": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.obsidilith_wave",
+    "category": "hostile",
+    "sounds": [
+      "mob/ghast/fireball4"
+    ]
   }
 }
