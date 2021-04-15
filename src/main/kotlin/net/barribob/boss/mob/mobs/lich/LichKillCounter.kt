@@ -48,7 +48,7 @@ class LichKillCounter(
         }
     }
 
-    fun onEntitiesKilledUpdate(
+    private fun onEntitiesKilledUpdate(
         entitiesKilled: Int,
         player: ServerPlayerEntity,
         sWorld: ServerWorld
@@ -71,24 +71,22 @@ class LichKillCounter(
             )
         }
 
-    fun trySummonLich(playerEntity: ServerPlayerEntity, sWorld: ServerWorld) {
+    private fun trySummonLich(playerEntity: ServerPlayerEntity, sWorld: ServerWorld) {
         if (sWorld.registryManager.dimensionTypes.getOrThrow(DimensionType.OVERWORLD_REGISTRY_KEY) == sWorld.dimension) {
-            eventScheduler.getWorldEventScheduler(sWorld).addEvent(TimedEvent({
-                val spawnPos =
-                    sWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, BlockPos(playerEntity.pos)).up(5).asVec3d()
+            val spawnPos =
+                sWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, BlockPos(playerEntity.pos)).up(5).asVec3d()
 
-                val compoundTag = CompoundTag()
-                compoundTag.putString("id", Mod.identifier("lich").toString())
+            val compoundTag = CompoundTag()
+            compoundTag.putString("id", Mod.identifier("lich").toString())
 
-                val spawned = MobPlacementLogic(
-                    RangedSpawnPosition(spawnPos, 2.0, 10.0, ModRandom()),
-                    CompoundTagEntityProvider(compoundTag, sWorld, Mod.LOGGER),
-                    MobEntitySpawnPredicate(sWorld),
-                    SimpleMobSpawner(sWorld)
-                ).tryPlacement(100)
+            val spawned = MobPlacementLogic(
+                RangedSpawnPosition(spawnPos, 2.0, 10.0, ModRandom()),
+                CompoundTagEntityProvider(compoundTag, sWorld, Mod.LOGGER),
+                MobEntitySpawnPredicate(sWorld),
+                SimpleMobSpawner(sWorld)
+            ).tryPlacement(100)
 
-                if (spawned) summonCounter.increment(playerEntity)
-            }, 100))
+            if (spawned) summonCounter.increment(playerEntity)
         }
     }
 

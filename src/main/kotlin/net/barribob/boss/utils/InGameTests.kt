@@ -3,7 +3,6 @@ package net.barribob.boss.utils
 import io.netty.buffer.Unpooled
 import net.barribob.boss.Mod
 import net.barribob.boss.cardinalComponents.ModComponents
-import net.barribob.boss.mob.Entities
 import net.barribob.boss.mob.mobs.obsidilith.BurstAction
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithUtils
 import net.barribob.boss.mob.mobs.obsidilith.PillarAction
@@ -11,10 +10,12 @@ import net.barribob.boss.mob.spawn.*
 import net.barribob.boss.particle.ClientParticleBuilder
 import net.barribob.boss.particle.Particles
 import net.barribob.boss.projectile.MagicMissileProjectile
+import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.general.random.ModRandom
 import net.barribob.maelstrom.static_utilities.DebugPointsNetworkHandler
 import net.barribob.maelstrom.static_utilities.MathUtils
 import net.barribob.maelstrom.static_utilities.VecUtils
+import net.barribob.maelstrom.static_utilities.setPos
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking
@@ -24,6 +25,7 @@ import net.minecraft.client.MinecraftClient
 import net.minecraft.enchantment.Enchantments
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.LivingEntity
+import net.minecraft.entity.damage.DamageSource
 import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
 import net.minecraft.nbt.CompoundTag
@@ -99,16 +101,6 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
         spawner.tryPlacement(10)
     }
 
-    fun lichSummon(source: ServerCommandSource) {
-        Entities.killCounter.trySummonLich(source.player, source.world)
-    }
-
-    var calls = 0
-    fun lichCounter(source: ServerCommandSource) {
-        Entities.killCounter.onEntitiesKilledUpdate(calls, source.player, source.world)
-        calls++
-    }
-
     fun burstAction(source: ServerCommandSource) {
         BurstAction(source.player).perform()
     }
@@ -163,5 +155,14 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
                 .continuousPosition { player.pos.add(VecUtils.yAxis.multiply(i * 0.2)).add(VecUtils.xAxis.rotateY(Math.toRadians((it.getAge() * 2 + startingRotation).toDouble()).toFloat())) }
                 .build(player.pos.add(VecUtils.yAxis.multiply(i * 0.2)).add(VecUtils.xAxis.rotateY(Math.toRadians(startingRotation.toDouble()).toFloat())))
         }
+    }
+
+    fun testLichSummon(source: ServerCommandSource) {
+        val zombie = EntityType.ZOMBIE.create(source.world) ?: return
+        zombie.setPos(source.player.pos.add(VecUtils.yAxis.multiply(-5.0)))
+        source.world.spawnEntity(zombie)
+        ModComponents.getWorldEventScheduler(source.world).addEvent(TimedEvent({
+            zombie.damage(DamageSource.player(source.player), 30f)
+        }, 2))
     }
 }
