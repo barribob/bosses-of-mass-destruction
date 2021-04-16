@@ -2,7 +2,6 @@ package net.barribob.boss.mob.mobs.lich
 
 import net.barribob.boss.Mod
 import net.barribob.boss.config.LichConfig
-import net.barribob.boss.mob.ai.BossVisibilityCache
 import net.barribob.boss.mob.ai.ValidatedTargetSelector
 import net.barribob.boss.mob.ai.VelocitySteering
 import net.barribob.boss.mob.ai.action.*
@@ -148,7 +147,6 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
     private val iEntity = EntityAdapter(this)
     private val serverWorld = if (world is ServerWorld) world else null
 
-    private val visibilityCache = BossVisibilityCache(this)
     override val damageHandler = CompositeDamageHandler(
         StagedDamageHandler(hpPercentRageModes) {
             priorityMoves.addAll(listOf(
@@ -262,8 +260,6 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
             )
         }
     }
-
-    override fun getVisibilityCache() = visibilityCache
 
     override fun registerControllers(data: AnimationData) {
         data.shouldPlayWhilePaused = true

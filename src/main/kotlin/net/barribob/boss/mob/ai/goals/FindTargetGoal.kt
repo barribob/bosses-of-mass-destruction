@@ -18,4 +18,8 @@ class FindTargetGoal<T : LivingEntity>(
     mob, targetClass, reciprocalChance, checkVisibility, checkCanNavigate, targetPredicate
 ) {
     override fun getSearchBox(distance: Double): Box = searchBoxProvider(distance)
+
+    init {
+        maxTimeWithoutVisibility = 200
+    }
 }

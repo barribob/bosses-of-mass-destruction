@@ -6,7 +6,6 @@ import io.github.stuff_stuffs.multipart_entities.common.util.CompoundOrientedBox
 import net.barribob.boss.Mod
 import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.config.GauntletConfig
-import net.barribob.boss.mob.ai.BossVisibilityCache
 import net.barribob.boss.mob.damage.CompositeDamageHandler
 import net.barribob.boss.mob.utils.*
 import net.barribob.boss.utils.ModUtils
@@ -35,7 +34,6 @@ class GauntletEntity(entityType: EntityType<out PathAwareEntity>, world: World, 
     val clientBlindnessHandler = GauntletBlindnessIndicatorParticles(this, preTickEvents)
     private val gauntletGoalHandler = GauntletGoalHandler(this, goalSelector, targetSelector, postTickEvents, mobConfig)
     private val animationHandler = GauntletAnimations(this)
-    private val visibilityCache = BossVisibilityCache(this)
     override val damageHandler = CompositeDamageHandler(hitboxHelper, gauntletGoalHandler)
     override val statusHandler = CompositeStatusHandler(animationHandler, laserHandler, clientBlindnessHandler)
     override val trackedDataHandler = CompositeTrackedDataHandler(laserHandler, energyShieldHandler)
@@ -92,6 +90,5 @@ class GauntletEntity(entityType: EntityType<out PathAwareEntity>, world: World, 
     override fun getHurtSound(source: DamageSource?) = Mod.sounds.gauntletHurt
     override fun getDeathSound() = Mod.sounds.gauntletDeath
     override fun getSoundVolume() = 2.0f
-    override fun getVisibilityCache() = visibilityCache
     override fun checkDespawn() = ModUtils.preventDespawnExceptPeaceful(this, world)
 }

@@ -4,7 +4,6 @@ import net.barribob.boss.Mod
 import net.barribob.boss.block.ModBlocks
 import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.config.ObsidilithConfig
-import net.barribob.boss.mob.ai.BossVisibilityCache
 import net.barribob.boss.mob.ai.action.CooldownAction
 import net.barribob.boss.mob.ai.goals.ActionGoal
 import net.barribob.boss.mob.ai.goals.FindTargetGoal
@@ -35,7 +34,6 @@ import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvent
-import net.minecraft.sound.SoundEvents
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
@@ -62,7 +60,6 @@ class ObsidilithEntity(
     private val effectHandler = ObsidilithEffectHandler(this, ModComponents.getWorldEventScheduler(world))
     override val damageHandler = CompositeDamageHandler(moveLogic, ShieldDamageHandler(::isShielded))
     private val activePillars = mutableSetOf<BlockPos>()
-    private val visibilityCache = BossVisibilityCache(this)
     private val iEntity = EntityAdapter(this)
     override val statusEffectHandler = StatusImmunity(StatusEffects.WITHER, StatusEffects.POISON)
 
@@ -146,8 +143,6 @@ class ObsidilithEntity(
         }
         super.handleStatus(status)
     }
-
-    override fun getVisibilityCache() = visibilityCache
 
     override fun initDataTracker() {
         super.initDataTracker()
