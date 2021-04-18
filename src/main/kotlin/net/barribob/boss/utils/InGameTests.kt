@@ -21,6 +21,7 @@ import net.fabricmc.api.Environment
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking
+import net.minecraft.block.Blocks
 import net.minecraft.client.MinecraftClient
 import net.minecraft.enchantment.Enchantments
 import net.minecraft.entity.EntityType
@@ -32,8 +33,10 @@ import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.PacketByteBuf
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.server.world.ServerWorld
+import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.util.registry.Registry
+import net.minecraft.world.World
 import kotlin.random.Random
 
 class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
@@ -157,9 +160,11 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
         }
     }
 
-    fun testLichSummon(source: ServerCommandSource) {
+    fun killZombies(source: ServerCommandSource) {
         val zombie = EntityType.ZOMBIE.create(source.world) ?: return
-        zombie.setPos(source.player.pos.add(VecUtils.yAxis.multiply(-5.0)))
+        val pos = source.player.pos.add(VecUtils.yAxis.multiply(-5.0))
+        zombie.setPos(pos)
+        if(source.world.getBlockState(BlockPos(pos).up()).block != Blocks.LAVA.defaultState) source.world.setBlockState(BlockPos(pos).up(), Blocks.LAVA.defaultState)
         source.world.spawnEntity(zombie)
         ModComponents.getWorldEventScheduler(source.world).addEvent(TimedEvent({
             zombie.damage(DamageSource.player(source.player), 30f)
