@@ -404,7 +404,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
                 playBeginTeleportSound()
                 collides = false
                 preTickEvents.addEvent(TimedEvent({
-                    entity.refreshPositionAndAngles(pos.x, pos.y, pos.z, yaw, pitch)
+                    entity.requestTeleport(pos.x, pos.y, pos.z)
                     world.sendEntityStatus(this, successfulTeleportStatus)
                     playTeleportSound()
                     collides = true
