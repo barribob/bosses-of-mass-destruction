@@ -63,7 +63,7 @@ object Entities {
         { type, world -> GauntletEntity(type, world, mobConfig.gauntletConfig) },
         { it.fireImmune().dimensions(EntityDimensions.fixed(5.0f, 4.0f)) })
 
-    val killCounter = LichKillCounter(mobConfig.lichConfig.summonMechanic, ModComponents, ModComponents)
+    private val killCounter = LichKillCounter(mobConfig.lichConfig.summonMechanic, ModComponents, ModComponents)
 
     private fun <T : Entity> registerConfiguredMob(
         name: String,
@@ -111,17 +111,19 @@ object Entities {
         val pauseSecondTimer = PauseAnimationTimer({ GlfwUtil.getTime() }, { MinecraftClient.getInstance().isPaused })
 
         EntityRendererRegistry.INSTANCE.register(LICH) { entityRenderDispatcher, _ ->
+            val texture = Mod.identifier("textures/entity/lich.png")
             SimpleLivingGeoRenderer(
                 entityRenderDispatcher, GeoModel(
                     Mod.identifier("geo/lich.geo.json"),
-                    { Mod.identifier("textures/entity/lich.png") },
+                    { texture },
                     Mod.identifier("animations/lich.animation.json"),
                     animationTimer,
                     LichCodeAnimations()
                 ),
                 BoundedLighting(5),
                 LichBoneLight(),
-                EternalNightRenderer()
+                EternalNightRenderer(),
+                renderLayer = RenderLayer.getEntityCutoutNoCull(texture)
             )
         }
 

@@ -26,9 +26,31 @@ class SimpleLivingGeoRenderer<T>(
     private val renderer: IRenderer<T>? = null,
     private val renderWithModel: IRendererWithModel? = null,
     private val overlayOverride: IOverlayOverride? = null,
+    private val renderLayer: RenderLayer? = null,
     private val deathRotation: Boolean = true
     ) : GeoEntityRenderer<T>(renderManager, modelProvider) where T : IAnimatable, T : LivingEntity {
     private val renderHelper = GeoRenderer(modelProvider, ::getTexture, this)
+
+    override fun getRenderType(
+        animatable: T,
+        partialTicks: Float,
+        stack: MatrixStack?,
+        renderTypeBuffer: VertexConsumerProvider?,
+        vertexBuilder: VertexConsumer?,
+        packedLightIn: Int,
+        textureLocation: Identifier?
+    ): RenderLayer {
+        return renderLayer
+            ?: renderHelper.getRenderType(
+                animatable,
+                partialTicks,
+                stack,
+                renderTypeBuffer,
+                vertexBuilder,
+                packedLightIn,
+                textureLocation
+            )
+    }
 
     override fun getBlockLight(entity: T, blockPos: BlockPos): Int {
         return brightness?.getBlockLight(entity, blockPos) ?: super.getBlockLight(entity, blockPos)
