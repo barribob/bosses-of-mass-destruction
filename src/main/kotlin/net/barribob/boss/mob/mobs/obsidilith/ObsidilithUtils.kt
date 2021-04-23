@@ -1,7 +1,6 @@
 package net.barribob.boss.mob.mobs.obsidilith
 
 import net.barribob.boss.Mod
-import net.barribob.boss.block.ModBlocks
 import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.mob.Entities.OBSIDILITH
 import net.barribob.boss.render.NodeBossBarRenderer
@@ -47,23 +46,6 @@ object ObsidilithUtils {
             .map { it.subtract(currentPos).planeProject(VecUtils.yAxis) }
             .reduce { acc, vec3d -> acc.add(vec3d) }
             .multiply(-0.5).add(currentPos)
-    }
-
-    fun placeObsidianBelow(entity: LivingEntity) {
-        if (entity.isOnGround) {
-            val down = entity.blockPos.down()
-            for (x in -1..1) {
-                for (z in -1..1) {
-                    if (entity.random.nextInt(200) == 0) {
-                        val blockPos = BlockPos(x, 0, z).add(down)
-                        val block = entity.world.getBlockState(blockPos).block
-                        if (block != Blocks.OBSIDIAN && block != ModBlocks.obsidilithRune) {
-                            entity.world.setBlockState(blockPos, Blocks.OBSIDIAN.defaultState)
-                        }
-                    }
-                }
-            }
-        }
     }
 
     fun onDeath(actor: LivingEntity, experienceDrop: Int) {

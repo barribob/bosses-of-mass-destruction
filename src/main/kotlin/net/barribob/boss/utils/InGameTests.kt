@@ -36,7 +36,6 @@ import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.util.registry.Registry
-import net.minecraft.world.World
 import kotlin.random.Random
 
 class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
@@ -123,11 +122,6 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
     fun placePillars(source: ServerCommandSource) {
         val entity = source.player
         PillarAction(entity).perform()
-    }
-
-    fun placeObsidian(source: ServerCommandSource){
-        val entity = source.player
-        ObsidilithUtils.placeObsidianBelow(entity)
     }
 
     fun obsidilithDeath(source: ServerCommandSource){

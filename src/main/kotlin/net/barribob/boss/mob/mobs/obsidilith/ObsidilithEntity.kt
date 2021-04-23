@@ -114,8 +114,6 @@ class ObsidilithEntity(
                 }
             }
         }
-
-        ObsidilithUtils.placeObsidianBelow(this)
     }
 
     override fun isCollidable(): Boolean = true
