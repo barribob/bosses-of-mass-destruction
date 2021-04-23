@@ -4,14 +4,14 @@ class PauseAnimationTimer(val sysTimeProvider: () -> Double, val isPaused: () ->
     private var pauseTime = 0.0
     private var pauseStart = 0.0
 
-    override fun getCurrentTick(): Float {
+    override fun getCurrentTick(): Double {
         val sysTime = sysTimeProvider()
 
         if (isPaused()) {
             if (pauseStart == 0.0) {
                 pauseStart = sysTime
             }
-            return (pauseStart - pauseTime).toFloat()
+            return (pauseStart - pauseTime)
 
         } else if (pauseStart != 0.0) {
             val timeElapsed = sysTime - pauseStart
@@ -19,6 +19,6 @@ class PauseAnimationTimer(val sysTimeProvider: () -> Double, val isPaused: () ->
             pauseStart = 0.0
         }
 
-        return (sysTime - pauseTime).toFloat()
+        return (sysTime - pauseTime)
     }
 }

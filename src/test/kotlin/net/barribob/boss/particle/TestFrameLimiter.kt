@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 class TestFrameLimiter {
     @Test
     fun canDoFrame_WhenFrameDeltaTooSmall_ReturnFalse() {
-        val time = 0.24f
+        val time = 0.24
         val timer = StubAnimationTimer { time }
         val limiter = createFrameLimiter(timer)
 
@@ -17,7 +17,7 @@ class TestFrameLimiter {
 
     @Test
     fun canDoFrame_WhenFrameDeltaLarge_ReturnsTrue() {
-        val time = 0.26f
+        val time = 0.26
         val timer = StubAnimationTimer { time }
         val limiter = createFrameLimiter(timer)
 
@@ -26,14 +26,14 @@ class TestFrameLimiter {
 
     @Test
     fun canDoFrame_AfterManySmallIncrements() {
-        var time = 0.2f
+        var time = 0.2
         val timer = StubAnimationTimer { time }
         val limiter = createFrameLimiter(timer)
 
         val firstTime = limiter.canDoFrame()
-        time = 0.3f
+        time = 0.3
         val secondTime = limiter.canDoFrame()
-        time = 0.4f
+        time = 0.4
         val thirdTime = limiter.canDoFrame()
 
         Assertions.assertFalse(firstTime)
@@ -43,7 +43,7 @@ class TestFrameLimiter {
 
     private fun createFrameLimiter(timer: IAnimationTimer): FrameLimiter = FrameLimiter(4f, timer)
 
-    private class StubAnimationTimer(val time: () -> Float): IAnimationTimer {
-        override fun getCurrentTick(): Float = time()
+    private class StubAnimationTimer(val time: () -> Double): IAnimationTimer {
+        override fun getCurrentTick(): Double = time()
     }
 }

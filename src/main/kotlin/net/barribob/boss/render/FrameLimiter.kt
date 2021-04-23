@@ -4,7 +4,7 @@ import net.barribob.boss.animation.IAnimationTimer
 
 class FrameLimiter(framesPerUnit: Float, private val timer: IAnimationTimer) {
     private val minimumFrameDelta = 1 / framesPerUnit
-    var previousTime = 0f
+    var previousTime = 0.0
 
     fun canDoFrame(): Boolean {
         val currentTick = timer.getCurrentTick()
