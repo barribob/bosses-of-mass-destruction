@@ -11,7 +11,7 @@ class TestPauseAnimationTimer {
 
         val actualTime = timer.getCurrentTick()
 
-        Assertions.assertEquals(10.0f, actualTime)
+        Assertions.assertEquals(10.0, actualTime)
     }
 
     @Test
@@ -23,7 +23,7 @@ class TestPauseAnimationTimer {
         timer.getCurrentTick()
         time = 11.0
 
-        Assertions.assertEquals(10.0f, timer.getCurrentTick())
+        Assertions.assertEquals(10.0, timer.getCurrentTick())
     }
 
     @Test
@@ -39,6 +39,6 @@ class TestPauseAnimationTimer {
         timer.getCurrentTick()
         time = 13.0
 
-        Assertions.assertEquals(11.0f, timer.getCurrentTick())
+        Assertions.assertEquals(11.0, timer.getCurrentTick())
     }
 }
