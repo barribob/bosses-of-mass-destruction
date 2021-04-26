@@ -15,7 +15,8 @@ class EternalNightRenderer: IRenderer<LichEntity> {
         light: Int,
     ) {
         val world = entity.world
-        if (entity.shouldSetToNighttime && world is ClientWorld) {
+        val isAddedToWorld = world.getEntityById(entity.entityId) != null
+        if (entity.shouldSetToNighttime && world is ClientWorld && isAddedToWorld) {
             world.timeOfDay = LichUtils.timeToNighttime(world.timeOfDay)
         }
     }
