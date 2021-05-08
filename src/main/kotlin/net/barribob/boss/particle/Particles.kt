@@ -133,6 +133,7 @@ object Particles {
             SimpleParticleFactory(provider) {
                 val particle = SimpleParticle(it, RandomUtils.range(15, 20), VanillaCopies::buildBillboardGeometry)
                 particle.setColorOverride { ModColors.COMET_BLUE }
+                particle.setBrightnessOverride { FULL_BRIGHT }
                 particle
             }
         }

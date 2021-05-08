@@ -204,5 +204,12 @@
     "sounds": [
       "mob/ghast/fireball4"
     ]
+  },
+  "soul_star": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.soul_star",
+    "category": "neutral",
+    "sounds": [
+      "bosses_of_mass_destruction:soul_star"
+    ]
   }
 }

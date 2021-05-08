@@ -3,8 +3,8 @@ package net.barribob.boss.mob
 import me.sargunvohra.mcmods.autoconfig1u.AutoConfig
 import net.barribob.boss.Mod
 import net.barribob.boss.animation.PauseAnimationTimer
-import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.config.ModConfig
+import net.barribob.boss.item.SoulStarEntity
 import net.barribob.boss.mob.mobs.gauntlet.*
 import net.barribob.boss.mob.mobs.lich.*
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithArmorRenderer
@@ -24,11 +24,9 @@ import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityCombatEvents
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.render.RenderLayer
+import net.minecraft.client.render.entity.FlyingItemEntityRenderer
 import net.minecraft.client.util.GlfwUtil
-import net.minecraft.entity.Entity
-import net.minecraft.entity.EntityDimensions
-import net.minecraft.entity.EntityType
-import net.minecraft.entity.SpawnGroup
+import net.minecraft.entity.*
 import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.entity.mob.HostileEntity
 import net.minecraft.util.registry.Registry
@@ -55,6 +53,13 @@ object Entities {
             .dimensions(EntityDimensions.fixed(0.25f, 0.25f)).build()
     )
 
+    val SOUL_STAR: EntityType<SoulStarEntity> = Registry.register(
+        Registry.ENTITY_TYPE,
+        Mod.identifier("soul_star"),
+        FabricEntityTypeBuilder.create(SpawnGroup.MISC, ::SoulStarEntity)
+            .dimensions(EntityDimensions.fixed(0.25f, 0.25f)).build()
+    )
+
     val OBSIDILITH: EntityType<ObsidilithEntity> = registerConfiguredMob("obsidilith",
         { type, world -> ObsidilithEntity(type, world, mobConfig.obsidilithConfig) },
         { it.fireImmune().dimensions(EntityDimensions.fixed(2.0f, 4.4f)) })
@@ -63,7 +68,7 @@ object Entities {
         { type, world -> GauntletEntity(type, world, mobConfig.gauntletConfig) },
         { it.fireImmune().dimensions(EntityDimensions.fixed(5.0f, 4.0f)) })
 
-    private val killCounter = LichKillCounter(mobConfig.lichConfig.summonMechanic, ModComponents, ModComponents)
+    private val killCounter = LichKillCounter(mobConfig.lichConfig.summonMechanic)
 
     private fun <T : Entity> registerConfiguredMob(
         name: String,
@@ -163,6 +168,10 @@ object Entities {
                 { missileTexture },
                 FullRenderLight()
             )
+        }
+
+        EntityRendererRegistry.INSTANCE.register(SOUL_STAR) { entityRenderDispatcher, context ->
+            FlyingItemEntityRenderer<SoulStarEntity>(entityRenderDispatcher, context.itemRenderer, 1.0f, true)
         }
 
         EntityRendererRegistry.INSTANCE.register(COMET) { entityRenderDispatcher, _ ->

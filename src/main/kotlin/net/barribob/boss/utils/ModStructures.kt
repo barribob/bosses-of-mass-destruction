@@ -3,10 +3,7 @@ package net.barribob.boss.utils
 import me.sargunvohra.mcmods.autoconfig1u.AutoConfig
 import net.barribob.boss.Mod
 import net.barribob.boss.config.ModConfig
-import net.barribob.boss.structure.GauntletArenaStructureFeature
-import net.barribob.boss.structure.IStructureSpawns
-import net.barribob.boss.structure.ModPiece
-import net.barribob.boss.structure.ObsidilithArenaStructureFeature
+import net.barribob.boss.structure.*
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors
 import net.fabricmc.fabric.api.structure.v1.FabricStructureBuilder
@@ -46,6 +43,14 @@ object ModStructures {
     private val gauntletArenaStructure = GauntletArenaStructureFeature(DefaultFeatureConfig.CODEC)
     private val configuredGauntletStructure = gauntletArenaStructure.configure(DefaultFeatureConfig.DEFAULT)
 
+    val lichTowerPiece: StructurePieceType = Registry.register(
+        Registry.STRUCTURE_PIECE,
+        Mod.identifier("lich_tower_piece"),
+        StructureFactories.lichTower
+    )
+    val lichTowerStructure = LichTowerStructureFeature(DefaultFeatureConfig.CODEC)
+    private val configuredLichTowerStructure = lichTowerStructure.configure(DefaultFeatureConfig.DEFAULT)
+
     private val emptyStructureSpawn = IStructureSpawns { listOf() }
     private val structureSpawnRegistry: Map<StructureFeature<*>, IStructureSpawns> = mapOf(
         Pair(obsidilithArenaStructure, emptyStructureSpawn),
@@ -70,6 +75,14 @@ object ModStructures {
             )
             .register()
 
+        FabricStructureBuilder.create(Mod.identifier("lich_tower"), lichTowerStructure)
+            .step(GenerationStep.Feature.SURFACE_STRUCTURES)
+            .defaultConfig(
+                24,
+                12,
+                1230784
+            )
+            .register()
 
         if (arenaGeneration.generationEnabled) {
             BiomeModifications.addStructure({
@@ -83,6 +96,11 @@ object ModStructures {
                 register(Mod.identifier("configured_gauntlet_arena"), configuredGauntletStructure)
             )
         }
+
+        BiomeModifications.addStructure(
+            { it.biome.temperature < 0.05 && BiomeSelectors.foundInOverworld().test(it) },
+            register(Mod.identifier("configured_lich_tower"), configuredLichTowerStructure)
+        )
     }
 
     private fun register(
@@ -111,5 +129,6 @@ object ModStructures {
     private object StructureFactories {
         val obsidilithArena = StructurePieceType { m, t -> ModPiece(m, t, obsidilithArenaPiece) }
         val gauntletArena = StructurePieceType { m, t -> ModPiece(m, t, gauntletArenaPiece) }
+        val lichTower = StructurePieceType { m, t -> ModPiece(m, t, lichTowerPiece) }
     }
 }

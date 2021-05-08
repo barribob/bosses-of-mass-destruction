@@ -40,7 +40,6 @@ class LichConfig {
             "minecraft:zombie_villager",
             "minecraft:zombified_piglin"
         ),
-        val numEntitiesKilledToSummonLich: Int = 250,
-        val numEntitiesKilledToShowCounter: Int = 50
+        val numEntitiesKilledToDropSoulStar: Int = 50
     )
 }

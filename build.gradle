@@ -22,8 +22,8 @@ repositories {
     maven { url 'https://repo.repsy.io/mvn/gandiber/geckolib' }
     maven { url = "http://maven.fabricmc.net/" }
     maven {
-        name = "Ladysnake Libs"
-        url = "https://dl.bintray.com/ladysnake/libs"
+        name = 'Ladysnake Mods'
+        url = 'https://ladysnake.jfrog.io/artifactory/mods'
     }
     mavenCentral()
     mavenLocal()

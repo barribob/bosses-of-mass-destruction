@@ -2,12 +2,16 @@ package net.barribob.boss.mob.mobs.lich
 
 import net.barribob.boss.mob.utils.IEntity
 import net.barribob.boss.mob.utils.IEntityStats
+import net.barribob.boss.utils.ModColors
 import net.barribob.maelstrom.static_utilities.MathUtils
 import net.minecraft.server.world.ServerWorld
+import net.minecraft.util.math.Vec3d
 
 object LichUtils {
     val hpPercentRageModes = listOf(0.0f, 0.25f, 0.5f, 0.75f, 1.0f)
     const val textureSize = 256
+    val blueColorFade: (Float) -> Vec3d =
+        { MathUtils.lerpVec(it, ModColors.COMET_BLUE, ModColors.FADED_COMET_BLUE) }
 
     /**
      * Info from [ServerWorld.tick]

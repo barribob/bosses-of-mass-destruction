@@ -26,7 +26,13 @@ import net.minecraft.tag.BlockTags
 import net.minecraft.util.hit.HitResult
 import net.minecraft.util.math.*
 import net.minecraft.world.*
+import net.minecraft.world.RaycastContext.FluidHandling
+import net.minecraft.world.biome.Biome
+import net.minecraft.world.biome.source.BiomeSource
 import net.minecraft.world.explosion.Explosion.DestructionType
+import net.minecraft.world.gen.chunk.ChunkGenerator
+import net.minecraft.world.gen.feature.StructureFeature
+import net.minecraft.world.gen.feature.WoodlandMansionFeature
 import kotlin.math.acos
 import kotlin.math.atan2
 
@@ -170,7 +176,7 @@ object VanillaCopies {
                 to,
                 from,
                 RaycastContext.ShapeType.COLLIDER,
-                RaycastContext.FluidHandling.NONE,
+                FluidHandling.NONE,
                 entity
             )
         ).type == HitResult.Type.MISS
@@ -416,5 +422,27 @@ object VanillaCopies {
         val e = MathHelper.lerp(delta.toDouble(), entity.lastRenderY, entity.y) + yOffset
         val f = MathHelper.lerp(delta.toDouble(), entity.lastRenderZ, entity.z)
         return Vec3d(d, e, f)
+    }
+
+    /**
+     * [WoodlandMansionFeature.shouldStartAt]
+     */
+    fun shouldStartAt(
+        structureFeature: StructureFeature<*>,
+        chunkGenerator: ChunkGenerator,
+        biomeSource: BiomeSource,
+        i: Int,
+        j: Int,
+    ): Boolean {
+        val set = biomeSource.getBiomesInArea(i * 16 + 9, chunkGenerator.seaLevel, j * 16 + 9, 32)
+        val var12: Iterator<*> = set.iterator()
+        var biome2: Biome
+        do {
+            if (!var12.hasNext()) {
+                return true
+            }
+            biome2 = var12.next() as Biome
+        } while (biome2.generationSettings.hasStructureFeature(structureFeature))
+        return false
     }
 }

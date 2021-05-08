@@ -5,6 +5,7 @@ import me.sargunvohra.mcmods.autoconfig1u.serializer.JanksonConfigSerializer
 import net.barribob.boss.Mod.networkUtils
 import net.barribob.boss.block.ModBlocks
 import net.barribob.boss.config.ModConfig
+import net.barribob.boss.item.ModItems
 import net.barribob.boss.mob.Entities
 import net.barribob.boss.particle.Particles
 import net.barribob.boss.sound.ModSounds
@@ -25,6 +26,7 @@ object Mod {
     val LOGGER = ConsoleLogger(LogManager.getLogger())
 
     val sounds: ModSounds = ModSounds()
+    val items: ModItems = ModItems()
 
     val networkUtils = NetworkUtils()
 
@@ -41,6 +43,7 @@ fun init() {
     Entities.init()
     ModStructures.init()
 
+    Mod.items.init()
     Mod.sounds.init()
 
     if(MaelstromMod.isDevelopmentEnvironment) initDev()
@@ -68,6 +71,8 @@ private fun initDev() {
     MaelstromMod.testCommand.addId(inGameTests::obsidilithDeath.name, inGameTests::obsidilithDeath)
     MaelstromMod.testCommand.addId(inGameTests::provideGear.name, inGameTests::provideGear)
     MaelstromMod.testCommand.addId(inGameTests::killZombies.name, inGameTests::killZombies)
+    MaelstromMod.testCommand.addId(inGameTests::lichSpawn.name, inGameTests::lichSpawn)
+    MaelstromMod.testCommand.addId(inGameTests::verifySpawnPosition.name, inGameTests::verifySpawnPosition)
 }
 
 @Environment(EnvType.CLIENT)

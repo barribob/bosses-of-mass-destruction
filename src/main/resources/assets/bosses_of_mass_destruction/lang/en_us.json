@@ -10,8 +10,6 @@
   "block.bosses_of_mass_destruction.sealed_blackstone" : "Sealed Blackstone Bricks",
   "block.bosses_of_mass_destruction.gauntlet_blackstone" : "Ancient Carved Blackstone",
 
-  "bosses_of_mass_destruction.kill_counter_update": "Undead killed: %d",
-
   "advancements.nether.gauntlet_defeat.title": "Through the Gauntlet",
   "advancements.nether.gauntlet_defeat.description" : "Defeat the Nether Gauntlet Boss",
 
@@ -28,6 +26,7 @@
   "subtitles.bosses_of_mass_destruction.gauntlet_laser_charge" : "Gauntlet Charges Up",
   "subtitles.bosses_of_mass_destruction.gauntlet_death" : "Gauntlet Dies",
   "subtitles.bosses_of_mass_destruction.gauntlet_clink" : "Gauntlet Clinks",
+  "subtitles.bosses_of_mass_destruction.soul_star" : "Soul Star Falls",
 
   "subtitles.bosses_of_mass_destruction.energy_shield" : "Obsidilith Shields",
   "subtitles.bosses_of_mass_destruction.obsidilith_prepare_attack": "Obsidilith Charges Up",

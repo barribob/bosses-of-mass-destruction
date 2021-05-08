@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "bosses_of_mass_destruction:block/chiseled_stone_altar",
+    "side": "minecraft:block/chiseled_stone_bricks"
+  }
+}

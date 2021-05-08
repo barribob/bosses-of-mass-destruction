@@ -2,7 +2,9 @@ package net.barribob.boss.utils
 
 import io.netty.buffer.Unpooled
 import net.barribob.boss.Mod
+import net.barribob.boss.block.ChiseledStoneAltarBlock
 import net.barribob.boss.cardinalComponents.ModComponents
+import net.barribob.boss.item.SoulStarItem
 import net.barribob.boss.mob.mobs.obsidilith.BurstAction
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithUtils
 import net.barribob.boss.mob.mobs.obsidilith.PillarAction
@@ -163,5 +165,14 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
         ModComponents.getWorldEventScheduler(source.world).addEvent(TimedEvent({
             zombie.damage(DamageSource.player(source.player), 30f)
         }, 2))
+    }
+
+    fun lichSpawn(source: ServerCommandSource){
+        SoulStarItem.spawnLich(BlockPos(source.position), source.world)
+    }
+
+    fun verifySpawnPosition(source: ServerCommandSource) {
+        val spawnPosition = HorizontalRangedSpawnPosition(source.position, 5.0, 10.0, ModRandom())
+        debugPoints.drawDebugPoints((0..100).map { spawnPosition.getPos() }, 20, source.position, source.world)
     }
 }
