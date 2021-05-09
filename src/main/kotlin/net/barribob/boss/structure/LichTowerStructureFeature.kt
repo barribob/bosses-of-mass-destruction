@@ -65,11 +65,11 @@ class LichTowerStructureFeature(codec: Codec<DefaultFeatureConfig>) :
             biome: Biome,
             config: DefaultFeatureConfig
         ) {
-            val x = chunkX * 16 + 15
-            val z = chunkZ * 16 + 15
+            val x = chunkX * 16
+            val z = chunkZ * 16
             val y = chunkGenerator.getHeight(x, z, Heightmap.Type.WORLD_SURFACE_WG) - 7
-            val pos = BlockPos(x, y, z)
             val rotation = BlockRotation.random(random)
+            val pos = BlockPos(x, y, z).add(BlockPos(-15, 0, -15).rotate(rotation))
             children.add(
                 ModPiece(
                     manager,

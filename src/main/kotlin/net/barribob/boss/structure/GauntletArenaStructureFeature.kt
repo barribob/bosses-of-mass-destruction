@@ -2,11 +2,7 @@ package net.barribob.boss.structure
 
 import com.mojang.serialization.Codec
 import net.barribob.boss.Mod
-import net.barribob.boss.mob.Entities
 import net.barribob.boss.utils.ModStructures
-import net.barribob.maelstrom.static_utilities.VecUtils
-import net.barribob.maelstrom.static_utilities.asVec3d
-import net.minecraft.block.Blocks
 import net.minecraft.structure.StructureManager
 import net.minecraft.structure.StructureStart
 import net.minecraft.util.BlockRotation
@@ -14,13 +10,11 @@ import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockBox
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.registry.DynamicRegistryManager
-import net.minecraft.world.ServerWorldAccess
 import net.minecraft.world.biome.Biome
 import net.minecraft.world.gen.chunk.ChunkGenerator
 import net.minecraft.world.gen.feature.DefaultFeatureConfig
 import net.minecraft.world.gen.feature.StructureFeature
 import net.minecraft.world.gen.feature.StructureFeature.StructureStartFactory
-import java.util.*
 
 class GauntletArenaStructureFeature(codec: Codec<DefaultFeatureConfig>) :
     StructureFeature<DefaultFeatureConfig>(codec) {

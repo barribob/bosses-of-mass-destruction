@@ -3,24 +3,18 @@ package net.barribob.boss.item
 import net.barribob.boss.Mod
 import net.barribob.boss.block.ChiseledStoneAltarBlock
 import net.barribob.boss.block.ModBlocks
+import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.mob.Entities
-import net.barribob.boss.mob.mobs.lich.LichUtils
 import net.barribob.boss.mob.spawn.*
-import net.barribob.boss.particle.ClientParticleBuilder
-import net.barribob.boss.particle.ParticleFactories
-import net.barribob.boss.particle.Particles
-import net.barribob.boss.sound.ModSounds
-import net.barribob.boss.utils.ModColors
 import net.barribob.boss.utils.ModStructures
-import net.barribob.boss.utils.ModUtils
 import net.barribob.boss.utils.ModUtils.randomPitch
+import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.general.random.ModRandom
 import net.barribob.maelstrom.static_utilities.MathUtils
 import net.barribob.maelstrom.static_utilities.VecUtils
 import net.barribob.maelstrom.static_utilities.asVec3d
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
-import net.minecraft.advancement.criterion.Criteria
 import net.minecraft.block.BlockState
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.EnderEyeItem
@@ -28,7 +22,6 @@ import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.item.ItemUsageContext
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvents
@@ -42,8 +35,6 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.RaycastContext
 import net.minecraft.world.World
-import org.apache.commons.lang3.RandomUtils
-import java.lang.Math.random
 import java.util.*
 
 class SoulStarItem(settings: Settings?) : Item(settings) {
@@ -89,13 +80,16 @@ class SoulStarItem(settings: Settings?) : Item(settings) {
             state.contains(ChiseledStoneAltarBlock.lit) && state.get(ChiseledStoneAltarBlock.lit)
         }
         if (numberOfAltarsFilled == 4) {
-            altarRange.forEach {
-                if (world.getBlockState(blockPos.up(it))
-                        .contains(ChiseledStoneAltarBlock.lit)
-                ) world.breakBlock(blockPos.up(it), false)
-            }
+            val eventScheduler = ModComponents.getWorldEventScheduler(world)
+            eventScheduler.addEvent(TimedEvent({
+                altarRange.forEach {
+                    if (world.getBlockState(blockPos.up(it))
+                            .contains(ChiseledStoneAltarBlock.lit)
+                    ) world.breakBlock(blockPos.up(it), false)
+                }
 
-            spawnLich(blockPos, world)
+                spawnLich(blockPos, world)
+            }, 20))
         }
     }
 
@@ -122,21 +116,12 @@ class SoulStarItem(settings: Settings?) : Item(settings) {
         } else {
             user.setCurrentHand(hand)
             if (world is ServerWorld) {
-                val blockPos = world.chunkManager.chunkGenerator.locateStructure(
-                    world,
-                    ModStructures.lichTowerStructure,
-                    user.blockPos,
-                    500,
-                    false
-                )
+                val blockPos = world.locateStructure(ModStructures.lichTowerStructure, user.blockPos,  100, false)
                 if (blockPos != null) {
-                    val eyeOfEnderEntity = SoulStarEntity(world, user.x, user.eyeY, user.z)
-                    eyeOfEnderEntity.setItem(itemStack)
-                    eyeOfEnderEntity.initTargetPos(blockPos)
-                    world.spawnEntity(eyeOfEnderEntity)
-//                    if (user is ServerPlayerEntity) {
-//                        Criteria.USED_ENDER_EYE.trigger(user, blockPos)
-//                    }
+                    val entity = SoulStarEntity(world, user.x, user.eyeY, user.z)
+                    entity.setItem(itemStack)
+                    entity.initTargetPos(blockPos)
+                    world.spawnEntity(entity)
                     world.playSound(
                         null as PlayerEntity?,
                         user.x,
@@ -147,8 +132,6 @@ class SoulStarItem(settings: Settings?) : Item(settings) {
                         0.5f,
                         0.4f / (RANDOM.nextFloat() * 0.4f + 0.8f)
                     )
-                    // plays sound
-//                    world.syncWorldEvent(null as PlayerEntity?, 1003, user.blockPos, 0)
                     if (!user.abilities.creativeMode) {
                         itemStack.decrement(1)
                     }
@@ -156,6 +139,7 @@ class SoulStarItem(settings: Settings?) : Item(settings) {
                     user.swingHand(hand, true)
                     return TypedActionResult.success(itemStack)
                 }
+                return TypedActionResult.pass(itemStack)
             }
             TypedActionResult.consume(itemStack)
         }

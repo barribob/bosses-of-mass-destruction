@@ -2,7 +2,6 @@ package net.barribob.boss.utils
 
 import io.netty.buffer.Unpooled
 import net.barribob.boss.Mod
-import net.barribob.boss.block.ChiseledStoneAltarBlock
 import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.item.SoulStarItem
 import net.barribob.boss.mob.mobs.obsidilith.BurstAction

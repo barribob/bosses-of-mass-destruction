@@ -23,7 +23,6 @@ import net.minecraft.item.Items
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.Packet
 import net.minecraft.particle.ParticleTypes
-import net.minecraft.sound.SoundEvents
 import net.minecraft.util.Util
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.MathHelper
