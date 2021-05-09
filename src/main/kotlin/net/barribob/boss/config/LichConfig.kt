@@ -9,6 +9,7 @@ class LichConfig {
     val missile = Missile()
     val comet = Comet()
     val summonMechanic = SummonMechanic()
+    val arenaGeneration = ArenaGeneration()
 
     data class Missile(
         val statusEffectId: String = "minecraft:slowness",
@@ -41,5 +42,9 @@ class LichConfig {
             "minecraft:zombified_piglin"
         ),
         val numEntitiesKilledToDropSoulStar: Int = 50
+    )
+
+    data class ArenaGeneration(
+        val generationEnabled: Boolean = true
     )
 }

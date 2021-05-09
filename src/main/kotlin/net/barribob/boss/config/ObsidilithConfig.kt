@@ -13,8 +13,8 @@ class ObsidilithConfig {
 
     data class ArenaGeneration(
         val generationHeight: Int = 90,
-        val generationSpacing: Int = 32,
-        val generationSeparation: Int = 24,
+        val generationSpacing: Int = 64,
+        val generationSeparation: Int = 32,
         val generationEnabled: Boolean = true
     )
 }

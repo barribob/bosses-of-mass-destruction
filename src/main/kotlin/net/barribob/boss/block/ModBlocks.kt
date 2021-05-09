@@ -12,7 +12,7 @@ import net.minecraft.util.registry.Registry
 
 object ModBlocks {
     val obsidilithRune = ObsidilithRuneBlock(FabricBlockSettings.copy(Blocks.CRYING_OBSIDIAN))
-    val obsidilithSummonBlock = ChiseledStoneAltarBlock(FabricBlockSettings.copy(Blocks.END_PORTAL_FRAME))
+    val obsidilithSummonBlock = ObsidilithSummonBlock(FabricBlockSettings.copy(Blocks.END_PORTAL_FRAME))
     private val gauntletBlackstone = GauntletBlackstoneBlock(FabricBlockSettings.copy(Blocks.OBSIDIAN))
     private val sealedBlackstone = Block(FabricBlockSettings.copy(Blocks.BEDROCK))
     val chiseledStoneAltar = ChiseledStoneAltarBlock(

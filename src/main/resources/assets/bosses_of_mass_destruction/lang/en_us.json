@@ -9,6 +9,9 @@
   "block.bosses_of_mass_destruction.obsidilith_rune" : "Obsidian Rune",
   "block.bosses_of_mass_destruction.sealed_blackstone" : "Sealed Blackstone Bricks",
   "block.bosses_of_mass_destruction.gauntlet_blackstone" : "Ancient Carved Blackstone",
+  "block.bosses_of_mass_destruction.chiseled_stone_altar" : "Chiseled Stone Altar",
+
+  "item.bosses_of_mass_destruction.soul_star" : "Soul Star",
 
   "advancements.nether.gauntlet_defeat.title": "Through the Gauntlet",
   "advancements.nether.gauntlet_defeat.description" : "Defeat the Nether Gauntlet Boss",

@@ -58,49 +58,44 @@ object ModStructures {
     )
 
     fun init() {
-        val arenaGeneration = mobConfig.obsidilithConfig.arenaGeneration
-        val gauntletArenaGeneration = mobConfig.gauntletConfig.arenaGeneration
+        val obsidilithGenConfig = mobConfig.obsidilithConfig.arenaGeneration
+        val gauntletGenConfig = mobConfig.gauntletConfig.arenaGeneration
+        val lichGenConfig = mobConfig.lichConfig.arenaGeneration
 
         FabricStructureBuilder.create(Mod.identifier("obsidilith_arena"), obsidilithArenaStructure)
             .step(GenerationStep.Feature.SURFACE_STRUCTURES)
-            .defaultConfig(arenaGeneration.generationSpacing, arenaGeneration.generationSeparation, 499672)
+            .defaultConfig(obsidilithGenConfig.generationSpacing, obsidilithGenConfig.generationSeparation, 499672)
             .register()
 
         FabricStructureBuilder.create(Mod.identifier("gauntlet_arena"), gauntletArenaStructure)
             .step(GenerationStep.Feature.UNDERGROUND_DECORATION)
-            .defaultConfig(
-                gauntletArenaGeneration.generationSpacing,
-                gauntletArenaGeneration.generationSeparation,
-                499672
-            )
+            .defaultConfig(gauntletGenConfig.generationSpacing, gauntletGenConfig.generationSeparation, 499672)
             .register()
 
         FabricStructureBuilder.create(Mod.identifier("lich_tower"), lichTowerStructure)
             .step(GenerationStep.Feature.SURFACE_STRUCTURES)
-            .defaultConfig(
-                24,
-                12,
-                1230784
-            )
+            .defaultConfig(24, 12, 1230784)
             .register()
 
-        if (arenaGeneration.generationEnabled) {
+        if (obsidilithGenConfig.generationEnabled) {
             BiomeModifications.addStructure({
                 BiomeSelectors.foundInTheEnd().test(it) && it.biomeKey != BiomeKeys.THE_END
             }, register(Mod.identifier("configured_obsidilith_arena"), configuredObsidilithStructure))
         }
 
-        if (gauntletArenaGeneration.generationEnabled) {
+        if (gauntletGenConfig.generationEnabled) {
             BiomeModifications.addStructure(
                 BiomeSelectors.foundInTheNether()::test,
                 register(Mod.identifier("configured_gauntlet_arena"), configuredGauntletStructure)
             )
         }
 
-        BiomeModifications.addStructure(
-            { it.biome.temperature < 0.05 && BiomeSelectors.foundInOverworld().test(it) },
-            register(Mod.identifier("configured_lich_tower"), configuredLichTowerStructure)
-        )
+        if (lichGenConfig.generationEnabled) {
+            BiomeModifications.addStructure(
+                { it.biome.temperature < 0.05 && BiomeSelectors.foundInOverworld().test(it) },
+                register(Mod.identifier("configured_lich_tower"), configuredLichTowerStructure)
+            )
+        }
     }
 
     private fun register(
