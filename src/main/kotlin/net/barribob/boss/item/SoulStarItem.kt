@@ -27,6 +27,7 @@ import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvents
 import net.minecraft.stat.Stats
 import net.minecraft.util.ActionResult
+import net.minecraft.util.BlockRotation
 import net.minecraft.util.Hand
 import net.minecraft.util.TypedActionResult
 import net.minecraft.util.hit.BlockHitResult
@@ -74,19 +75,22 @@ class SoulStarItem(settings: Settings?) : Item(settings) {
         val blockState2 = blockState.with(ChiseledStoneAltarBlock.lit, true)
         world.setBlockState(blockPos, blockState2, 2)
         context.stack.decrement(1)
-        val altarRange = -60..60
-        val numberOfAltarsFilled = altarRange.count {
-            val state = world.getBlockState(blockPos.up(it))
+        val quarterAltarPosition = listOf(BlockPos(12, 0, 0), BlockPos(6, 0, 6))
+        val allPotentialAltarPositions = BlockRotation.values().flatMap { rot -> quarterAltarPosition.map { it.rotate(rot) } }
+        val numberOfAltarsFilled = allPotentialAltarPositions.count {
+            val state = world.getBlockState(blockPos.add(it))
             state.contains(ChiseledStoneAltarBlock.lit) && state.get(ChiseledStoneAltarBlock.lit)
         }
-        if (numberOfAltarsFilled == 4) {
+        if (numberOfAltarsFilled == 3) {
             val eventScheduler = ModComponents.getWorldEventScheduler(world)
             eventScheduler.addEvent(TimedEvent({
-                altarRange.forEach {
-                    if (world.getBlockState(blockPos.up(it))
+                allPotentialAltarPositions.forEach {
+                    if (world.getBlockState(blockPos.add(it))
                             .contains(ChiseledStoneAltarBlock.lit)
-                    ) world.breakBlock(blockPos.up(it), false)
+                    ) world.breakBlock(blockPos.add(it), false)
                 }
+
+                world.breakBlock(blockPos, false)
 
                 spawnLich(blockPos, world)
             }, 20))

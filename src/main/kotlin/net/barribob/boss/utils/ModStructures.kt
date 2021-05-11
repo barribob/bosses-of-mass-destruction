@@ -92,7 +92,7 @@ object ModStructures {
 
         if (lichGenConfig.generationEnabled) {
             BiomeModifications.addStructure(
-                { it.biome.temperature < 0.05 && BiomeSelectors.foundInOverworld().test(it) },
+                { it.biome.temperature <= 0.05 && BiomeSelectors.foundInOverworld().test(it) },
                 register(Mod.identifier("configured_lich_tower"), configuredLichTowerStructure)
             )
         }

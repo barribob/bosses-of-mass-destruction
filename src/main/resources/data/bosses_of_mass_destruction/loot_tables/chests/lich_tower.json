@@ -10,6 +10,11 @@
       "entries": [
         {
           "type": "minecraft:item",
+          "weight": 5,
+          "name": "minecraft:diamond"
+        },
+        {
+          "type": "minecraft:item",
           "weight": 20,
           "name": "minecraft:saddle"
         },
@@ -37,11 +42,6 @@
           "type": "minecraft:item",
           "weight": 20,
           "name": "minecraft:name_tag"
-        },
-        {
-          "type": "minecraft:item",
-          "weight": 10,
-          "name": "minecraft:golden_horse_armor"
         },
         {
           "type": "minecraft:item",
@@ -74,6 +74,21 @@
       "entries": [
         {
           "type": "minecraft:item",
+          "weight": 10,
+          "name": "minecraft:lapis_lazuli",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 4,
+                "max": 8
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 10,
           "name": "minecraft:leather",
           "functions": [
             {
@@ -104,26 +119,6 @@
           "type": "minecraft:item",
           "weight": 5,
           "name": "minecraft:gold_ingot",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 1,
-                "max": 4
-              }
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
-          "weight": 20,
-          "name": "minecraft:bread"
-        },
-        {
-          "type": "minecraft:item",
-          "weight": 20,
-          "name": "minecraft:wheat",
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -193,6 +188,20 @@
         {
           "type": "minecraft:item",
           "weight": 10,
+          "name": "minecraft:basalt",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 4,
+                "max": 8
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "weight": 10,
           "name": "minecraft:phantom_membrane",
           "functions": [
             {
@@ -237,21 +246,6 @@
           "type": "minecraft:item",
           "weight": 10,
           "name": "minecraft:gunpowder",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 1,
-                "max": 8
-              }
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
-          "weight": 10,
-          "name": "minecraft:rotten_flesh",
           "functions": [
             {
               "function": "minecraft:set_count",

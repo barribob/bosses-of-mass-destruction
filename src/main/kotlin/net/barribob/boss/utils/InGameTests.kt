@@ -63,7 +63,8 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
         shield.addEnchantment(Enchantments.UNBREAKING, 3)
         val pickaxe = ItemStack(Items.NETHERITE_PICKAXE)
         pickaxe.addEnchantment(Enchantments.EFFICIENCY, 4)
-        listOf(sword, bow, apples, food, arrow, shield, pickaxe).forEach { entity.giveItemStack(it) }
+        val blocks = ItemStack(Items.COBBLESTONE, 64)
+        listOf(sword, bow, apples, food, blocks, shield, pickaxe, arrow).forEach { entity.giveItemStack(it) }
         armor.forEach { entity.giveItemStack(it) }
     }
 
