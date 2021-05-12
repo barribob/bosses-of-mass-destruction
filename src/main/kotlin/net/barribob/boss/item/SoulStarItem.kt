@@ -16,6 +16,7 @@ import net.barribob.maelstrom.static_utilities.asVec3d
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.minecraft.block.BlockState
+import net.minecraft.client.item.TooltipContext
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.EnderEyeItem
 import net.minecraft.item.Item
@@ -26,10 +27,9 @@ import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvents
 import net.minecraft.stat.Stats
-import net.minecraft.util.ActionResult
-import net.minecraft.util.BlockRotation
-import net.minecraft.util.Hand
-import net.minecraft.util.TypedActionResult
+import net.minecraft.text.Text
+import net.minecraft.text.TranslatableText
+import net.minecraft.util.*
 import net.minecraft.util.hit.BlockHitResult
 import net.minecraft.util.hit.HitResult
 import net.minecraft.util.math.BlockPos
@@ -39,6 +39,15 @@ import net.minecraft.world.World
 import java.util.*
 
 class SoulStarItem(settings: Settings?) : Item(settings) {
+    override fun appendTooltip(
+        stack: ItemStack?,
+        world: World?,
+        tooltip: MutableList<Text>,
+        context: TooltipContext?
+    ) {
+        tooltip.add(TranslatableText("item.bosses_of_mass_destruction.soul_star.tooltip").formatted(Formatting.DARK_GRAY))
+    }
+
     override fun useOnBlock(context: ItemUsageContext): ActionResult {
         val world = context.world
         val blockPos = context.blockPos
