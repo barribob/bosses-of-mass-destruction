@@ -1,6 +1,6 @@
 package net.barribob.boss.mob
 
-import me.sargunvohra.mcmods.autoconfig1u.AutoConfig
+import me.shedaniel.autoconfig.AutoConfig
 import net.barribob.boss.Mod
 import net.barribob.boss.animation.PauseAnimationTimer
 import net.barribob.boss.config.ModConfig

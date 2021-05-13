@@ -1,6 +1,6 @@
 package net.barribob.boss.utils
 
-import me.sargunvohra.mcmods.autoconfig1u.AutoConfig
+import me.shedaniel.autoconfig.AutoConfig
 import net.barribob.boss.Mod
 import net.barribob.boss.config.ModConfig
 import net.barribob.boss.structure.*
@@ -24,7 +24,7 @@ import net.minecraft.world.gen.feature.StructureFeature
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
 
 object ModStructures {
-    private val mobConfig = AutoConfig.getConfigHolder(ModConfig::class.java).config
+    private val modConfig = AutoConfig.getConfigHolder(ModConfig::class.java).config
 
     val obsidilithArenaPiece: StructurePieceType = Registry.register(
         Registry.STRUCTURE_PIECE,
@@ -32,7 +32,7 @@ object ModStructures {
         StructureFactories.obsidilithArena
     )
     private val obsidilithArenaStructure =
-        ObsidilithArenaStructureFeature(DefaultFeatureConfig.CODEC, mobConfig.obsidilithConfig)
+        ObsidilithArenaStructureFeature(DefaultFeatureConfig.CODEC, modConfig.obsidilithConfig)
     private val configuredObsidilithStructure = obsidilithArenaStructure.configure(DefaultFeatureConfig.DEFAULT)
 
     val gauntletArenaPiece: StructurePieceType = Registry.register(
@@ -58,9 +58,8 @@ object ModStructures {
     )
 
     fun init() {
-        val obsidilithGenConfig = mobConfig.obsidilithConfig.arenaGeneration
-        val gauntletGenConfig = mobConfig.gauntletConfig.arenaGeneration
-        val lichGenConfig = mobConfig.lichConfig.arenaGeneration
+        val obsidilithGenConfig = modConfig.obsidilithConfig.arenaGeneration
+        val gauntletGenConfig = modConfig.gauntletConfig.arenaGeneration
 
         FabricStructureBuilder.create(Mod.identifier("obsidilith_arena"), obsidilithArenaStructure)
             .step(GenerationStep.Feature.SURFACE_STRUCTURES)
@@ -90,7 +89,7 @@ object ModStructures {
             )
         }
 
-        if (lichGenConfig.generationEnabled) {
+        if (modConfig.lichConfig.generateLichTower) {
             BiomeModifications.addStructure(
                 { it.biome.temperature <= 0.05 && BiomeSelectors.foundInOverworld().test(it) },
                 register(Mod.identifier("configured_lich_tower"), configuredLichTowerStructure)

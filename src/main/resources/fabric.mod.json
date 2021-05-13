@@ -30,6 +30,9 @@
     ],
     "cardinal-components-entity": [
       "net.barribob.boss.cardinalComponents.ModComponents"
+    ],
+    "modmenu": [
+      "net.barribob.boss.config.ModMenuIntegration"
     ]
   },
   "mixins": [

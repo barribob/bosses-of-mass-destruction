@@ -1,7 +1,7 @@
 package net.barribob.boss
 
-import me.sargunvohra.mcmods.autoconfig1u.AutoConfig
-import me.sargunvohra.mcmods.autoconfig1u.serializer.JanksonConfigSerializer
+import me.shedaniel.autoconfig.AutoConfig
+import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer
 import net.barribob.boss.Mod.networkUtils
 import net.barribob.boss.block.ModBlocks
 import net.barribob.boss.config.ModConfig
