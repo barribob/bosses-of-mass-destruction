@@ -56,7 +56,7 @@
   "subtitles.bosses_of_mass_destruction.comet_shoot" : "Lich Launches Comet",
   "subtitles.bosses_of_mass_destruction.blue_fireball_land" : "Iceball Lands",
 
-  "text.autoconfig.bosses_of_mass_destruction.title" : "Bosses of Mass Destruction Configuration",
+  "text.autoconfig.bosses_of_mass_destruction.title" : "All changes require mc restart",
 
   "text.autoconfig.bosses_of_mass_destruction.category.Lich" : "Lich",
   "text.autoconfig.bosses_of_mass_destruction.option.lichConfig.eternalNighttime" : "Apply Eternal Nightime",
