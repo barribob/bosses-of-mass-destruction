@@ -7,6 +7,8 @@ import net.barribob.boss.mob.mobs.lich.LichUtils
 import net.barribob.boss.particle.ClientParticleBuilder
 import net.barribob.boss.particle.Particles
 import net.barribob.maelstrom.general.event.Event
+import net.barribob.maelstrom.general.event.TimedEvent
+import net.barribob.maelstrom.static_utilities.RandomUtils
 import net.barribob.maelstrom.static_utilities.VecUtils
 import net.barribob.maelstrom.static_utilities.rotateVector
 import net.fabricmc.api.EnvType
@@ -137,7 +139,11 @@ class SoulStarEntity(entityType: EntityType<out SoulStarEntity?>?, world: World?
 
                 playSound(Mod.sounds.soulStar, 1.0f, 1.0f)
                 this.remove()
-                world.spawnEntity(ItemEntity(world, this.x, this.y, this.z, this.stack))
+                val itemEntity = ItemEntity(world, this.x, this.y, this.z, this.stack)
+                world.spawnEntity(itemEntity)
+                ModComponents.getWorldEventScheduler(world).addEvent(TimedEvent({
+                    particleBuilder.build(itemEntity.pos, itemEntity.velocity.multiply(0.1))
+                }, 0, 30, { itemEntity.removed }))
             }
             val n = if (this.y < targetY) 1 else -1
             vec3d = Vec3d(
@@ -157,7 +163,7 @@ class SoulStarEntity(entityType: EntityType<out SoulStarEntity?>?, world: World?
 
     private val particleBuilder = ClientParticleBuilder(Particles.SPARKLES)
         .color(LichUtils.blueColorFade)
-        .age(40)
+        .age{RandomUtils.range(80, 100)}
         .colorVariation(0.3)
         .scale { 0.05f - (it * 0.025f) }
         .brightness(Particles.FULL_BRIGHT)
@@ -167,8 +173,7 @@ class SoulStarEntity(entityType: EntityType<out SoulStarEntity?>?, world: World?
         val cross = look.crossProduct(VecUtils.yAxis).normalize()
         val rotatedOffset = cross.rotateVector(look, rotationOffset + age * 30.0).multiply(0.25)
         val particlePos = pos.add(rotatedOffset)
-        val particleVel = rotatedOffset.multiply(0.1)
-        particleBuilder.build(particlePos, particleVel)
+        particleBuilder.build(particlePos, velocity.multiply(0.1))
     }
 
     private fun spawnParticles(d: Double, vec3d: Vec3d, e: Double, f: Double) {
