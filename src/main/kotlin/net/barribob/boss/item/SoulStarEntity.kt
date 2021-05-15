@@ -139,11 +139,7 @@ class SoulStarEntity(entityType: EntityType<out SoulStarEntity?>?, world: World?
 
                 playSound(Mod.sounds.soulStar, 1.0f, 1.0f)
                 this.remove()
-                val itemEntity = ItemEntity(world, this.x, this.y, this.z, this.stack)
-                world.spawnEntity(itemEntity)
-                ModComponents.getWorldEventScheduler(world).addEvent(TimedEvent({
-                    particleBuilder.build(itemEntity.pos, itemEntity.velocity.multiply(0.1))
-                }, 0, 30, { itemEntity.removed }))
+                world.spawnEntity(ItemEntity(world, this.x, this.y, this.z, this.stack))
             }
             val n = if (this.y < targetY) 1 else -1
             vec3d = Vec3d(
