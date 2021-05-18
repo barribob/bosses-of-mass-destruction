@@ -31,6 +31,9 @@
     "cardinal-components-entity": [
       "net.barribob.boss.cardinalComponents.ModComponents"
     ],
+    "cardinal-components-chunk": [
+      "net.barribob.boss.cardinalComponents.ModComponents"
+    ],
     "modmenu": [
       "net.barribob.boss.config.ModMenuIntegration"
     ]
@@ -48,7 +51,8 @@
     "cardinal-components": [
       "bosses_of_mass_destruction:event_scheduler",
       "bosses_of_mass_destruction:lich_summon_counter",
-      "bosses_of_mass_destruction:player_move_history"
+      "bosses_of_mass_destruction:player_move_history",
+      "bosses_of_mass_destruction:chunk_block_cache_component"
     ]
   }
 }
