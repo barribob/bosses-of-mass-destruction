@@ -14,6 +14,9 @@
   "item.bosses_of_mass_destruction.soul_star" : "Soul Star",
   "item.bosses_of_mass_destruction.soul_star.tooltip" : "Where does it lead?",
 
+  "block.bosses_of_mass_destruction.mob_ward" : "Staff of Suppression",
+  "item.bosses_of_mass_destruction.mob_ward.tooltip" : "When placed, mobs won't spawn in any 64 block direction",
+
   "advancements.nether.gauntlet_defeat.title": "Through the Gauntlet",
   "advancements.nether.gauntlet_defeat.description" : "Defeat the Nether Gauntlet Boss",
 

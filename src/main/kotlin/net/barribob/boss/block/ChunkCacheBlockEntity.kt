@@ -5,9 +5,12 @@ import net.minecraft.block.Block
 import net.minecraft.block.entity.BlockEntity
 import net.minecraft.block.entity.BlockEntityType
 import net.minecraft.util.Tickable
+import software.bernie.geckolib3.core.IAnimatable
+import software.bernie.geckolib3.core.manager.AnimationData
+import software.bernie.geckolib3.core.manager.AnimationFactory
 
-class ChunkCacheBlockEntity(private val block: Block, type: BlockEntityType<*>?) : BlockEntity(type), Tickable {
-    var added = false
+class ChunkCacheBlockEntity(private val block: Block, type: BlockEntityType<*>?) : BlockEntity(type), Tickable, IAnimatable {
+    private var added = false
 
     override fun tick() {
         if (!added) {
@@ -29,4 +32,10 @@ class ChunkCacheBlockEntity(private val block: Block, type: BlockEntityType<*>?)
         }
         super.markRemoved()
     }
+
+    override fun registerControllers(data: AnimationData) {
+    }
+
+    private val animationFactory = AnimationFactory(this)
+    override fun getFactory(): AnimationFactory = animationFactory
 }

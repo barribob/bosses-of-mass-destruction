@@ -1,12 +1,19 @@
 package net.barribob.boss.block
 
 import net.barribob.boss.Mod
+import net.barribob.boss.animation.IAnimationTimer
+import net.barribob.boss.animation.PauseAnimationTimer
+import net.barribob.boss.mob.GeoModel
+import net.barribob.boss.render.ModBlockEntityRenderer
 import net.fabricmc.fabric.api.`object`.builder.v1.block.FabricBlockSettings
+import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings
 import net.minecraft.block.Block
 import net.minecraft.block.Blocks
 import net.minecraft.block.entity.BlockEntity
 import net.minecraft.block.entity.BlockEntityType
+import net.minecraft.client.MinecraftClient
+import net.minecraft.client.util.GlfwUtil
 import net.minecraft.item.BlockItem
 import net.minecraft.state.property.Properties
 import net.minecraft.util.Identifier
@@ -21,9 +28,11 @@ object ModBlocks {
         FabricBlockSettings.copy(Blocks.BEDROCK)
             .luminance { if (it.get(Properties.LIT)) 11 else 0 })
 
-    private val entityTypes = mutableMapOf<Block, BlockEntityType<*>>()
-    private val mobWardBlockEntityFactory: () -> BlockEntity = { ChunkCacheBlockEntity(mobWard, entityTypes[mobWard]) }
-    val mobWard = MobWardBlock(mobWardBlockEntityFactory, FabricBlockSettings.copy(Blocks.OBSIDIAN))
+    private val entityTypes = mutableMapOf<Block, BlockEntityType<BlockEntity>>()
+    private val mobWardBlockEntityFactory: () -> BlockEntity = {
+        ChunkCacheBlockEntity(mobWard, entityTypes[mobWard])
+    }
+    val mobWard = MobWardBlock(mobWardBlockEntityFactory, FabricBlockSettings.copy(Blocks.OBSIDIAN).nonOpaque().luminance { 15 })
 
     fun init() {
         registerBlockAndItem(Mod.identifier("obsidilith_rune"), obsidilithRune)
@@ -42,7 +51,20 @@ object ModBlocks {
         )
     }
 
-    private fun registerBlockAndItem(identifier: Identifier, block: Block){
+    fun clientInit(animationTimer: IAnimationTimer) {
+        BlockEntityRendererRegistry.INSTANCE.register(entityTypes[mobWard]) { dispatcher ->
+            ModBlockEntityRenderer(
+                dispatcher, GeoModel<ChunkCacheBlockEntity>(
+                    { Mod.identifier("geo/lich_staff_${it.cachedState.get(MobWardBlock.tripleBlockPart)}.geo.json") },
+                    { Mod.identifier("textures/block/mob_ward.png") },
+                    Mod.identifier("animations/lich.animation.json"),
+                    animationTimer
+                )
+            )
+        }
+    }
+
+    private fun registerBlockAndItem(identifier: Identifier, block: Block) {
         Registry.register(Registry.BLOCK, identifier, block)
         Registry.register(Registry.ITEM, identifier, BlockItem(block, FabricItemSettings()))
     }

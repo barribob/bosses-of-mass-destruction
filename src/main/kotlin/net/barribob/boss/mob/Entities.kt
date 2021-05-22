@@ -2,6 +2,7 @@ package net.barribob.boss.mob
 
 import me.shedaniel.autoconfig.AutoConfig
 import net.barribob.boss.Mod
+import net.barribob.boss.animation.IAnimationTimer
 import net.barribob.boss.animation.PauseAnimationTimer
 import net.barribob.boss.config.ModConfig
 import net.barribob.boss.item.SoulStarEntity
@@ -111,15 +112,14 @@ object Entities {
             .add(EntityAttributes.GENERIC_ARMOR, mobConfig.gauntletConfig.armor))
     }
 
-    fun clientInit() {
-        val animationTimer = PauseAnimationTimer({ GlfwUtil.getTime() * 20 }, { MinecraftClient.getInstance().isPaused })
+    fun clientInit(animationTimer: IAnimationTimer) {
         val pauseSecondTimer = PauseAnimationTimer({ GlfwUtil.getTime() }, { MinecraftClient.getInstance().isPaused })
 
         EntityRendererRegistry.INSTANCE.register(LICH) { entityRenderDispatcher, _ ->
             val texture = Mod.identifier("textures/entity/lich.png")
             SimpleLivingGeoRenderer(
                 entityRenderDispatcher, GeoModel(
-                    Mod.identifier("geo/lich.geo.json"),
+                    { Mod.identifier("geo/lich.geo.json") },
                     { texture },
                     Mod.identifier("animations/lich.animation.json"),
                     animationTimer,
@@ -135,7 +135,7 @@ object Entities {
         EntityRendererRegistry.INSTANCE.register(OBSIDILITH) { entityRenderDispatcher, _ ->
             val runeColorHandler = ObsidilithBoneLight()
             val modelProvider = GeoModel<ObsidilithEntity>(
-                Mod.identifier("geo/obsidilith.geo.json"),
+                { Mod.identifier("geo/obsidilith.geo.json") },
                 { Mod.identifier("textures/entity/obsidilith.png") },
                 Mod.identifier("animations/obsidilith.animation.json"),
                 animationTimer,
@@ -176,7 +176,7 @@ object Entities {
 
         EntityRendererRegistry.INSTANCE.register(COMET) { entityRenderDispatcher, _ ->
             ModGeoRenderer(entityRenderDispatcher, GeoModel(
-                Mod.identifier("geo/comet.geo.json"),
+                { Mod.identifier("geo/comet.geo.json") },
                 { Mod.identifier("textures/entity/comet.png") },
                 Mod.identifier("animations/comet.animation.json"),
                 animationTimer,
@@ -193,7 +193,7 @@ object Entities {
 
         EntityRendererRegistry.INSTANCE.register(GAUNTLET) { entityRenderDispatcher, _ ->
             val modelProvider = GeoModel(
-                Mod.identifier("geo/gauntlet.geo.json"),
+                { Mod.identifier("geo/gauntlet.geo.json") },
                 GauntletTextureProvider(),
                 Mod.identifier("animations/gauntlet.animation.json"),
                 animationTimer,
