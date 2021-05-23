@@ -1,8 +1,8 @@
 package net.barribob.boss.utils
 
 import net.barribob.maelstrom.static_utilities.MathUtils
-import net.minecraft.block.BlockState
-import net.minecraft.block.Material
+import net.minecraft.block.*
+import net.minecraft.block.enums.DoubleBlockHalf
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.network.ClientPlayNetworkHandler
 import net.minecraft.client.particle.BillboardParticle
@@ -21,6 +21,7 @@ import net.minecraft.entity.boss.dragon.EnderDragonEntity
 import net.minecraft.entity.mob.CreeperEntity
 import net.minecraft.entity.mob.FlyingEntity
 import net.minecraft.entity.mob.MobEntity
+import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket
 import net.minecraft.tag.BlockTags
 import net.minecraft.util.hit.HitResult
@@ -444,5 +445,20 @@ object VanillaCopies {
             biome2 = var12.next() as Biome
         } while (biome2.generationSettings.hasStructureFeature(structureFeature))
         return false
+    }
+
+    /**
+     * [TallPlantBlock.onBreakInCreative]
+     */
+    fun onBreakInCreative(world: World, pos: BlockPos, state: BlockState, player: PlayerEntity?) {
+        val doubleBlockHalf = state.get(TallPlantBlock.HALF) as DoubleBlockHalf
+        if (doubleBlockHalf == DoubleBlockHalf.UPPER) {
+            val blockPos = pos.down()
+            val blockState = world.getBlockState(blockPos)
+            if (blockState.block === state.block && blockState.get(TallPlantBlock.HALF) == DoubleBlockHalf.LOWER) {
+                world.setBlockState(blockPos, Blocks.AIR.defaultState, 35)
+                world.syncWorldEvent(player, 2001, blockPos, Block.getRawIdFromState(blockState))
+            }
+        }
     }
 }

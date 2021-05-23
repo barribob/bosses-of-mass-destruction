@@ -5,8 +5,9 @@
   "mixins": [
     "BossBarHudMixin",
     "EnderEyeUseMixin",
-    "SpawnEntryMixin",
+    "ExplosionMixin",
     "IceBlockMixin",
+    "SpawnEntryMixin",
     "SpawnHelperMixin"
   ],
   "injectors": {
