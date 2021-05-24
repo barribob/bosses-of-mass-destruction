@@ -38,7 +38,7 @@ class LichConfig {
 
     data class SummonMechanic(
         val isEnabled: Boolean = true,
-        val entitiesThatCountToSummonCounter: List<String> = listOf(
+        val entitiesThatCountToSummonCounter: MutableList<String> = mutableListOf(
             "minecraft:zombie",
             "minecraft:skeleton",
             "minecraft:drowned",
