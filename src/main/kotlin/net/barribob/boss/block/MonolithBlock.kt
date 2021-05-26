@@ -5,35 +5,58 @@ import net.barribob.boss.utils.VanillaCopies
 import net.minecraft.block.*
 import net.minecraft.block.entity.BlockEntity
 import net.minecraft.block.enums.DoubleBlockHalf
+import net.minecraft.client.item.TooltipContext
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemPlacementContext
 import net.minecraft.item.ItemStack
 import net.minecraft.state.StateManager
 import net.minecraft.state.property.Properties
+import net.minecraft.text.Text
+import net.minecraft.text.TranslatableText
 import net.minecraft.util.BlockMirror
 import net.minecraft.util.BlockRotation
+import net.minecraft.util.Formatting
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.ChunkPos
 import net.minecraft.util.math.Direction
+import net.minecraft.util.shape.VoxelShape
 import net.minecraft.world.BlockView
 import net.minecraft.world.World
 import net.minecraft.world.WorldAccess
 import net.minecraft.world.WorldView
 import net.minecraft.world.chunk.ChunkStatus
-import net.minecraft.world.explosion.Explosion
-import java.util.*
 import kotlin.math.abs
 
 class MonolithBlock(private val factory: (() -> BlockEntity)?, settings: Settings) : Block(settings),
     BlockEntityProvider {
+
     init {
         defaultState = stateManager.defaultState
             .with(HorizontalFacingBlock.FACING, Direction.NORTH)
             .with(Properties.DOUBLE_BLOCK_HALF, DoubleBlockHalf.LOWER)
     }
 
+    override fun appendTooltip(
+        stack: ItemStack?,
+        world: BlockView?,
+        tooltip: MutableList<Text>,
+        options: TooltipContext?
+    ) {
+        tooltip.add(TranslatableText("item.bosses_of_mass_destruction.monolith_block.tooltip_0").formatted(Formatting.DARK_GRAY))
+        tooltip.add(TranslatableText("item.bosses_of_mass_destruction.monolith_block.tooltip_1").formatted(Formatting.DARK_GRAY))
+    }
+
     override fun createBlockEntity(world: BlockView?): BlockEntity? = factory?.invoke()
+
+    override fun getOutlineShape(
+        state: BlockState,
+        world: BlockView?,
+        pos: BlockPos?,
+        context: ShapeContext?
+    ): VoxelShape {
+        return if (state.get(HorizontalFacingBlock.FACING).axis === Direction.Axis.X) xAxisShape else zAxisShape
+    }
 
     override fun getStateForNeighborUpdate(
         state: BlockState,
@@ -46,15 +69,15 @@ class MonolithBlock(private val factory: (() -> BlockEntity)?, settings: Setting
         val doubleBlockHalf = state.get(Properties.DOUBLE_BLOCK_HALF)
         val airState = Blocks.AIR.defaultState
         return if (direction.axis === Direction.Axis.Y && doubleBlockHalf == DoubleBlockHalf.LOWER == (direction == Direction.UP)) {
-            if (newState.isOf(this) && newState.get(Properties.DOUBLE_BLOCK_HALF) != doubleBlockHalf)
-                state.with(HorizontalFacingBlock.FACING, newState.get(HorizontalFacingBlock.FACING)) else airState
+            if (newState.isOf(this) && newState.get(Properties.DOUBLE_BLOCK_HALF) != doubleBlockHalf) {
+                state.with(HorizontalFacingBlock.FACING, newState.get(HorizontalFacingBlock.FACING))
+            } else {
+                airState
+            }
         } else {
-            if (doubleBlockHalf == DoubleBlockHalf.LOWER && direction == Direction.DOWN && !state.canPlaceAt(
-                    world,
-                    pos
-                )
-            )
-                airState else
+            if (doubleBlockHalf == DoubleBlockHalf.LOWER && direction == Direction.DOWN && !state.canPlaceAt(world, pos)) {
+                airState
+            } else {
                 super.getStateForNeighborUpdate(
                     state,
                     direction,
@@ -63,6 +86,7 @@ class MonolithBlock(private val factory: (() -> BlockEntity)?, settings: Setting
                     pos,
                     posFrom
                 )
+            }
         }
     }
 
@@ -107,7 +131,7 @@ class MonolithBlock(private val factory: (() -> BlockEntity)?, settings: Setting
         return state.with(
             HorizontalFacingBlock.FACING,
             rotation.rotate(state.get(HorizontalFacingBlock.FACING) as Direction)
-        ) as BlockState
+        )
     }
 
     override fun mirror(state: BlockState, mirror: BlockMirror): BlockState {
@@ -115,9 +139,9 @@ class MonolithBlock(private val factory: (() -> BlockEntity)?, settings: Setting
             mirror.getRotation(
                 state.get(
                     HorizontalFacingBlock.FACING
-                ) as Direction
+                )
             )
-        ).cycle(DoorBlock.HINGE) as BlockState
+        ).cycle(DoorBlock.HINGE)
     }
 
     override fun appendProperties(builder: StateManager.Builder<Block?, BlockState?>) {
@@ -125,12 +149,14 @@ class MonolithBlock(private val factory: (() -> BlockEntity)?, settings: Setting
     }
 
     companion object {
-        private val hashMap = WeakHashMap<BlockPos, Boolean>()
+        private val xAxisShape = createCuboidShape(3.5, 0.0, 1.5, 12.5, 16.0, 14.5)
+        private val zAxisShape = createCuboidShape(1.5, 0.0, 3.5, 14.5, 16.0, 12.5)
 
-        fun canExplode(
+        fun getExplosionPower(
             serverWorld: World,
-            pos: BlockPos
-        ): Boolean {
+            pos: BlockPos,
+            power: Float
+        ): Float {
             val chunkPos = ChunkPos(pos)
             for (x in chunkPos.x - 4..chunkPos.x + 4) {
                 for (z in chunkPos.z - 4..chunkPos.z + 4) {
@@ -140,13 +166,13 @@ class MonolithBlock(private val factory: (() -> BlockEntity)?, settings: Setting
                     if (blockCache.isPresent) {
                         val blocks = blockCache.get().getBlocksFromChunk(ModBlocks.monolithBlock)
                         if (blocks.any { abs(it.x - pos.x) < 64 && abs(it.y - pos.y) < 64 && abs(it.z - pos.z) < 64 }) {
-                            return false
+                            return power * 1.25f
                         }
                     }
                 }
             }
 
-            return true
+            return power
         }
     }
 }

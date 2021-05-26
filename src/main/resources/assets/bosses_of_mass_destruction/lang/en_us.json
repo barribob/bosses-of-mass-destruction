@@ -17,6 +17,10 @@
   "block.bosses_of_mass_destruction.mob_ward" : "Staff of Suppression",
   "item.bosses_of_mass_destruction.mob_ward.tooltip" : "When placed, mobs won't spawn in any 64 block direction",
 
+  "block.bosses_of_mass_destruction.monolith_block" : "Blast Amplifier",
+  "item.bosses_of_mass_destruction.monolith_block.tooltip_0" : "When placed, increases explosion power by 25% in any",
+  "item.bosses_of_mass_destruction.monolith_block.tooltip_1" : "64 block direction. This effect cannot stack",
+
   "advancements.nether.gauntlet_defeat.title": "Through the Gauntlet",
   "advancements.nether.gauntlet_defeat.description" : "Defeat the Nether Gauntlet Boss",
 
