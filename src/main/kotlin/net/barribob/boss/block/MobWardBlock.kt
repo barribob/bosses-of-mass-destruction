@@ -47,7 +47,6 @@ class MobWardBlock(private val factory: (() -> BlockEntity)?, settings: Settings
     }
 
     override fun createBlockEntity(world: BlockView): BlockEntity? = factory?.invoke()
-    override fun getRenderType(state: BlockState): BlockRenderType = BlockRenderType.ENTITYBLOCK_ANIMATED
     override fun appendTooltip(
         stack: ItemStack?,
         world: BlockView?,

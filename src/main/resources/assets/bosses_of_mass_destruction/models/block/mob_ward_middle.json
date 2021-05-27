@@ -1,0 +1,66 @@
+{
+	"credit": "Made with Blockbench",
+	"texture_size": [64, 64],
+	"textures": {
+		"0": "bosses_of_mass_destruction:block/mob_ward",
+		"particle" : "bosses_of_mass_destruction:block/mob_ward"
+	},
+	"elements": [
+		{
+			"name": "shaft",
+			"from": [7.5, 0, 7.5],
+			"to": [8.5, 16, 8.5],
+			"shade": false,
+			"rotation": {"angle": 0, "axis": "y", "origin": [-1, 24.2, -0.5]},
+			"faces": {
+				"north": {"uv": [0.5, 2.75, 0.25, 6.75], "texture": "#0"},
+				"east": {"uv": [0.75, 2.75, 0.5, 6.75], "texture": "#0"},
+				"south": {"uv": [1, 2.75, 0.75, 6.75], "texture": "#0"},
+				"west": {"uv": [0.25, 2.75, 0, 6.75], "texture": "#0"},
+				"up": {"uv": [0.25, 2.75, 0.5, 2.5], "texture": "#0"},
+				"down": {"uv": [0.5, 2.5, 0.75, 2.75], "texture": "#0"}
+			}
+		},
+		{
+			"name": "shaft",
+			"from": [6.5, 14, 7.5],
+			"to": [7.5, 16, 8.5],
+			"rotation": {"angle": 0, "axis": "y", "origin": [-1, 24.2, -0.5]},
+			"faces": {
+				"north": {"uv": [5.75, 7.5, 6, 8], "texture": "#0"},
+				"east": {"uv": [5.5, 7.5, 5.75, 8], "texture": "#0"},
+				"south": {"uv": [6.25, 7.5, 6.5, 8], "texture": "#0"},
+				"west": {"uv": [6, 7.5, 6.25, 8], "texture": "#0"},
+				"up": {"uv": [6, 7.5, 5.75, 7.25], "texture": "#0"},
+				"down": {"uv": [6.25, 7.25, 6, 7.5], "texture": "#0"}
+			}
+		},
+		{
+			"name": "shaft",
+			"from": [8.5, 15, 7.5],
+			"to": [9.5, 16, 8.5],
+			"rotation": {"angle": 0, "axis": "y", "origin": [-1, 24.2, -0.5]},
+			"faces": {
+				"north": {"uv": [6.75, 6.75, 7, 7], "texture": "#0"},
+				"east": {"uv": [6.5, 6.75, 6.75, 7], "texture": "#0"},
+				"south": {"uv": [7.25, 6.75, 7.5, 7], "texture": "#0"},
+				"west": {"uv": [7, 6.75, 7.25, 7], "texture": "#0"},
+				"up": {"uv": [7, 6.75, 6.75, 6.5], "texture": "#0"},
+				"down": {"uv": [7.25, 6.5, 7, 6.75], "texture": "#0"}
+			}
+		}
+	],
+	"groups": [
+		{
+			"name": "staff",
+			"origin": [0, 18.15, 0],
+			"children": [0, 1, 2,
+				{
+					"name": "crystal",
+					"origin": [0, 50.7, 0],
+					"children": []
+				}
+			]
+		}
+	]
+}

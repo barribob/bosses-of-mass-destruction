@@ -2,15 +2,14 @@ package net.barribob.boss.block
 
 import net.barribob.boss.Mod
 import net.barribob.boss.animation.IAnimationTimer
-import net.barribob.boss.mob.GeoModel
-import net.barribob.boss.render.ModBlockEntityRenderer
 import net.fabricmc.fabric.api.`object`.builder.v1.block.FabricBlockSettings
-import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry
+import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings
 import net.minecraft.block.Block
 import net.minecraft.block.Blocks
 import net.minecraft.block.entity.BlockEntity
 import net.minecraft.block.entity.BlockEntityType
+import net.minecraft.client.render.RenderLayer
 import net.minecraft.item.BlockItem
 import net.minecraft.state.property.Properties
 import net.minecraft.util.Identifier
@@ -63,16 +62,7 @@ object ModBlocks {
     }
 
     fun clientInit(animationTimer: IAnimationTimer) {
-        BlockEntityRendererRegistry.INSTANCE.register(entityTypes[mobWard]) { dispatcher ->
-            ModBlockEntityRenderer(
-                dispatcher, GeoModel<ChunkCacheBlockEntity>(
-                    { Mod.identifier("geo/lich_staff_${it.cachedState.get(MobWardBlock.tripleBlockPart)}.geo.json") },
-                    { Mod.identifier("textures/block/mob_ward.png") },
-                    Mod.identifier("animations/lich.animation.json"),
-                    animationTimer
-                )
-            )
-        }
+        BlockRenderLayerMap.INSTANCE.putBlock(mobWard, RenderLayer.getCutout())
     }
 
     private fun registerBlockAndItem(identifier: Identifier, block: Block, fabricItemSettings: FabricItemSettings = FabricItemSettings()) {

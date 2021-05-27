@@ -1,0 +1,49 @@
+{
+  "variants": {
+    "facing=east,triple_part=bottom": {
+      "model": "bosses_of_mass_destruction:block/mob_ward_bottom",
+      "y": 90
+    },
+    "facing=east,triple_part=top": {
+      "model": "bosses_of_mass_destruction:block/mob_ward_top",
+      "y": 90
+    },
+    "facing=east,triple_part=middle": {
+      "model": "bosses_of_mass_destruction:block/mob_ward_middle",
+      "y": 90
+    },
+    "facing=north,triple_part=bottom": {
+      "model": "bosses_of_mass_destruction:block/mob_ward_bottom"
+    },
+    "facing=north,triple_part=top": {
+      "model": "bosses_of_mass_destruction:block/mob_ward_top"
+    },
+    "facing=north,triple_part=middle": {
+      "model": "bosses_of_mass_destruction:block/mob_ward_middle"
+    },
+    "facing=south,triple_part=bottom": {
+      "model": "bosses_of_mass_destruction:block/mob_ward_bottom",
+      "y": 180
+    },
+    "facing=south,triple_part=top": {
+      "model": "bosses_of_mass_destruction:block/mob_ward_top",
+      "y": 180
+    },
+    "facing=south,triple_part=middle": {
+      "model": "bosses_of_mass_destruction:block/mob_ward_middle",
+      "y": 180
+    },
+    "facing=west,triple_part=bottom": {
+      "model": "bosses_of_mass_destruction:block/mob_ward_bottom",
+      "y": 270
+    },
+    "facing=west,triple_part=top": {
+      "model": "bosses_of_mass_destruction:block/mob_ward_top",
+      "y": 270
+    },
+    "facing=west,triple_part=middle": {
+      "model": "bosses_of_mass_destruction:block/mob_ward_middle",
+      "y": 270
+    }
+  }
+}

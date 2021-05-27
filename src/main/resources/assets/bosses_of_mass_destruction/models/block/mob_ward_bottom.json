@@ -1,0 +1,93 @@
+{
+	"credit": "Made with Blockbench",
+	"texture_size": [64, 64],
+	"textures": {
+		"1": "bosses_of_mass_destruction:block/mob_ward",
+		"particle" : "bosses_of_mass_destruction:block/mob_ward"
+	},
+	"elements": [
+		{
+			"name": "shaft",
+			"from": [7.5, 2, 7.5],
+			"to": [8.5, 18, 8.5],
+			"rotation": {"angle": 0, "axis": "y", "origin": [-1, 24.2, -0.5]},
+			"faces": {
+				"north": {"uv": [0.25, 5.75, 0.5, 9.75], "texture": "#1"},
+				"east": {"uv": [0, 5.75, 0.25, 9.75], "texture": "#1"},
+				"south": {"uv": [0.75, 5.75, 1, 9.75], "texture": "#1"},
+				"west": {"uv": [0.5, 5.75, 0.75, 9.75], "texture": "#1"},
+				"up": {"uv": [0.5, 5.75, 0.25, 5.5], "texture": "#1"},
+				"down": {"uv": [0.75, 5.5, 0.5, 5.75], "texture": "#1"}
+			}
+		},
+		{
+			"name": "shaft",
+			"from": [8.5, 2, 7.5],
+			"to": [9.5, 11, 8.5],
+			"rotation": {"angle": 0, "axis": "y", "origin": [-1, 24.2, -0.5]},
+			"faces": {
+				"north": {"uv": [1.25, 7, 1.5, 9.25], "texture": "#1"},
+				"east": {"uv": [1, 7, 1.25, 9.25], "texture": "#1"},
+				"south": {"uv": [1.75, 7, 2, 9.25], "texture": "#1"},
+				"west": {"uv": [1.5, 7, 1.75, 9.25], "texture": "#1"},
+				"up": {"uv": [1.5, 7, 1.25, 6.75], "texture": "#1"},
+				"down": {"uv": [1.75, 6.75, 1.5, 7], "texture": "#1"}
+			}
+		},
+		{
+			"name": "shaft",
+			"from": [6.5, 2, 7.5],
+			"to": [7.5, 15, 8.5],
+			"rotation": {"angle": 0, "axis": "y", "origin": [-1, 24.2, -0.5]},
+			"faces": {
+				"north": {"uv": [5.75, 0.25, 6, 3.5], "texture": "#1"},
+				"east": {"uv": [5.5, 0.25, 5.75, 3.5], "texture": "#1"},
+				"south": {"uv": [6.25, 0.25, 6.5, 3.5], "texture": "#1"},
+				"west": {"uv": [6, 0.25, 6.25, 3.5], "texture": "#1"},
+				"up": {"uv": [6, 0.25, 5.75, 0], "texture": "#1"},
+				"down": {"uv": [6.25, 0, 6, 0.25], "texture": "#1"}
+			}
+		},
+		{
+			"name": "end",
+			"from": [6.5, 1, 6.5],
+			"to": [9.5, 2, 9.5],
+			"rotation": {"angle": 0, "axis": "y", "origin": [-1, 24.2, -0.5]},
+			"faces": {
+				"north": {"uv": [7.25, 0.75, 8, 1], "texture": "#1"},
+				"east": {"uv": [6.5, 0.75, 7.25, 1], "texture": "#1"},
+				"south": {"uv": [8.75, 0.75, 9.5, 1], "texture": "#1"},
+				"west": {"uv": [8, 0.75, 8.75, 1], "texture": "#1"},
+				"up": {"uv": [8, 0.75, 7.25, 0], "texture": "#1"},
+				"down": {"uv": [8.75, 0, 8, 0.75], "texture": "#1"}
+			}
+		},
+		{
+			"name": "base1",
+			"from": [5.5, 0, 5.5],
+			"to": [10.5, 1, 10.5],
+			"rotation": {"angle": 0, "axis": "y", "origin": [-1, 24.2, -0.5]},
+			"faces": {
+				"north": {"uv": [2.25, 4.5, 3.5, 4.75], "texture": "#1"},
+				"east": {"uv": [1, 4.5, 2.25, 4.75], "texture": "#1"},
+				"south": {"uv": [4.75, 4.5, 6, 4.75], "texture": "#1"},
+				"west": {"uv": [3.5, 4.5, 4.75, 4.75], "texture": "#1"},
+				"up": {"uv": [3.5, 4.5, 2.25, 3.25], "texture": "#1"},
+				"down": {"uv": [4.75, 3.25, 3.5, 4.5], "texture": "#1"}
+			}
+		}
+	],
+	"groups": [
+		{
+			"name": "staff",
+			"origin": [0, 18.15, 0],
+			"children": [0, 1, 2, 3, 4,
+				{
+					"name": "crystal",
+					"origin": [0, 50.7, 0],
+					"children": []
+				}
+			]
+		}
+	]
+}
