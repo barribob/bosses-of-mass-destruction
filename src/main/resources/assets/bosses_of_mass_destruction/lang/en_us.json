@@ -13,6 +13,9 @@
 
   "item.bosses_of_mass_destruction.soul_star" : "Soul Star",
   "item.bosses_of_mass_destruction.soul_star.tooltip" : "Where does it lead?",
+  "item.bosses_of_mass_destruction.ancient_anima" : "Ancient Anima",
+  "item.bosses_of_mass_destruction.blazing_eye" : "Blazing Eye",
+  "item.bosses_of_mass_destruction.obsidian_heart" : "Obsidian Heart",
 
   "block.bosses_of_mass_destruction.mob_ward" : "Staff of Suppression",
   "item.bosses_of_mass_destruction.mob_ward.tooltip" : "When placed, mobs won't spawn in any 64 block direction",

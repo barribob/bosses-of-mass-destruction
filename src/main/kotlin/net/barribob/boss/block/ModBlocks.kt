@@ -46,8 +46,8 @@ object ModBlocks {
         val mobWardId = Mod.identifier("mob_ward")
         val monolithBlockId = Mod.identifier("monolith_block")
 
-        registerBlockAndItem(mobWardId, mobWard)
-        registerBlockAndItem(monolithBlockId, monolithBlock)
+        registerBlockAndItem(mobWardId, mobWard, FabricItemSettings().fireproof())
+        registerBlockAndItem(monolithBlockId, monolithBlock, FabricItemSettings().fireproof())
 
         entityTypes[mobWard] = Registry.register(
             Registry.BLOCK_ENTITY_TYPE,
@@ -75,8 +75,8 @@ object ModBlocks {
         }
     }
 
-    private fun registerBlockAndItem(identifier: Identifier, block: Block) {
+    private fun registerBlockAndItem(identifier: Identifier, block: Block, fabricItemSettings: FabricItemSettings = FabricItemSettings()) {
         Registry.register(Registry.BLOCK, identifier, block)
-        Registry.register(Registry.ITEM, identifier, BlockItem(block, FabricItemSettings()))
+        Registry.register(Registry.ITEM, identifier, BlockItem(block, fabricItemSettings))
     }
 }

@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CCC",
+    "CEC",
+    "CHC"
+  ],
+  "key": {
+    "C": {
+      "item": "minecraft:obsidian"
+    },
+    "E": {
+      "item": "bosses_of_mass_destruction:blazing_eye"
+    },
+    "H": {
+      "item": "bosses_of_mass_destruction:obsidian_heart"
+    }
+  },
+  "result": {
+    "item": "bosses_of_mass_destruction:monolith_block"
+  }
+}

@@ -1,5 +1,6 @@
 package net.barribob.boss.mob.mobs.gauntlet
 
+import net.barribob.boss.Mod
 import net.barribob.boss.config.GauntletConfig
 import net.barribob.boss.mob.utils.IEntityTick
 import net.barribob.boss.utils.VanillaCopies
@@ -10,6 +11,7 @@ import net.barribob.maelstrom.static_utilities.RandomUtils
 import net.barribob.maelstrom.static_utilities.VecUtils
 import net.barribob.maelstrom.static_utilities.planeProject
 import net.minecraft.block.Blocks
+import net.minecraft.block.entity.LootableContainerBlockEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
@@ -31,7 +33,7 @@ class ServerGauntletDeathHandler(
     }
 
     private fun createLoot(world: ServerWorld) {
-        for (i in 0..5) {
+        for (i in 0..4) {
             val randomDir = RandomUtils.randVec().normalize()
             val length = 8 - i
             val start = entity.pos
@@ -43,6 +45,9 @@ class ServerGauntletDeathHandler(
                 else world.setBlockState(blockPos, Blocks.NETHERRACK.defaultState)
             }
         }
+        val chestPos = entity.blockPos.up()
+        world.setBlockState(chestPos, Blocks.CHEST.defaultState, 2)
+        LootableContainerBlockEntity.setLootTable(world, entity.random, chestPos, Mod.identifier("chests/gauntlet"))
     }
 
     private fun dropExp() {

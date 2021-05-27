@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "A",
+    "H",
+    "C"
+  ],
+  "key": {
+    "C": {
+      "item": "minecraft:obsidian"
+    },
+    "A": {
+      "item": "bosses_of_mass_destruction:ancient_anima"
+    },
+    "H": {
+      "item": "bosses_of_mass_destruction:obsidian_heart"
+    }
+  },
+  "result": {
+    "item": "bosses_of_mass_destruction:mob_ward"
+  }
+}
