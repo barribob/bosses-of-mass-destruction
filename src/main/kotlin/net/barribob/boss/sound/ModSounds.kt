@@ -37,6 +37,7 @@ class ModSounds {
     val obsidilithDeath = newSound("obsidilith_death")
     val obsidilithHurt = newSound("obsidilith_hurt")
     val obsidilithWave = newSound("obsidilith_wave")
+    val soulStar = newSound("soul_star")
 
     fun init() {
         registerSound(cometShoot)
@@ -68,6 +69,7 @@ class ModSounds {
         registerSound(obsidilithDeath)
         registerSound(obsidilithHurt)
         registerSound(obsidilithWave)
+        registerSound(soulStar)
     }
 
     private fun registerSound(event: SoundEvent) {

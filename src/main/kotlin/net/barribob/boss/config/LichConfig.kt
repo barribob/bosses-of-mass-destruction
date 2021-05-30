@@ -1,18 +1,32 @@
 package net.barribob.boss.config
 
+import me.shedaniel.autoconfig.annotation.ConfigEntry
+
 class LichConfig {
     val eternalNighttime = true
+
+    @ConfigEntry.BoundedDiscrete(min = 0, max = 10000)
     val experienceDrop = 1500
     val idleHealingPerTick = 0.2f
     val health = 200.0
+    val generateLichTower = true
 
+    @ConfigEntry.Gui.CollapsibleObject
     val missile = Missile()
+
+    @ConfigEntry.Gui.CollapsibleObject
     val comet = Comet()
+
+    @ConfigEntry.Gui.CollapsibleObject
     val summonMechanic = SummonMechanic()
 
     data class Missile(
         val statusEffectId: String = "minecraft:slowness",
+
+        @ConfigEntry.BoundedDiscrete(min = 0, max = 1000)
         val statusEffectDuration: Int = 100,
+
+        @ConfigEntry.BoundedDiscrete(min = 0, max = 4)
         val statusEffectPotency: Int = 2,
         val damage: Double = 9.0
     )
@@ -24,7 +38,7 @@ class LichConfig {
 
     data class SummonMechanic(
         val isEnabled: Boolean = true,
-        val entitiesThatCountToSummonCounter: List<String> = listOf(
+        val entitiesThatCountToSummonCounter: MutableList<String> = mutableListOf(
             "minecraft:zombie",
             "minecraft:skeleton",
             "minecraft:drowned",
@@ -40,7 +54,8 @@ class LichConfig {
             "minecraft:zombie_villager",
             "minecraft:zombified_piglin"
         ),
-        val numEntitiesKilledToSummonLich: Int = 250,
-        val numEntitiesKilledToShowCounter: Int = 50
+
+        @ConfigEntry.BoundedDiscrete(min = 1, max = 1000)
+        val numEntitiesKilledToDropSoulStar: Int = 50
     )
 }

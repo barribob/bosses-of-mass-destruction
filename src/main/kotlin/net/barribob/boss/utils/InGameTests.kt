@@ -3,6 +3,7 @@ package net.barribob.boss.utils
 import io.netty.buffer.Unpooled
 import net.barribob.boss.Mod
 import net.barribob.boss.cardinalComponents.ModComponents
+import net.barribob.boss.item.SoulStarItem
 import net.barribob.boss.mob.mobs.obsidilith.BurstAction
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithUtils
 import net.barribob.boss.mob.mobs.obsidilith.PillarAction
@@ -62,7 +63,8 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
         shield.addEnchantment(Enchantments.UNBREAKING, 3)
         val pickaxe = ItemStack(Items.NETHERITE_PICKAXE)
         pickaxe.addEnchantment(Enchantments.EFFICIENCY, 4)
-        listOf(sword, bow, apples, food, arrow, shield, pickaxe).forEach { entity.giveItemStack(it) }
+        val blocks = ItemStack(Items.COBBLESTONE, 64)
+        listOf(sword, bow, apples, food, blocks, shield, pickaxe, arrow).forEach { entity.giveItemStack(it) }
         armor.forEach { entity.giveItemStack(it) }
     }
 
@@ -163,5 +165,14 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
         ModComponents.getWorldEventScheduler(source.world).addEvent(TimedEvent({
             zombie.damage(DamageSource.player(source.player), 30f)
         }, 2))
+    }
+
+    fun lichSpawn(source: ServerCommandSource){
+        SoulStarItem.spawnLich(BlockPos(source.position), source.world)
+    }
+
+    fun verifySpawnPosition(source: ServerCommandSource) {
+        val spawnPosition = HorizontalRangedSpawnPosition(source.position, 5.0, 10.0, ModRandom())
+        debugPoints.drawDebugPoints((0..100).map { spawnPosition.getPos() }, 20, source.position, source.world)
     }
 }

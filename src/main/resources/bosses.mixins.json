@@ -5,7 +5,8 @@
   "mixins": [
     "BossBarHudMixin",
     "EnderEyeUseMixin",
-    "SpawnEntryMixin"
+    "SpawnEntryMixin",
+    "IceBlockMixin"
   ],
   "injectors": {
     "defaultRequire": 1

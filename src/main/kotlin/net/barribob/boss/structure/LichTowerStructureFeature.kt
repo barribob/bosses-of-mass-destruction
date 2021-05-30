@@ -3,20 +3,24 @@ package net.barribob.boss.structure
 import com.mojang.serialization.Codec
 import net.barribob.boss.Mod
 import net.barribob.boss.utils.ModStructures
+import net.barribob.boss.utils.VanillaCopies
 import net.minecraft.structure.StructureManager
 import net.minecraft.structure.StructureStart
 import net.minecraft.util.BlockRotation
-import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockBox
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.ChunkPos
 import net.minecraft.util.registry.DynamicRegistryManager
+import net.minecraft.world.Heightmap
 import net.minecraft.world.biome.Biome
+import net.minecraft.world.biome.source.BiomeSource
+import net.minecraft.world.gen.ChunkRandom
 import net.minecraft.world.gen.chunk.ChunkGenerator
 import net.minecraft.world.gen.feature.DefaultFeatureConfig
 import net.minecraft.world.gen.feature.StructureFeature
 import net.minecraft.world.gen.feature.StructureFeature.StructureStartFactory
 
-class GauntletArenaStructureFeature(codec: Codec<DefaultFeatureConfig>) :
+class LichTowerStructureFeature(codec: Codec<DefaultFeatureConfig>) :
     StructureFeature<DefaultFeatureConfig>(codec) {
     override fun getStructureStartFactory(): StructureStartFactory<DefaultFeatureConfig> {
         return StructureStartFactory { feature: StructureFeature<DefaultFeatureConfig>, chunkX: Int, chunkZ: Int, box: BlockBox, references: Int, seed: Long ->
@@ -31,6 +35,18 @@ class GauntletArenaStructureFeature(codec: Codec<DefaultFeatureConfig>) :
         }
     }
 
+    override fun shouldStartAt(
+        chunkGenerator: ChunkGenerator,
+        biomeSource: BiomeSource,
+        l: Long,
+        chunkRandom: ChunkRandom?,
+        i: Int,
+        j: Int,
+        biome: Biome?,
+        chunkPos: ChunkPos?,
+        defaultFeatureConfig: DefaultFeatureConfig?
+    ): Boolean = VanillaCopies.shouldStartAt(this, chunkGenerator, biomeSource, i, j)
+
     class Start(
         feature: StructureFeature<DefaultFeatureConfig>,
         chunkX: Int,
@@ -39,7 +55,6 @@ class GauntletArenaStructureFeature(codec: Codec<DefaultFeatureConfig>) :
         references: Int,
         seed: Long
     ) : StructureStart<DefaultFeatureConfig>(feature, chunkX, chunkZ, box, references, seed) {
-        private val template: Identifier = Mod.identifier("gauntlet_arena")
 
         override fun init(
             registryManager: DynamicRegistryManager,
@@ -52,10 +67,27 @@ class GauntletArenaStructureFeature(codec: Codec<DefaultFeatureConfig>) :
         ) {
             val x = chunkX * 16
             val z = chunkZ * 16
-            val y = 15
-            val pos = BlockPos(x, y, z)
+            val y = chunkGenerator.getHeight(x, z, Heightmap.Type.WORLD_SURFACE_WG) - 7
             val rotation = BlockRotation.random(random)
-            children.add(ModPiece(manager, pos, template, rotation, ModStructures.gauntletArenaPiece))
+            val pos = BlockPos(x, y, z).add(BlockPos(-15, 0, -15).rotate(rotation))
+            children.add(
+                ModPiece(
+                    manager,
+                    pos,
+                    Mod.identifier("lich_tower_1"),
+                    rotation,
+                    ModStructures.lichTowerPiece
+                )
+            )
+            children.add(
+                ModPiece(
+                    manager,
+                    pos.up(59 - 11),
+                    Mod.identifier("lich_tower_2"),
+                    rotation,
+                    ModStructures.lichTowerPiece
+                )
+            )
             setBoundingBoxFromChildren()
         }
     }

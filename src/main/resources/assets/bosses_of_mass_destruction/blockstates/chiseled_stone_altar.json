@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=true": {
+      "model": "bosses_of_mass_destruction:block/chiseled_stone_altar_lit"
+    },
+    "lit=false": {
+      "model": "bosses_of_mass_destruction:block/chiseled_stone_altar"
+    }
+  }
+}

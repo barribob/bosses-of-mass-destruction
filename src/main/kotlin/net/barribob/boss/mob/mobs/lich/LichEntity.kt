@@ -158,9 +158,6 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
     private val priorityMoves = mutableListOf<IActionWithCooldown>()
     override val bossBar = ServerBossBar(this.displayName, BossBar.Color.BLUE, BossBar.Style.PROGRESS)
 
-    private val blueColorFade: (Float) -> Vec3d =
-        { MathUtils.lerpVec(it, ModColors.COMET_BLUE, ModColors.FADED_COMET_BLUE) }
-
     private val summonMissileParticleBuilder = ParticleFactories.soulFlame().age(2).colorVariation(0.5)
     private val teleportParticleBuilder = ClientParticleBuilder(Particles.DISAPPEARING_SWIRL)
         .color(ModColors.TELEPORT_PURPLE)
@@ -176,19 +173,19 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
         .age(20)
         .scale(0.5f)
     private val summonRingFactory = ParticleFactories.soulFlame()
-        .color(blueColorFade)
+        .color(LichUtils.blueColorFade)
         .colorVariation(0.5)
         .age(10)
     private val summonRingCompleteFactory = ParticleFactories.soulFlame()
         .color(ModColors.WHITE)
         .age(20, 30)
     private val deathParticleFactory = ParticleFactories.soulFlame()
-        .color(blueColorFade)
+        .color(LichUtils.blueColorFade)
         .age(40, 80)
         .colorVariation(0.5)
         .scale { 0.5f - (it * 0.3f) }
     private val idleParticles = ParticleFactories.soulFlame()
-        .color(blueColorFade)
+        .color(LichUtils.blueColorFade)
         .age(30, 40)
         .colorVariation(0.5)
         .scale { 0.25f - (it * 0.1f) }
