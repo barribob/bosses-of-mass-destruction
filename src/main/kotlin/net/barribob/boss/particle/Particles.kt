@@ -118,6 +118,12 @@ object Particles {
         FabricParticleTypes.simple()
     )
 
+    val LINE: DefaultParticleType = Registry.register(
+        Registry.PARTICLE_TYPE,
+        Mod.identifier("line"),
+        FabricParticleTypes.simple()
+    )
+
     const val FULL_BRIGHT = 15728880
 
     fun clientInit() {
@@ -296,6 +302,12 @@ object Particles {
         particleFactory.register(EYE) { provider: SpriteProvider ->
             SimpleParticleFactory(provider) {
                 SimpleParticle(it, RandomUtils.range(60, 70), VanillaCopies::buildBillboardGeometry)
+            }
+        }
+
+        particleFactory.register(LINE) { provider: SpriteProvider ->
+            SimpleParticleFactory(provider) {
+                SimpleParticle(it, RandomUtils.range(20, 30), VanillaCopies::buildBillboardGeometry)
             }
         }
     }

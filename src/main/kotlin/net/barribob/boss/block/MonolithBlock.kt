@@ -25,7 +25,6 @@ import net.minecraft.world.BlockView
 import net.minecraft.world.World
 import net.minecraft.world.WorldAccess
 import net.minecraft.world.WorldView
-import net.minecraft.world.chunk.ChunkStatus
 import kotlin.math.abs
 
 class MonolithBlock(private val factory: (() -> BlockEntity)?, settings: Settings) : Block(settings),
@@ -75,7 +74,11 @@ class MonolithBlock(private val factory: (() -> BlockEntity)?, settings: Setting
                 airState
             }
         } else {
-            if (doubleBlockHalf == DoubleBlockHalf.LOWER && direction == Direction.DOWN && !state.canPlaceAt(world, pos)) {
+            if (doubleBlockHalf == DoubleBlockHalf.LOWER && direction == Direction.DOWN && !state.canPlaceAt(
+                    world,
+                    pos
+                )
+            ) {
                 airState
             } else {
                 super.getStateForNeighborUpdate(
@@ -158,13 +161,11 @@ class MonolithBlock(private val factory: (() -> BlockEntity)?, settings: Setting
             power: Float
         ): Float {
             val chunkPos = ChunkPos(pos)
-            for (x in chunkPos.x - 4..chunkPos.x + 4) {
-                for (z in chunkPos.z - 4..chunkPos.z + 4) {
-                    val chunk = serverWorld.getChunk(x, z, ChunkStatus.FULL)
-                    val blockCache = ModComponents.getChunkBlockCache(chunk)
-
-                    if (blockCache.isPresent) {
-                        val blocks = blockCache.get().getBlocksFromChunk(ModBlocks.monolithBlock)
+            val blockCache = ModComponents.getChunkBlockCache(serverWorld)
+            if (blockCache.isPresent) {
+                for (x in chunkPos.x - 4..chunkPos.x + 4) {
+                    for (z in chunkPos.z - 4..chunkPos.z + 4) {
+                        val blocks = blockCache.get().getBlocksFromChunk(ChunkPos(x, z), ModBlocks.monolithBlock)
                         if (blocks.any { abs(it.x - pos.x) < 64 && abs(it.y - pos.y) < 64 && abs(it.z - pos.z) < 64 }) {
                             return power * 1.25f
                         }

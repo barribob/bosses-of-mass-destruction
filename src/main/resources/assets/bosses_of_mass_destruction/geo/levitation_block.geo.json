@@ -1,0 +1,59 @@
+{
+	"format_version": "1.12.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.LevitationBlock",
+				"texture_width": 64,
+				"texture_height": 64,
+				"visible_bounds_width": 2,
+				"visible_bounds_height": 2.5,
+				"visible_bounds_offset": [0, 0.75, 0]
+			},
+			"bones": [
+				{
+					"name": "bone",
+					"pivot": [8, 0, -8]
+				},
+				{
+					"name": "crystalCage",
+					"parent": "bone",
+					"pivot": [0, 18, 0],
+					"cubes": [
+						{
+							"origin": [-1.5, 16.5, -1.5],
+							"size": [3, 3, 3],
+							"uv": {
+								"north": {"uv": [40, 32], "uv_size": [3, 3]},
+								"east": {"uv": [42, 18], "uv_size": [3, 3]},
+								"south": {"uv": [42, 21], "uv_size": [3, 3]},
+								"west": {"uv": [42, 24], "uv_size": [3, 3]},
+								"up": {"uv": [42, 27], "uv_size": [3, 3]},
+								"down": {"uv": [42, 43], "uv_size": [3, -3]}
+							}
+						}
+					]
+				},
+				{
+					"name": "crystal",
+					"parent": "crystalCage",
+					"pivot": [0, 18, 0],
+					"cubes": [
+						{
+							"origin": [-1, 17, -1],
+							"size": [2, 2, 2],
+							"uv": {
+								"north": {"uv": [44, 43], "uv_size": [2, 2]},
+								"east": {"uv": [45, 18], "uv_size": [2, 2]},
+								"south": {"uv": [45, 20], "uv_size": [2, 2]},
+								"west": {"uv": [45, 22], "uv_size": [2, 2]},
+								"up": {"uv": [45, 24], "uv_size": [2, 2]},
+								"down": {"uv": [45, 28], "uv_size": [2, -2]}
+							}
+						}
+					]
+				}
+			]
+		}
+	]
+}

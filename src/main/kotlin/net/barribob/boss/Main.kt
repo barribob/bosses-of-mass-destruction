@@ -80,6 +80,7 @@ private fun initDev() {
     MaelstromMod.testCommand.addId(inGameTests::killZombies.name, inGameTests::killZombies)
     MaelstromMod.testCommand.addId(inGameTests::lichSpawn.name, inGameTests::lichSpawn)
     MaelstromMod.testCommand.addId(inGameTests::verifySpawnPosition.name, inGameTests::verifySpawnPosition)
+    MaelstromMod.testCommand.addId(inGameTests::levitationPerformance.name, inGameTests::levitationPerformance)
 }
 
 @Environment(EnvType.CLIENT)

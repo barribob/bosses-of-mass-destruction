@@ -1,7 +1,5 @@
 package net.barribob.boss.cardinalComponents
 
-import dev.onyxstudios.cca.api.v3.chunk.ChunkComponentFactoryRegistry
-import dev.onyxstudios.cca.api.v3.chunk.ChunkComponentInitializer
 import dev.onyxstudios.cca.api.v3.component.ComponentKey
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistryV3
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry
@@ -13,10 +11,9 @@ import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
-import net.minecraft.world.chunk.Chunk
 import java.util.*
 
-class ModComponents : WorldComponentInitializer, EntityComponentInitializer, ChunkComponentInitializer {
+class ModComponents : WorldComponentInitializer, EntityComponentInitializer {
     companion object : IWorldEventScheduler, ILichSummonCounter, IPlayerMoveHistory {
         private val eventSchedulerComponentKey: ComponentKey<IWorldEventSchedulerComponent> =
             ComponentRegistryV3.INSTANCE.getOrCreate(
@@ -53,24 +50,17 @@ class ModComponents : WorldComponentInitializer, EntityComponentInitializer, Chu
         override fun getPlayerPositions(serverPlayerEntity: ServerPlayerEntity): List<Vec3d> =
             playerMoveHistoryComponentKey.get(serverPlayerEntity).getHistoricalPositions()
 
-        fun getChunkBlockCache(chunk: Chunk): Optional<IChunkBlockCacheComponent> =
-            chunkBlockCacheComponentKey.maybeGet(chunk)
+        fun getChunkBlockCache(world: World): Optional<IChunkBlockCacheComponent> =
+            chunkBlockCacheComponentKey.maybeGet(world)
     }
 
     override fun registerWorldComponentFactories(registry: WorldComponentFactoryRegistry) {
-        registry.register(
-            eventSchedulerComponentKey,
-            WorldEventScheduler::class.java,
-            ::WorldEventScheduler
-        )
+        registry.register(eventSchedulerComponentKey, ::WorldEventScheduler)
+        registry.register(chunkBlockCacheComponentKey, ::ChunkBlockCacheComponent)
     }
 
     override fun registerEntityComponentFactories(registry: EntityComponentFactoryRegistry) {
         registry.registerFor(PlayerEntity::class.java, lichSummonCounterComponentKey, ::LichSummonCounter)
         registry.registerFor(ServerPlayerEntity::class.java, playerMoveHistoryComponentKey, ::PlayerMoveHistory)
-    }
-
-    override fun registerChunkComponentFactories(registry: ChunkComponentFactoryRegistry) {
-        registry.register(chunkBlockCacheComponentKey, ::ChunkBlockCacheComponent)
     }
 }

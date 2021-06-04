@@ -2,8 +2,12 @@ package net.barribob.boss.block
 
 import net.barribob.boss.Mod
 import net.barribob.boss.animation.IAnimationTimer
+import net.barribob.boss.mob.GeoModel
+import net.barribob.boss.render.IBoneLight
+import net.barribob.boss.render.ModBlockEntityRenderer
 import net.fabricmc.fabric.api.`object`.builder.v1.block.FabricBlockSettings
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap
+import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings
 import net.minecraft.block.Block
 import net.minecraft.block.Blocks
@@ -35,6 +39,11 @@ object ModBlocks {
     }
     val monolithBlock = MonolithBlock(monolithBlockEntityFactory, FabricBlockSettings.copy(Blocks.NETHERITE_BLOCK).nonOpaque().luminance { 4 })
 
+    private val levitationBlockEntityFactory: () -> BlockEntity = {
+        LevitationBlockEntity(levitationBlock, entityTypes[levitationBlock])
+    }
+    val levitationBlock = LevitationBlock(levitationBlockEntityFactory, FabricBlockSettings.copy(Blocks.ENCHANTING_TABLE).nonOpaque().luminance { 4 })
+
     fun init() {
         registerBlockAndItem(Mod.identifier("obsidilith_rune"), obsidilithRune)
         registerBlockAndItem(Mod.identifier("obsidilith_end_frame"), obsidilithSummonBlock)
@@ -44,9 +53,11 @@ object ModBlocks {
 
         val mobWardId = Mod.identifier("mob_ward")
         val monolithBlockId = Mod.identifier("monolith_block")
+        val levitationBlockId = Mod.identifier("levitation_block")
 
         registerBlockAndItem(mobWardId, mobWard, FabricItemSettings().fireproof())
         registerBlockAndItem(monolithBlockId, monolithBlock, FabricItemSettings().fireproof())
+        registerBlockAndItem(levitationBlockId, levitationBlock, FabricItemSettings().fireproof())
 
         entityTypes[mobWard] = Registry.register(
             Registry.BLOCK_ENTITY_TYPE,
@@ -59,10 +70,27 @@ object ModBlocks {
             monolithBlockId,
             BlockEntityType.Builder.create(monolithBlockEntityFactory, monolithBlock).build(null)
         )
+
+        entityTypes[levitationBlock] = Registry.register(
+            Registry.BLOCK_ENTITY_TYPE,
+            levitationBlockId,
+            BlockEntityType.Builder.create(levitationBlockEntityFactory, levitationBlock).build(null)
+        )
     }
 
     fun clientInit(animationTimer: IAnimationTimer) {
         BlockRenderLayerMap.INSTANCE.putBlock(mobWard, RenderLayer.getCutout())
+
+        BlockEntityRendererRegistry.INSTANCE.register(entityTypes[levitationBlock]) { dispatcher ->
+            ModBlockEntityRenderer(
+                dispatcher, GeoModel<LevitationBlockEntity>(
+                    { Mod.identifier("geo/levitation_block.geo.json") },
+                    { Mod.identifier("textures/block/levitation_block.png") },
+                    Mod.identifier("animations/levitation_block.animation.json"),
+                    animationTimer
+                )
+            ) { _, _ -> IBoneLight.fullbright }
+        }
     }
 
     private fun registerBlockAndItem(identifier: Identifier, block: Block, fabricItemSettings: FabricItemSettings = FabricItemSettings()) {

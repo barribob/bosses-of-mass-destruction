@@ -2,6 +2,7 @@ package net.barribob.boss.utils
 
 import io.netty.buffer.Unpooled
 import net.barribob.boss.Mod
+import net.barribob.boss.block.MonolithBlock
 import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.item.SoulStarItem
 import net.barribob.boss.mob.mobs.obsidilith.BurstAction
@@ -174,5 +175,10 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
     fun verifySpawnPosition(source: ServerCommandSource) {
         val spawnPosition = HorizontalRangedSpawnPosition(source.position, 5.0, 10.0, ModRandom())
         debugPoints.drawDebugPoints((0..100).map { spawnPosition.getPos() }, 20, source.position, source.world)
+    }
+
+    fun levitationPerformance(source: ServerCommandSource){
+//        LevitationBlockEntity.tickFlight(source.player)
+        MonolithBlock.getExplosionPower(source.world, BlockPos(source.position), 2.0f)
     }
 }

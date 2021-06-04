@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " A ",
+    "GHG",
+    "CCC"
+  ],
+  "key": {
+    "C": {
+      "item": "minecraft:obsidian"
+    },
+    "A": {
+      "item": "bosses_of_mass_destruction:ancient_anima"
+    },
+    "H": {
+      "item": "bosses_of_mass_destruction:blazing_eye"
+    },
+    "G": {
+      "item": "minecraft:gold_ingot"
+    }
+  },
+  "result": {
+    "item": "bosses_of_mass_destruction:levitation_block"
+  }
+}

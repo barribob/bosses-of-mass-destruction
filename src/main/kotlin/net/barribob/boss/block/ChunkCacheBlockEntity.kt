@@ -5,37 +5,29 @@ import net.minecraft.block.Block
 import net.minecraft.block.entity.BlockEntity
 import net.minecraft.block.entity.BlockEntityType
 import net.minecraft.util.Tickable
-import software.bernie.geckolib3.core.IAnimatable
-import software.bernie.geckolib3.core.manager.AnimationData
-import software.bernie.geckolib3.core.manager.AnimationFactory
+import net.minecraft.util.math.ChunkPos
 
-class ChunkCacheBlockEntity(private val block: Block, type: BlockEntityType<*>?) : BlockEntity(type), Tickable, IAnimatable {
+open class ChunkCacheBlockEntity(private val block: Block, type: BlockEntityType<*>?) : BlockEntity(type), Tickable {
     private var added = false
 
     override fun tick() {
+        val world = world ?: return
         if (!added) {
-            world?.getChunk(pos)?.let { chunk ->
-                ModComponents.getChunkBlockCache(chunk).ifPresent {
-                    it.addToChunk(block, pos)
-                    added = true
-                }
+            ModComponents.getChunkBlockCache(world).ifPresent {
+                it.addToChunk(ChunkPos(pos), block, pos)
+                added = true
             }
         }
     }
 
     override fun markRemoved() {
-        world?.getChunk(pos)?.let { chunk ->
-            ModComponents.getChunkBlockCache(chunk).ifPresent {
-                it.removeFromChunk(block, pos)
-                added = false
+        val world = world
+        if(world != null) {
+            ModComponents.getChunkBlockCache(world).ifPresent {
+                it.removeFromChunk(ChunkPos(pos), block, pos)
             }
+            added = false
         }
         super.markRemoved()
     }
-
-    override fun registerControllers(data: AnimationData) {
-    }
-
-    private val animationFactory = AnimationFactory(this)
-    override fun getFactory(): AnimationFactory = animationFactory
 }

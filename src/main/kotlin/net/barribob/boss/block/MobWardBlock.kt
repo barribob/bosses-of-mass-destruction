@@ -31,7 +31,6 @@ import net.minecraft.world.BlockView
 import net.minecraft.world.World
 import net.minecraft.world.WorldAccess
 import net.minecraft.world.WorldView
-import net.minecraft.world.chunk.ChunkStatus
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
 import java.util.*
 import kotlin.math.abs
@@ -200,7 +199,7 @@ class MobWardBlock(private val factory: (() -> BlockEntity)?, settings: Settings
                 val randomHeight = RandomUtils.double(0.25) + 0.25
                 val randomRadius = RandomUtils.double(0.1) + 0.3
                 val randomOffset = RandomUtils.double(Math.PI)
-                blueFireParticleFactory.continuousPosition{
+                blueFireParticleFactory.continuousPosition {
                     calcParticlePos(
                         vecPos,
                         randomOffset,
@@ -208,11 +207,15 @@ class MobWardBlock(private val factory: (() -> BlockEntity)?, settings: Settings
                         randomHeight,
                         it.getAge().toDouble() * 0.1
                     )
-                }.build(calcParticlePos(vecPos,
-                    randomOffset,
-                    randomRadius,
-                    randomHeight,
-                    .0))
+                }.build(
+                    calcParticlePos(
+                        vecPos,
+                        randomOffset,
+                        randomRadius,
+                        randomHeight,
+                        .0
+                    )
+                )
             }
         }
     }
@@ -223,10 +226,13 @@ class MobWardBlock(private val factory: (() -> BlockEntity)?, settings: Settings
         randomRadius: Double,
         randomHeight: Double,
         age: Double
-    ): Vec3d = vecPos.add(Vec3d(
-        sin(age + randomOffset) * randomRadius,
-        randomHeight + age * 0.3,
-        cos(age + randomOffset) * randomRadius))
+    ): Vec3d = vecPos.add(
+        Vec3d(
+            sin(age + randomOffset) * randomRadius,
+            randomHeight + age * 0.3,
+            cos(age + randomOffset) * randomRadius
+        )
+    )
 
     companion object {
         val blockShape: VoxelShape = createCuboidShape(5.0, 0.0, 5.0, 11.0, 16.0, 11.0)
@@ -237,11 +243,10 @@ class MobWardBlock(private val factory: (() -> BlockEntity)?, settings: Settings
             if (cir.returnValue == false) return
 
             val chunkPos = ChunkPos(pos)
-            for (x in chunkPos.x - 4..chunkPos.x + 4) {
-                for (z in chunkPos.z - 4..chunkPos.z + 4) {
-                    val chunk = serverWorld.getChunk(x, z, ChunkStatus.FULL)
-                    ModComponents.getChunkBlockCache(chunk).ifPresent { component ->
-                        val blocks = component.getBlocksFromChunk(ModBlocks.mobWard)
+            ModComponents.getChunkBlockCache(serverWorld).ifPresent { component ->
+                for (x in chunkPos.x - 4..chunkPos.x + 4) {
+                    for (z in chunkPos.z - 4..chunkPos.z + 4) {
+                        val blocks = component.getBlocksFromChunk(ChunkPos(x, z), ModBlocks.mobWard)
                         if (blocks.any { abs(it.x - pos.x) < 64 && abs(it.y - pos.y) < 64 && abs(it.z - pos.z) < 64 }) {
                             cir.returnValue = false
                         }

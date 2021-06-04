@@ -24,6 +24,9 @@
   "item.bosses_of_mass_destruction.monolith_block.tooltip_0" : "When placed, increases explosion power by 25% in any",
   "item.bosses_of_mass_destruction.monolith_block.tooltip_1" : "64 block direction. This effect cannot stack",
 
+  "block.bosses_of_mass_destruction.levitation_block" : "Table of Elevation",
+  "item.bosses_of_mass_destruction.levitation_block.tooltip" : "When placed, grants creative flight in a 7x7 column",
+
   "advancements.nether.gauntlet_defeat.title": "Through the Gauntlet",
   "advancements.nether.gauntlet_defeat.description" : "Defeat the Nether Gauntlet Boss",
 
