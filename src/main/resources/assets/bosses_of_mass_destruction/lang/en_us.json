@@ -11,6 +11,8 @@
   "block.bosses_of_mass_destruction.gauntlet_blackstone" : "Ancient Carved Blackstone",
   "block.bosses_of_mass_destruction.chiseled_stone_altar" : "Chiseled Stone Altar",
 
+  "itemGroup.bosses_of_mass_destruction.items" : "Bosses of Mass Destruction",
+
   "item.bosses_of_mass_destruction.soul_star" : "Soul Star",
   "item.bosses_of_mass_destruction.soul_star.tooltip" : "Where does it lead?",
   "item.bosses_of_mass_destruction.ancient_anima" : "Ancient Anima",
