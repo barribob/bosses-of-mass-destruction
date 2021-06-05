@@ -82,7 +82,6 @@ class MobWardBlock(private val factory: (() -> BlockEntity)?, settings: Settings
         return when (thisState) {
             TripleBlockPart.BOTTOM -> when (direction) {
                 Direction.UP -> if (otherState && newState.get(tripleBlockPart) == TripleBlockPart.MIDDLE) facingState else air
-                Direction.DOWN -> if (state.canPlaceAt(world, pos)) superState else air
                 else -> superState
             }
             TripleBlockPart.MIDDLE -> when (direction) {

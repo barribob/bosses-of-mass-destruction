@@ -74,22 +74,14 @@ class MonolithBlock(private val factory: (() -> BlockEntity)?, settings: Setting
                 airState
             }
         } else {
-            if (doubleBlockHalf == DoubleBlockHalf.LOWER && direction == Direction.DOWN && !state.canPlaceAt(
-                    world,
-                    pos
-                )
-            ) {
-                airState
-            } else {
-                super.getStateForNeighborUpdate(
-                    state,
-                    direction,
-                    newState,
-                    world,
-                    pos,
-                    posFrom
-                )
-            }
+            super.getStateForNeighborUpdate(
+                state,
+                direction,
+                newState,
+                world,
+                pos,
+                posFrom
+            )
         }
     }
 

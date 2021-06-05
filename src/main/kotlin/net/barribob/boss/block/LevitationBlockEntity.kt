@@ -28,7 +28,7 @@ class LevitationBlockEntity(block: Block, type: BlockEntityType<*>?) : ChunkCach
     private val particlesFactory = ClientParticleBuilder(Particles.LINE)
         .color(ModColors.COMET_BLUE)
         .brightness(Particles.FULL_BRIGHT)
-        .colorVariation(0.25)
+        .colorVariation(0.5)
         .scale(0.05f)
 
     override fun registerControllers(data: AnimationData) {

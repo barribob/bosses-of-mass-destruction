@@ -55,8 +55,8 @@ class ModComponents : WorldComponentInitializer, EntityComponentInitializer {
     }
 
     override fun registerWorldComponentFactories(registry: WorldComponentFactoryRegistry) {
-        registry.register(eventSchedulerComponentKey, ::WorldEventScheduler)
-        registry.register(chunkBlockCacheComponentKey, ::ChunkBlockCacheComponent)
+        registry.register(eventSchedulerComponentKey, WorldEventScheduler::class.java, ::WorldEventScheduler)
+        registry.register(chunkBlockCacheComponentKey, ChunkBlockCacheComponent::class.java, ::ChunkBlockCacheComponent)
     }
 
     override fun registerEntityComponentFactories(registry: EntityComponentFactoryRegistry) {
