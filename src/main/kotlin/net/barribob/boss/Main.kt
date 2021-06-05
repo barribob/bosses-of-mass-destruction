@@ -39,6 +39,8 @@ object Mod {
 @Suppress("unused")
 fun init() {
     AutoConfig.register(ModConfig::class.java, ::JanksonConfigSerializer)
+    AutoConfig.getConfigHolder(ModConfig::class.java).config.postInit()
+    AutoConfig.getConfigHolder(ModConfig::class.java).save()
 
     GeckoLib.initialize()
 

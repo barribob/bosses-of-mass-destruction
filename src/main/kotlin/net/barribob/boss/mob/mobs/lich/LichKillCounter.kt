@@ -15,7 +15,7 @@ import net.minecraft.util.Identifier
 import net.minecraft.util.registry.Registry
 
 class LichKillCounter(private val config: LichConfig.SummonMechanic) : ServerEntityCombatEvents.AfterKilledOtherEntity {
-    private val countedEntities = config.entitiesThatCountToSummonCounter.map { Registry.ENTITY_TYPE[Identifier(it)] }
+    private val countedEntities = config.entitiesThatCountToSummonCounter?.map { Registry.ENTITY_TYPE[Identifier(it)] } ?: listOf()
 
     override fun afterKilledOtherEntity(sWorld: ServerWorld, entity: Entity, killedEntity: LivingEntity) {
         if (entity is ServerPlayerEntity && killedEntity.type in countedEntities) {

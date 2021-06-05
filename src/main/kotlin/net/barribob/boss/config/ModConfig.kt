@@ -19,4 +19,31 @@ class ModConfig : ConfigData {
     @ConfigEntry.Category("Gauntlet")
     @TransitiveObject
     val gauntletConfig = GauntletConfig()
+
+    fun postInit() {
+        val entitiesThatCountToSummonCounter = lichConfig.summonMechanic.entitiesThatCountToSummonCounter
+        if (entitiesThatCountToSummonCounter == null) {
+            val defaultEntities = mutableListOf(
+                "minecraft:zombie",
+                "minecraft:skeleton",
+                "minecraft:drowned",
+                "minecraft:giant",
+                "minecraft:husk",
+                "minecraft:phantom",
+                "minecraft:skeleton_horse",
+                "minecraft:stray",
+                "minecraft:wither",
+                "minecraft:wither_skeleton",
+                "minecraft:zoglin",
+                "minecraft:zombie_horse",
+                "minecraft:zombie_villager",
+                "minecraft:zombified_piglin"
+            )
+            lichConfig.summonMechanic.entitiesThatCountToSummonCounter = defaultEntities.toMutableList()
+        }
+        else {
+            lichConfig.summonMechanic.entitiesThatCountToSummonCounter =
+                entitiesThatCountToSummonCounter.toSet().toMutableList()
+        }
+    }
 }

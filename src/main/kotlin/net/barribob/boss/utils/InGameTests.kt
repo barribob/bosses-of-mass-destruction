@@ -161,7 +161,6 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
         val zombie = EntityType.ZOMBIE.create(source.world) ?: return
         val pos = source.player.pos.add(VecUtils.yAxis.multiply(-5.0))
         zombie.setPos(pos)
-        if(source.world.getBlockState(BlockPos(pos).up()).block != Blocks.LAVA.defaultState) source.world.setBlockState(BlockPos(pos).up(), Blocks.LAVA.defaultState)
         source.world.spawnEntity(zombie)
         ModComponents.getWorldEventScheduler(source.world).addEvent(TimedEvent({
             zombie.damage(DamageSource.player(source.player), 30f)

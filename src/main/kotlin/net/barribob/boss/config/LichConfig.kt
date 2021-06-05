@@ -38,22 +38,8 @@ class LichConfig {
 
     data class SummonMechanic(
         val isEnabled: Boolean = true,
-        val entitiesThatCountToSummonCounter: MutableList<String> = mutableListOf(
-            "minecraft:zombie",
-            "minecraft:skeleton",
-            "minecraft:drowned",
-            "minecraft:giant",
-            "minecraft:husk",
-            "minecraft:phantom",
-            "minecraft:skeleton_horse",
-            "minecraft:stray",
-            "minecraft:wither",
-            "minecraft:wither_skeleton",
-            "minecraft:zoglin",
-            "minecraft:zombie_horse",
-            "minecraft:zombie_villager",
-            "minecraft:zombified_piglin"
-        ),
+
+        var entitiesThatCountToSummonCounter: MutableList<String>? = null,
 
         @ConfigEntry.BoundedDiscrete(min = 1, max = 1000)
         val numEntitiesKilledToDropSoulStar: Int = 50
