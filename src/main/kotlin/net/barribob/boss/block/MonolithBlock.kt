@@ -159,7 +159,7 @@ class MonolithBlock(private val factory: (() -> BlockEntity)?, settings: Setting
                     for (z in chunkPos.z - 4..chunkPos.z + 4) {
                         val blocks = blockCache.get().getBlocksFromChunk(ChunkPos(x, z), ModBlocks.monolithBlock)
                         if (blocks.any { abs(it.x - pos.x) < 64 && abs(it.y - pos.y) < 64 && abs(it.z - pos.z) < 64 }) {
-                            return power * 1.25f
+                            return power * 1.3f
                         }
                     }
                 }

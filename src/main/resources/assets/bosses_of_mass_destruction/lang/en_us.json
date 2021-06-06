@@ -23,7 +23,7 @@
   "item.bosses_of_mass_destruction.mob_ward.tooltip" : "When placed, mobs won't spawn in any 64 block direction",
 
   "block.bosses_of_mass_destruction.monolith_block" : "Blast Amplifier",
-  "item.bosses_of_mass_destruction.monolith_block.tooltip_0" : "When placed, increases explosion power by 25% in any",
+  "item.bosses_of_mass_destruction.monolith_block.tooltip_0" : "When placed, increases explosion power by 30% in any",
   "item.bosses_of_mass_destruction.monolith_block.tooltip_1" : "64 block direction. This effect cannot stack",
 
   "block.bosses_of_mass_destruction.levitation_block" : "Table of Elevation",

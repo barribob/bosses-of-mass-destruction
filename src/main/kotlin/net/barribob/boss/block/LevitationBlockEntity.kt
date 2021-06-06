@@ -29,7 +29,7 @@ class LevitationBlockEntity(block: Block, type: BlockEntityType<*>?) : ChunkCach
         .color(ModColors.COMET_BLUE)
         .brightness(Particles.FULL_BRIGHT)
         .colorVariation(0.5)
-        .scale(0.05f)
+        .scale(0.075f)
 
     override fun registerControllers(data: AnimationData) {
         data.addAnimationController(
@@ -68,6 +68,8 @@ class LevitationBlockEntity(block: Block, type: BlockEntityType<*>?) : ChunkCach
     private fun randYPos(x: Double, player: PlayerEntity, z: Double) = Vec3d(x, player.y + RandomUtils.double(0.5) + 1, z)
 
     companion object {
+        private val flight = HashSet<ServerPlayerEntity>()
+
         fun tickFlight(player: ServerPlayerEntity) {
             val blockToCheck = mutableListOf<BlockPos>()
             for (x in -1..1) {
@@ -87,13 +89,29 @@ class LevitationBlockEntity(block: Block, type: BlockEntityType<*>?) : ChunkCach
                 }
             }
 
-            if (!hasLevitationBlock && !player.isCreative) {
-                player.abilities.allowFlying = false
-                player.abilities.flying = false
-                player.networkHandler.sendPacket(PlayerAbilitiesS2CPacket(player.abilities))
-            } else if (!player.abilities.allowFlying) {
-                player.abilities.allowFlying = true
-                player.networkHandler.sendPacket(PlayerAbilitiesS2CPacket(player.abilities))
+            /**
+             * Known bugs:
+             * - does not have persistence (e.g. loading why flying will fall next time it is opened, though without fall damage)
+             * - does not handle changing gamemodes that change these abilities (e.g. changing to survival or losing the flying ability
+             * from taking another modded item off will not work as expected.)
+             * - However, it will be more-or-less able to work with other mods that mess with the flight ability provided that
+             * they do not set it every tick
+             */
+            if (!hasLevitationBlock) {
+                if (flight.contains(player)) {
+                    if (!player.isCreative && !player.isSpectator) {
+                        player.abilities.allowFlying = false
+                        player.abilities.flying = false
+                        player.networkHandler.sendPacket(PlayerAbilitiesS2CPacket(player.abilities))
+                    }
+                    flight.remove(player)
+                }
+            } else if (!flight.contains(player)) {
+                flight.add(player)
+                if (!player.abilities.allowFlying) {
+                    player.abilities.allowFlying = true
+                    player.networkHandler.sendPacket(PlayerAbilitiesS2CPacket(player.abilities))
+                }
             }
         }
 
