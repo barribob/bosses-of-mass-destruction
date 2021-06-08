@@ -32,17 +32,26 @@ object ModBlocks {
     private val mobWardBlockEntityFactory: () -> BlockEntity = {
         ChunkCacheBlockEntity(mobWard, entityTypes[mobWard])
     }
-    val mobWard = MobWardBlock(mobWardBlockEntityFactory, FabricBlockSettings.copy(Blocks.OBSIDIAN).nonOpaque().luminance { 15 })
+    val mobWard = MobWardBlock(mobWardBlockEntityFactory, FabricBlockSettings.copy(Blocks.OBSIDIAN)
+        .nonOpaque()
+        .luminance { 15 }
+        .strength(10.0F, 1200.0F))
 
     private val monolithBlockEntityFactory: () -> BlockEntity = {
         ChunkCacheBlockEntity(monolithBlock, entityTypes[monolithBlock])
     }
-    val monolithBlock = MonolithBlock(monolithBlockEntityFactory, FabricBlockSettings.copy(Blocks.NETHERITE_BLOCK).nonOpaque().luminance { 4 })
+    val monolithBlock = MonolithBlock(monolithBlockEntityFactory, FabricBlockSettings.copy(Blocks.NETHERITE_BLOCK)
+        .nonOpaque()
+        .luminance { 4 }
+        .strength(10.0F, 1200.0F))
 
     private val levitationBlockEntityFactory: () -> BlockEntity = {
         LevitationBlockEntity(levitationBlock, entityTypes[levitationBlock])
     }
-    val levitationBlock = LevitationBlock(levitationBlockEntityFactory, FabricBlockSettings.copy(Blocks.ENCHANTING_TABLE).nonOpaque().luminance { 4 })
+    val levitationBlock = LevitationBlock(levitationBlockEntityFactory, FabricBlockSettings.copy(Blocks.ENCHANTING_TABLE)
+        .nonOpaque()
+        .luminance { 4 }
+        .strength(10.0F, 1200.0F))
 
     fun init() {
         registerBlockAndItem(Mod.identifier("obsidilith_rune"), obsidilithRune)
