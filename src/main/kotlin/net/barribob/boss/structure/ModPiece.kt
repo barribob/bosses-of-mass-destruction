@@ -1,6 +1,7 @@
 package net.barribob.boss.structure
 
-import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.NbtCompound
+import net.minecraft.server.world.ServerWorld
 import net.minecraft.structure.*
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor
 import net.minecraft.util.BlockMirror
@@ -16,17 +17,20 @@ import java.util.*
  */
 class ModPiece : SimpleStructurePiece {
     private val rot: BlockRotation
-    private val template: Identifier
     private val metadataHandler: IMetadataHandler?
 
-    constructor(structureManager: StructureManager, compoundTag: CompoundTag, type: StructurePieceType) : super(
+    constructor(serverWorld: ServerWorld, NbtCompound: NbtCompound, type: StructurePieceType) : super(
         type,
-        compoundTag
+        NbtCompound,
+        serverWorld,
+        {
+            StructurePlacementData()
+            .setRotation(BlockRotation.valueOf(NbtCompound.getString("Rot")))
+            .setMirror(BlockMirror.NONE)
+            .addProcessor(BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS) }
     ) {
-        template = Identifier(compoundTag.getString("Template"))
-        this.rot = BlockRotation.valueOf(compoundTag.getString("Rot"))
+        this.rot = BlockRotation.valueOf(NbtCompound.getString("Rot"))
         metadataHandler = null
-        initializeStructureData(structureManager)
     }
 
     constructor(
@@ -36,27 +40,20 @@ class ModPiece : SimpleStructurePiece {
         rotation: BlockRotation,
         type: StructurePieceType,
         metadataHandler: IMetadataHandler? = null
-    ) : super(type, 0) {
-        this.pos = pos
-        this.rot = rotation
-        this.template = template
-        this.metadataHandler = metadataHandler
-        initializeStructureData(structureManager)
-    }
-
-    private fun initializeStructureData(structureManager: StructureManager) {
-        val structure: Structure = structureManager.getStructureOrBlank(template)
-        val placementData = StructurePlacementData()
-            .setRotation(this.rot)
+    ) : super(
+        type, 0, structureManager, template, template.toString(),
+        StructurePlacementData()
+            .setRotation(rotation)
             .setMirror(BlockMirror.NONE)
-            .addProcessor(BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS)
-        setStructureData(structure, pos, placementData)
+            .addProcessor(BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS), pos
+    ) {
+        this.rot = rotation
+        this.metadataHandler = metadataHandler
     }
 
-    override fun toNbt(tag: CompoundTag) {
-        super.toNbt(tag)
-        tag.putString("Template", template.toString())
-        tag.putString("Rot", this.rot.name)
+    override fun writeNbt(world: ServerWorld?, nbt: NbtCompound) {
+        super.writeNbt(world, nbt)
+        nbt.putString("Rot", this.rot.name)
     }
 
     override fun handleMetadata(

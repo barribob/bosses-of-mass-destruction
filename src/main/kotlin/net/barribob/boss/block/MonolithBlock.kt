@@ -2,8 +2,11 @@ package net.barribob.boss.block
 
 import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.utils.VanillaCopies
+import net.fabricmc.fabric.api.`object`.builder.v1.block.entity.FabricBlockEntityTypeBuilder
 import net.minecraft.block.*
 import net.minecraft.block.entity.BlockEntity
+import net.minecraft.block.entity.BlockEntityTicker
+import net.minecraft.block.entity.BlockEntityType
 import net.minecraft.block.enums.DoubleBlockHalf
 import net.minecraft.client.item.TooltipContext
 import net.minecraft.entity.LivingEntity
@@ -27,7 +30,7 @@ import net.minecraft.world.WorldAccess
 import net.minecraft.world.WorldView
 import kotlin.math.abs
 
-class MonolithBlock(private val factory: (() -> BlockEntity)?, settings: Settings) : Block(settings),
+class MonolithBlock(private val factory: (FabricBlockEntityTypeBuilder.Factory<ChunkCacheBlockEntity>)?, settings: Settings) : BlockWithEntity(settings),
     BlockEntityProvider {
 
     init {
@@ -46,7 +49,16 @@ class MonolithBlock(private val factory: (() -> BlockEntity)?, settings: Setting
         tooltip.add(TranslatableText("item.bosses_of_mass_destruction.monolith_block.tooltip_1").formatted(Formatting.DARK_GRAY))
     }
 
-    override fun createBlockEntity(world: BlockView?): BlockEntity? = factory?.invoke()
+    override fun createBlockEntity(pos: BlockPos?, state: BlockState?): BlockEntity? = factory?.create(pos, state)
+    override fun getRenderType(state: BlockState?): BlockRenderType = BlockRenderType.MODEL
+
+    override fun <T : BlockEntity?> getTicker(
+        world: World?,
+        state: BlockState?,
+        type: BlockEntityType<T>?
+    ): BlockEntityTicker<T>? {
+        return checkType(type, ModBlocks.monolithEntityType, ChunkCacheBlockEntity::tick)
+    }
 
     override fun getOutlineShape(
         state: BlockState,

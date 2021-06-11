@@ -35,7 +35,7 @@ class BlindnessAction(
 
         eventScheduler.addEvent(TimedEvent({
             val players: List<PlayerEntity> = entity.world.getPlayers(
-                TargetPredicate().setBaseMaxDistance(64.0),
+                TargetPredicate.createAttackable().setBaseMaxDistance(64.0),
                 entity,
                 Box(entity.pos, entity.pos).expand(64.0, 32.0, 64.0)
             )

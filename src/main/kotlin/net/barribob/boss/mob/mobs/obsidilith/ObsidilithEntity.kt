@@ -30,7 +30,7 @@ import net.minecraft.entity.boss.ServerBossBar
 import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.effect.StatusEffects
 import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.NbtCompound
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvent
@@ -172,9 +172,7 @@ class ObsidilithEntity(
 
     override fun checkDespawn() = ModUtils.preventDespawnExceptPeaceful(this, world)
 
-    override fun handleFallDamage(fallDistance: Float, damageMultiplier: Float): Boolean {
-        return false
-    }
+    override fun handleFallDamage(fallDistance: Float, damageMultiplier: Float, damageSource: DamageSource?) = false
 
     fun isShielded(): Boolean = getDataTracker().get(ObsidilithUtils.isShielded)
 
@@ -182,16 +180,16 @@ class ObsidilithEntity(
         activePillars.add(pos)
     }
 
-    override fun toTag(tag: CompoundTag): CompoundTag {
-        tag.putIntArray(::activePillars.name, activePillars.flatMap { listOf(it.x, it.y, it.z) })
-        return super.toTag(tag)
+    override fun writeNbt(nbt: NbtCompound?): NbtCompound {
+        nbt?.putIntArray(::activePillars.name, activePillars.flatMap { listOf(it.x, it.y, it.z) })
+        return super.writeNbt(nbt)
     }
 
-    override fun fromTag(tag: CompoundTag) {
-        super.fromTag(tag)
-        if (tag.contains(::activePillars.name)) {
+    override fun readNbt(nbt: NbtCompound) {
+        super.readNbt(nbt)
+        if (nbt.contains(::activePillars.name)) {
             activePillars.addAll(
-                tag.getIntArray(::activePillars.name).asIterable().chunked(3).map { BlockPos(it[0], it[1], it[2]) })
+                nbt.getIntArray(::activePillars.name).asIterable().chunked(3).map { BlockPos(it[0], it[1], it[2]) })
         }
     }
 }

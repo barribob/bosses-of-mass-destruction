@@ -4,21 +4,19 @@ import net.minecraft.block.entity.BlockEntity
 import net.minecraft.client.render.RenderLayer
 import net.minecraft.client.render.VertexConsumer
 import net.minecraft.client.render.VertexConsumerProvider
-import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher
 import net.minecraft.client.util.math.MatrixStack
-import net.minecraft.client.util.math.Vector4f
 import net.minecraft.util.Identifier
+import net.minecraft.util.math.Vector4f
 import software.bernie.geckolib3.core.IAnimatable
 import software.bernie.geckolib3.geo.render.built.GeoBone
 import software.bernie.geckolib3.model.AnimatedGeoModel
-import software.bernie.geckolib3.renderer.geo.GeoBlockRenderer
+import software.bernie.geckolib3.renderers.geo.GeoBlockRenderer
 
 class ModBlockEntityRenderer<T>(
-    rendererDispatcherIn: BlockEntityRenderDispatcher?,
     modelProvider: AnimatedGeoModel<T>?,
     private val iBoneLight: IBoneLight? = null,
-    ) : GeoBlockRenderer<T>(
-    rendererDispatcherIn, modelProvider
+) : GeoBlockRenderer<T>(
+    modelProvider
 ) where T : BlockEntity, T : IAnimatable {
     override fun getRenderType(
         animatable: T,

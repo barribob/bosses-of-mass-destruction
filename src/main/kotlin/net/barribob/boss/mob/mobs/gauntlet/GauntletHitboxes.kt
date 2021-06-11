@@ -112,7 +112,7 @@ class GauntletHitboxes(val entity: GauntletEntity) : IDamageHandler {
         if (!damageSource.isProjectile) {
             val entity: Entity? = damageSource.source
             if (entity is LivingEntity) {
-                entity.takeKnockback(0.5f, actor.x - entity.getX(), actor.z - entity.getZ())
+                entity.takeKnockback(0.5, actor.x - entity.getX(), actor.z - entity.getZ())
             }
         }
         entity.playSound(Mod.sounds.gauntletClink, 1.0f, actor.random.randomPitch())

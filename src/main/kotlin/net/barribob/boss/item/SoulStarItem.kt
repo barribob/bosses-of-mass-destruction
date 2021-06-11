@@ -22,7 +22,7 @@ import net.minecraft.item.EnderEyeItem
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.item.ItemUsageContext
-import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.NbtCompound
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvents
@@ -143,7 +143,7 @@ class SoulStarItem(settings: Settings?) : Item(settings) {
                         SoundEvents.ENTITY_ENDER_EYE_LAUNCH,
                         SoundCategory.NEUTRAL,
                         0.5f,
-                        0.4f / (RANDOM.nextFloat() * 0.4f + 0.8f)
+                        0.4f / (world.random.nextFloat() * 0.4f + 0.8f)
                     )
                     if (!user.abilities.creativeMode) {
                         itemStack.decrement(1)
@@ -160,7 +160,7 @@ class SoulStarItem(settings: Settings?) : Item(settings) {
 
     companion object {
         fun spawnLich(blockPos: BlockPos, world: World) {
-            val compoundTag = CompoundTag()
+            val compoundTag = NbtCompound()
             compoundTag.putString("id", Mod.identifier("lich").toString())
 
             val spawnPos = blockPos.asVec3d()

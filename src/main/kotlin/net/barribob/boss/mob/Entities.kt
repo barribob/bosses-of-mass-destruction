@@ -25,6 +25,7 @@ import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityCombatEvents
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.render.RenderLayer
+import net.minecraft.client.render.entity.EntityRendererFactory
 import net.minecraft.client.render.entity.FlyingItemEntityRenderer
 import net.minecraft.client.util.GlfwUtil
 import net.minecraft.entity.*
@@ -115,10 +116,10 @@ object Entities {
     fun clientInit(animationTimer: IAnimationTimer) {
         val pauseSecondTimer = PauseAnimationTimer({ GlfwUtil.getTime() }, { MinecraftClient.getInstance().isPaused })
 
-        EntityRendererRegistry.INSTANCE.register(LICH) { entityRenderDispatcher, _ ->
+        EntityRendererRegistry.INSTANCE.register(LICH) { context ->
             val texture = Mod.identifier("textures/entity/lich.png")
             SimpleLivingGeoRenderer(
-                entityRenderDispatcher, GeoModel(
+                context, GeoModel(
                     { Mod.identifier("geo/lich.geo.json") },
                     { texture },
                     Mod.identifier("animations/lich.animation.json"),
@@ -132,7 +133,7 @@ object Entities {
             )
         }
 
-        EntityRendererRegistry.INSTANCE.register(OBSIDILITH) { entityRenderDispatcher, _ ->
+        EntityRendererRegistry.INSTANCE.register(OBSIDILITH) { context ->
             val runeColorHandler = ObsidilithBoneLight()
             val modelProvider = GeoModel<ObsidilithEntity>(
                 { Mod.identifier("geo/obsidilith.geo.json") },
@@ -142,7 +143,7 @@ object Entities {
             )
             val armorRenderer = ObsidilithArmorRenderer(modelProvider)
             val obsidilithRenderer = SimpleLivingGeoRenderer(
-                entityRenderDispatcher,
+                context,
                 modelProvider,
                 renderer = CompositeRenderer(armorRenderer, runeColorHandler),
                 renderWithModel = armorRenderer,
@@ -154,11 +155,11 @@ object Entities {
 
         val missileTexture = Mod.identifier("textures/entity/blue_magic_missile.png")
         val magicMissileRenderLayer = RenderLayer.getEntityCutoutNoCull(missileTexture)
-        EntityRendererRegistry.INSTANCE.register(MAGIC_MISSILE) { entityRenderDispatcher, _ ->
+        EntityRendererRegistry.INSTANCE.register(MAGIC_MISSILE) { context ->
             SimpleEntityRenderer(
-                entityRenderDispatcher,
+                context,
                 CompositeRenderer(
-                    BillboardRenderer(entityRenderDispatcher, magicMissileRenderLayer) { 0.5f },
+                    BillboardRenderer(context.renderDispatcher, magicMissileRenderLayer) { 0.5f },
                     ConditionalRenderer(
                         WeakHashPredicate<MagicMissileProjectile> { FrameLimiter(20f, pauseSecondTimer)::canDoFrame },
                         LerpedPosRenderer {
@@ -170,12 +171,12 @@ object Entities {
             )
         }
 
-        EntityRendererRegistry.INSTANCE.register(SOUL_STAR) { entityRenderDispatcher, context ->
-            FlyingItemEntityRenderer<SoulStarEntity>(entityRenderDispatcher, context.itemRenderer, 1.0f, true)
+        EntityRendererRegistry.INSTANCE.register(SOUL_STAR) { context ->
+            FlyingItemEntityRenderer(context, 1.0f, true)
         }
 
-        EntityRendererRegistry.INSTANCE.register(COMET) { entityRenderDispatcher, _ ->
-            ModGeoRenderer(entityRenderDispatcher, GeoModel(
+        EntityRendererRegistry.INSTANCE.register(COMET) { context ->
+            ModGeoRenderer(context, GeoModel(
                 { Mod.identifier("geo/comet.geo.json") },
                 { Mod.identifier("textures/entity/comet.png") },
                 Mod.identifier("animations/comet.animation.json"),
@@ -191,7 +192,7 @@ object Entities {
             )
         }
 
-        EntityRendererRegistry.INSTANCE.register(GAUNTLET) { entityRenderDispatcher, _ ->
+        EntityRendererRegistry.INSTANCE.register(GAUNTLET) { context ->
             val modelProvider = GeoModel(
                 { Mod.identifier("geo/gauntlet.geo.json") },
                 GauntletTextureProvider(),
@@ -202,7 +203,7 @@ object Entities {
             val energyRenderer = GauntletEnergyRenderer(modelProvider)
             val overlayOverride = GauntletOverlay()
             SimpleLivingGeoRenderer(
-                entityRenderDispatcher, modelProvider,
+                context, modelProvider,
                 renderer = CompositeRenderer(
                     GauntletLaserRenderer(),
                     ConditionalRenderer(

@@ -38,7 +38,7 @@ class LaserAction(
         serverWorld.playSound(entity.pos, Mod.sounds.gauntletLaserCharge, SoundCategory.HOSTILE, 3.0f, 1.0f, 64.0)
 
         val sendStartToClient = TimedEvent({
-            entity.dataTracker.set(laserTarget, target.entityId)
+            entity.dataTracker.set(laserTarget, target.id)
         }, 25, shouldCancel = cancelAction)
 
         val applyLaser = TimedEvent({

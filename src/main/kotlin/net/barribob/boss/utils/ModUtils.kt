@@ -71,7 +71,7 @@ object ModUtils {
 
     fun preventDespawnExceptPeaceful(entity: MobEntity, world: World) {
         if (world.difficulty == Difficulty.PEACEFUL) {
-            entity.remove()
+            entity.discard()
         } else {
             entity.despawnCounter = 0
         }

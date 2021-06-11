@@ -18,15 +18,8 @@ import software.bernie.geckolib3.core.manager.AnimationData
 import software.bernie.geckolib3.core.manager.AnimationFactory
 
 class CometProjectile : BaseThrownItemEntity, IAnimatable {
-    var impacted: Boolean = false
+    private var impacted: Boolean = false
     private var impactAction: ((Vec3d) -> Unit)? = null
-
-    constructor(
-        d: Double,
-        e: Double,
-        f: Double,
-        world: World,
-    ) : super(Entities.COMET, d, e, f, world)
 
     constructor(entityType: EntityType<out ThrownItemEntity>, world: World?) : super(entityType, world)
 
@@ -46,7 +39,7 @@ class CometProjectile : BaseThrownItemEntity, IAnimatable {
         val owner = owner
         if (owner != null && owner is LivingEntity) {
             impactAction?.let { it(pos) }
-            remove()
+            discard()
         }
     }
 

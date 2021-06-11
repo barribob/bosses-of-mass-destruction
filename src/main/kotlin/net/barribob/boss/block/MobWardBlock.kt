@@ -7,9 +7,13 @@ import net.barribob.boss.particle.Particles
 import net.barribob.maelstrom.static_utilities.RandomUtils
 import net.barribob.maelstrom.static_utilities.VecUtils
 import net.barribob.maelstrom.static_utilities.asVec3d
+import net.fabricmc.fabric.api.`object`.builder.v1.block.entity.FabricBlockEntityTypeBuilder
 import net.minecraft.block.*
 import net.minecraft.block.entity.BlockEntity
+import net.minecraft.block.entity.BlockEntityTicker
+import net.minecraft.block.entity.BlockEntityType
 import net.minecraft.client.item.TooltipContext
+import net.minecraft.entity.EntityType
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemPlacementContext
@@ -37,7 +41,8 @@ import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sin
 
-class MobWardBlock(private val factory: (() -> BlockEntity)?, settings: Settings) : Block(settings),
+class MobWardBlock(private val factory: (FabricBlockEntityTypeBuilder.Factory<ChunkCacheBlockEntity>)?, settings: Settings) :
+    BlockWithEntity(settings),
     BlockEntityProvider {
     init {
         defaultState = stateManager.defaultState
@@ -45,7 +50,16 @@ class MobWardBlock(private val factory: (() -> BlockEntity)?, settings: Settings
             .with(tripleBlockPart, TripleBlockPart.BOTTOM)
     }
 
-    override fun createBlockEntity(world: BlockView): BlockEntity? = factory?.invoke()
+    override fun getRenderType(state: BlockState?): BlockRenderType = BlockRenderType.MODEL
+    override fun createBlockEntity(pos: BlockPos?, state: BlockState?): ChunkCacheBlockEntity? = factory?.create(pos, state)
+    override fun <T : BlockEntity?> getTicker(
+        world: World?,
+        state: BlockState?,
+        type: BlockEntityType<T>?
+    ): BlockEntityTicker<T>? {
+        return checkType(type, ModBlocks.mobWardEntityType, ChunkCacheBlockEntity::tick)
+    }
+
     override fun appendTooltip(
         stack: ItemStack?,
         world: BlockView?,

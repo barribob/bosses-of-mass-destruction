@@ -15,13 +15,6 @@ import net.minecraft.world.World
 class MagicMissileProjectile : BaseThrownItemEntity {
     private var entityHit: ((LivingEntity) -> Unit)? = null
 
-    constructor(
-        d: Double,
-        e: Double,
-        f: Double,
-        world: World,
-    ) : super(Entities.MAGIC_MISSILE, d, e, f, world)
-
     constructor(entityType: EntityType<out ThrownItemEntity>, world: World?) : super(entityType, world)
 
     constructor(livingEntity: LivingEntity, world: World, entityHit: (LivingEntity) -> Unit, exemptEntities: List<EntityType<*>>) : super(
@@ -45,12 +38,12 @@ class MagicMissileProjectile : BaseThrownItemEntity {
                 entityHit?.let { it(entity ) }
             }
         }
-        remove()
+        discard()
     }
 
     override fun onBlockHit(blockHitResult: BlockHitResult?) {
         super.onBlockHit(blockHitResult)
         playSound(Mod.sounds.blueFireballLand, 1.0f, 1.0f)
-        remove()
+        discard()
     }
 }

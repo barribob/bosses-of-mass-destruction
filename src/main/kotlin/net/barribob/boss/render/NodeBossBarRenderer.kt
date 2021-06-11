@@ -1,7 +1,7 @@
 package net.barribob.boss.render
 
+import com.mojang.blaze3d.systems.RenderSystem
 import net.barribob.maelstrom.static_utilities.MathUtils
-import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.DrawableHelper
 import net.minecraft.client.gui.hud.BossBarHud
 import net.minecraft.client.util.math.MatrixStack
@@ -52,7 +52,7 @@ class NodeBossBarRenderer(
         x: Int,
         y: Int,
     ) {
-        MinecraftClient.getInstance().textureManager.bindTexture(noteTexture)
+        RenderSystem.setShaderTexture(0, noteTexture)
         val steppedPercentage = (192 * MathUtils.roundedStep(bossBar.percent, hpPercentages, true)).toInt() + 7
         DrawableHelper.drawTexture(
             matrices, x - 3, y - 1, 0f, 0f, steppedPercentage, 7,

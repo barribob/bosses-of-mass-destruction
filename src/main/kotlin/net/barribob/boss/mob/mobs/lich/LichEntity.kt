@@ -772,7 +772,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
     private fun canContinueAttack() = isAlive && target != null
     private fun shouldCancelAttackAnimation() = !isAlive || doIdleAnimation
 
-    override fun handleFallDamage(fallDistance: Float, damageMultiplier: Float): Boolean = false
+    override fun handleFallDamage(fallDistance: Float, damageMultiplier: Float, damageSource: DamageSource?) = false
     override fun getGroup(): EntityGroup = EntityGroup.UNDEAD
 
     override fun checkDespawn() = ModUtils.preventDespawnExceptPeaceful(this, world)

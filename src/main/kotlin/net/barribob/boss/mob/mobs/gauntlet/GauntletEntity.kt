@@ -21,6 +21,7 @@ import net.minecraft.entity.effect.StatusEffects
 import net.minecraft.entity.mob.PathAwareEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.Box
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import software.bernie.geckolib3.core.manager.AnimationData
@@ -73,15 +74,14 @@ class GauntletEntity(entityType: EntityType<out PathAwareEntity>, world: World, 
         hitboxHelper.setNextDamagedPart(part)
     }
 
-    override fun setPos(x: Double, y: Double, z: Double) {
-        super.setPos(x, y, z)
+    override fun onSetPos(x: Double, y: Double, z: Double) {
         if (hitboxHelper != null) hitboxHelper.updatePosition()
     }
 
     override fun isClimbing(): Boolean = false
-    override fun handleFallDamage(fallDistance: Float, damageMultiplier: Float): Boolean = false
+    override fun handleFallDamage(fallDistance: Float, damageMultiplier: Float, damageSource: DamageSource?) = false
     override fun getLookPitchSpeed(): Int = 90
-    override fun getBoundingBox(): CompoundOrientedBox = hitboxHelper.getHitbox().getBox(super.getBoundingBox())
+    override fun getCompoundBoundingBox(box: Box): CompoundOrientedBox = hitboxHelper.getHitbox().getBox(box)
     override fun getBounds(): EntityBounds = hitboxHelper.getHitbox()
     override fun getActiveEyeHeight(pose: EntityPose, dimensions: EntityDimensions) = dimensions.height * 0.4f
     override fun isInsideWall(): Boolean = false

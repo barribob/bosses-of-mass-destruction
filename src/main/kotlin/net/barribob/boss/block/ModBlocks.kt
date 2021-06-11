@@ -6,49 +6,55 @@ import net.barribob.boss.mob.GeoModel
 import net.barribob.boss.render.IBoneLight
 import net.barribob.boss.render.ModBlockEntityRenderer
 import net.fabricmc.fabric.api.`object`.builder.v1.block.FabricBlockSettings
+import net.fabricmc.fabric.api.`object`.builder.v1.block.entity.FabricBlockEntityTypeBuilder
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap
 import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings
+import net.fabricmc.fabric.api.tool.attribute.v1.FabricToolTags
 import net.minecraft.block.Block
 import net.minecraft.block.Blocks
-import net.minecraft.block.entity.BlockEntity
+import net.minecraft.block.MapColor
+import net.minecraft.block.Material
 import net.minecraft.block.entity.BlockEntityType
 import net.minecraft.client.render.RenderLayer
+import net.minecraft.client.render.block.entity.BlockEntityRendererFactory
 import net.minecraft.item.BlockItem
 import net.minecraft.state.property.Properties
 import net.minecraft.util.Identifier
 import net.minecraft.util.registry.Registry
 
 object ModBlocks {
-    val obsidilithRune = ObsidilithRuneBlock(FabricBlockSettings.copy(Blocks.CRYING_OBSIDIAN))
+    val obsidilithRune = ObsidilithRuneBlock(FabricBlockSettings.of(Material.STONE, MapColor.BLACK).requiresTool().breakByTool(FabricToolTags.PICKAXES, 3).strength(50.0F, 1200.0F))
     val obsidilithSummonBlock = ObsidilithSummonBlock(FabricBlockSettings.copy(Blocks.END_PORTAL_FRAME))
-    private val gauntletBlackstone = GauntletBlackstoneBlock(FabricBlockSettings.copy(Blocks.OBSIDIAN))
+    private val gauntletBlackstone = GauntletBlackstoneBlock(FabricBlockSettings.of(Material.STONE, MapColor.BLACK).requiresTool().breakByTool(FabricToolTags.PICKAXES, 3).strength(50.0F, 1200.0F))
     private val sealedBlackstone = Block(FabricBlockSettings.copy(Blocks.BEDROCK))
     val chiseledStoneAltar = ChiseledStoneAltarBlock(
         FabricBlockSettings.copy(Blocks.BEDROCK)
             .luminance { if (it.get(Properties.LIT)) 11 else 0 })
 
-    private val entityTypes = mutableMapOf<Block, BlockEntityType<BlockEntity>>()
-    private val mobWardBlockEntityFactory: () -> BlockEntity = {
-        ChunkCacheBlockEntity(mobWard, entityTypes[mobWard])
+    var mobWardEntityType: BlockEntityType<ChunkCacheBlockEntity>? = null
+    private val mobWardBlockEntityFactory = FabricBlockEntityTypeBuilder.Factory { pos, state ->
+        ChunkCacheBlockEntity(mobWard, mobWardEntityType, pos, state)
     }
-    val mobWard = MobWardBlock(mobWardBlockEntityFactory, FabricBlockSettings.copy(Blocks.OBSIDIAN)
+    val mobWard: MobWardBlock = MobWardBlock(mobWardBlockEntityFactory, FabricBlockSettings.of(Material.STONE, MapColor.BLACK).requiresTool().breakByTool(FabricToolTags.PICKAXES, 3)
         .nonOpaque()
         .luminance { 15 }
         .strength(10.0F, 1200.0F))
 
-    private val monolithBlockEntityFactory: () -> BlockEntity = {
-        ChunkCacheBlockEntity(monolithBlock, entityTypes[monolithBlock])
+    var monolithEntityType: BlockEntityType<ChunkCacheBlockEntity>? = null
+    private val monolithBlockEntityFactory = FabricBlockEntityTypeBuilder.Factory { pos, state ->
+        ChunkCacheBlockEntity(monolithBlock, monolithEntityType, pos, state)
     }
-    val monolithBlock = MonolithBlock(monolithBlockEntityFactory, FabricBlockSettings.copy(Blocks.NETHERITE_BLOCK)
+    val monolithBlock: MonolithBlock = MonolithBlock(monolithBlockEntityFactory, FabricBlockSettings.of(Material.METAL, MapColor.BLACK).requiresTool().breakByTool(FabricToolTags.PICKAXES, 3)
         .nonOpaque()
         .luminance { 4 }
         .strength(10.0F, 1200.0F))
 
-    private val levitationBlockEntityFactory: () -> BlockEntity = {
-        LevitationBlockEntity(levitationBlock, entityTypes[levitationBlock])
+    var levitationBlockEntityType: BlockEntityType<LevitationBlockEntity>? = null
+    private val levitationBlockEntityFactory = FabricBlockEntityTypeBuilder.Factory { pos, state ->
+        LevitationBlockEntity(levitationBlock, levitationBlockEntityType, pos, state)
     }
-    val levitationBlock = LevitationBlock(levitationBlockEntityFactory, FabricBlockSettings.copy(Blocks.ENCHANTING_TABLE)
+    val levitationBlock: LevitationBlock = LevitationBlock(levitationBlockEntityFactory, FabricBlockSettings.of(Material.STONE, MapColor.BLUE).requiresTool().breakByTool(FabricToolTags.PICKAXES, 3)
         .nonOpaque()
         .luminance { 4 }
         .strength(10.0F, 1200.0F))
@@ -68,38 +74,38 @@ object ModBlocks {
         registerBlockAndItem(monolithBlockId, monolithBlock, FabricItemSettings().group(Mod.items.itemGroup).fireproof())
         registerBlockAndItem(levitationBlockId, levitationBlock, FabricItemSettings().group(Mod.items.itemGroup).fireproof())
 
-        entityTypes[mobWard] = Registry.register(
+        mobWardEntityType = Registry.register(
             Registry.BLOCK_ENTITY_TYPE,
             mobWardId,
-            BlockEntityType.Builder.create(mobWardBlockEntityFactory, mobWard).build(null)
+            FabricBlockEntityTypeBuilder.create(mobWardBlockEntityFactory, mobWard).build(null)
         )
 
-        entityTypes[monolithBlock] = Registry.register(
+        monolithEntityType = Registry.register(
             Registry.BLOCK_ENTITY_TYPE,
             monolithBlockId,
-            BlockEntityType.Builder.create(monolithBlockEntityFactory, monolithBlock).build(null)
+            FabricBlockEntityTypeBuilder.create(monolithBlockEntityFactory, monolithBlock).build(null)
         )
 
-        entityTypes[levitationBlock] = Registry.register(
+        levitationBlockEntityType = Registry.register(
             Registry.BLOCK_ENTITY_TYPE,
             levitationBlockId,
-            BlockEntityType.Builder.create(levitationBlockEntityFactory, levitationBlock).build(null)
+            FabricBlockEntityTypeBuilder.create(levitationBlockEntityFactory, levitationBlock).build(null)
         )
     }
 
     fun clientInit(animationTimer: IAnimationTimer) {
         BlockRenderLayerMap.INSTANCE.putBlock(mobWard, RenderLayer.getCutout())
 
-        BlockEntityRendererRegistry.INSTANCE.register(entityTypes[levitationBlock]) { dispatcher ->
+        BlockEntityRendererRegistry.INSTANCE.register(levitationBlockEntityType, BlockEntityRendererFactory {
             ModBlockEntityRenderer(
-                dispatcher, GeoModel<LevitationBlockEntity>(
+                GeoModel<LevitationBlockEntity>(
                     { Mod.identifier("geo/levitation_block.geo.json") },
                     { Mod.identifier("textures/block/levitation_block.png") },
                     Mod.identifier("animations/levitation_block.animation.json"),
                     animationTimer
                 )
             ) { _, _ -> IBoneLight.fullbright }
-        }
+        })
     }
 
     private fun registerBlockAndItem(identifier: Identifier, block: Block, fabricItemSettings: FabricItemSettings = FabricItemSettings()) {

@@ -4,22 +4,22 @@ import net.barribob.boss.render.*
 import net.minecraft.client.render.RenderLayer
 import net.minecraft.client.render.VertexConsumer
 import net.minecraft.client.render.VertexConsumerProvider
-import net.minecraft.client.render.entity.EntityRenderDispatcher
+import net.minecraft.client.render.entity.EntityRendererFactory
 import net.minecraft.client.util.math.MatrixStack
-import net.minecraft.client.util.math.Vector4f
 import net.minecraft.entity.LivingEntity
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.Vector4f
 import software.bernie.geckolib3.core.IAnimatable
 import software.bernie.geckolib3.geo.render.built.GeoBone
 import software.bernie.geckolib3.geo.render.built.GeoModel
 import software.bernie.geckolib3.model.AnimatedGeoModel
 import software.bernie.geckolib3.model.provider.GeoModelProvider
-import software.bernie.geckolib3.renderer.geo.GeoEntityRenderer
-import software.bernie.geckolib3.renderer.geo.IGeoRenderer
+import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer
+import software.bernie.geckolib3.renderers.geo.IGeoRenderer
 
 class SimpleLivingGeoRenderer<T>(
-    renderManager: EntityRenderDispatcher?,
+    renderManager: EntityRendererFactory.Context?,
     modelProvider: AnimatedGeoModel<T>,
     private val brightness: IRenderLight<T>? = null,
     private val iBoneLight: IBoneLight? = null,
@@ -113,7 +113,7 @@ class SimpleLivingGeoRenderer<T>(
     class GeoRenderer<T>(
         val geoModel: AnimatedGeoModel<T>,
         private val textureLocation: (T) -> Identifier,
-        val renderer: SimpleLivingGeoRenderer<T>
+        private val renderer: SimpleLivingGeoRenderer<T>
     ) :
         IGeoRenderer<T> where T : IAnimatable, T : LivingEntity {
         override fun getGeoModelProvider(): GeoModelProvider<*> = geoModel

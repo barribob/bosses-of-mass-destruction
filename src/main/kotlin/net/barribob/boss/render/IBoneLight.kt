@@ -1,6 +1,6 @@
 package net.barribob.boss.render
 
-import net.minecraft.client.util.math.Vector4f
+import net.minecraft.util.math.Vector4f
 import software.bernie.geckolib3.geo.render.built.GeoBone
 
 fun interface IBoneLight {

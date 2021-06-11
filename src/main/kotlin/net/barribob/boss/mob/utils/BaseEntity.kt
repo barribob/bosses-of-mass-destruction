@@ -11,7 +11,7 @@ import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.data.TrackedData
 import net.minecraft.entity.effect.StatusEffectInstance
 import net.minecraft.entity.mob.PathAwareEntity
-import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.NbtCompound
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.text.Text
@@ -81,12 +81,12 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
         bossBar?.percent = this.health / this.maxHealth
     }
 
-    override fun fromTag(tag: CompoundTag) {
-        super.fromTag(tag)
+    override fun readNbt(nbt: NbtCompound) {
+        super.readNbt(nbt)
         if (hasCustomName()) {
             bossBar?.name = this.displayName
         }
-        nbtHandler?.fromTag(tag)
+        nbtHandler?.fromTag(nbt)
     }
 
     final override fun setCustomName(@Nullable name: Text?) {
@@ -104,8 +104,8 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
         bossBar?.removePlayer(player)
     }
 
-    final override fun readCustomDataFromTag(tag: CompoundTag?) {
-        super.readCustomDataFromTag(tag)
+    final override fun readCustomDataFromNbt(nbt: NbtCompound?) {
+        super.readCustomDataFromNbt(nbt)
     }
 
     // Todo: Make handler hooks final [handleStatus, onTrackedDataSet, move, fromTag, toTag]
@@ -152,8 +152,8 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
         if(moveHandler == null || shouldDoDefault) super.move(type, movement)
     }
 
-    override fun toTag(tag: CompoundTag): CompoundTag {
-        val superTag = super.toTag(tag)
+    override fun writeNbt(nbt: NbtCompound?): NbtCompound {
+        val superTag = super.writeNbt(nbt)
         return nbtHandler?.toTag(superTag) ?: superTag
     }
 }

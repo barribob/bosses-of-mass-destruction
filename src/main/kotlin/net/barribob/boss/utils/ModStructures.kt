@@ -10,6 +10,7 @@ import net.fabricmc.fabric.api.structure.v1.FabricStructureBuilder
 import net.minecraft.entity.SpawnGroup
 import net.minecraft.structure.StructurePieceType
 import net.minecraft.util.Identifier
+import net.minecraft.util.collection.Pool
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.registry.BuiltinRegistries
 import net.minecraft.util.registry.Registry
@@ -101,7 +102,7 @@ object ModStructures {
         identifier: Identifier,
         configuredStructure: ConfiguredStructureFeature<*, *>
     ): RegistryKey<ConfiguredStructureFeature<*, *>> {
-        val key = RegistryKey.of(Registry.CONFIGURED_STRUCTURE_FEATURE_WORLDGEN, identifier)
+        val key = RegistryKey.of(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, identifier)
         BuiltinRegistries.add(BuiltinRegistries.CONFIGURED_STRUCTURE_FEATURE, key.value, configuredStructure)
         return key
     }
@@ -110,13 +111,13 @@ object ModStructures {
         structureAccessor: StructureAccessor,
         spawnGroup: SpawnGroup,
         blockPos: BlockPos,
-        cir: CallbackInfoReturnable<List<SpawnSettings.SpawnEntry>>
+        cir: CallbackInfoReturnable<Pool<SpawnSettings.SpawnEntry>>
     ) {
         if (spawnGroup == SpawnGroup.MONSTER) {
             val spawnRegistryEntry = structureSpawnRegistry.entries.firstOrNull {
                 structureAccessor.getStructureAt(blockPos, false, it.key).hasChildren()
             } ?: return
-            cir.returnValue = spawnRegistryEntry.value.getMonsterSpawnList()
+            cir.returnValue = Pool.of(spawnRegistryEntry.value.getMonsterSpawnList())
         }
     }
 

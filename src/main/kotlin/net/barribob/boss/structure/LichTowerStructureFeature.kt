@@ -7,10 +7,10 @@ import net.barribob.boss.utils.VanillaCopies
 import net.minecraft.structure.StructureManager
 import net.minecraft.structure.StructureStart
 import net.minecraft.util.BlockRotation
-import net.minecraft.util.math.BlockBox
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.ChunkPos
 import net.minecraft.util.registry.DynamicRegistryManager
+import net.minecraft.world.HeightLimitView
 import net.minecraft.world.Heightmap
 import net.minecraft.world.biome.Biome
 import net.minecraft.world.biome.source.BiomeSource
@@ -23,12 +23,10 @@ import net.minecraft.world.gen.feature.StructureFeature.StructureStartFactory
 class LichTowerStructureFeature(codec: Codec<DefaultFeatureConfig>) :
     StructureFeature<DefaultFeatureConfig>(codec) {
     override fun getStructureStartFactory(): StructureStartFactory<DefaultFeatureConfig> {
-        return StructureStartFactory { feature: StructureFeature<DefaultFeatureConfig>, chunkX: Int, chunkZ: Int, box: BlockBox, references: Int, seed: Long ->
+        return StructureStartFactory { feature: StructureFeature<DefaultFeatureConfig>, chunkPos: ChunkPos, references: Int, seed: Long ->
             Start(
                 feature,
-                chunkX,
-                chunkZ,
-                box,
+                chunkPos,
                 references,
                 seed
             )
@@ -38,42 +36,40 @@ class LichTowerStructureFeature(codec: Codec<DefaultFeatureConfig>) :
     override fun shouldStartAt(
         chunkGenerator: ChunkGenerator,
         biomeSource: BiomeSource,
-        l: Long,
-        chunkRandom: ChunkRandom?,
-        i: Int,
-        j: Int,
+        worldSeed: Long,
+        random: ChunkRandom?,
+        pos: ChunkPos,
         biome: Biome?,
         chunkPos: ChunkPos?,
-        defaultFeatureConfig: DefaultFeatureConfig?
-    ): Boolean = VanillaCopies.shouldStartAt(this, chunkGenerator, biomeSource, i, j)
+        config: DefaultFeatureConfig?,
+        world: HeightLimitView?
+    ): Boolean = VanillaCopies.shouldStartAt(this, chunkGenerator, biomeSource, pos.x, pos.z)
 
     class Start(
         feature: StructureFeature<DefaultFeatureConfig>,
-        chunkX: Int,
-        chunkZ: Int,
-        box: BlockBox,
+        chunkPos: ChunkPos,
         references: Int,
         seed: Long
-    ) : StructureStart<DefaultFeatureConfig>(feature, chunkX, chunkZ, box, references, seed) {
+    ) : StructureStart<DefaultFeatureConfig>(feature, chunkPos, references, seed) {
 
         override fun init(
-            registryManager: DynamicRegistryManager,
+            registryManager: DynamicRegistryManager?,
             chunkGenerator: ChunkGenerator,
             manager: StructureManager,
-            chunkX: Int,
-            chunkZ: Int,
-            biome: Biome,
-            config: DefaultFeatureConfig
+            pos: ChunkPos,
+            biome: Biome?,
+            config: DefaultFeatureConfig?,
+            world: HeightLimitView?
         ) {
-            val x = chunkX * 16
-            val z = chunkZ * 16
-            val y = chunkGenerator.getHeight(x, z, Heightmap.Type.WORLD_SURFACE_WG) - 7
+            val x = pos.x * 16
+            val z = pos.z * 16
+            val y = chunkGenerator.getHeight(x, z, Heightmap.Type.WORLD_SURFACE_WG, world) - 7
             val rotation = BlockRotation.random(random)
-            val pos = BlockPos(x, y, z).add(BlockPos(-15, 0, -15).rotate(rotation))
+            val blockPos = BlockPos(x, y, z).add(BlockPos(-15, 0, -15).rotate(rotation))
             children.add(
                 ModPiece(
                     manager,
-                    pos,
+                    blockPos,
                     Mod.identifier("lich_tower_1"),
                     rotation,
                     ModStructures.lichTowerPiece
@@ -82,7 +78,7 @@ class LichTowerStructureFeature(codec: Codec<DefaultFeatureConfig>) :
             children.add(
                 ModPiece(
                     manager,
-                    pos.up(59 - 11),
+                    blockPos.up(59 - 11),
                     Mod.identifier("lich_tower_2"),
                     rotation,
                     ModStructures.lichTowerPiece

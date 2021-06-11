@@ -7,16 +7,16 @@ import net.minecraft.client.MinecraftClient
 import net.minecraft.client.render.OverlayTexture
 import net.minecraft.client.render.VertexConsumer
 import net.minecraft.client.render.VertexConsumerProvider
-import net.minecraft.client.render.entity.EntityRenderDispatcher
 import net.minecraft.client.render.entity.EntityRenderer
+import net.minecraft.client.render.entity.EntityRendererFactory
 import net.minecraft.client.util.math.MatrixStack
-import net.minecraft.client.util.math.Vector3f
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityPose
 import net.minecraft.entity.LivingEntity
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.MathHelper
+import net.minecraft.util.math.Vec3f
 import software.bernie.geckolib3.core.IAnimatable
 import software.bernie.geckolib3.core.IAnimatableModel
 import software.bernie.geckolib3.core.controller.AnimationController
@@ -24,20 +24,20 @@ import software.bernie.geckolib3.core.event.predicate.AnimationEvent
 import software.bernie.geckolib3.model.AnimatedGeoModel
 import software.bernie.geckolib3.model.provider.GeoModelProvider
 import software.bernie.geckolib3.model.provider.data.EntityModelData
-import software.bernie.geckolib3.renderer.geo.GeoLayerRenderer
-import software.bernie.geckolib3.renderer.geo.IGeoRenderer
+import software.bernie.geckolib3.renderers.geo.GeoLayerRenderer
+import software.bernie.geckolib3.renderers.geo.IGeoRenderer
 import software.bernie.geckolib3.util.AnimationUtils
 
 @Environment(EnvType.CLIENT)
-class ModGeoRenderer<T>(
-    renderManager: EntityRenderDispatcher?,
+open class ModGeoRenderer<T>(
+    renderManager: EntityRendererFactory.Context?,
     private val modelProvider: AnimatedGeoModel<T>,
     private val additionalRenderers: IRenderer<T>? = null,
     private val brightness: IRenderLight<T>? = null,
 ) :
     EntityRenderer<T>(renderManager),
     IGeoRenderer<T> where T : Entity, T : IAnimatable {
-    protected val layerRenderers: MutableList<GeoLayerRenderer<T>> = Lists.newArrayList()
+    private val layerRenderers: MutableList<GeoLayerRenderer<T>> = Lists.newArrayList()
 
     override fun getBlockLight(entity: T, blockPos: BlockPos): Int {
         return brightness?.getBlockLight(entity, blockPos) ?: super.getBlockLight(entity, blockPos)
@@ -140,18 +140,18 @@ class ModGeoRenderer<T>(
         return modelProvider
     }
 
-    protected fun applyRotations(
+    private fun applyRotations(
         entityLiving: T,
         matrixStackIn: MatrixStack,
         rotationYaw: Float,
     ) {
         val pose = entityLiving.pose
         if (pose != EntityPose.SLEEPING) {
-            matrixStackIn.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(rotationYaw))
+            matrixStackIn.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(rotationYaw))
         }
     }
 
-    protected fun handleRotationFloat(livingBase: T, partialTicks: Float): Float {
+    private fun handleRotationFloat(livingBase: T, partialTicks: Float): Float {
         return livingBase.age.toFloat() + partialTicks
     }
 

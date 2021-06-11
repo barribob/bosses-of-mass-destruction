@@ -12,6 +12,7 @@ import net.barribob.maelstrom.static_utilities.VecUtils
 import net.barribob.maelstrom.static_utilities.planeProject
 import net.minecraft.block.Blocks
 import net.minecraft.block.entity.LootableContainerBlockEntity
+import net.minecraft.entity.Entity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
@@ -28,7 +29,7 @@ class ServerGauntletDeathHandler(
             world.createExplosion(null, entity.pos.x, entity.pos.y, entity.pos.z, 4.0f, destructionType)
             if (mobConfig.spawnAncientDebrisOnDeath) createLoot(world)
             dropExp()
-            entity.remove()
+            entity.remove(Entity.RemovalReason.KILLED)
         }
     }
 

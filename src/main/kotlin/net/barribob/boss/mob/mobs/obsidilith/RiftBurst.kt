@@ -55,7 +55,7 @@ class RiftBurst(
                 )
 
                 val box = Box(impactPos)
-                val entities = world.getEntitiesByClass(LivingEntity::class.java, box, null)
+                val entities = world.getEntitiesByClass(LivingEntity::class.java, box) { it != entity }
 
                 entities.forEach {
                     if (it != entity) {

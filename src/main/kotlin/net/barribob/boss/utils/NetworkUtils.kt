@@ -39,7 +39,7 @@ class NetworkUtils {
 
         fun GauntletEntity.changeHitbox(open: Boolean) {
             val packet = PacketByteBuf(Unpooled.buffer())
-            packet.writeInt(this.entityId)
+            packet.writeInt(this.id)
             packet.writeBoolean(open)
             PlayerLookup.tracking(this).forEach {
                 ServerPlayNetworking.send(it, changeHitboxPacketId, packet)
@@ -48,8 +48,8 @@ class NetworkUtils {
 
         fun GauntletEntity.sendBlindnessPacket(players: List<PlayerEntity>) {
             val packet = PacketByteBuf(Unpooled.buffer())
-            packet.writeInt(this.entityId)
-            packet.writeIntArray(players.map { it.entityId }.toIntArray())
+            packet.writeInt(this.id)
+            packet.writeIntArray(players.map { it.id }.toIntArray())
             PlayerLookup.tracking(this).forEach {
                 ServerPlayNetworking.send(it, gauntletBlindnessPacketId, packet)
             }
@@ -93,8 +93,7 @@ class NetworkUtils {
 
     @Environment(EnvType.CLIENT)
     private fun handleSpawnClientEntity(client: MinecraftClient, buf: PacketByteBuf) {
-        val packet = EntitySpawnS2CPacket()
-        packet.read(buf)
+        val packet = EntitySpawnS2CPacket(buf)
 
         client.execute { VanillaCopies.handleClientSpawnEntity(client, packet) }
     }
