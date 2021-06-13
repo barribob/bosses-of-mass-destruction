@@ -34,7 +34,18 @@ class GauntletEntity(entityType: EntityType<out PathAwareEntity>, world: World, 
     val energyShieldHandler = GauntletClientEnergyShieldHandler(this, postTickEvents)
     val clientBlindnessHandler = GauntletBlindnessIndicatorParticles(this, preTickEvents)
     private val gauntletGoalHandler = GauntletGoalHandler(this, goalSelector, targetSelector, postTickEvents, mobConfig)
-    private val animationHandler = GauntletAnimations(this)
+    private val animationHandler = AnimationHolder(
+        this, mapOf(
+            Pair(GauntletAttacks.punchAttack, AnimationHolder.Animation("punch_start", "punch_loop")),
+            Pair(GauntletAttacks.stopPunchAnimation, AnimationHolder.Animation("punch_stop", "idle")),
+            Pair(GauntletAttacks.stopPoundAnimation, AnimationHolder.Animation("pound_stop", "idle")),
+            Pair(GauntletAttacks.laserAttack, AnimationHolder.Animation("laser_eye_start", "laser_eye_loop")),
+            Pair(GauntletAttacks.laserAttackStop, AnimationHolder.Animation("laser_eye_stop", "idle")),
+            Pair(GauntletAttacks.swirlPunchAttack, AnimationHolder.Animation("swirl_punch", "idle")),
+            Pair(GauntletAttacks.blindnessAttack, AnimationHolder.Animation("cast", "idle")),
+            Pair(3, AnimationHolder.Animation("death", "idle"))
+        )
+    )
     override val damageHandler = CompositeDamageHandler(hitboxHelper, gauntletGoalHandler)
     override val statusHandler = CompositeStatusHandler(animationHandler, laserHandler, clientBlindnessHandler)
     override val trackedDataHandler = CompositeTrackedDataHandler(laserHandler, energyShieldHandler)
