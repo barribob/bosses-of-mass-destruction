@@ -3,19 +3,19 @@
 	"animations": {
 		"idle": {
 			"loop": true,
-			"animation_length": 1.04,
+			"animation_length": 2.08,
 			"bones": {
 				"Stem": {
 					"rotation": {
 						"0.0": {
-							"vector": [0, 0, -7.5]
+							"vector": [-7.5, 0, 0]
 						},
-						"0.52": {
-							"vector": [0, 0, -12.5],
+						"1.0": {
+							"vector": [-15, 0, 0],
 							"easing": "easeInOutSine"
 						},
-						"1.04": {
-							"vector": [0, 0, -7.5],
+						"2.08": {
+							"vector": [-7.5, 0, 0],
 							"easing": "easeInOutSine"
 						}
 					}
@@ -23,52 +23,52 @@
 				"Stem2": {
 					"rotation": {
 						"0.0": {
-							"vector": [0, 0, 7.5]
+							"vector": [7.5, 0, 0]
 						},
-						"0.52": {
-							"vector": [0, 0, 7.5]
+						"1.0": {
+							"vector": [7.5, 0, 0]
 						},
-						"1.04": {
-							"vector": [0, 0, 7.5]
+						"2.08": {
+							"vector": [7.5, 0, 0]
 						}
 					}
 				},
 				"Strem3": {
 					"rotation": {
 						"0.0": {
-							"vector": [0, 0, 25]
+							"vector": [25, 0, 0]
 						},
-						"0.52": {
-							"vector": [0, 0, 25]
+						"1.0": {
+							"vector": [25, 0, 0]
 						},
-						"1.04": {
-							"vector": [0, 0, 25]
+						"2.08": {
+							"vector": [25, 0, 0]
 						}
 					}
 				},
 				"Steam4": {
 					"rotation": {
 						"0.0": {
-							"vector": [0, 0, 45]
+							"vector": [45, 0, 0]
 						},
-						"0.52": {
-							"vector": [0, 0, 45]
+						"1.0": {
+							"vector": [45, 0, 0]
 						},
-						"1.04": {
-							"vector": [0, 0, 45]
+						"2.08": {
+							"vector": [45, 0, 0]
 						}
 					}
 				},
 				"Steam5": {
 					"rotation": {
 						"0.0": {
-							"vector": [0, 0, 47.5]
+							"vector": [47.5, 0, 0]
 						},
-						"0.52": {
-							"vector": [0, 0, 47.5]
+						"1.0": {
+							"vector": [47.5, 0, 0]
 						},
-						"1.04": {
-							"vector": [0, 0, 47.5]
+						"2.08": {
+							"vector": [47.5, 0, 0]
 						}
 					}
 				}

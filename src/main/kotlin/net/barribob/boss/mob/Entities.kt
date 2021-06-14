@@ -11,6 +11,7 @@ import net.barribob.boss.mob.mobs.lich.*
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithArmorRenderer
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithBoneLight
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithEntity
+import net.barribob.boss.mob.mobs.void_blossom.VoidBlossomCodeAnimations
 import net.barribob.boss.mob.mobs.void_blossom.VoidBlossomEntity
 import net.barribob.boss.mob.utils.SimpleLivingGeoRenderer
 import net.barribob.boss.particle.ParticleFactories
@@ -70,7 +71,7 @@ object Entities {
         { type, world -> GauntletEntity(type, world, mobConfig.gauntletConfig) },
         { it.fireImmune().dimensions(EntityDimensions.fixed(5.0f, 4.0f)) })
 
-    val VOID_BLOSSOM: EntityType<VoidBlossomEntity> = registerConfiguredMob("void_blossom",
+    private val VOID_BLOSSOM: EntityType<VoidBlossomEntity> = registerConfiguredMob("void_blossom",
         { type, world -> VoidBlossomEntity(type, world) },
         { it.dimensions(EntityDimensions.fixed(2.0f, 4.4f)) })
 
@@ -233,13 +234,15 @@ object Entities {
         }
 
         EntityRendererRegistry.INSTANCE.register(VOID_BLOSSOM) { context ->
-            val modelProvider = GeoModel<VoidBlossomEntity>(
+            val texture = Mod.identifier("textures/entity/void_blossom.png")
+            val modelProvider = GeoModel(
                 { Mod.identifier("geo/void_blossom.geo.json") },
-                { Mod.identifier("textures/entity/void_blossom.png") },
+                { texture },
                 Mod.identifier("animations/void_blossom.animation.json"),
                 animationTimer,
+                VoidBlossomCodeAnimations()
             )
-            SimpleLivingGeoRenderer(context, modelProvider, deathRotation = false)
+            SimpleLivingGeoRenderer(context, modelProvider, deathRotation = false, renderLayer = RenderLayer.getEntityCutoutNoCull(texture))
         }
     }
 }
