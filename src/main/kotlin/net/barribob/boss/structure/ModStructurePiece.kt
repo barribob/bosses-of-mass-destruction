@@ -2,7 +2,10 @@ package net.barribob.boss.structure
 
 import net.minecraft.nbt.NbtCompound
 import net.minecraft.server.world.ServerWorld
-import net.minecraft.structure.*
+import net.minecraft.structure.SimpleStructurePiece
+import net.minecraft.structure.StructureManager
+import net.minecraft.structure.StructurePieceType
+import net.minecraft.structure.StructurePlacementData
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor
 import net.minecraft.util.BlockMirror
 import net.minecraft.util.BlockRotation
@@ -15,9 +18,8 @@ import java.util.*
 /**
  * Credit: https://fabricmc.net/wiki/tutorial:structures
  */
-class ModPiece : SimpleStructurePiece {
+class ModStructurePiece : SimpleStructurePiece {
     private val rot: BlockRotation
-    private val metadataHandler: IMetadataHandler?
 
     constructor(serverWorld: ServerWorld, NbtCompound: NbtCompound, type: StructurePieceType) : super(
         type,
@@ -30,7 +32,6 @@ class ModPiece : SimpleStructurePiece {
             .addProcessor(BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS) }
     ) {
         this.rot = BlockRotation.valueOf(NbtCompound.getString("Rot"))
-        metadataHandler = null
     }
 
     constructor(
@@ -39,7 +40,6 @@ class ModPiece : SimpleStructurePiece {
         template: Identifier,
         rotation: BlockRotation,
         type: StructurePieceType,
-        metadataHandler: IMetadataHandler? = null
     ) : super(
         type, 0, structureManager, template, template.toString(),
         StructurePlacementData()
@@ -48,7 +48,6 @@ class ModPiece : SimpleStructurePiece {
             .addProcessor(BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS), pos
     ) {
         this.rot = rotation
-        this.metadataHandler = metadataHandler
     }
 
     override fun writeNbt(world: ServerWorld?, nbt: NbtCompound) {
@@ -59,6 +58,6 @@ class ModPiece : SimpleStructurePiece {
     override fun handleMetadata(
         metadata: String, pos: BlockPos, serverWorldAccess: ServerWorldAccess, random: Random, boundingBox: BlockBox
     ) {
-        metadataHandler?.handleMetadata(metadata, pos, serverWorldAccess, random, boundingBox)
+
     }
 }

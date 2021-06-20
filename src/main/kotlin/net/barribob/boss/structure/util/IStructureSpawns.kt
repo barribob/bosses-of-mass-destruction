@@ -1,4 +1,4 @@
-package net.barribob.boss.structure
+package net.barribob.boss.structure.util
 
 import net.minecraft.world.biome.SpawnSettings
 

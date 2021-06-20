@@ -52,7 +52,7 @@ class GauntletArenaStructureFeature(codec: Codec<DefaultFeatureConfig>) :
             val y = 15
             val blockPos = BlockPos(x, y, z)
             val rotation = BlockRotation.random(random)
-            children.add(ModPiece(manager, blockPos, template, rotation, ModStructures.gauntletArenaPiece))
+            children.add(ModStructurePiece(manager, blockPos, template, rotation, ModStructures.gauntletArenaPiece))
             setBoundingBoxFromChildren()
         }
     }

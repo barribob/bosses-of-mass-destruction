@@ -3,7 +3,14 @@ package net.barribob.boss.utils
 import me.shedaniel.autoconfig.AutoConfig
 import net.barribob.boss.Mod
 import net.barribob.boss.config.ModConfig
-import net.barribob.boss.structure.*
+import net.barribob.boss.structure.GauntletArenaStructureFeature
+import net.barribob.boss.structure.LichTowerStructureFeature
+import net.barribob.boss.structure.ModStructurePiece
+import net.barribob.boss.structure.ObsidilithArenaStructureFeature
+import net.barribob.boss.structure.util.CodeStructurePiece
+import net.barribob.boss.structure.util.IStructureSpawns
+import net.barribob.boss.structure.void_blossom_cavern.VoidBlossomCavernPieceGenerator
+import net.barribob.boss.structure.void_blossom_cavern.VoidBlossomArenaStructureFeature
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors
 import net.fabricmc.fabric.api.structure.v1.FabricStructureBuilder
@@ -52,10 +59,24 @@ object ModStructures {
     val lichTowerStructure = LichTowerStructureFeature(DefaultFeatureConfig.CODEC)
     private val configuredLichTowerStructure = lichTowerStructure.configure(DefaultFeatureConfig.DEFAULT)
 
+    val voidBlossomPiece: StructurePieceType = Registry.register(
+        Registry.STRUCTURE_PIECE,
+        Mod.identifier("void_blossom_piece"),
+        StructureFactories.voidBlossom
+    )
+    val voidBlossomStructurePiece: StructurePieceType = Registry.register(
+        Registry.STRUCTURE_PIECE,
+        Mod.identifier("void_blossom_structure_piece"),
+        StructureFactories.voidBlossomStructure
+    )
+    private val voidBlossomArenaStructure = VoidBlossomArenaStructureFeature(DefaultFeatureConfig.CODEC)
+    private val configuredVoidBlossomArenaStructure = voidBlossomArenaStructure.configure(DefaultFeatureConfig.DEFAULT)
+
     private val emptyStructureSpawn = IStructureSpawns { listOf() }
     private val structureSpawnRegistry: Map<StructureFeature<*>, IStructureSpawns> = mapOf(
         Pair(obsidilithArenaStructure, emptyStructureSpawn),
-        Pair(gauntletArenaStructure, emptyStructureSpawn)
+        Pair(gauntletArenaStructure, emptyStructureSpawn),
+        Pair(voidBlossomArenaStructure, emptyStructureSpawn)
     )
 
     fun init() {
@@ -77,6 +98,11 @@ object ModStructures {
             .defaultConfig(24, 12, 1230784)
             .register()
 
+        FabricStructureBuilder.create(Mod.identifier("void_blossom"), voidBlossomArenaStructure)
+            .step(GenerationStep.Feature.UNDERGROUND_STRUCTURES)
+            .defaultConfig(32, 24, 574839)
+            .register()
+
         if (obsidilithGenConfig.generationEnabled) {
             BiomeModifications.addStructure({
                 BiomeSelectors.foundInTheEnd().test(it) && it.biomeKey != BiomeKeys.THE_END
@@ -96,6 +122,11 @@ object ModStructures {
                 register(Mod.identifier("configured_lich_tower"), configuredLichTowerStructure)
             )
         }
+
+        BiomeModifications.addStructure(
+            BiomeSelectors.foundInOverworld()::test,
+            register(Mod.identifier("configured_void_blossom_arena"), configuredVoidBlossomArenaStructure)
+        )
     }
 
     private fun register(
@@ -122,8 +153,10 @@ object ModStructures {
     }
 
     private object StructureFactories {
-        val obsidilithArena = StructurePieceType { m, t -> ModPiece(m, t, obsidilithArenaPiece) }
-        val gauntletArena = StructurePieceType { m, t -> ModPiece(m, t, gauntletArenaPiece) }
-        val lichTower = StructurePieceType { m, t -> ModPiece(m, t, lichTowerPiece) }
+        val obsidilithArena = StructurePieceType { m, t -> ModStructurePiece(m, t, obsidilithArenaPiece) }
+        val gauntletArena = StructurePieceType { m, t -> ModStructurePiece(m, t, gauntletArenaPiece) }
+        val lichTower = StructurePieceType { m, t -> ModStructurePiece(m, t, lichTowerPiece) }
+        val voidBlossomStructure = StructurePieceType { m, t -> ModStructurePiece(m, t, voidBlossomStructurePiece) }
+        val voidBlossom: StructurePieceType = StructurePieceType { _, t -> CodeStructurePiece(voidBlossomPiece, t, VoidBlossomCavernPieceGenerator()) }
     }
 }

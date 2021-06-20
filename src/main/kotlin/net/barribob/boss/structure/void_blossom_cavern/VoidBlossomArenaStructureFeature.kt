@@ -1,13 +1,11 @@
-package net.barribob.boss.structure
+package net.barribob.boss.structure.void_blossom_cavern
 
 import com.mojang.serialization.Codec
-import net.barribob.boss.Mod
-import net.barribob.boss.config.ObsidilithConfig
+import net.barribob.boss.structure.util.CodeStructurePiece
 import net.barribob.boss.utils.ModStructures
 import net.minecraft.structure.StructureManager
 import net.minecraft.structure.StructureStart
-import net.minecraft.util.BlockRotation
-import net.minecraft.util.Identifier
+import net.minecraft.util.math.BlockBox
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.ChunkPos
 import net.minecraft.util.registry.DynamicRegistryManager
@@ -18,11 +16,7 @@ import net.minecraft.world.gen.feature.DefaultFeatureConfig
 import net.minecraft.world.gen.feature.StructureFeature
 import net.minecraft.world.gen.feature.StructureFeature.StructureStartFactory
 
-
-class ObsidilithArenaStructureFeature(
-    codec: Codec<DefaultFeatureConfig>,
-    private val obsidilithConfig: ObsidilithConfig
-) :
+class VoidBlossomArenaStructureFeature(codec: Codec<DefaultFeatureConfig>) :
     StructureFeature<DefaultFeatureConfig>(codec) {
     override fun getStructureStartFactory(): StructureStartFactory<DefaultFeatureConfig> {
         return StructureStartFactory { feature: StructureFeature<DefaultFeatureConfig>, chunkPos: ChunkPos, references: Int, seed: Long ->
@@ -30,8 +24,7 @@ class ObsidilithArenaStructureFeature(
                 feature,
                 chunkPos,
                 references,
-                seed,
-                obsidilithConfig
+                seed
             )
         }
     }
@@ -40,14 +33,11 @@ class ObsidilithArenaStructureFeature(
         feature: StructureFeature<DefaultFeatureConfig>,
         chunkPos: ChunkPos,
         references: Int,
-        seed: Long,
-        private val obsidilithConfig: ObsidilithConfig
+        seed: Long
     ) : StructureStart<DefaultFeatureConfig>(feature, chunkPos, references, seed) {
-        private val template: Identifier = Mod.identifier("obsidilith_arena")
-
         override fun init(
             registryManager: DynamicRegistryManager?,
-            chunkGenerator: ChunkGenerator?,
+            chunkGenerator: ChunkGenerator,
             manager: StructureManager,
             pos: ChunkPos,
             biome: Biome?,
@@ -56,10 +46,15 @@ class ObsidilithArenaStructureFeature(
         ) {
             val x = pos.x * 16
             val z = pos.z * 16
-            val y = obsidilithConfig.arenaGeneration.generationHeight
-            val blockPos = BlockPos(x, y, z)
-            val rotation = BlockRotation.random(random)
-            children.add(ModStructurePiece(manager, blockPos, template, rotation, ModStructures.obsidilithArenaPiece))
-            setBoundingBoxFromChildren()        }
+            val y = 35 + chunkGenerator.minimumY
+            children.add(
+                CodeStructurePiece(
+                    ModStructures.voidBlossomPiece,
+                    BlockBox(BlockPos(x, y, z)).expand(32),
+                    VoidBlossomCavernPieceGenerator()
+                )
+            )
+            setBoundingBoxFromChildren()
+        }
     }
 }

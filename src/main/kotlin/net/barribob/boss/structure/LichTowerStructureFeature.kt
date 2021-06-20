@@ -67,7 +67,7 @@ class LichTowerStructureFeature(codec: Codec<DefaultFeatureConfig>) :
             val rotation = BlockRotation.random(random)
             val blockPos = BlockPos(x, y, z).add(BlockPos(-15, 0, -15).rotate(rotation))
             children.add(
-                ModPiece(
+                ModStructurePiece(
                     manager,
                     blockPos,
                     Mod.identifier("lich_tower_1"),
@@ -76,7 +76,7 @@ class LichTowerStructureFeature(codec: Codec<DefaultFeatureConfig>) :
                 )
             )
             children.add(
-                ModPiece(
+                ModStructurePiece(
                     manager,
                     blockPos.up(59 - 11),
                     Mod.identifier("lich_tower_2"),
