@@ -62,8 +62,10 @@ class VoidBlossomCavernPieceGenerator : IPieceGenerator {
         val noiseMultiplier = 0.005
         val outerWallDistance = UniformIntProvider.create(3, 4)
         val pointOffset = UniformIntProvider.create(1, 2)
-        val minY = -32
-        val maxY = 32
+        val minY = bottomOfWorld - pos.y
+        val maxY = minY + 32
+        val minXZ = -32
+        val maxXZ = 32
         val verticalSquish = 2.0
         val distributionPoints = 5
 
@@ -90,7 +92,7 @@ class VoidBlossomCavernPieceGenerator : IPieceGenerator {
 
         val predicate = Feature.notInBlockTagPredicate(BlockTags.FEATURES_CANNOT_REPLACE.id)
         val positions: Iterator<BlockPos> =
-            BlockPos.iterate(pos.add(minY, minY, minY), pos.add(maxY, maxY, maxY)).iterator()
+            BlockPos.iterate(pos.add(minXZ, minY, minXZ), pos.add(maxXZ, maxY, maxXZ)).iterator()
         while (true) {
             var noisedDistance: Double
             var samplePos: BlockPos
@@ -112,7 +114,7 @@ class VoidBlossomCavernPieceGenerator : IPieceGenerator {
 
                 while (randomsIter.hasNext()) {
                     val pair = randomsIter.next()
-                    val distancePos = BlockPos(samplePos.x, (samplePos.y * verticalSquish).toInt(), samplePos.z)
+                    val distancePos = BlockPos(samplePos.x, (((samplePos.y - bottomOfWorld) * verticalSquish) + bottomOfWorld).toInt(), samplePos.z)
                     noisedDistance += MathHelper.fastInverseSqrt(distancePos.getSquaredDistance(pair.first) + (pair.second).toDouble()) + noise
                 }
             } while (noisedDistance < outerLayerThickness)
@@ -141,7 +143,7 @@ class VoidBlossomCavernPieceGenerator : IPieceGenerator {
                     samplePos,
                     structurePiece,
                     boundingBox,
-                    Blocks.STONE.defaultState,
+                    if(samplePos.y > 0) Blocks.STONE.defaultState else Blocks.DEEPSLATE.defaultState,
                     caveDecorators
                 )
             }
