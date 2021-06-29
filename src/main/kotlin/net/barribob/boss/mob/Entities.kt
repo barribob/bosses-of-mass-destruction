@@ -242,7 +242,7 @@ object Entities {
                 animationTimer,
                 VoidBlossomCodeAnimations()
             )
-            SimpleLivingGeoRenderer(context, modelProvider, deathRotation = false, renderLayer = RenderLayer.getEntityCutoutNoCull(texture))
+            SimpleLivingGeoRenderer(context, modelProvider, deathRotation = false)
         }
     }
 }

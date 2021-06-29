@@ -12,11 +12,13 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vector4f
 import software.bernie.geckolib3.core.IAnimatable
 import software.bernie.geckolib3.geo.render.built.GeoBone
+import software.bernie.geckolib3.geo.render.built.GeoCube
 import software.bernie.geckolib3.geo.render.built.GeoModel
 import software.bernie.geckolib3.model.AnimatedGeoModel
 import software.bernie.geckolib3.model.provider.GeoModelProvider
 import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer
 import software.bernie.geckolib3.renderers.geo.IGeoRenderer
+import software.bernie.geckolib3.util.RenderUtils
 
 class SimpleLivingGeoRenderer<T>(
     renderManager: EntityRendererFactory.Context?,
@@ -106,6 +108,37 @@ class SimpleLivingGeoRenderer<T>(
         val packetOverlay = overlayOverride?.getOverlay() ?: packedOverlayIn
         renderHelper.render(model, animatable, partialTicks, type, matrixStackIn, renderTypeBuffer, vertexBuilder, packedLightIn, packetOverlay, red, green, blue, alpha)
         renderWithModel?.render(model, partialTicks, type, matrixStackIn, renderTypeBuffer, packedLightIn, packetOverlay, red, green, blue, alpha)
+    }
+
+    override fun renderCube(
+        cube: GeoCube, stack: MatrixStack, bufferIn: VertexConsumer, packedLightIn: Int,
+        packedOverlayIn: Int, red: Float, green: Float, blue: Float, alpha: Float
+    ) {
+        RenderUtils.moveToPivot(cube, stack)
+        RenderUtils.rotate(cube, stack)
+        RenderUtils.moveBackFromPivot(cube, stack)
+        val matrix3f = stack.peek().normal
+        val matrix4f = stack.peek().model
+
+        for (quad in cube.quads) {
+            if (quad == null) {
+                continue
+            }
+            val normal = quad.normal.copy()
+            normal.transform(matrix3f)
+            for (vertex in quad.vertices) {
+                val vector4f = Vector4f(
+                    vertex.position.x, vertex.position.y, vertex.position.z,
+                    1.0f
+                )
+                vector4f.transform(matrix4f)
+                bufferIn.vertex(
+                    vector4f.x, vector4f.y, vector4f.z, red, green, blue, alpha,
+                    vertex.textureU, vertex.textureV, packedOverlayIn, packedLightIn, normal.x, normal.y,
+                    normal.z
+                )
+            }
+        }
     }
 
     override fun getDeathMaxRotation(entityLivingBaseIn: T): Float = if(deathRotation) 90f else 0f
