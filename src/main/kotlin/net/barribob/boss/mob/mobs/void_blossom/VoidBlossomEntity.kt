@@ -1,10 +1,14 @@
 package net.barribob.boss.mob.mobs.void_blossom
 
+import io.github.stuff_stuffs.multipart_entities.common.entity.EntityBounds
+import io.github.stuff_stuffs.multipart_entities.common.entity.MultipartAwareEntity
+import io.github.stuff_stuffs.multipart_entities.common.util.CompoundOrientedBox
 import net.barribob.boss.mob.ai.goals.ActionGoal
 import net.barribob.boss.mob.ai.goals.CompositeGoal
 import net.barribob.boss.mob.ai.goals.FindTargetGoal
 import net.barribob.boss.mob.mobs.gauntlet.AnimationHolder
 import net.barribob.boss.mob.utils.BaseEntity
+import net.barribob.boss.utils.AnimationUtils
 import net.barribob.maelstrom.static_utilities.eyePos
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.MovementType
@@ -13,13 +17,17 @@ import net.minecraft.entity.boss.ServerBossBar
 import net.minecraft.entity.mob.PathAwareEntity
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.server.world.ServerWorld
+import net.minecraft.util.math.Box
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
+import software.bernie.geckolib3.core.controller.AnimationController
 import software.bernie.geckolib3.core.manager.AnimationData
 
-class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: World) : BaseEntity(entityType, world) {
+class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: World) : BaseEntity(entityType, world),
+    MultipartAwareEntity {
     override val statusHandler = AnimationHolder(this, mapOf())
     override val bossBar = ServerBossBar(this.displayName, BossBar.Color.PINK, BossBar.Style.NOTCHED_12)
+    private val hitboxHelper = VoidBlossomHitboxes(this)
 
     init {
         ignoreCameraFrustum = true
@@ -44,6 +52,7 @@ class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: Worl
     override fun registerControllers(data: AnimationData) {
         data.shouldPlayWhilePaused = true
         statusHandler.registerControllers(data)
+        data.addAnimationController(AnimationController(this, "leaves", 5f, AnimationUtils.createIdlePredicate("leaves")))
     }
 
     override fun move(type: MovementType, movement: Vec3d) {
@@ -52,5 +61,17 @@ class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: Worl
 
     override fun isOnFire(): Boolean {
         return false
+    }
+
+    override fun getCompoundBoundingBox(bounds: Box?): CompoundOrientedBox = hitboxHelper.getHitbox().getBox(bounds)
+    override fun getBounds(): EntityBounds = hitboxHelper.getHitbox()
+    override fun isInsideWall(): Boolean = false
+
+    override fun onSetPos(x: Double, y: Double, z: Double) {
+        if (hitboxHelper != null) hitboxHelper.updatePosition()
+    }
+
+    override fun setNextDamagedPart(part: String?) {
+        hitboxHelper.setNextDamagedPart(part)
     }
 }

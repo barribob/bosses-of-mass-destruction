@@ -73,7 +73,7 @@ object Entities {
 
     private val VOID_BLOSSOM: EntityType<VoidBlossomEntity> = registerConfiguredMob("void_blossom",
         { type, world -> VoidBlossomEntity(type, world) },
-        { it.dimensions(EntityDimensions.fixed(2.0f, 4.4f)) })
+        { it.dimensions(EntityDimensions.fixed(8.0f, 10.0f)) })
 
     private val killCounter = LichKillCounter(mobConfig.lichConfig.summonMechanic)
 
