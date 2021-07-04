@@ -395,7 +395,7 @@ object VanillaCopies {
     /**
      * [GuardianEntityRenderer.method_23173]
      */
-    private fun method_23173(
+    fun method_23173(
         vertexConsumer: VertexConsumer,
         matrix4f: Matrix4f,
         matrix3f: Matrix3f,
@@ -420,7 +420,7 @@ object VanillaCopies {
     /**
      * [GuardianEntityRenderer.fromLerpedPosition]
      */
-    private fun fromLerpedPosition(entity: LivingEntity, yOffset: Double, delta: Float): Vec3d {
+    fun fromLerpedPosition(entity: LivingEntity, yOffset: Double, delta: Float): Vec3d {
         val d = MathHelper.lerp(delta.toDouble(), entity.lastRenderX, entity.x)
         val e = MathHelper.lerp(delta.toDouble(), entity.lastRenderY, entity.y) + yOffset
         val f = MathHelper.lerp(delta.toDouble(), entity.lastRenderZ, entity.z)

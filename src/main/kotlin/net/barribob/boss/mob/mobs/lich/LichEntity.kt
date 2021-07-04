@@ -250,7 +250,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
 
         if (!world.isClient) {
             goalSelector.add(1, SwimGoal(this))
-            goalSelector.add(3, CompositeGoal(listOf(buildAttackGoal(), buildAttackMovement())))
+            goalSelector.add(3, CompositeGoal(buildAttackGoal(), buildAttackMovement()))
             goalSelector.add(4, buildWanderGoal())
 
             targetSelector.add(2, FindTargetGoal(this, PlayerEntity::class.java, { boundingBox.expand(it) })

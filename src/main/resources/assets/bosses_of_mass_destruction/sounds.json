@@ -211,5 +211,12 @@
     "sounds": [
       "bosses_of_mass_destruction:soul_star"
     ]
+  },
+  "void_blossom_spike": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.void_blossom_spike",
+    "category": "hostile",
+    "sounds": [
+      "bosses_of_mass_destruction:void_blossom_spike"
+    ]
   }
 }

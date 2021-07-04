@@ -3,11 +3,13 @@ package net.barribob.boss.utils
 import io.netty.buffer.Unpooled
 import net.barribob.boss.Mod
 import net.barribob.boss.mob.mobs.gauntlet.GauntletEntity
+import net.barribob.boss.mob.mobs.void_blossom.VoidBlossomEntity
 import net.barribob.maelstrom.static_utilities.readVec3d
 import net.barribob.maelstrom.static_utilities.writeVec3d
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking
 import net.minecraft.client.MinecraftClient
@@ -18,6 +20,7 @@ import net.minecraft.network.Packet
 import net.minecraft.network.PacketByteBuf
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket
 import net.minecraft.server.network.ServerPlayerEntity
+import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 
 class NetworkUtils {
@@ -27,6 +30,7 @@ class NetworkUtils {
         private val changeHitboxPacketId = Mod.identifier("change_hitbox")
         private val gauntletBlindnessPacketId = Mod.identifier("gauntlet_blindness")
         private val playerVelocityPacketId = Mod.identifier("player_velocity")
+        private val voidBlossomSpikePacketId = Mod.identifier("void_blossom_spikes")
 
         fun LivingEntity.sendVelocity(velocity: Vec3d) {
             this.velocity = velocity
@@ -54,6 +58,19 @@ class NetworkUtils {
                 ServerPlayNetworking.send(it, gauntletBlindnessPacketId, packet)
             }
         }
+
+        fun VoidBlossomEntity.sendSpikePacket(spikesPositions: List<BlockPos>) {
+            for(spikePos in spikesPositions) {
+                val buf: PacketByteBuf = PacketByteBufs.create()
+                buf.writeInt(this.id)
+                buf.writeInt(spikePos.x)
+                buf.writeInt(spikePos.y)
+                buf.writeInt(spikePos.z)
+                for (player in PlayerLookup.tracking(this)) {
+                    ServerPlayNetworking.send(player, voidBlossomSpikePacketId, buf)
+                }
+            }
+        }
     }
 
     @Environment(EnvType.CLIENT)
@@ -69,6 +86,9 @@ class NetworkUtils {
         }
         ClientPlayNetworking.registerGlobalReceiver(gauntletBlindnessPacketId) { client, _, buf, _ ->
             handleGauntletBlindness(client, buf)
+        }
+        ClientPlayNetworking.registerGlobalReceiver(voidBlossomSpikePacketId) { client, _, buf, _ ->
+            handleVoidBlossomSpikes(client, buf)
         }
     }
 
@@ -121,6 +141,20 @@ class NetworkUtils {
             val players: List<PlayerEntity> = playerIds.map { client.world?.getEntityById(it) }.filterIsInstance<PlayerEntity>()
             if(entity is GauntletEntity) {
                 entity.clientBlindnessHandler.handlePlayerEffects(players)
+            }
+        }
+    }
+
+    @Environment(EnvType.CLIENT)
+    private fun handleVoidBlossomSpikes(client: MinecraftClient, buf: PacketByteBuf) {
+        val entityId = buf.readInt()
+        val spikePos = BlockPos(buf.readInt(), buf.readInt(), buf.readInt())
+
+        client.execute {
+            val entity = client.world?.getEntityById(entityId)
+
+            if(entity is VoidBlossomEntity) {
+                entity.clientSpikeHandler.addSpike(spikePos)
             }
         }
     }

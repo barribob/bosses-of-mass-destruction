@@ -13,6 +13,7 @@ import net.barribob.boss.mob.mobs.obsidilith.ObsidilithBoneLight
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithEntity
 import net.barribob.boss.mob.mobs.void_blossom.VoidBlossomCodeAnimations
 import net.barribob.boss.mob.mobs.void_blossom.VoidBlossomEntity
+import net.barribob.boss.mob.mobs.void_blossom.VoidBlossomSpikeRenderer
 import net.barribob.boss.mob.utils.SimpleLivingGeoRenderer
 import net.barribob.boss.particle.ParticleFactories
 import net.barribob.boss.projectile.MagicMissileProjectile
@@ -242,7 +243,8 @@ object Entities {
                 animationTimer,
                 VoidBlossomCodeAnimations()
             )
-            SimpleLivingGeoRenderer(context, modelProvider, deathRotation = false)
+            SimpleLivingGeoRenderer(context, modelProvider, deathRotation = false,
+            renderer = VoidBlossomSpikeRenderer())
         }
     }
 }

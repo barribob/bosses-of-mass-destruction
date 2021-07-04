@@ -13,6 +13,8 @@ object ModColors {
     val RED = Vec3d(0.8, 0.2, 0.4)
     val DARK_RED = Vec3d(0.4, 0.0, 0.0)
     val ENDER_PURPLE = Vec3d(158 / 255.0, 66 / 255.0, 245 / 255.0)
+    val DARK_PURPLE: Vec3d = ENDER_PURPLE.multiply(0.75)
+    val VOID_PURPLE = Vec3d(0.7, 0.3, 0.6)
     val LASER_RED = Vec3d(0.8, 0.1, 0.1)
-    val GREY = VecUtils.unit.multiply(0.5)
+    val GREY: Vec3d = VecUtils.unit.multiply(0.5)
 }

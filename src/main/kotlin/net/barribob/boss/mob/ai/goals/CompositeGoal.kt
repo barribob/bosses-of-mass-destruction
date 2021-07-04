@@ -2,7 +2,8 @@ package net.barribob.boss.mob.ai.goals
 
 import net.minecraft.entity.ai.goal.Goal
 
-class CompositeGoal(private val goals: List<Goal>) : Goal() {
+class CompositeGoal(vararg goals: Goal) : Goal() {
+    private val goals = goals.toList()
     init {
         goals.forEach { goal: Goal -> controls.addAll(goal.controls) }
     }

@@ -25,16 +25,23 @@ import software.bernie.geckolib3.core.manager.AnimationData
 
 class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: World) : BaseEntity(entityType, world),
     MultipartAwareEntity {
-    override val statusHandler = AnimationHolder(this, mapOf())
+    override val statusHandler = AnimationHolder(
+        this, mapOf(
+            Pair(VoidBlossomAttacks.spikeAttack, AnimationHolder.Animation("spike", "idle")),
+        )
+    )
     override val bossBar = ServerBossBar(this.displayName, BossBar.Color.PINK, BossBar.Style.NOTCHED_12)
+    val clientSpikeHandler = VoidBlossomClientSpikeHandler()
+    override val clientTick = clientSpikeHandler
     private val hitboxHelper = VoidBlossomHitboxes(this)
 
     init {
         ignoreCameraFrustum = true
 
         if (!world.isClient && world is ServerWorld) {
-            goalSelector.add(2, CompositeGoal(listOf())) // Idle goal
-            goalSelector.add(1, ActionGoal(::canContinueAttack, tickAction = ::lookAtTarget))
+            val attackHandler = VoidBlossomAttacks(this, preTickEvents)
+            goalSelector.add(2, CompositeGoal()) // Idle goal
+            goalSelector.add(1, CompositeGoal(attackHandler.buildAttackGoal(), ActionGoal(::canContinueAttack, tickAction = ::lookAtTarget)))
             targetSelector.add(2, FindTargetGoal(this, PlayerEntity::class.java, { boundingBox.expand(it) }))
         }
     }

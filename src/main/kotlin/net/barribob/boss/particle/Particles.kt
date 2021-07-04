@@ -4,6 +4,7 @@ import net.barribob.boss.Mod
 import net.barribob.boss.mob.mobs.obsidilith.BurstAction
 import net.barribob.boss.mob.mobs.obsidilith.PillarAction
 import net.barribob.boss.mob.mobs.obsidilith.WaveAction
+import net.barribob.boss.mob.mobs.void_blossom.SpikeAction.Companion.indicatorDelay
 import net.barribob.boss.utils.ModColors
 import net.barribob.boss.utils.VanillaCopies
 import net.barribob.maelstrom.static_utilities.MathUtils
@@ -121,6 +122,12 @@ object Particles {
     val LINE: DefaultParticleType = Registry.register(
         Registry.PARTICLE_TYPE,
         Mod.identifier("line"),
+        FabricParticleTypes.simple()
+    )
+
+    val VOID_BLOSSOM_SPIKE_INDICATOR: DefaultParticleType = Registry.register(
+        Registry.PARTICLE_TYPE,
+        Mod.identifier("void_blossom_spike_indicator"),
         FabricParticleTypes.simple()
     )
 
@@ -308,6 +315,21 @@ object Particles {
         particleFactory.register(LINE) { provider: SpriteProvider ->
             SimpleParticleFactory(provider) {
                 SimpleParticle(it, RandomUtils.range(20, 30), VanillaCopies::buildBillboardGeometry)
+            }
+        }
+
+        particleFactory.register(VOID_BLOSSOM_SPIKE_INDICATOR) { provider: SpriteProvider ->
+            SimpleParticleFactory(provider) { context ->
+                val particle = SimpleParticle(
+                    context,
+                    indicatorDelay + RandomUtils.range(-1, 2),
+                    VanillaCopies::buildFlatGeometry
+                )
+                particle.setColorOverride { ModColors.DARK_PURPLE }
+                particle.setColorVariation(0.3)
+                particle.setBrightnessOverride { FULL_BRIGHT }
+                particle.setScaleOverride { (1 + it) * 0.25f }
+                particle
             }
         }
     }

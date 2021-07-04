@@ -30,9 +30,9 @@ class GauntletGoalHandler(
         val serverWorld = entity.world
         if (serverWorld is ServerWorld) {
             val attackHelper = GauntletAttacks(entity, eventScheduler, mobConfig, serverWorld)
-            val attackGoal = CompositeGoal(listOf(movementHelper.buildAttackMovement(), attackHelper.buildAttackGoal()))
+            val attackGoal = CompositeGoal(movementHelper.buildAttackMovement(), attackHelper.buildAttackGoal())
 
-            goalSelector.add(2, CompositeGoal(listOf())) // Idle goal
+            goalSelector.add(2, CompositeGoal()) // Idle goal
             goalSelector.add(3, attackGoal)
 
             targetSelector.add(2, FindTargetGoal(entity, PlayerEntity::class.java, { entity.boundingBox.expand(it) }))
