@@ -7,7 +7,6 @@ import net.barribob.boss.mob.mobs.lich.LichUtils
 import net.barribob.boss.particle.ClientParticleBuilder
 import net.barribob.boss.particle.Particles
 import net.barribob.maelstrom.general.event.Event
-import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.static_utilities.RandomUtils
 import net.barribob.maelstrom.static_utilities.VecUtils
 import net.barribob.maelstrom.static_utilities.rotateVector
@@ -22,7 +21,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry
 import net.minecraft.entity.projectile.ProjectileEntity
 import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
-import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.NbtCompound
 import net.minecraft.network.Packet
 import net.minecraft.particle.ParticleTypes
 import net.minecraft.util.Util
@@ -188,15 +187,15 @@ class SoulStarEntity(entityType: EntityType<out SoulStarEntity?>?, world: World?
         }
     }
 
-    public override fun writeCustomDataToTag(tag: CompoundTag) {
+    public override fun writeCustomDataToNbt(tag: NbtCompound) {
         val itemStack = trackedItem()
         if (!itemStack.isEmpty) {
-            tag.put("Item", itemStack.toTag(CompoundTag()))
+            tag.put("Item", itemStack.writeNbt(NbtCompound()))
         }
     }
 
-    public override fun readCustomDataFromTag(tag: CompoundTag) {
-        val itemStack = ItemStack.fromTag(tag.getCompound("Item"))
+    public override fun readCustomDataFromNbt(tag: NbtCompound) {
+        val itemStack = ItemStack.fromNbt(tag.getCompound("Item"))
         setItem(itemStack)
     }
 

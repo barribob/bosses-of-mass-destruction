@@ -12,7 +12,7 @@ import net.minecraft.entity.MovementType
 import net.minecraft.entity.ai.goal.GoalSelector
 import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.NbtCompound
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.Vec3d
 
@@ -39,12 +39,12 @@ class GauntletGoalHandler(
         }
     }
 
-    override fun toTag(tag: CompoundTag): CompoundTag {
+    override fun writeNbt(tag: NbtCompound): NbtCompound {
         tag.putBoolean(::isAggroed.name, isAggroed)
         return tag
     }
 
-    override fun fromTag(tag: CompoundTag) {
+    override fun fromNbt(tag: NbtCompound) {
         if (tag.contains(::isAggroed.name)) {
             isAggroed = tag.getBoolean(::isAggroed.name)
             if (isAggroed) addGoals()

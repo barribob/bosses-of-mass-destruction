@@ -10,13 +10,13 @@ import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.client.render.entity.EntityRenderDispatcher
 import net.minecraft.client.render.entity.EntityRenderer
 import net.minecraft.client.util.math.MatrixStack
-import net.minecraft.client.util.math.Vector3f
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityPose
 import net.minecraft.entity.LivingEntity
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.MathHelper
+import net.minecraft.util.math.Vec3f
 import software.bernie.geckolib3.core.IAnimatable
 import software.bernie.geckolib3.core.IAnimatableModel
 import software.bernie.geckolib3.core.controller.AnimationController
@@ -147,7 +147,7 @@ class ModGeoRenderer<T>(
     ) {
         val pose = entityLiving.pose
         if (pose != EntityPose.SLEEPING) {
-            matrixStackIn.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(rotationYaw))
+            matrixStackIn.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(rotationYaw))
         }
     }
 
@@ -166,16 +166,6 @@ class ModGeoRenderer<T>(
     companion object Init {
         fun getPackedOverlay(uIn: Float): Int {
             return OverlayTexture.getUv(OverlayTexture.getU(uIn).toFloat(), false)
-        }
-
-        init {
-            AnimationController.addModelFetcher {
-                if (it is Entity) {
-                    return@addModelFetcher AnimationUtils.getGeoModelForEntity(it as Entity) as IAnimatableModel<*>
-                } else {
-                    return@addModelFetcher null
-                }
-            }
         }
     }
 }

@@ -6,7 +6,7 @@ import net.minecraft.client.render.VertexConsumer
 import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher
 import net.minecraft.client.util.math.MatrixStack
-import net.minecraft.client.util.math.Vector4f
+import net.minecraft.util.math.Vector4f
 import net.minecraft.util.Identifier
 import software.bernie.geckolib3.core.IAnimatable
 import software.bernie.geckolib3.geo.render.built.GeoBone

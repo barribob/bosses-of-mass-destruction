@@ -6,6 +6,7 @@
     "BossBarHudMixin",
     "EnderEyeUseMixin",
     "ExplosionMixin",
+    "StructuresConfigAccessor",
     "IceBlockMixin",
     "ServerPlayerEntityMixin",
     "SpawnEntryMixin",

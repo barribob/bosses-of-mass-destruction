@@ -108,8 +108,8 @@ class SimpleParticle(
         positionOverride = override
     }
 
-    override fun getColorMultiplier(tint: Float): Int =
-        brightnessOverride?.invoke(age / maxAge.toFloat()) ?: super.getColorMultiplier(tint)
+    override fun getBrightness(tint: Float): Int =
+        brightnessOverride?.invoke(age / maxAge.toFloat()) ?: super.getBrightness(tint)
 
     override fun buildGeometry(vertexConsumer: VertexConsumer?, camera: Camera, tickDelta: Float) {
         val vector3fs = particleGeometry.getGeometry(
@@ -124,7 +124,7 @@ class SimpleParticle(
         val m = this.maxU
         val n = this.minV
         val o = this.maxV
-        val p = getColorMultiplier(tickDelta)
+        val p = getBrightness(tickDelta)
         vertexConsumer!!.vertex(
             vector3fs[0].x.toDouble(), vector3fs[0].y.toDouble(),
             vector3fs[0].z.toDouble()

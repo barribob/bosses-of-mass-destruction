@@ -1,8 +1,8 @@
 package net.barribob.boss.mob.utils
 
-import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.NbtCompound
 
 interface INbtHandler {
-    fun toTag(tag: CompoundTag): CompoundTag
-    fun fromTag(tag: CompoundTag)
+    fun writeNbt(tag: NbtCompound): NbtCompound
+    fun fromNbt(tag: NbtCompound)
 }

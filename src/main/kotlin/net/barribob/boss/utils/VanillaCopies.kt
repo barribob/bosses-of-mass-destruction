@@ -12,7 +12,6 @@ import net.minecraft.client.render.entity.EntityRenderDispatcher
 import net.minecraft.client.render.entity.EntityRenderer
 import net.minecraft.client.render.entity.GuardianEntityRenderer
 import net.minecraft.client.util.math.MatrixStack
-import net.minecraft.client.util.math.Vector3f
 import net.minecraft.entity.Entity
 import net.minecraft.entity.ExperienceOrbEntity
 import net.minecraft.entity.LivingEntity
@@ -135,7 +134,7 @@ object VanillaCopies {
     ) {
         matrixStack.push()
         matrixStack.multiply(dispatcher.rotation)
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f))
+        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0f))
         val entry = matrixStack.peek()
         val matrix4f = entry.model
         val matrix3f = entry.normal
@@ -221,17 +220,17 @@ object VanillaCopies {
         y: Double,
         z: Double,
         scale: Float
-    ): Array<Vector3f> {
+    ): Array<Vec3f> {
         val vec3d = camera.pos
         val f = (MathHelper.lerp(tickDelta.toDouble(), prevPosX, x) - vec3d.getX()).toFloat()
         val g = (MathHelper.lerp(tickDelta.toDouble(), prevPosY, y) - vec3d.getY()).toFloat()
         val h = (MathHelper.lerp(tickDelta.toDouble(), prevPosZ, z) - vec3d.getZ()).toFloat()
 
         val vector3fs = arrayOf(
-            Vector3f(-1.0f, 0.0f, -1.0f),
-            Vector3f(-1.0f, 0.0f, 1.0f),
-            Vector3f(1.0f, 0.0f, 1.0f),
-            Vector3f(1.0f, 0.0f, -1.0f)
+            Vec3f(-1.0f, 0.0f, -1.0f),
+            Vec3f(-1.0f, 0.0f, 1.0f),
+            Vec3f(1.0f, 0.0f, 1.0f),
+            Vec3f(1.0f, 0.0f, -1.0f)
         )
 
         for (k in 0..3) {
@@ -255,20 +254,20 @@ object VanillaCopies {
         y: Double,
         z: Double,
         scale: Float
-    ): Array<Vector3f> {
+    ): Array<Vec3f> {
         val vec3d = camera.pos
         val f = (MathHelper.lerp(tickDelta.toDouble(), prevPosX, x) - vec3d.getX()).toFloat()
         val g = (MathHelper.lerp(tickDelta.toDouble(), prevPosY, y) - vec3d.getY()).toFloat()
         val h = (MathHelper.lerp(tickDelta.toDouble(), prevPosZ, z) - vec3d.getZ()).toFloat()
         val quaternion2: Quaternion = camera.rotation
 
-        val vector3f = Vector3f(-1.0f, -1.0f, 0.0f)
+        val vector3f = Vec3f(-1.0f, -1.0f, 0.0f)
         vector3f.rotate(quaternion2)
         val vector3fs = arrayOf(
-            Vector3f(-1.0f, -1.0f, 0.0f),
-            Vector3f(-1.0f, 1.0f, 0.0f),
-            Vector3f(1.0f, 1.0f, 0.0f),
-            Vector3f(1.0f, -1.0f, 0.0f)
+            Vec3f(-1.0f, -1.0f, 0.0f),
+            Vec3f(-1.0f, 1.0f, 0.0f),
+            Vec3f(1.0f, 1.0f, 0.0f),
+            Vec3f(1.0f, -1.0f, 0.0f)
         )
         val j: Float = scale
 
@@ -331,8 +330,8 @@ object VanillaCopies {
             vec3d3 = vec3d3.normalize()
             val n = acos(vec3d3.y).toFloat()
             val o = atan2(vec3d3.z, vec3d3.x).toFloat()
-            matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion((1.5707964f - o) * 57.295776f))
-            matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(n * 57.295776f))
+            matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion((1.5707964f - o) * 57.295776f))
+            matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(n * 57.295776f))
             val q = j * 0.05f * -1.5f
             val red = (color.x * 255).toInt()
             val green = (color.y * 255).toInt()

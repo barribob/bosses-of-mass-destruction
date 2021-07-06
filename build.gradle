@@ -19,7 +19,7 @@ test {
 }
 
 repositories {
-    maven { url 'https://repo.repsy.io/mvn/gandiber/geckolib' }
+    maven { url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
     maven { url = "http://maven.fabricmc.net/" }
     maven {
         name = 'Ladysnake Mods'
@@ -28,6 +28,7 @@ repositories {
     mavenCentral()
     mavenLocal()
     maven { url "https://maven.shedaniel.me/" }
+    maven { url "https://maven.terraformersmc.com/" }
 }
 
 dependencies {
@@ -67,10 +68,10 @@ dependencies {
     modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${project.cardinal_components_version}"
     modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${project.cardinal_components_version}"
 
-    modCompileOnly("io.github.prospector:modmenu:1.14.6+build.31") {
+    modCompileOnly("com.terraformersmc:modmenu:1.16.15") {
         exclude module: "fabric-api"
     }
-    modRuntime("io.github.prospector:modmenu:1.14.6+build.31") {
+    modRuntime("com.terraformersmc:modmenu:1.16.15") {
         exclude module: "fabric-api"
     }
 }

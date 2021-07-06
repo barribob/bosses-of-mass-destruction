@@ -23,7 +23,6 @@ import net.fabricmc.api.Environment
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking
-import net.minecraft.block.Blocks
 import net.minecraft.client.MinecraftClient
 import net.minecraft.enchantment.Enchantments
 import net.minecraft.entity.EntityType
@@ -31,7 +30,7 @@ import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.damage.DamageSource
 import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
-import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.NbtCompound
 import net.minecraft.network.PacketByteBuf
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.server.world.ServerWorld
@@ -94,7 +93,7 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
     fun spawnEntity(source: ServerCommandSource) {
         val entity = source.entityOrThrow
         val serverWorld = entity.world as ServerWorld
-        val compoundTag = CompoundTag()
+        val compoundTag = NbtCompound()
         compoundTag.putString("id", Registry.ENTITY_TYPE.getId(EntityType.PHANTOM).toString())
 
         val spawner = MobPlacementLogic(

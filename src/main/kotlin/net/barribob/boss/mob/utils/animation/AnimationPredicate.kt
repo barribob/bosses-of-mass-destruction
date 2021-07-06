@@ -7,5 +7,5 @@ import software.bernie.geckolib3.core.event.predicate.AnimationEvent
 
 class AnimationPredicate<T : IAnimatable>(val predicate: (AnimationEvent<*>) -> PlayState) :
     AnimationController.IAnimationPredicate<T> {
-    override fun <P : IAnimatable> test(p0: AnimationEvent<P>): PlayState = predicate(p0)
+    override fun test(p0: AnimationEvent<T>): PlayState = predicate(p0)
 }

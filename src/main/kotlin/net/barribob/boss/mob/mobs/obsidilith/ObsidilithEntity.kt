@@ -30,7 +30,7 @@ import net.minecraft.entity.boss.ServerBossBar
 import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.effect.StatusEffects
 import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.NbtCompound
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvent
@@ -182,16 +182,16 @@ class ObsidilithEntity(
         activePillars.add(pos)
     }
 
-    override fun toTag(tag: CompoundTag): CompoundTag {
+    override fun writeNbt(tag: NbtCompound): NbtCompound {
         tag.putIntArray(::activePillars.name, activePillars.flatMap { listOf(it.x, it.y, it.z) })
-        return super.toTag(tag)
+        return super.writeNbt(tag)
     }
 
-    override fun fromTag(tag: CompoundTag) {
-        super.fromTag(tag)
-        if (tag.contains(::activePillars.name)) {
+    override fun readNbt(nbt: NbtCompound) {
+        super.readNbt(nbt)
+        if (nbt.contains(::activePillars.name)) {
             activePillars.addAll(
-                tag.getIntArray(::activePillars.name).asIterable().chunked(3).map { BlockPos(it[0], it[1], it[2]) })
+                nbt.getIntArray(::activePillars.name).asIterable().chunked(3).map { BlockPos(it[0], it[1], it[2]) })
         }
     }
 }

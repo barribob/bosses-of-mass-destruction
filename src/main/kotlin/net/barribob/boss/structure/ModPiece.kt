@@ -1,6 +1,6 @@
 package net.barribob.boss.structure
 
-import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.NbtCompound
 import net.minecraft.structure.*
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor
 import net.minecraft.util.BlockMirror
@@ -19,7 +19,7 @@ class ModPiece : SimpleStructurePiece {
     private val template: Identifier
     private val metadataHandler: IMetadataHandler?
 
-    constructor(structureManager: StructureManager, compoundTag: CompoundTag, type: StructurePieceType) : super(
+    constructor(structureManager: StructureManager, compoundTag: NbtCompound, type: StructurePieceType) : super(
         type,
         compoundTag
     ) {
@@ -53,7 +53,7 @@ class ModPiece : SimpleStructurePiece {
         setStructureData(structure, pos, placementData)
     }
 
-    override fun toNbt(tag: CompoundTag) {
+    override fun toNbt(tag: NbtCompound) {
         super.toNbt(tag)
         tag.putString("Template", template.toString())
         tag.putString("Rot", this.rot.name)

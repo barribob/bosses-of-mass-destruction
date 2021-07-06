@@ -3,10 +3,10 @@ package net.barribob.boss.mob.spawn
 import net.barribob.maelstrom.general.io.ILogger
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityType
-import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.NbtCompound
 import net.minecraft.world.World
 
-class CompoundTagEntityProvider(private val tag: CompoundTag, val world: World, private val logger: ILogger): IEntityProvider {
+class CompoundTagEntityProvider(private val tag: NbtCompound, val world: World, private val logger: ILogger): IEntityProvider {
     override fun getEntity(): Entity? {
         val entity = EntityType.loadEntityWithPassengers(tag, world) { it }
 
