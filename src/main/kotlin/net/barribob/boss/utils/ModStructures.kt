@@ -3,16 +3,18 @@ package net.barribob.boss.utils
 import me.shedaniel.autoconfig.AutoConfig
 import net.barribob.boss.Mod
 import net.barribob.boss.config.ModConfig
+import net.barribob.boss.mixin.StructuresConfigAccessor
 import net.barribob.boss.structure.GauntletArenaStructureFeature
 import net.barribob.boss.structure.LichTowerStructureFeature
 import net.barribob.boss.structure.ModStructurePiece
 import net.barribob.boss.structure.ObsidilithArenaStructureFeature
 import net.barribob.boss.structure.util.CodeStructurePiece
 import net.barribob.boss.structure.util.IStructureSpawns
-import net.barribob.boss.structure.void_blossom_cavern.VoidBlossomCavernPieceGenerator
 import net.barribob.boss.structure.void_blossom_cavern.VoidBlossomArenaStructureFeature
+import net.barribob.boss.structure.void_blossom_cavern.VoidBlossomCavernPieceGenerator
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents
 import net.fabricmc.fabric.api.structure.v1.FabricStructureBuilder
 import net.minecraft.entity.SpawnGroup
 import net.minecraft.structure.StructurePieceType
@@ -22,10 +24,12 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.registry.BuiltinRegistries
 import net.minecraft.util.registry.Registry
 import net.minecraft.util.registry.RegistryKey
+import net.minecraft.world.World
 import net.minecraft.world.biome.BiomeKeys
 import net.minecraft.world.biome.SpawnSettings
 import net.minecraft.world.gen.GenerationStep
 import net.minecraft.world.gen.StructureAccessor
+import net.minecraft.world.gen.chunk.FlatChunkGenerator
 import net.minecraft.world.gen.feature.ConfiguredStructureFeature
 import net.minecraft.world.gen.feature.DefaultFeatureConfig
 import net.minecraft.world.gen.feature.StructureFeature
@@ -127,6 +131,21 @@ object ModStructures {
             BiomeSelectors.foundInOverworld()::test,
             register(Mod.identifier("configured_void_blossom_arena"), configuredVoidBlossomArenaStructure)
         )
+
+        ServerWorldEvents.LOAD.register(ServerWorldEvents.Load { _, world ->
+            val chunkGenerator = world.chunkManager.chunkGenerator
+            if (chunkGenerator is FlatChunkGenerator && world.registryKey == World.OVERWORLD) {
+                val map = chunkGenerator.structuresConfig.structures.filter {
+                    !listOf(
+                        obsidilithArenaStructure,
+                        lichTowerStructure,
+                        gauntletArenaStructure,
+                        voidBlossomArenaStructure
+                    ).contains(it.key)
+                }.toMap()
+                (chunkGenerator.structuresConfig as StructuresConfigAccessor).bossesOfMassDestruction_setStructures(map)
+            }
+        })
     }
 
     private fun register(
