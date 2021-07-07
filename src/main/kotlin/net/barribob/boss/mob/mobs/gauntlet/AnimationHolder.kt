@@ -8,7 +8,7 @@ import software.bernie.geckolib3.core.builder.AnimationBuilder
 import software.bernie.geckolib3.core.controller.AnimationController
 import software.bernie.geckolib3.core.manager.AnimationData
 
-class AnimationHolder(val entity: BaseEntity, private val animationStatusFlags: Map<Byte, Animation>) : IStatusHandler {
+class AnimationHolder(val entity: BaseEntity, private val animationStatusFlags: Map<Byte, Animation>, private val stopAttackByte: Byte) : IStatusHandler {
     private var nextAnimation: Animation? = null
     private var doIdleAnimation = true
 
@@ -21,7 +21,7 @@ class AnimationHolder(val entity: BaseEntity, private val animationStatusFlags: 
             doIdleAnimation = false
             nextAnimation = animationStatusFlags[status]
         }
-        if (status == GauntletAttacks.stopAttackAnimation) doIdleAnimation = true
+        if (status == stopAttackByte) doIdleAnimation = true
     }
 
     private val attack = AnimationPredicate<BaseEntity> {

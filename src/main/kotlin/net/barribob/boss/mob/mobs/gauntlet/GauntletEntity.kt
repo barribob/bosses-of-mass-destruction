@@ -44,7 +44,8 @@ class GauntletEntity(entityType: EntityType<out PathAwareEntity>, world: World, 
             Pair(GauntletAttacks.swirlPunchAttack, AnimationHolder.Animation("swirl_punch", "idle")),
             Pair(GauntletAttacks.blindnessAttack, AnimationHolder.Animation("cast", "idle")),
             Pair(3, AnimationHolder.Animation("death", "idle"))
-        )
+        ),
+        GauntletAttacks.stopAttackAnimation
     )
     override val damageHandler = CompositeDamageHandler(hitboxHelper, gauntletGoalHandler)
     override val statusHandler = CompositeStatusHandler(animationHandler, laserHandler, clientBlindnessHandler)

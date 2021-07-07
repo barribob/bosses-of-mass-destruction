@@ -28,7 +28,9 @@ class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: Worl
     override val statusHandler = AnimationHolder(
         this, mapOf(
             Pair(VoidBlossomAttacks.spikeAttack, AnimationHolder.Animation("spike", "idle")),
-        )
+            Pair(VoidBlossomAttacks.spikeWaveAttack, AnimationHolder.Animation("spike_wave", "idle")),
+        ),
+        VoidBlossomAttacks.stopAttackAnimation
     )
     override val bossBar = ServerBossBar(this.displayName, BossBar.Color.PINK, BossBar.Style.NOTCHED_12)
     val clientSpikeHandler = VoidBlossomClientSpikeHandler()

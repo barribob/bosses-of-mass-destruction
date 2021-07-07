@@ -77,6 +77,5 @@ class SpikeAction(
 
     companion object {
         const val indicatorDelay = 20
-        const val maxAge = 20
     }
 }

@@ -1,6 +1,5 @@
 package net.barribob.boss.mob.mobs.void_blossom
 
-import net.barribob.boss.mob.mobs.void_blossom.SpikeAction.Companion.maxAge
 import net.barribob.boss.mob.utils.IEntityTick
 import net.barribob.boss.particle.ClientParticleBuilder
 import net.barribob.boss.particle.Particles
@@ -13,6 +12,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 
 class VoidBlossomClientSpikeHandler: IEntityTick<ClientWorld> {
+    private val maxAge = 10
     private val spikes = mutableMapOf<BlockPos, Spike>()
     private val spikeParticleFactory = ClientParticleBuilder(Particles.SPARKLES)
         .age { RandomUtils.range(10, 15) }
@@ -39,7 +39,7 @@ class VoidBlossomClientSpikeHandler: IEntityTick<ClientWorld> {
         for(kv in spikes) {
             val age = kv.value.age++
 
-            if (age == maxAge - 10) {
+            if (age == maxAge - 5) {
                 spikeParticleFactory.build(
                     kv.key.asVec3d()
                         .add(RandomUtils.randVec().add(VecUtils.yAxis.multiply(2.5 + RandomUtils.double(2.0))))

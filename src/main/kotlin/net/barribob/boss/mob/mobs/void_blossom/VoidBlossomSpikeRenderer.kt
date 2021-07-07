@@ -41,14 +41,14 @@ class VoidBlossomSpikeRenderer : IRenderer<VoidBlossomEntity> {
     }
 
     private fun renderBeam(actor: LivingEntity, spike: VoidBlossomClientSpikeHandler.Spike, tickDelta: Float, color: Vec3d, matrixStack: MatrixStack, vertexConsumerProvider: VertexConsumerProvider, layer: RenderLayer) {
-        val numTextures = 6.0f
-        val lifeRatio = 3.0f
+        val numTextures = 8.0f
+        val lifeRatio = 2.0f
         val textureProgress = max(0f, ((spike.age + tickDelta) * lifeRatio / spike.maxAge) - lifeRatio + 1)
         if(textureProgress >= 1) return
 
         val spikeHeight = spike.height
         val spikeWidth = textureRatio * spikeHeight * 0.5f
-        val upProgress = (sin((min((spike.age + tickDelta) / (spike.maxAge * 0.2), 1.0)) * Math.PI * 0.5) - 1) * spikeHeight
+        val upProgress = (sin((min((spike.age + tickDelta) / (spike.maxAge * 0.4), 1.0)) * Math.PI * 0.5) - 1) * spikeHeight
         val texTransformer = textureMultiplier(1 / numTextures, floor(textureProgress * numTextures) / numTextures)
         matrixStack.push()
         val offset = VanillaCopies.fromLerpedPosition(actor, 0.0, tickDelta).subtract(spike.pos)

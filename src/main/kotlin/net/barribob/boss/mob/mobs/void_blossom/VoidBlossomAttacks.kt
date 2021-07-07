@@ -2,20 +2,20 @@ package net.barribob.boss.mob.mobs.void_blossom
 
 import net.barribob.boss.mob.ai.action.CooldownAction
 import net.barribob.boss.mob.ai.goals.ActionGoal
-import net.barribob.boss.mob.mobs.gauntlet.GauntletAttacks
 import net.barribob.maelstrom.general.event.EventScheduler
 
 class VoidBlossomAttacks(val entity: VoidBlossomEntity, eventScheduler: EventScheduler) {
     private val cancelAttackAction: () -> Boolean = { entity.isDead || entity.target == null }
     private val statusRegistry = mapOf(
-        Pair(GauntletAttacks.punchAttack, SpikeAction(entity, eventScheduler, cancelAttackAction)),
+        Pair(spikeAttack, SpikeAction(entity, eventScheduler, cancelAttackAction)),
+        Pair(spikeWaveAttack, SpikeWaveAction(entity, eventScheduler, cancelAttackAction)),
     )
     private val moveLogic = VoidBlossomMoveLogic(statusRegistry, entity)
 
     fun buildAttackGoal(): ActionGoal {
         val attackAction = CooldownAction(moveLogic, 80)
         val onCancel = {
-            entity.world.sendEntityStatus(entity, GauntletAttacks.stopAttackAnimation)
+            entity.world.sendEntityStatus(entity, stopAttackAnimation)
             attackAction.stop()
         }
         return ActionGoal(
@@ -27,5 +27,7 @@ class VoidBlossomAttacks(val entity: VoidBlossomEntity, eventScheduler: EventSch
 
     companion object Status {
         const val spikeAttack: Byte = 4
+        const val spikeWaveAttack: Byte = 5
+        const val stopAttackAnimation: Byte = 6
     }
 }
