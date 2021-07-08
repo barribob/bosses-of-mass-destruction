@@ -34,7 +34,7 @@ class SpikeWaveAction(val entity: VoidBlossomEntity, private val eventScheduler:
         val spikeGenerator = Spikes(
             entity,
             world,
-            Particles.VOID_BLOSSOM_SPIKE_INDICATOR,
+            Particles.VOID_BLOSSOM_SPIKE_WAVE_INDICATOR,
             indicatorDelay,
             eventScheduler,
             {
