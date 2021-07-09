@@ -9,6 +9,7 @@ class VoidBlossomAttacks(val entity: VoidBlossomEntity, eventScheduler: EventSch
     private val statusRegistry = mapOf(
         Pair(spikeAttack, SpikeAction(entity, eventScheduler, cancelAttackAction)),
         Pair(spikeWaveAttack, SpikeWaveAction(entity, eventScheduler, cancelAttackAction)),
+        Pair(sporeAttack, SporeAction(entity, eventScheduler, cancelAttackAction)),
     )
     private val moveLogic = VoidBlossomMoveLogic(statusRegistry, entity)
 
@@ -29,5 +30,6 @@ class VoidBlossomAttacks(val entity: VoidBlossomEntity, eventScheduler: EventSch
         const val spikeAttack: Byte = 4
         const val spikeWaveAttack: Byte = 5
         const val stopAttackAnimation: Byte = 6
+        const val sporeAttack: Byte = 7
     }
 }

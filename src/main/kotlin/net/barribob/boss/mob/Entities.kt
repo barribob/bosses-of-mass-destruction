@@ -15,11 +15,15 @@ import net.barribob.boss.mob.mobs.void_blossom.VoidBlossomCodeAnimations
 import net.barribob.boss.mob.mobs.void_blossom.VoidBlossomEntity
 import net.barribob.boss.mob.mobs.void_blossom.VoidBlossomSpikeRenderer
 import net.barribob.boss.mob.utils.SimpleLivingGeoRenderer
+import net.barribob.boss.particle.ClientParticleBuilder
 import net.barribob.boss.particle.ParticleFactories
+import net.barribob.boss.particle.Particles
 import net.barribob.boss.projectile.MagicMissileProjectile
+import net.barribob.boss.projectile.SporeBallProjectile
 import net.barribob.boss.projectile.comet.CometCodeAnimations
 import net.barribob.boss.projectile.comet.CometProjectile
 import net.barribob.boss.render.*
+import net.barribob.boss.utils.ModColors
 import net.barribob.maelstrom.general.data.WeakHashPredicate
 import net.barribob.maelstrom.static_utilities.RandomUtils
 import net.fabricmc.fabric.api.`object`.builder.v1.entity.FabricDefaultAttributeRegistry
@@ -72,9 +76,16 @@ object Entities {
         { type, world -> GauntletEntity(type, world, mobConfig.gauntletConfig) },
         { it.fireImmune().dimensions(EntityDimensions.fixed(5.0f, 4.0f)) })
 
-    private val VOID_BLOSSOM: EntityType<VoidBlossomEntity> = registerConfiguredMob("void_blossom",
+    val VOID_BLOSSOM: EntityType<VoidBlossomEntity> = registerConfiguredMob("void_blossom",
         { type, world -> VoidBlossomEntity(type, world) },
         { it.dimensions(EntityDimensions.fixed(8.0f, 10.0f)) })
+
+    val SPORE_BALL: EntityType<SporeBallProjectile> = Registry.register(
+        Registry.ENTITY_TYPE,
+        Mod.identifier("spore_ball"),
+        FabricEntityTypeBuilder.create(SpawnGroup.MISC, ::SporeBallProjectile)
+            .dimensions(EntityDimensions.fixed(0.25f, 0.25f)).build()
+    )
 
     private val killCounter = LichKillCounter(mobConfig.lichConfig.summonMechanic)
 
@@ -245,6 +256,29 @@ object Entities {
             )
             SimpleLivingGeoRenderer(context, modelProvider, deathRotation = false,
             renderer = VoidBlossomSpikeRenderer())
+        }
+
+        val sporeBallTexture = Mod.identifier("textures/entity/spore_ball.png")
+        val sporeBallRenderLayer = RenderLayer.getEntityCutoutNoCull(sporeBallTexture)
+        EntityRendererRegistry.INSTANCE.register(SPORE_BALL) { context ->
+            SimpleEntityRenderer(
+                context,
+                CompositeRenderer(
+                    BillboardRenderer(context.renderDispatcher, sporeBallRenderLayer) { 0.3f + (it.ancestor * 0.1f)},
+                    ConditionalRenderer(
+                        WeakHashPredicate<SporeBallProjectile> { FrameLimiter(20f, pauseSecondTimer)::canDoFrame },
+                        LerpedPosRenderer {
+                            val projectileParticles = ClientParticleBuilder(Particles.OBSIDILITH_BURST)
+                                .color(ModColors.GREEN)
+                                .colorVariation(0.3)
+                                .scale(0.25f)
+                                .brightness(Particles.FULL_BRIGHT)
+                            projectileParticles.build(it.add(RandomUtils.randVec().multiply(0.25)))
+                        })
+                ),
+                { sporeBallTexture },
+                FullRenderLight()
+            )
         }
     }
 }

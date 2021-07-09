@@ -13,17 +13,7 @@ import net.minecraft.world.World
 import java.util.function.Predicate
 
 abstract class BaseThrownItemEntity : ThrownItemEntity {
-    private val collisionPredicate: Predicate<EntityHitResult>
-
-    constructor(
-        entityType: EntityType<out ThrownItemEntity>,
-        d: Double,
-        e: Double,
-        f: Double,
-        world: World
-    ) : super(entityType, d, e, f, world) {
-        collisionPredicate = Predicate { true }
-    }
+    protected val collisionPredicate: Predicate<EntityHitResult>
 
     constructor(
         entityType: EntityType<out ThrownItemEntity>, world: World?

@@ -11,7 +11,8 @@ import net.barribob.boss.mob.mobs.obsidilith.PillarAction
 import net.barribob.boss.mob.spawn.*
 import net.barribob.boss.particle.ClientParticleBuilder
 import net.barribob.boss.particle.Particles
-import net.barribob.boss.projectile.MagicMissileProjectile
+import net.barribob.boss.projectile.SporeBallProjectile
+import net.barribob.boss.projectile.util.ExemptEntities
 import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.general.random.ModRandom
 import net.barribob.maelstrom.static_utilities.DebugPointsNetworkHandler
@@ -71,7 +72,7 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
     fun throwProjectile(source: ServerCommandSource) {
         val entity = source.entityOrThrow
         if (entity is LivingEntity) {
-            val projectile = MagicMissileProjectile(entity, entity.world, {}, listOf(EntityType.ZOMBIE))
+            val projectile = SporeBallProjectile(entity, entity.world, ExemptEntities(listOf()), 3)
             projectile.setProperties(entity, entity.pitch, entity.yaw, 0f, 1.5f, 1.0f)
             entity.world.spawnEntity(projectile)
         }

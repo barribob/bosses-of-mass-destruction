@@ -218,5 +218,12 @@
     "sounds": [
       "bosses_of_mass_destruction:void_blossom_spike"
     ]
+  },
+  "spore_impact": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.spore_impact",
+    "category": "hostile",
+    "sounds": [
+      "bosses_of_mass_destruction:spore_impact"
+    ]
   }
 }

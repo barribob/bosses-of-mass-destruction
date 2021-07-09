@@ -29,6 +29,7 @@ class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: Worl
         this, mapOf(
             Pair(VoidBlossomAttacks.spikeAttack, AnimationHolder.Animation("spike", "idle")),
             Pair(VoidBlossomAttacks.spikeWaveAttack, AnimationHolder.Animation("spike_wave", "idle")),
+            Pair(VoidBlossomAttacks.sporeAttack, AnimationHolder.Animation("spore", "idle")),
         ),
         VoidBlossomAttacks.stopAttackAnimation
     )
