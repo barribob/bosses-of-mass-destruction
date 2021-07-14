@@ -138,6 +138,12 @@ object Particles {
         FabricParticleTypes.simple()
     )
 
+    val PETAL: DefaultParticleType = Registry.register(
+        Registry.PARTICLE_TYPE,
+        Mod.identifier("petal"),
+        FabricParticleTypes.simple()
+    )
+
     const val FULL_BRIGHT = 15728880
 
     fun clientInit() {
@@ -351,6 +357,15 @@ object Particles {
                 particle.setColorVariation(0.3)
                 particle.setBrightnessOverride { FULL_BRIGHT }
                 particle.setScaleOverride { (1 + it) * 0.25f }
+                particle
+            }
+        }
+
+        particleFactory.register(PETAL) { provider: SpriteProvider ->
+            SimpleParticleFactory(provider) {
+                val particle = SimpleParticle(it, RandomUtils.range(15, 20), VanillaCopies::buildBillboardGeometry)
+                particle.setColorOverride { ModColors.PINK }
+                particle.setBrightnessOverride { FULL_BRIGHT }
                 particle
             }
         }

@@ -30,6 +30,7 @@ class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: Worl
             Pair(VoidBlossomAttacks.spikeAttack, AnimationHolder.Animation("spike", "idle")),
             Pair(VoidBlossomAttacks.spikeWaveAttack, AnimationHolder.Animation("spike_wave", "idle")),
             Pair(VoidBlossomAttacks.sporeAttack, AnimationHolder.Animation("spore", "idle")),
+            Pair(VoidBlossomAttacks.bladeAttack, AnimationHolder.Animation("leaf_blade", "idle")),
         ),
         VoidBlossomAttacks.stopAttackAnimation
     )

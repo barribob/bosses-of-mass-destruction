@@ -19,6 +19,7 @@ import net.barribob.boss.particle.ClientParticleBuilder
 import net.barribob.boss.particle.ParticleFactories
 import net.barribob.boss.particle.Particles
 import net.barribob.boss.projectile.MagicMissileProjectile
+import net.barribob.boss.projectile.PetalBladeProjectile
 import net.barribob.boss.projectile.SporeBallProjectile
 import net.barribob.boss.projectile.comet.CometCodeAnimations
 import net.barribob.boss.projectile.comet.CometProjectile
@@ -86,6 +87,14 @@ object Entities {
         FabricEntityTypeBuilder.create(SpawnGroup.MISC, ::SporeBallProjectile)
             .dimensions(EntityDimensions.fixed(0.25f, 0.25f)).build()
     )
+
+    val PETAL_BLADE: EntityType<PetalBladeProjectile> = Registry.register(
+        Registry.ENTITY_TYPE,
+        Mod.identifier("petal_blade"),
+        FabricEntityTypeBuilder.create(SpawnGroup.MISC, ::PetalBladeProjectile)
+            .dimensions(EntityDimensions.fixed(0.25f, 0.25f)).build()
+    )
+
 
     private val killCounter = LichKillCounter(mobConfig.lichConfig.summonMechanic)
 
@@ -277,6 +286,24 @@ object Entities {
                         })
                 ),
                 { sporeBallTexture },
+                FullRenderLight()
+            )
+        }
+
+        val petalTexture = Mod.identifier("textures/projectile/petal.png")
+        val petalBladeRenderLayer = RenderLayer.getEntityCutoutNoCull(petalTexture)
+        EntityRendererRegistry.INSTANCE.register(PETAL_BLADE) { context ->
+            SimpleEntityRenderer(
+                context,
+                CompositeRenderer(
+                    BillboardRenderer(context.renderDispatcher, petalBladeRenderLayer) { 0.5f },
+                    ConditionalRenderer(
+                        WeakHashPredicate<PetalBladeProjectile> { FrameLimiter(20f, pauseSecondTimer)::canDoFrame },
+                        LerpedPosRenderer {
+                            ClientParticleBuilder(Particles.PETAL).build(it.add(RandomUtils.randVec().multiply(0.25)))
+                        })
+                ),
+                { petalTexture },
                 FullRenderLight()
             )
         }

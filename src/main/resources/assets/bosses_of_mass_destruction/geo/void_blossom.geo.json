@@ -63,8 +63,13 @@
 					]
 				},
 				{
-					"name": "Steam5",
+					"name": "Stem5X",
 					"parent": "Steam4Y",
+					"pivot": [0, 127.5, 0]
+				},
+				{
+					"name": "Steam5",
+					"parent": "Stem5X",
 					"pivot": [0, 127.5, 0],
 					"cubes": [
 						{"origin": [-4.5, 128, -4.5], "size": [9, 14, 9], "uv": [0, 0]}
@@ -72,7 +77,6 @@
 				},
 				{
 					"name": "Flower",
-
 					"parent": "Steam5",
 					"pivot": [0, 141.5, 0],
 					"cubes": [
