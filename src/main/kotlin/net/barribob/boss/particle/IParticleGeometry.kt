@@ -13,6 +13,7 @@ fun interface IParticleGeometry {
         x: Double,
         y: Double,
         z: Double,
-        scale: Float
+        scale: Float,
+        rotation: Float
     ): Array<Vec3f>
 }

@@ -40,6 +40,7 @@ class ModSounds {
     val soulStar = newSound("soul_star")
     val voidBlossomSpike = newSound("void_blossom_spike")
     val sporeImpact = newSound("spore_impact")
+    val petalBlade = newSound("petal_blade")
 
     fun init() {
         registerSound(cometShoot)
@@ -74,6 +75,7 @@ class ModSounds {
         registerSound(soulStar)
         registerSound(voidBlossomSpike)
         registerSound(sporeImpact)
+        registerSound(petalBlade)
     }
 
     private fun registerSound(event: SoundEvent) {

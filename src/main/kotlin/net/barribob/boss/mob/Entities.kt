@@ -18,9 +18,7 @@ import net.barribob.boss.mob.utils.SimpleLivingGeoRenderer
 import net.barribob.boss.particle.ClientParticleBuilder
 import net.barribob.boss.particle.ParticleFactories
 import net.barribob.boss.particle.Particles
-import net.barribob.boss.projectile.MagicMissileProjectile
-import net.barribob.boss.projectile.PetalBladeProjectile
-import net.barribob.boss.projectile.SporeBallProjectile
+import net.barribob.boss.projectile.*
 import net.barribob.boss.projectile.comet.CometCodeAnimations
 import net.barribob.boss.projectile.comet.CometProjectile
 import net.barribob.boss.render.*
@@ -35,7 +33,10 @@ import net.minecraft.client.MinecraftClient
 import net.minecraft.client.render.RenderLayer
 import net.minecraft.client.render.entity.FlyingItemEntityRenderer
 import net.minecraft.client.util.GlfwUtil
-import net.minecraft.entity.*
+import net.minecraft.entity.Entity
+import net.minecraft.entity.EntityDimensions
+import net.minecraft.entity.EntityType
+import net.minecraft.entity.SpawnGroup
 import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.entity.mob.HostileEntity
 import net.minecraft.util.registry.Registry
@@ -290,18 +291,17 @@ object Entities {
             )
         }
 
-        val petalTexture = Mod.identifier("textures/projectile/petal.png")
+        val petalTexture = Mod.identifier("textures/entity/petal_blade.png")
         val petalBladeRenderLayer = RenderLayer.getEntityCutoutNoCull(petalTexture)
         EntityRendererRegistry.INSTANCE.register(PETAL_BLADE) { context ->
             SimpleEntityRenderer(
                 context,
                 CompositeRenderer(
-                    BillboardRenderer(context.renderDispatcher, petalBladeRenderLayer) { 0.5f },
+                    PetalBladeRenderer(context.renderDispatcher, petalBladeRenderLayer),
                     ConditionalRenderer(
-                        WeakHashPredicate<PetalBladeProjectile> { FrameLimiter(20f, pauseSecondTimer)::canDoFrame },
-                        LerpedPosRenderer {
-                            ClientParticleBuilder(Particles.PETAL).build(it.add(RandomUtils.randVec().multiply(0.25)))
-                        })
+                        WeakHashPredicate { FrameLimiter(30f, pauseSecondTimer)::canDoFrame },
+                        PetalBladeParticleRenderer()
+                    )
                 ),
                 { petalTexture },
                 FullRenderLight()

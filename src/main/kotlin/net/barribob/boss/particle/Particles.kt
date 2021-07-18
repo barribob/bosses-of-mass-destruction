@@ -14,6 +14,7 @@ import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes
 import net.minecraft.client.particle.SpriteProvider
 import net.minecraft.particle.DefaultParticleType
+import net.minecraft.util.math.Vec3d
 import net.minecraft.util.registry.Registry
 import kotlin.math.sin
 
@@ -363,10 +364,7 @@ object Particles {
 
         particleFactory.register(PETAL) { provider: SpriteProvider ->
             SimpleParticleFactory(provider) {
-                val particle = SimpleParticle(it, RandomUtils.range(15, 20), VanillaCopies::buildBillboardGeometry)
-                particle.setColorOverride { ModColors.PINK }
-                particle.setBrightnessOverride { FULL_BRIGHT }
-                particle
+                SimpleParticle(it, RandomUtils.range(15, 20), VanillaCopies::buildBillboardGeometry, false)
             }
         }
     }

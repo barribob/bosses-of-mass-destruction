@@ -132,10 +132,12 @@ object VanillaCopies {
         i: Int,
         dispatcher: EntityRenderDispatcher,
         layer: RenderLayer,
+        rotation: Quaternion = Quaternion.IDENTITY
     ) {
         matrixStack.push()
         matrixStack.multiply(dispatcher.rotation)
         matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0f))
+        matrixStack.multiply(rotation)
         val entry = matrixStack.peek()
         val matrix4f = entry.model
         val matrix3f = entry.normal
@@ -222,7 +224,8 @@ object VanillaCopies {
         x: Double,
         y: Double,
         z: Double,
-        scale: Float
+        scale: Float,
+        rotation: Float
     ): Array<Vec3f> {
         val vec3d = camera.pos
         val f = (MathHelper.lerp(tickDelta.toDouble(), prevPosX, x) - vec3d.getX()).toFloat()
@@ -256,7 +259,8 @@ object VanillaCopies {
         x: Double,
         y: Double,
         z: Double,
-        scale: Float
+        scale: Float,
+        rotation: Float
     ): Array<Vec3f> {
         val vec3d = camera.pos
         val f = (MathHelper.lerp(tickDelta.toDouble(), prevPosX, x) - vec3d.getX()).toFloat()
@@ -264,20 +268,18 @@ object VanillaCopies {
         val h = (MathHelper.lerp(tickDelta.toDouble(), prevPosZ, z) - vec3d.getZ()).toFloat()
         val quaternion2: Quaternion = camera.rotation
 
-        val vector3f = Vec3f(-1.0f, -1.0f, 0.0f)
-        vector3f.rotate(quaternion2)
         val vector3fs = arrayOf(
             Vec3f(-1.0f, -1.0f, 0.0f),
             Vec3f(-1.0f, 1.0f, 0.0f),
             Vec3f(1.0f, 1.0f, 0.0f),
             Vec3f(1.0f, -1.0f, 0.0f)
         )
-        val j: Float = scale
 
         for (k in 0..3) {
             val vector3f2 = vector3fs[k]
+            vector3f2.rotate(Vec3f.POSITIVE_Z.getDegreesQuaternion(rotation))
             vector3f2.rotate(quaternion2)
-            vector3f2.scale(j)
+            vector3f2.scale(scale)
             vector3f2.add(f, g, h)
         }
 

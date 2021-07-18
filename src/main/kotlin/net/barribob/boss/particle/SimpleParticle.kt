@@ -8,6 +8,7 @@ import net.minecraft.client.particle.ParticleTextureSheet
 import net.minecraft.client.particle.SpriteBillboardParticle
 import net.minecraft.client.render.Camera
 import net.minecraft.client.render.VertexConsumer
+import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
 
 class SimpleParticle(
@@ -29,6 +30,10 @@ class SimpleParticle(
     private var colorVariation: Vec3d = Vec3d.ZERO
     private var velocityOverride: ((SimpleParticle) -> Vec3d)? = null
     private var positionOverride: ((SimpleParticle) -> Vec3d)? = null
+    private var rotationOverride: ((SimpleParticle) -> Float)? = null
+
+    private var rotation = 0f
+    private var prevRotation = 0f
 
     override fun getType(): ParticleTextureSheet = ParticleTextureSheet.PARTICLE_SHEET_OPAQUE
 
@@ -47,6 +52,15 @@ class SimpleParticle(
             setScaleFromOverride(scaleOverride, ageRatio)
             setVelocityFromOverride(velocityOverride)
             setPositionFromOverride(positionOverride)
+            setRotationFromOverride(rotationOverride)
+        }
+    }
+
+    private fun setRotationFromOverride(rotationOverride: ((SimpleParticle) -> Float)?) {
+        if (rotationOverride != null) {
+            val rot = rotationOverride(this)
+            prevRotation = rotation
+            rotation = rot
         }
     }
 
@@ -108,6 +122,14 @@ class SimpleParticle(
         positionOverride = override
     }
 
+    fun setRotationOverride(override: ((SimpleParticle) -> Float)?) {
+        rotationOverride = override
+        rotationOverride?.let {
+            rotation = it(this)
+            prevRotation = it(this)
+        }
+    }
+
     override fun getBrightness(tint: Float): Int =
         brightnessOverride?.invoke(age / maxAge.toFloat()) ?: super.getBrightness(tint)
 
@@ -117,7 +139,8 @@ class SimpleParticle(
             tickDelta,
             prevPosX, prevPosY, prevPosZ,
             x, y, z,
-            getSize(tickDelta)
+            getSize(tickDelta),
+            MathHelper.lerp(tickDelta, prevRotation, rotation)
         )
 
         val l = this.minU

@@ -225,5 +225,12 @@
     "sounds": [
       "bosses_of_mass_destruction:spore_impact"
     ]
+  },
+  "petal_blade": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.petal_blade",
+    "category": "hostile",
+    "sounds": [
+      "bosses_of_mass_destruction:petal_blade"
+    ]
   }
 }
