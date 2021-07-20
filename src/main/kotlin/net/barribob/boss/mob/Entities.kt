@@ -80,7 +80,7 @@ object Entities {
 
     val VOID_BLOSSOM: EntityType<VoidBlossomEntity> = registerConfiguredMob("void_blossom",
         { type, world -> VoidBlossomEntity(type, world) },
-        { it.dimensions(EntityDimensions.fixed(8.0f, 10.0f)) })
+        { it.fireImmune().dimensions(EntityDimensions.fixed(8.0f, 10.0f)) })
 
     val SPORE_BALL: EntityType<SporeBallProjectile> = Registry.register(
         Registry.ENTITY_TYPE,

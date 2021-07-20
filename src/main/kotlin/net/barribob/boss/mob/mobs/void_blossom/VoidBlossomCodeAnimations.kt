@@ -11,6 +11,7 @@ class VoidBlossomCodeAnimations : ICodeAnimations<VoidBlossomEntity> {
 
         val model = geoModel.getModel(geoModel.getModelLocation(animatable))
         model.getBone("Leaves").ifPresent { it.rotationY = Math.toRadians(bodyYaw.toDouble()).toFloat() }
+        model.getBone("Thorns").ifPresent { it.rotationY = Math.toRadians(bodyYaw.toDouble()).toFloat() }
         model.getBone("Roots").ifPresent { it.rotationY = Math.toRadians(bodyYaw.toDouble()).toFloat() }
     }
 }
