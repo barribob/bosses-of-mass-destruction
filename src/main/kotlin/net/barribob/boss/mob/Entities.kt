@@ -11,6 +11,7 @@ import net.barribob.boss.mob.mobs.lich.*
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithArmorRenderer
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithBoneLight
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithEntity
+import net.barribob.boss.mob.mobs.void_blossom.VoidBlossomBoneLight
 import net.barribob.boss.mob.mobs.void_blossom.VoidBlossomCodeAnimations
 import net.barribob.boss.mob.mobs.void_blossom.VoidBlossomEntity
 import net.barribob.boss.mob.mobs.void_blossom.VoidBlossomSpikeRenderer
@@ -141,7 +142,7 @@ object Entities {
 
         FabricDefaultAttributeRegistry.register(VOID_BLOSSOM,
             HostileEntity.createHostileAttributes()
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, 20.0)
+                .add(EntityAttributes.GENERIC_MAX_HEALTH, 200.0)
                 .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 32.0)
                 .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 8.0)
                 .add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 10.0)
@@ -264,8 +265,10 @@ object Entities {
                 animationTimer,
                 VoidBlossomCodeAnimations()
             )
-            SimpleLivingGeoRenderer(context, modelProvider, deathRotation = false,
-            renderer = VoidBlossomSpikeRenderer())
+            SimpleLivingGeoRenderer(
+                context, modelProvider, deathRotation = false,
+                renderer = VoidBlossomSpikeRenderer(), iBoneLight = VoidBlossomBoneLight()
+            )
         }
 
         val sporeBallTexture = Mod.identifier("textures/entity/spore_ball.png")

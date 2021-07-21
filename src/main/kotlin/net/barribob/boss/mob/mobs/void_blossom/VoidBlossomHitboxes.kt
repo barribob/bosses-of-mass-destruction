@@ -1,10 +1,14 @@
 package net.barribob.boss.mob.mobs.void_blossom
 
 import io.github.stuff_stuffs.multipart_entities.common.entity.EntityBounds
+import net.barribob.boss.mob.damage.IDamageHandler
+import net.barribob.boss.mob.utils.IEntityStats
+import net.minecraft.entity.attribute.EntityAttributes
+import net.minecraft.entity.damage.DamageSource
 import net.minecraft.util.math.Box
 import net.minecraft.util.math.Vec3d
 
-class VoidBlossomHitboxes(val entity: VoidBlossomEntity) {
+class VoidBlossomHitboxes(val entity: VoidBlossomEntity) : IDamageHandler {
     private val collisionHitbox = Box(Vec3d.ZERO, Vec3d(2.0, 8.0, 2.0))
     private var nextDamagedPart: String? = null
     private val rootBoxYaw = "rootYaw"
@@ -38,5 +42,17 @@ class VoidBlossomHitboxes(val entity: VoidBlossomEntity) {
 
     fun setNextDamagedPart(part: String?) {
         nextDamagedPart = part
+    }
+
+    override fun afterDamage(stats: IEntityStats, damageSource: DamageSource, amount: Float, result: Boolean) {
+        val part = nextDamagedPart
+        nextDamagedPart = null
+
+        if(result) {
+            if(part == rootBoxYaw || part == neck) {
+                val damage = entity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE).toFloat()
+                damageSource.attacker?.damage(DamageSource.thorns(entity), damage)
+            }
+        }
     }
 }

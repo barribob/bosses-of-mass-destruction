@@ -8,6 +8,7 @@ import net.barribob.boss.mob.ai.goals.CompositeGoal
 import net.barribob.boss.mob.ai.goals.FindTargetGoal
 import net.barribob.boss.mob.mobs.gauntlet.AnimationHolder
 import net.barribob.boss.mob.utils.BaseEntity
+import net.barribob.boss.mob.utils.CompositeEntityTick
 import net.barribob.boss.utils.AnimationUtils
 import net.barribob.maelstrom.static_utilities.eyePos
 import net.minecraft.entity.EntityType
@@ -37,9 +38,10 @@ class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: Worl
     override val bossBar = ServerBossBar(this.displayName, BossBar.Color.PINK, BossBar.Style.NOTCHED_12)
     val clientSpikeHandler = VoidBlossomClientSpikeHandler()
     override val clientTick = clientSpikeHandler
-    override val serverTick = LightBlockPlacer(this)
+    override val serverTick = CompositeEntityTick(LightBlockPlacer(this), VoidBlossomSpikeTick(this))
     override val deathServerTick = LightBlockRemover(this)
     private val hitboxHelper = VoidBlossomHitboxes(this)
+    override val damageHandler = hitboxHelper
 
     init {
         ignoreCameraFrustum = true
