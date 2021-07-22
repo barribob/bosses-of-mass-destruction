@@ -38,9 +38,9 @@ class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: Worl
     override val bossBar = ServerBossBar(this.displayName, BossBar.Color.PINK, BossBar.Style.NOTCHED_12)
     val clientSpikeHandler = VoidBlossomClientSpikeHandler()
     override val clientTick = clientSpikeHandler
-    override val serverTick = CompositeEntityTick(LightBlockPlacer(this), VoidBlossomSpikeTick(this))
-    override val deathServerTick = LightBlockRemover(this)
     private val hitboxHelper = VoidBlossomHitboxes(this)
+    override val serverTick = CompositeEntityTick(LightBlockPlacer(this), VoidBlossomSpikeTick(this), hitboxHelper)
+    override val deathServerTick = LightBlockRemover(this)
     override val damageHandler = hitboxHelper
 
     init {
