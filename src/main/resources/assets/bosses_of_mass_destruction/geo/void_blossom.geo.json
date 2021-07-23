@@ -158,74 +158,6 @@
 					]
 				},
 				{
-					"name": "Petal5",
-					"parent": "Flower",
-					"pivot": [5.75, 151.5, -6],
-					"rotation": [-20, -45, 0],
-					"cubes": [
-						{"origin": [16, 152, -7], "size": [17, 0, 22], "pivot": [6, 129.5, 4], "rotation": [0, 90, 0], "uv": [173, 129]}
-					]
-				},
-				{
-					"name": "PetalTop5",
-					"parent": "Petal5",
-					"pivot": [5, 152, -23],
-					"cubes": [
-						{"origin": [33, 152, -4], "size": [16, 0, 16], "pivot": [6, 151.5, 4], "rotation": [0, 90, 0], "uv": [184, 104]}
-					]
-				},
-				{
-					"name": "Petal6",
-					"parent": "Flower",
-					"pivot": [5.75, 151.5, 6],
-					"rotation": [20, 45, 0],
-					"cubes": [
-						{"origin": [16, 152, -15], "size": [17, 0, 22], "pivot": [6, 129.5, -4], "rotation": [0, -90, 0], "uv": [173, 129]}
-					]
-				},
-				{
-					"name": "PetalTop6",
-					"parent": "Petal6",
-					"pivot": [5, 152, 23],
-					"cubes": [
-						{"origin": [33, 152, -12], "size": [16, 0, 16], "pivot": [6, 151.5, -4], "rotation": [0, -90, 0], "uv": [184, 104]}
-					]
-				},
-				{
-					"name": "Petal7",
-					"parent": "Flower",
-					"pivot": [-5.75, 151.5, -6],
-					"rotation": [-20, 45, 0],
-					"cubes": [
-						{"origin": [-33, 152, -7], "size": [17, 0, 22], "pivot": [-6, 129.5, 4], "rotation": [0, -90, 0], "uv": [173, 129], "mirror": true}
-					]
-				},
-				{
-					"name": "PetalTop7",
-					"parent": "Petal7",
-					"pivot": [-5, 152, -23],
-					"cubes": [
-						{"origin": [-49, 152, -4], "size": [16, 0, 16], "pivot": [-6, 151.5, 4], "rotation": [0, -90, 0], "uv": [184, 104], "mirror": true}
-					]
-				},
-				{
-					"name": "Petal8",
-					"parent": "Flower",
-					"pivot": [-5.75, 151.5, 6],
-					"rotation": [20, -45, 0],
-					"cubes": [
-						{"origin": [-33, 152, -15], "size": [17, 0, 22], "pivot": [-6, 129.5, -4], "rotation": [0, 90, 0], "uv": [173, 129], "mirror": true}
-					]
-				},
-				{
-					"name": "PetalTop8",
-					"parent": "Petal8",
-					"pivot": [-5, 152, 23],
-					"cubes": [
-						{"origin": [-49, 152, -12], "size": [16, 0, 16], "pivot": [-6, 151.5, -4], "rotation": [0, 90, 0], "uv": [184, 104], "mirror": true}
-					]
-				},
-				{
 					"name": "Petal9",
 					"parent": "Flower",
 					"pivot": [8, 152, 0],
@@ -291,6 +223,80 @@
 					"pivot": [0, 152, 20],
 					"cubes": [
 						{"origin": [-55, 152, 23], "size": [8, 0, 8], "pivot": [-27, 152.5, 0], "rotation": [0, 90, 0], "uv": [39, 157], "mirror": true}
+					]
+				},
+				{
+					"name": "MidPetals",
+					"parent": "Flower",
+					"pivot": [0, 141.5, 0],
+					"rotation": [0, -45, 0]
+				},
+				{
+					"name": "Petal5",
+					"parent": "MidPetals",
+					"pivot": [-0.25, 151.5, -9],
+					"rotation": [-20, 0, 0],
+					"cubes": [
+						{"origin": [10, 152, -10], "size": [17, 0, 22], "pivot": [0, 129.5, 1], "rotation": [0, 90, 0], "uv": [173, 129]}
+					]
+				},
+				{
+					"name": "PetalTop5",
+					"parent": "Petal5",
+					"pivot": [-1, 152, -26],
+					"cubes": [
+						{"origin": [27, 152, -7], "size": [16, 0, 16], "pivot": [0, 151.5, 1], "rotation": [0, 90, 0], "uv": [184, 104]}
+					]
+				},
+				{
+					"name": "Petal6",
+					"parent": "MidPetals",
+					"pivot": [8.75, 151.5, 0],
+					"rotation": [20, 90, 0],
+					"cubes": [
+						{"origin": [19, 152, -21], "size": [17, 0, 22], "pivot": [9, 129.5, -10], "rotation": [0, -90, 0], "uv": [173, 129]}
+					]
+				},
+				{
+					"name": "PetalTop6",
+					"parent": "Petal6",
+					"pivot": [8, 152, 17],
+					"cubes": [
+						{"origin": [36, 152, -18], "size": [16, 0, 16], "pivot": [9, 151.5, -10], "rotation": [0, -90, 0], "uv": [184, 104]}
+					]
+				},
+				{
+					"name": "Petal7",
+					"parent": "MidPetals",
+					"pivot": [-8.75, 151.5, 0],
+					"rotation": [-20, 90, 0],
+					"cubes": [
+						{"origin": [-36, 152, -1], "size": [17, 0, 22], "pivot": [-9, 129.5, 10], "rotation": [0, -90, 0], "uv": [173, 129], "mirror": true}
+					]
+				},
+				{
+					"name": "PetalTop7",
+					"parent": "Petal7",
+					"pivot": [-8, 152, -17],
+					"cubes": [
+						{"origin": [-52, 152, 2], "size": [16, 0, 16], "pivot": [-9, 151.5, 10], "rotation": [0, -90, 0], "uv": [184, 104], "mirror": true}
+					]
+				},
+				{
+					"name": "Petal8",
+					"parent": "MidPetals",
+					"pivot": [0.25, 151.5, 9],
+					"rotation": [20, 0, 0],
+					"cubes": [
+						{"origin": [-27, 152, -12], "size": [17, 0, 22], "pivot": [0, 129.5, -1], "rotation": [0, 90, 0], "uv": [173, 129], "mirror": true}
+					]
+				},
+				{
+					"name": "PetalTop8",
+					"parent": "Petal8",
+					"pivot": [1, 152, 26],
+					"cubes": [
+						{"origin": [-43, 152, -9], "size": [16, 0, 16], "pivot": [0, 151.5, -1], "rotation": [0, 90, 0], "uv": [184, 104], "mirror": true}
 					]
 				},
 				{

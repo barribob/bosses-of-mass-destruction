@@ -28,8 +28,9 @@ class SpikeWaveAction(val entity: VoidBlossomEntity, private val eventScheduler:
     }
 
     private fun placeRifts(target: ServerPlayerEntity) {
-        val secondBurstDelay = 30
-        val thirdBurstDelay = 60
+        val firstBurstDelay = 20
+        val secondBurstDelay = 45
+        val thirdBurstDelay = 70
         val world = target.serverWorld
         val spikeGenerator = Spikes(
             entity,
@@ -42,10 +43,9 @@ class SpikeWaveAction(val entity: VoidBlossomEntity, private val eventScheduler:
                 it.damage(DamageSource.mob(entity), damage)
             }, shouldCancel
         )
-
-        world.playSound(entity.pos, Mod.sounds.waveIndicator, SoundCategory.HOSTILE, 3.0f, 0.7f, 64.0)
-
-        createBurst(world, spikeGenerator, firstCirclePoints)
+        eventScheduler.addEvent(TimedEvent({
+            createBurst(world, spikeGenerator, firstCirclePoints)
+        }, firstBurstDelay, shouldCancel = shouldCancel))
         eventScheduler.addEvent(TimedEvent({
             createBurst(world, spikeGenerator, secondCirclePoints)
         }, secondBurstDelay, shouldCancel = shouldCancel))
@@ -64,6 +64,8 @@ class SpikeWaveAction(val entity: VoidBlossomEntity, private val eventScheduler:
         }, indicatorDelay, shouldCancel = shouldCancel))
 
         val placedPositions = positions.mapNotNull { spikeGenerator.tryPlaceRift(entity.pos.add(it)) }.toList()
+        world.playSound(entity.pos, Mod.sounds.waveIndicator, SoundCategory.HOSTILE, 2.0f, 0.7f, 64.0)
+
         eventScheduler.addEvent(TimedEvent({
             entity.sendSpikePacket(placedPositions)
         }, indicatorDelay, shouldCancel = shouldCancel))

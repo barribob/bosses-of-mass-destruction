@@ -31,7 +31,7 @@ class BladeAction(private val entity: VoidBlossomEntity, private val eventSchedu
             val lineEnd = eyePos.add(angled.multiply(-7.0))
             val projectileThrower = ProjectileThrower {
                 val projectile = PetalBladeProjectile(entity, entity.world, {}, listOf(entity.type), rotation.toFloat())
-                projectile.setPosition(entity.eyePos)
+                projectile.setPosition(entity.eyePos.add(VecUtils.yAxis))
                 projectile.setNoGravity(true)
                 ProjectileData(projectile, 0.9f, 0f, 0.0)
             }
@@ -44,9 +44,9 @@ class BladeAction(private val entity: VoidBlossomEntity, private val eventSchedu
         }
 
         eventScheduler.addEvent(TimedEvent(thrower, 28, shouldCancel = shouldCancel))
-        eventScheduler.addEvent(TimedEvent(thrower, 46, shouldCancel = shouldCancel))
-        eventScheduler.addEvent(TimedEvent(thrower, 68, shouldCancel = shouldCancel))
+        eventScheduler.addEvent(TimedEvent(thrower, 52, shouldCancel = shouldCancel))
+        eventScheduler.addEvent(TimedEvent(thrower, 75, shouldCancel = shouldCancel))
 
-        return 100
+        return 120
     }
 }

@@ -26,7 +26,7 @@ class SpikeAction(
         val target = entity.target
         if (target !is ServerPlayerEntity) return 80
         placeSpikes(target)
-        return 120
+        return 150
     }
 
     private fun placeSpikes(target: ServerPlayerEntity) {
@@ -42,6 +42,14 @@ class SpikeAction(
             }, shouldCancel
         )
 
+        target.serverWorld.playSound(
+            entity.pos,
+            Mod.sounds.voidBlossomBurrow,
+            SoundCategory.HOSTILE,
+            1.5f,
+            range = 32.0
+        )
+
         for (i in 0 until 3) {
             val timeBetweenRifts = 30
             val initialDelay = 30
@@ -50,7 +58,7 @@ class SpikeAction(
                     ObsidilithUtils.approximatePlayerNextPosition(ModComponents.getPlayerPositions(target), target.pos)
                 target.serverWorld.playSound(
                     placement,
-                    Mod.sounds.waveIndicator,
+                    Mod.sounds.spikeIndicator,
                     SoundCategory.HOSTILE,
                     1.0f,
                     range = 32.0

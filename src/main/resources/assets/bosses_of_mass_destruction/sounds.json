@@ -232,5 +232,12 @@
     "sounds": [
       "bosses_of_mass_destruction:petal_blade"
     ]
+  },
+  "void_blossom_burrow": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.void_blossom_burrow",
+    "category": "hostile",
+    "sounds": [
+      "bosses_of_mass_destruction:void_blossom_burrow"
+    ]
   }
 }
