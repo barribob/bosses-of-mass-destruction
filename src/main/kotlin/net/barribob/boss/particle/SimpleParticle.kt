@@ -34,6 +34,8 @@ class SimpleParticle(
 
     private var rotation = 0f
     private var prevRotation = 0f
+    var ageRatio = 1f
+        private set
 
     override fun getType(): ParticleTextureSheet = ParticleTextureSheet.PARTICLE_SHEET_OPAQUE
 
@@ -47,7 +49,7 @@ class SimpleParticle(
         super.tick()
         if (isAlive) {
             if (cycleSprites) setSpriteForAge(particleContext.spriteProvider)
-            val ageRatio = age / maxAge.toFloat()
+            ageRatio = age / maxAge.toFloat()
             setColorFromOverride(colorOverride, ageRatio)
             setScaleFromOverride(scaleOverride, ageRatio)
             setVelocityFromOverride(velocityOverride)
@@ -131,7 +133,7 @@ class SimpleParticle(
     }
 
     override fun getBrightness(tint: Float): Int =
-        brightnessOverride?.invoke(age / maxAge.toFloat()) ?: super.getBrightness(tint)
+        brightnessOverride?.invoke(ageRatio) ?: super.getBrightness(tint)
 
     override fun buildGeometry(vertexConsumer: VertexConsumer?, camera: Camera, tickDelta: Float) {
         val vector3fs = particleGeometry.getGeometry(

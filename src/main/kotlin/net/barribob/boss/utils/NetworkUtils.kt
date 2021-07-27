@@ -2,6 +2,7 @@ package net.barribob.boss.utils
 
 import io.netty.buffer.Unpooled
 import net.barribob.boss.Mod
+import net.barribob.boss.block.VoidBlossomBlock
 import net.barribob.boss.mob.mobs.gauntlet.GauntletEntity
 import net.barribob.boss.mob.mobs.void_blossom.VoidBlossomEntity
 import net.barribob.maelstrom.static_utilities.readVec3d
@@ -31,10 +32,12 @@ class NetworkUtils {
         private val gauntletBlindnessPacketId = Mod.identifier("gauntlet_blindness")
         private val playerVelocityPacketId = Mod.identifier("player_velocity")
         private val voidBlossomSpikePacketId = Mod.identifier("void_blossom_spikes")
+        private val voidBlossomHealId = Mod.identifier("void_blossom_head")
+        private val voidBlossomPlaceId = Mod.identifier("void_blossom_place")
 
         fun LivingEntity.sendVelocity(velocity: Vec3d) {
             this.velocity = velocity
-            if(this is ServerPlayerEntity) {
+            if (this is ServerPlayerEntity) {
                 val packet = PacketByteBuf(Unpooled.buffer())
                 packet.writeVec3d(velocity)
                 ServerPlayNetworking.send(this, playerVelocityPacketId, packet)
@@ -60,7 +63,7 @@ class NetworkUtils {
         }
 
         fun VoidBlossomEntity.sendSpikePacket(spikesPositions: List<BlockPos>) {
-            for(spikePos in spikesPositions) {
+            for (spikePos in spikesPositions) {
                 val buf: PacketByteBuf = PacketByteBufs.create()
                 buf.writeInt(this.id)
                 buf.writeInt(spikePos.x)
@@ -69,6 +72,23 @@ class NetworkUtils {
                 for (player in PlayerLookup.tracking(this)) {
                     ServerPlayNetworking.send(player, voidBlossomSpikePacketId, buf)
                 }
+            }
+        }
+
+        fun VoidBlossomEntity.sendHealPacket(source: Vec3d, dest: Vec3d) {
+            val buf: PacketByteBuf = PacketByteBufs.create()
+            buf.writeVec3d(source)
+            buf.writeVec3d(dest)
+            for (player in PlayerLookup.tracking(this)) {
+                ServerPlayNetworking.send(player, voidBlossomHealId, buf)
+            }
+        }
+
+        fun VoidBlossomEntity.sendPlacePacket(pos: Vec3d) {
+            val buf: PacketByteBuf = PacketByteBufs.create()
+            buf.writeVec3d(pos)
+            for (player in PlayerLookup.tracking(this)) {
+                ServerPlayNetworking.send(player, voidBlossomPlaceId, buf)
             }
         }
     }
@@ -90,6 +110,12 @@ class NetworkUtils {
         ClientPlayNetworking.registerGlobalReceiver(voidBlossomSpikePacketId) { client, _, buf, _ ->
             handleVoidBlossomSpikes(client, buf)
         }
+        ClientPlayNetworking.registerGlobalReceiver(voidBlossomHealId) { client, _, buf, _ ->
+            handleVoidBlossomHeal(client, buf)
+        }
+        ClientPlayNetworking.registerGlobalReceiver(voidBlossomPlaceId) { client, _, buf, _ ->
+            handleVoidBlossomPlace(client, buf)
+        }
     }
 
     @Environment(EnvType.CLIENT)
@@ -107,8 +133,11 @@ class NetworkUtils {
     }
 
     fun createClientEntityPacket(entity: Entity): Packet<*> {
-        return ServerPlayNetworking.createS2CPacket(spawnEntityPacketId, packSpawnClientEntity(
-            EntitySpawnS2CPacket(entity)))
+        return ServerPlayNetworking.createS2CPacket(
+            spawnEntityPacketId, packSpawnClientEntity(
+                EntitySpawnS2CPacket(entity)
+            )
+        )
     }
 
     @Environment(EnvType.CLIENT)
@@ -125,8 +154,8 @@ class NetworkUtils {
 
         client.execute {
             val entity = client.world?.getEntityById(entityId)
-            if(entity is GauntletEntity) {
-                if(open) entity.hitboxHelper.setOpenHandHitbox() else entity.hitboxHelper.setClosedFistHitbox()
+            if (entity is GauntletEntity) {
+                if (open) entity.hitboxHelper.setOpenHandHitbox() else entity.hitboxHelper.setClosedFistHitbox()
             }
         }
     }
@@ -153,9 +182,31 @@ class NetworkUtils {
         client.execute {
             val entity = client.world?.getEntityById(entityId)
 
-            if(entity is VoidBlossomEntity) {
+            if (entity is VoidBlossomEntity) {
                 entity.clientSpikeHandler.addSpike(spikePos)
             }
+        }
+    }
+
+    @Environment(EnvType.CLIENT)
+    private fun handleVoidBlossomHeal(client: MinecraftClient, buf: PacketByteBuf) {
+        val source = buf.readVec3d()
+        val dest = buf.readVec3d()
+
+        client.execute {
+            val world = client.world
+            if (world != null) {
+                VoidBlossomBlock.handleVoidBlossomHeal(world, source, dest)
+            }
+        }
+    }
+
+    @Environment(EnvType.CLIENT)
+    private fun handleVoidBlossomPlace(client: MinecraftClient, buf: PacketByteBuf) {
+        val pos = buf.readVec3d()
+
+        client.execute {
+            VoidBlossomBlock.handleVoidBlossomPlace(pos)
         }
     }
 }

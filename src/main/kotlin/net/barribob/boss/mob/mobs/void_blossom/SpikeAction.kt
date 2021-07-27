@@ -74,7 +74,7 @@ class SpikeAction(
                     )
                 }, indicatorDelay, shouldCancel = shouldCancel))
 
-                val successfulSpikes = circlePoints.mapNotNull { riftBurst.tryPlaceRift(placement.add(it)) }
+                val successfulSpikes = circlePoints.flatMap { riftBurst.tryPlaceRift(placement.add(it)) }
 
                 eventScheduler.addEvent(TimedEvent({
                     entity.sendSpikePacket(successfulSpikes)

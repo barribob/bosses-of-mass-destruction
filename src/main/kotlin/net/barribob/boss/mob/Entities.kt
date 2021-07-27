@@ -142,7 +142,7 @@ object Entities {
 
         FabricDefaultAttributeRegistry.register(VOID_BLOSSOM,
             HostileEntity.createHostileAttributes()
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, 200.0)
+                .add(EntityAttributes.GENERIC_MAX_HEALTH, 300.0)
                 .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 32.0)
                 .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 8.0)
                 .add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 10.0)

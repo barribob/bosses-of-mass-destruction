@@ -6,11 +6,11 @@
     "BossBarHudMixin",
     "EnderEyeUseMixin",
     "ExplosionMixin",
-    "StructuresConfigAccessor",
     "IceBlockMixin",
     "ServerPlayerEntityMixin",
     "SpawnEntryMixin",
-    "SpawnHelperMixin"
+    "SpawnHelperMixin",
+    "StructuresConfigAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

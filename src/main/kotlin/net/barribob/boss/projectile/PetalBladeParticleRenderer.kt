@@ -3,6 +3,7 @@ package net.barribob.boss.projectile
 import net.barribob.boss.particle.ClientParticleBuilder
 import net.barribob.boss.particle.Particles
 import net.barribob.boss.render.IRenderer
+import net.barribob.boss.utils.ModColors
 import net.barribob.maelstrom.static_utilities.MathUtils
 import net.barribob.maelstrom.static_utilities.RandomUtils
 import net.barribob.maelstrom.static_utilities.VecUtils
@@ -16,9 +17,9 @@ class PetalBladeParticleRenderer<T : Entity> : IRenderer<T> {
     private val petalParticleFactory = ClientParticleBuilder(Particles.PETAL)
         .color {
             if (it < 0.7) {
-                MathUtils.lerpVec(it, Vec3d(0.9, 0.6, 0.8), Vec3d(1.0, 0.85, 0.95))
+                MathUtils.lerpVec(it, ModColors.PINK, Vec3d(1.0, 0.85, 0.95))
             } else {
-                MathUtils.lerpVec(it, Vec3d(1.0, 0.85, 0.95), Vec3d(0.3, 0.0, 0.2))
+                MathUtils.lerpVec(it, Vec3d(1.0, 0.85, 0.95), ModColors.ULTRA_DARK_PURPLE)
             }
         }
         .brightness(Particles.FULL_BRIGHT)

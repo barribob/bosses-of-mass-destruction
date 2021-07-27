@@ -29,7 +29,7 @@ object LichUtils {
         healingStrength: Float,
         heal: (Float) -> Unit,
     ) {
-        if (iEntity.isAlive() && iEntity.target() == null) {
+        if (iEntity.isAlive()) {
             val targetHealthRatio = MathUtils.roundedStep(stats.getHealth() / stats.getMaxHealth(), hpPercentRageModes)
             if ((stats.getHealth() + healingStrength) / stats.getMaxHealth() < targetHealthRatio) {
                 heal(healingStrength)

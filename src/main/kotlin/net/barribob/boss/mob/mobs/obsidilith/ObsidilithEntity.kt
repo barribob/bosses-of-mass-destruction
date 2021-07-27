@@ -89,13 +89,15 @@ class ObsidilithEntity(
     override fun serverTick(serverWorld: ServerWorld) {
         super.serverTick(serverWorld)
 
-        LichUtils.cappedHeal(
-            iEntity,
-            EntityStats(this),
-            ObsidilithUtils.hpPillarShieldMilestones,
-            mobConfig.idleHealingPerTick,
-            ::heal
-        )
+        if(this.target == null) {
+            LichUtils.cappedHeal(
+                iEntity,
+                EntityStats(this),
+                ObsidilithUtils.hpPillarShieldMilestones,
+                mobConfig.idleHealingPerTick,
+                ::heal
+            )
+        }
 
         activePillars.removeIf {
             world.getBlockState(it).block != ModBlocks.obsidilithRune || !it.isWithinDistance(

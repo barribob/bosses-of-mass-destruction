@@ -63,7 +63,7 @@ class SpikeWaveAction(val entity: VoidBlossomEntity, private val eventScheduler:
             world.playSound(entity.pos, Mod.sounds.voidBlossomSpike, SoundCategory.HOSTILE, 1.2f, range = 64.0)
         }, indicatorDelay, shouldCancel = shouldCancel))
 
-        val placedPositions = positions.mapNotNull { spikeGenerator.tryPlaceRift(entity.pos.add(it)) }.toList()
+        val placedPositions = positions.flatMap { spikeGenerator.tryPlaceRift(entity.pos.add(it)) }.toList()
         world.playSound(entity.pos, Mod.sounds.waveIndicator, SoundCategory.HOSTILE, 2.0f, 0.7f, 64.0)
 
         eventScheduler.addEvent(TimedEvent({

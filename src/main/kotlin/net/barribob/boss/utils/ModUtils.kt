@@ -59,10 +59,10 @@ object ModUtils {
     /**
      * From Maelstrom Mod ModUtils.java
      */
-    fun World.findGroundBelow(pos: BlockPos): BlockPos {
+    fun World.findGroundBelow(pos: BlockPos, isOpenBlock: (BlockPos) -> Boolean = { true }): BlockPos {
         for (i in pos.y downTo 1) {
             val tempPos = BlockPos(pos.x, i, pos.z)
-            if (this.getBlockState(tempPos).isSideSolid(this, tempPos, Direction.UP, SideShapeType.FULL)) {
+            if (this.getBlockState(tempPos).isSideSolid(this, tempPos, Direction.UP, SideShapeType.FULL) && isOpenBlock(tempPos.up())) {
                 return tempPos
             }
         }

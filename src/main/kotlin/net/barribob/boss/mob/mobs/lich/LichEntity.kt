@@ -590,7 +590,9 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
     override fun serverTick(serverWorld: ServerWorld) {
         positionalHistory.set(pos)
 
-        LichUtils.cappedHeal(iEntity, EntityStats(this), hpPercentRageModes, healingStrength, ::heal)
+        if(this.target == null) {
+            LichUtils.cappedHeal(iEntity, EntityStats(this), hpPercentRageModes, healingStrength, ::heal)
+        }
 
         if (shouldSetToNighttime) {
             serverWorld.timeOfDay = LichUtils.timeToNighttime(serverWorld.timeOfDay)

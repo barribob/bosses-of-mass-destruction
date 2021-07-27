@@ -11,20 +11,20 @@ import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap
 import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings
 import net.fabricmc.fabric.api.tool.attribute.v1.FabricToolTags
-import net.minecraft.block.Block
-import net.minecraft.block.Blocks
-import net.minecraft.block.MapColor
-import net.minecraft.block.Material
+import net.minecraft.block.*
 import net.minecraft.block.entity.BlockEntityType
 import net.minecraft.client.render.RenderLayer
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory
 import net.minecraft.item.BlockItem
+import net.minecraft.sound.BlockSoundGroup
 import net.minecraft.state.property.Properties
 import net.minecraft.util.Identifier
 import net.minecraft.util.registry.Registry
 
 object ModBlocks {
     val obsidilithRune = ObsidilithRuneBlock(FabricBlockSettings.of(Material.STONE, MapColor.BLACK).requiresTool().breakByTool(FabricToolTags.PICKAXES, 3).strength(50.0F, 1200.0F))
+    val voidBlossom = VoidBlossomBlock(FabricBlockSettings.of(Material.PLANT, MapColor.PURPLE).breakInstantly().noCollision().luminance { 11 }.sounds(BlockSoundGroup.SPORE_BLOSSOM))
+    val vineWall = VineWallBlock(FabricBlockSettings.of(Material.PLANT, MapColor.DARK_GREEN).strength(2.0f, 6.0f))
     val obsidilithSummonBlock = ObsidilithSummonBlock(FabricBlockSettings.copy(Blocks.END_PORTAL_FRAME))
     private val gauntletBlackstone = GauntletBlackstoneBlock(FabricBlockSettings.of(Material.STONE, MapColor.BLACK).requiresTool().breakByTool(FabricToolTags.PICKAXES, 3).strength(50.0F, 1200.0F))
     private val sealedBlackstone = Block(FabricBlockSettings.copy(Blocks.BEDROCK))
@@ -65,6 +65,8 @@ object ModBlocks {
         registerBlockAndItem(Mod.identifier("gauntlet_blackstone"), gauntletBlackstone)
         registerBlockAndItem(Mod.identifier("sealed_blackstone"), sealedBlackstone)
         registerBlockAndItem(Mod.identifier("chiseled_stone_altar"), chiseledStoneAltar)
+        registerBlockAndItem(Mod.identifier("void_blossom"), voidBlossom)
+        registerBlockAndItem(Mod.identifier("vine_wall"), vineWall)
 
         val mobWardId = Mod.identifier("mob_ward")
         val monolithBlockId = Mod.identifier("monolith_block")
@@ -95,6 +97,8 @@ object ModBlocks {
 
     fun clientInit(animationTimer: IAnimationTimer) {
         BlockRenderLayerMap.INSTANCE.putBlock(mobWard, RenderLayer.getCutout())
+        BlockRenderLayerMap.INSTANCE.putBlock(voidBlossom, RenderLayer.getCutout())
+        BlockRenderLayerMap.INSTANCE.putBlock(vineWall, RenderLayer.getCutout())
 
         BlockEntityRendererRegistry.INSTANCE.register(levitationBlockEntityType, BlockEntityRendererFactory {
             ModBlockEntityRenderer(

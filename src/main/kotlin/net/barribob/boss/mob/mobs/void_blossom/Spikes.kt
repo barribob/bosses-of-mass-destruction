@@ -26,16 +26,19 @@ class Spikes(
     val onImpact: (LivingEntity) -> Unit,
     private val shouldCancel: () -> Boolean
 ) {
-    fun tryPlaceRift(pos: Vec3d): BlockPos? {
-        val above = BlockPos(pos.add(VecUtils.yAxis.multiply(14.0)))
-        val groundPos = world.findGroundBelow(above)
-        val up = groundPos.up()
-        if (up.y + 28 >= above.y && isOpenBlock(up)) {
-            placeRift(up)
-            return groundPos
-        }
+    fun tryPlaceRift(pos: Vec3d): List<BlockPos> {
+        return (0..12 step 6).mapNotNull {
+            val above = BlockPos(pos.add(VecUtils.yAxis.multiply(it.toDouble())))
+            val groundPos = world.findGroundBelow(above, ::isOpenBlock)
+            val up = groundPos.up()
+            if (up.y + 5 >= above.y) {
+                placeRift(up)
+                groundPos
+            } else {
+                null
+            }
 
-        return null
+        }
     }
 
     private fun placeRift(pos: BlockPos) {

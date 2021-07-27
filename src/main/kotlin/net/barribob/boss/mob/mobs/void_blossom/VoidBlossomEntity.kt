@@ -6,10 +6,13 @@ import io.github.stuff_stuffs.multipart_entities.common.util.CompoundOrientedBox
 import net.barribob.boss.mob.ai.goals.ActionGoal
 import net.barribob.boss.mob.ai.goals.CompositeGoal
 import net.barribob.boss.mob.ai.goals.FindTargetGoal
+import net.barribob.boss.mob.damage.CompositeDamageHandler
+import net.barribob.boss.mob.damage.StagedDamageHandler
 import net.barribob.boss.mob.mobs.gauntlet.AnimationHolder
 import net.barribob.boss.mob.utils.BaseEntity
 import net.barribob.boss.mob.utils.CompositeEntityTick
 import net.barribob.boss.utils.AnimationUtils
+import net.barribob.maelstrom.general.data.BooleanFlag
 import net.barribob.maelstrom.static_utilities.eyePos
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.MovementType
@@ -32,22 +35,26 @@ class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: Worl
             Pair(VoidBlossomAttacks.spikeWaveAttack, AnimationHolder.Animation("spike_wave", "idle")),
             Pair(VoidBlossomAttacks.sporeAttack, AnimationHolder.Animation("spore", "idle")),
             Pair(VoidBlossomAttacks.bladeAttack, AnimationHolder.Animation("leaf_blade", "idle")),
+            Pair(VoidBlossomAttacks.blossomAction, AnimationHolder.Animation("spike_wave", "idle")),
         ),
         VoidBlossomAttacks.stopAttackAnimation
     )
+    private var shouldSpawnBlossoms = BooleanFlag()
+    val hpMilestones = listOf(0.0f, 0.25f, 0.5f, 0.75f, 1.0f)
+    private val hpDetector = StagedDamageHandler(hpMilestones) { shouldSpawnBlossoms.flag() }
     override val bossBar = ServerBossBar(this.displayName, BossBar.Color.PINK, BossBar.Style.NOTCHED_12)
     val clientSpikeHandler = VoidBlossomClientSpikeHandler()
     override val clientTick = clientSpikeHandler
     private val hitboxHelper = VoidBlossomHitboxes(this)
     override val serverTick = CompositeEntityTick(LightBlockPlacer(this), VoidBlossomSpikeTick(this), hitboxHelper)
     override val deathServerTick = LightBlockRemover(this)
-    override val damageHandler = hitboxHelper
+    override val damageHandler = CompositeDamageHandler(hitboxHelper, hpDetector)
 
     init {
         ignoreCameraFrustum = true
 
         if (!world.isClient && world is ServerWorld) {
-            val attackHandler = VoidBlossomAttacks(this, preTickEvents)
+            val attackHandler = VoidBlossomAttacks(this, preTickEvents) { shouldSpawnBlossoms.getAndReset() }
             goalSelector.add(2, CompositeGoal()) // Idle goal
             goalSelector.add(1, CompositeGoal(attackHandler.buildAttackGoal(), ActionGoal(::canContinueAttack, tickAction = ::lookAtTarget)))
             targetSelector.add(2, FindTargetGoal(this, PlayerEntity::class.java, { boundingBox.expand(it) }))
