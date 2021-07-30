@@ -239,5 +239,12 @@
     "sounds": [
       "bosses_of_mass_destruction:void_blossom_burrow"
     ]
+  },
+  "spore_prepare": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.spore_prepare",
+    "category": "hostile",
+    "sounds": [
+      "bosses_of_mass_destruction:spore_prepare"
+    ]
   }
 }

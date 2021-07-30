@@ -11,10 +11,7 @@ import net.barribob.boss.mob.mobs.lich.*
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithArmorRenderer
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithBoneLight
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithEntity
-import net.barribob.boss.mob.mobs.void_blossom.VoidBlossomBoneLight
-import net.barribob.boss.mob.mobs.void_blossom.VoidBlossomCodeAnimations
-import net.barribob.boss.mob.mobs.void_blossom.VoidBlossomEntity
-import net.barribob.boss.mob.mobs.void_blossom.VoidBlossomSpikeRenderer
+import net.barribob.boss.mob.mobs.void_blossom.*
 import net.barribob.boss.mob.utils.SimpleLivingGeoRenderer
 import net.barribob.boss.particle.ClientParticleBuilder
 import net.barribob.boss.particle.ParticleFactories
@@ -26,6 +23,7 @@ import net.barribob.boss.render.*
 import net.barribob.boss.utils.ModColors
 import net.barribob.maelstrom.general.data.WeakHashPredicate
 import net.barribob.maelstrom.static_utilities.RandomUtils
+import net.barribob.maelstrom.static_utilities.VecUtils
 import net.fabricmc.fabric.api.`object`.builder.v1.entity.FabricDefaultAttributeRegistry
 import net.fabricmc.fabric.api.`object`.builder.v1.entity.FabricEntityTypeBuilder
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry
@@ -225,7 +223,7 @@ object Entities {
                     LerpedPosRenderer {
                         ParticleFactories.cometTrail().build(it.add(RandomUtils.randVec().multiply(0.5)))
                     }),
-                FullRenderLight()
+                brightness = FullRenderLight()
             )
         }
 
@@ -271,26 +269,28 @@ object Entities {
             )
         }
 
-        val sporeBallTexture = Mod.identifier("textures/entity/spore_ball.png")
-        val sporeBallRenderLayer = RenderLayer.getEntityCutoutNoCull(sporeBallTexture)
         EntityRendererRegistry.INSTANCE.register(SPORE_BALL) { context ->
-            SimpleEntityRenderer(
-                context,
-                CompositeRenderer(
-                    BillboardRenderer(context.renderDispatcher, sporeBallRenderLayer) { 0.3f + (it.ancestor * 0.1f)},
-                    ConditionalRenderer(
-                        WeakHashPredicate<SporeBallProjectile> { FrameLimiter(20f, pauseSecondTimer)::canDoFrame },
-                        LerpedPosRenderer {
-                            val projectileParticles = ClientParticleBuilder(Particles.OBSIDILITH_BURST)
-                                .color(ModColors.GREEN)
-                                .colorVariation(0.3)
-                                .scale(0.25f)
-                                .brightness(Particles.FULL_BRIGHT)
-                            projectileParticles.build(it.add(RandomUtils.randVec().multiply(0.25)))
-                        })
-                ),
-                { sporeBallTexture },
-                FullRenderLight()
+            val explosionFlasher = SporeBallOverlay()
+            ModGeoRenderer(context, GeoModel(
+                { Mod.identifier("geo/comet.geo.json") },
+                { Mod.identifier("textures/entity/spore.png") },
+                Mod.identifier("animations/comet.animation.json"),
+                animationTimer,
+                SporeCodeAnimations()
+            ),
+                CompositeRenderer(ConditionalRenderer(
+                    WeakHashPredicate { FrameLimiter(60f, pauseSecondTimer)::canDoFrame },
+                    LerpedPosRenderer {
+                        val projectileParticles = ClientParticleBuilder(Particles.OBSIDILITH_BURST)
+                            .color(ModColors.GREEN)
+                            .colorVariation(0.4)
+                            .scale(0.5f)
+                            .brightness(Particles.FULL_BRIGHT)
+                        projectileParticles.build(it.add(RandomUtils.randVec().multiply(0.25)), VecUtils.yAxis.multiply(0.1))
+                    }), explosionFlasher),
+                SporeBallSizeRenderer(),
+                FullRenderLight(),
+                explosionFlasher
             )
         }
 

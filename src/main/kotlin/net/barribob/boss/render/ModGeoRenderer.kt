@@ -32,9 +32,11 @@ import software.bernie.geckolib3.util.AnimationUtils
 open class ModGeoRenderer<T>(
     renderManager: EntityRendererFactory.Context?,
     private val modelProvider: AnimatedGeoModel<T>,
-    private val additionalRenderers: IRenderer<T>? = null,
+    private val postRenderers: IRenderer<T>? = null,
+    private val preRenderers: IRenderer<T>? = null,
     private val brightness: IRenderLight<T>? = null,
-) :
+    private val overlayOverride: IOverlayOverride? = null,
+    ) :
     EntityRenderer<T>(renderManager),
     IGeoRenderer<T> where T : Entity, T : IAnimatable {
     private val layerRenderers: MutableList<GeoLayerRenderer<T>> = Lists.newArrayList()
@@ -89,6 +91,7 @@ open class ModGeoRenderer<T>(
             listOf(entityModelData))
         modelProvider.setLivingAnimations(entity, getUniqueID(entity), predicate)
         stack.push()
+        preRenderers?.render(entity, entityYaw, partialTicks, stack, bufferIn, packedLightIn)
         stack.translate(0.0, 0.009999999776482582, 0.0)
         MinecraftClient.getInstance().textureManager.bindTexture(getTexture(entity))
         val model = modelProvider.getModel(modelProvider.getModelLocation(entity))
@@ -103,7 +106,7 @@ open class ModGeoRenderer<T>(
             bufferIn,
             null as VertexConsumer?,
             packedLightIn,
-            getPackedOverlay(0.0f),
+            overlayOverride?.getOverlay() ?: getPackedOverlay(0.0f),
             renderColor.red
                 .toFloat() / 255.0f,
             renderColor.blue.toFloat() / 255.0f,
@@ -129,7 +132,7 @@ open class ModGeoRenderer<T>(
         }
         stack.pop()
         super<EntityRenderer>.render(entity, entityYaw, partialTicks, stack, bufferIn, packedLightIn)
-        additionalRenderers?.render(entity, entityYaw, partialTicks, stack, bufferIn, packedLightIn)
+        postRenderers?.render(entity, entityYaw, partialTicks, stack, bufferIn, packedLightIn)
     }
 
     override fun getTexture(entity: T): Identifier {

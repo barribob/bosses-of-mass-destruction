@@ -13,12 +13,13 @@ import net.minecraft.world.World
 import java.util.function.Predicate
 
 abstract class BaseThrownItemEntity : ThrownItemEntity {
-    protected val collisionPredicate: Predicate<EntityHitResult>
+    protected val entityCollisionPredicate: Predicate<EntityHitResult>
+    protected open val collisionPredicate: Predicate<HitResult> = Predicate<HitResult> { !world.isClient }
 
     constructor(
         entityType: EntityType<out ThrownItemEntity>, world: World?
     ) : super(entityType, world) {
-        collisionPredicate = Predicate { true }
+        entityCollisionPredicate = Predicate { true }
     }
 
     constructor(
@@ -31,7 +32,7 @@ abstract class BaseThrownItemEntity : ThrownItemEntity {
         livingEntity,
         world,
     ) {
-        this.collisionPredicate = collisionPredicate
+        this.entityCollisionPredicate = collisionPredicate
     }
 
     final override fun tick() {
@@ -46,13 +47,13 @@ abstract class BaseThrownItemEntity : ThrownItemEntity {
     }
 
     override fun onCollision(hitResult: HitResult) {
-        if(!world.isClient) {
+        if(collisionPredicate.test(hitResult)) {
             super.onCollision(hitResult)
         }
     }
 
     final override fun onEntityHit(entityHitResult: EntityHitResult) {
-        if(collisionPredicate.test(entityHitResult)) {
+        if(entityCollisionPredicate.test(entityHitResult)) {
             entityHit(entityHitResult)
         }
     }

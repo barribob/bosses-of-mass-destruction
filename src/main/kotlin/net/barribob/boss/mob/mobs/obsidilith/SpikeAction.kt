@@ -7,6 +7,7 @@ import net.barribob.boss.particle.Particles
 import net.barribob.boss.utils.ModUtils.playSound
 import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.static_utilities.MathUtils
+import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.effect.StatusEffectInstance
@@ -34,12 +35,9 @@ class SpikeAction(val entity: MobEntity) : IActionWithCooldown {
             Particles.OBSIDILITH_SPIKE_INDICATOR,
             Particles.OBSIDILITH_SPIKE,
             riftTime,
-            eventScheduler
-        ) {
-            val damage = entity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE).toFloat()
-            it.damage(DamageSource.mob(entity), damage)
-            it.addStatusEffect(StatusEffectInstance(StatusEffects.SLOWNESS, 120, 2))
-        }
+            eventScheduler,
+            ::damageEntity
+        )
 
         target.serverWorld.playSound(entity.pos, Mod.sounds.obsidilithPrepareAttack, SoundCategory.HOSTILE, 3.0f, 1.2f, 64.0)
 
@@ -66,5 +64,11 @@ class SpikeAction(val entity: MobEntity) : IActionWithCooldown {
                 }
             }, initialDelay + i * timeBetweenRifts, shouldCancel = { !entity.isAlive }))
         }
+    }
+
+    private fun damageEntity(entity: LivingEntity) {
+        val damage = this.entity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE).toFloat()
+        entity.damage(DamageSource.mob(this.entity), damage)
+        entity.addStatusEffect(StatusEffectInstance(StatusEffects.SLOWNESS, 120, 2))
     }
 }

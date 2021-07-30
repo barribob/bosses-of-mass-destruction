@@ -11,6 +11,7 @@ import net.barribob.boss.mob.damage.StagedDamageHandler
 import net.barribob.boss.mob.mobs.gauntlet.AnimationHolder
 import net.barribob.boss.mob.utils.BaseEntity
 import net.barribob.boss.mob.utils.CompositeEntityTick
+import net.barribob.boss.mob.utils.CompositeStatusHandler
 import net.barribob.boss.utils.AnimationUtils
 import net.barribob.maelstrom.general.data.BooleanFlag
 import net.barribob.maelstrom.static_utilities.eyePos
@@ -29,7 +30,7 @@ import software.bernie.geckolib3.core.manager.AnimationData
 
 class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: World) : BaseEntity(entityType, world),
     MultipartAwareEntity {
-    override val statusHandler = AnimationHolder(
+    private val animationHolder = AnimationHolder(
         this, mapOf(
             Pair(VoidBlossomAttacks.spikeAttack, AnimationHolder.Animation("spike", "idle")),
             Pair(VoidBlossomAttacks.spikeWaveAttack, AnimationHolder.Animation("spike_wave", "idle")),
@@ -39,6 +40,7 @@ class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: Worl
         ),
         VoidBlossomAttacks.stopAttackAnimation
     )
+    override val statusHandler = CompositeStatusHandler(animationHolder, ClientSporeEffectHandler(this, preTickEvents))
     private var shouldSpawnBlossoms = BooleanFlag()
     val hpMilestones = listOf(0.0f, 0.25f, 0.5f, 0.75f, 1.0f)
     private val hpDetector = StagedDamageHandler(hpMilestones) { shouldSpawnBlossoms.flag() }
@@ -73,7 +75,7 @@ class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: Worl
 
     override fun registerControllers(data: AnimationData) {
         data.shouldPlayWhilePaused = true
-        statusHandler.registerControllers(data)
+        animationHolder.registerControllers(data)
         data.addAnimationController(AnimationController(this, "leaves", 5f, AnimationUtils.createIdlePredicate("leaves")))
     }
 

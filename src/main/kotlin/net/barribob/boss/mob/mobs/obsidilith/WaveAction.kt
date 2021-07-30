@@ -37,16 +37,9 @@ class WaveAction(val entity: MobEntity) :
             Particles.OBSIDILITH_WAVE_INDICATOR,
             Particles.OBSIDILITH_WAVE,
             waveDelay,
-            eventScheduler
-        ) {
-            val damage = entity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE).toFloat()
-            it.sendVelocity(Vec3d(it.velocity.x, 0.8, it.velocity.z))
-            it.setOnFireFor(5)
-            it.damage(
-                DamageSource.mob(entity),
-                damage
-            )
-        }
+            eventScheduler,
+            ::damageEntity
+        )
 
         world.playSound(entity.pos, Mod.sounds.obsidilithPrepareAttack, SoundCategory.HOSTILE, 3.0f, 0.8f, 64.0)
         eventScheduler.addEvent(TimedEvent({
@@ -67,6 +60,13 @@ class WaveAction(val entity: MobEntity) :
                 }, i * 8, shouldCancel = { !entity.isAlive }))
             }
         }, attackStartDelay, shouldCancel = { !entity.isAlive }))
+    }
+
+    private fun damageEntity(entity: LivingEntity) {
+        val damage = this.entity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE).toFloat()
+        entity.sendVelocity(Vec3d(entity.velocity.x, 0.8, entity.velocity.z))
+        entity.setOnFireFor(5)
+        entity.damage(DamageSource.mob(this.entity), damage)
     }
 
     companion object {

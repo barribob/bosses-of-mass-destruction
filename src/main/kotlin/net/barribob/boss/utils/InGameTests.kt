@@ -72,7 +72,7 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
     fun throwProjectile(source: ServerCommandSource) {
         val entity = source.entityOrThrow
         if (entity is LivingEntity) {
-            val projectile = SporeBallProjectile(entity, entity.world, ExemptEntities(listOf()), 3)
+            val projectile = SporeBallProjectile(entity, entity.world, ExemptEntities(listOf()))
             projectile.setProperties(entity, entity.pitch, entity.yaw, 0f, 1.5f, 1.0f)
             entity.world.spawnEntity(projectile)
         }

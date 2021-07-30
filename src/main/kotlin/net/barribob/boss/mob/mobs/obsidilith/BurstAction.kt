@@ -33,15 +33,8 @@ class BurstAction(val entity: LivingEntity) :
             Particles.OBSIDILITH_BURST_INDICATOR,
             Particles.OBSIDILITH_BURST,
             burstDelay,
-            eventScheduler
-        ) {
-            val damage = entity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE).toFloat()
-            it.sendVelocity(Vec3d(it.velocity.x, 1.3, it.velocity.z))
-            it.damage(
-                DamageSource.mob(entity),
-                damage
-            )
-        }
+            eventScheduler,
+            ::damageEntity)
         world.playSound(entity.pos, Mod.sounds.obsidilithPrepareAttack, SoundCategory.HOSTILE, 3.0f, 0.7f, 64.0)
 
         eventScheduler.addEvent(TimedEvent({
@@ -51,6 +44,15 @@ class BurstAction(val entity: LivingEntity) :
         for (point in circlePoints) {
             riftBurst.tryPlaceRift(entity.pos.add(point))
         }
+    }
+
+    private fun damageEntity(livingEntity: LivingEntity) {
+        val damage = entity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE).toFloat()
+        livingEntity.sendVelocity(Vec3d(livingEntity.velocity.x, 1.3, livingEntity.velocity.z))
+        livingEntity.damage(
+            DamageSource.mob(entity),
+            damage
+        )
     }
 
     companion object {

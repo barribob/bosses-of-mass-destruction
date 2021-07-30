@@ -6,6 +6,7 @@ import net.barribob.boss.mob.mobs.obsidilith.PillarAction
 import net.barribob.boss.mob.mobs.obsidilith.WaveAction
 import net.barribob.boss.mob.mobs.void_blossom.SpikeAction.Companion.indicatorDelay
 import net.barribob.boss.mob.mobs.void_blossom.SpikeWaveAction
+import net.barribob.boss.projectile.SporeBallProjectile
 import net.barribob.boss.utils.ModColors
 import net.barribob.boss.utils.VanillaCopies
 import net.barribob.maelstrom.static_utilities.MathUtils
@@ -14,7 +15,6 @@ import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes
 import net.minecraft.client.particle.SpriteProvider
 import net.minecraft.particle.DefaultParticleType
-import net.minecraft.util.math.Vec3d
 import net.minecraft.util.registry.Registry
 import kotlin.math.sin
 
@@ -142,6 +142,18 @@ object Particles {
     val PETAL: DefaultParticleType = Registry.register(
         Registry.PARTICLE_TYPE,
         Mod.identifier("petal"),
+        FabricParticleTypes.simple()
+    )
+
+    val SPORE: DefaultParticleType = Registry.register(
+        Registry.PARTICLE_TYPE,
+        Mod.identifier("spore"),
+        FabricParticleTypes.simple()
+    )
+
+    val SPORE_INDICATOR: DefaultParticleType = Registry.register(
+        Registry.PARTICLE_TYPE,
+        Mod.identifier("spore_indicator"),
         FabricParticleTypes.simple()
     )
 
@@ -365,6 +377,32 @@ object Particles {
         particleFactory.register(PETAL) { provider: SpriteProvider ->
             SimpleParticleFactory(provider) {
                 SimpleParticle(it, RandomUtils.range(15, 20), VanillaCopies::buildBillboardGeometry, false)
+            }
+        }
+
+        particleFactory.register(SPORE) { provider: SpriteProvider ->
+            SimpleParticleFactory(provider) {
+                val particle = SimpleParticle(it, RandomUtils.range(7, 15), VanillaCopies::buildBillboardGeometry)
+                particle.setBrightnessOverride { FULL_BRIGHT }
+                particle.scale(4f)
+                particle.setColorOverride { age -> MathUtils.lerpVec(age, ModColors.GREEN, ModColors.DARK_GREEN) }
+                particle.setColorVariation(0.25)
+                particle
+            }
+        }
+
+        particleFactory.register(SPORE_INDICATOR) { provider: SpriteProvider ->
+            SimpleParticleFactory(provider) { context ->
+                val particle = SimpleParticle(
+                    context,
+                    SporeBallProjectile.explosionDelay + RandomUtils.range(-1, 2),
+                    VanillaCopies::buildFlatGeometry
+                )
+                particle.setColorOverride { ModColors.GREEN }
+                particle.setColorVariation(0.35)
+                particle.setBrightnessOverride { FULL_BRIGHT }
+                particle.setScaleOverride { (1 + it) * 0.25f }
+                particle
             }
         }
     }
