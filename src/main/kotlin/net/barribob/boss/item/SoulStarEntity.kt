@@ -48,7 +48,7 @@ class SoulStarEntity(entityType: EntityType<out SoulStarEntity?>?, world: World?
     }
 
     fun setItem(stack: ItemStack) {
-        if (stack.item !== Items.ENDER_EYE || stack.hasTag()) {
+        if (stack.item !== Items.ENDER_EYE || stack.hasNbt()) {
             getDataTracker().set(
                 ITEM, Util.make(stack.copy()) { it.count = 1 }
             )

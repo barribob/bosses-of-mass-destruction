@@ -18,15 +18,12 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3f
 import software.bernie.geckolib3.core.IAnimatable
-import software.bernie.geckolib3.core.IAnimatableModel
-import software.bernie.geckolib3.core.controller.AnimationController
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent
 import software.bernie.geckolib3.model.AnimatedGeoModel
 import software.bernie.geckolib3.model.provider.GeoModelProvider
 import software.bernie.geckolib3.model.provider.data.EntityModelData
 import software.bernie.geckolib3.renderers.geo.GeoLayerRenderer
 import software.bernie.geckolib3.renderers.geo.IGeoRenderer
-import software.bernie.geckolib3.util.AnimationUtils
 
 @Environment(EnvType.CLIENT)
 open class ModGeoRenderer<T>(
@@ -169,16 +166,6 @@ open class ModGeoRenderer<T>(
     companion object Init {
         fun getPackedOverlay(uIn: Float): Int {
             return OverlayTexture.getUv(OverlayTexture.getU(uIn).toFloat(), false)
-        }
-
-        init {
-            AnimationController.addModelFetcher {
-                if (it is Entity) {
-                    return@addModelFetcher AnimationUtils.getGeoModelForEntity(it as Entity) as IAnimatableModel<*>
-                } else {
-                    return@addModelFetcher null
-                }
-            }
         }
     }
 }
