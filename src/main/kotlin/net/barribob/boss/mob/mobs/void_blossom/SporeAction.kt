@@ -19,7 +19,7 @@ class SporeAction(private val entity: VoidBlossomEntity, private val eventSchedu
         if (target !is ServerPlayerEntity) return 80
 
         eventScheduler.addEvent(TimedEvent({
-            target.serverWorld.playSound(entity.pos, Mod.sounds.sporePrepare, SoundCategory.HOSTILE, 1.0f, range = 32.0)
+            target.serverWorld.playSound(entity.pos, Mod.sounds.sporePrepare, SoundCategory.HOSTILE, 1.5f, range = 32.0)
         }, 26))
 
         eventScheduler.addEvent(TimedEvent({
