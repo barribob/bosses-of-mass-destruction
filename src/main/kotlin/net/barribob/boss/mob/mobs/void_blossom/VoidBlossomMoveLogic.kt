@@ -11,18 +11,18 @@ class VoidBlossomMoveLogic(private val actions: Map<Byte, IActionWithCooldown>, 
         val sporeWeight = 1.0
         val bladeWeight = 1.0
 
-//        val moveByte = if (doBlossom()) {
-//            VoidBlossomAttacks.blossomAction
-//        } else {
-//            random.add(spikeWeight, VoidBlossomAttacks.spikeAttack)
-//            random.add(spikeWaveWeight, VoidBlossomAttacks.spikeWaveAttack)
-//            random.add(sporeWeight, VoidBlossomAttacks.sporeAttack)
-//            random.add(bladeWeight, VoidBlossomAttacks.bladeAttack)
-//
-//            random.next()
-//        }
+        val moveByte = if (doBlossom()) {
+            VoidBlossomAttacks.blossomAction
+        } else {
+            random.add(spikeWeight, VoidBlossomAttacks.spikeAttack)
+            random.add(spikeWaveWeight, VoidBlossomAttacks.spikeWaveAttack)
+            random.add(sporeWeight, VoidBlossomAttacks.sporeAttack)
+            random.add(bladeWeight, VoidBlossomAttacks.bladeAttack)
 
-        val moveByte = VoidBlossomAttacks.spikeAttack
+            random.next()
+        }
+
+//        val moveByte = VoidBlossomAttacks.sporeAttack
         val action = actions[moveByte] ?: error("$moveByte action not registered as an attack")
         entity.world.sendEntityStatus(entity, moveByte)
         return action.perform()

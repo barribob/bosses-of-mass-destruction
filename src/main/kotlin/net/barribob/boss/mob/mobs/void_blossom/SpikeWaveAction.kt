@@ -2,11 +2,14 @@ package net.barribob.boss.mob.mobs.void_blossom
 
 import net.barribob.boss.Mod
 import net.barribob.boss.mob.ai.action.IActionWithCooldown
+import net.barribob.boss.mob.mobs.void_blossom.hitbox.HitboxId
+import net.barribob.boss.mob.mobs.void_blossom.hitbox.NetworkedHitboxManager
 import net.barribob.boss.particle.Particles
 import net.barribob.boss.utils.ModUtils.playSound
 import net.barribob.boss.utils.ModUtils.randomPitch
 import net.barribob.boss.utils.NetworkUtils.Companion.sendSpikePacket
 import net.barribob.maelstrom.general.event.EventScheduler
+import net.barribob.maelstrom.general.event.EventSeries
 import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.static_utilities.MathUtils
 import net.minecraft.entity.attribute.EntityAttributes
@@ -42,6 +45,23 @@ class SpikeWaveAction(
         val secondBurstDelay = 45
         val thirdBurstDelay = 70
         val world = target.serverWorld
+
+        eventScheduler.addEvent(
+            EventSeries(
+                TimedEvent({
+                    entity.dataTracker.set(NetworkedHitboxManager.hitbox, HitboxId.SpikeWave1.id)
+                }, 20, shouldCancel = shouldCancel),
+                TimedEvent({
+                    entity.dataTracker.set(NetworkedHitboxManager.hitbox, HitboxId.SpikeWave2.id)
+                }, 26, shouldCancel = shouldCancel),
+                TimedEvent({
+                    entity.dataTracker.set(NetworkedHitboxManager.hitbox, HitboxId.SpikeWave3.id)
+                }, 26, shouldCancel = shouldCancel),
+                TimedEvent({
+                    entity.dataTracker.set(NetworkedHitboxManager.hitbox, HitboxId.Idle.id)
+                }, 26)
+            )
+        )
 
         val spikeGenerator = Spikes(
             entity,

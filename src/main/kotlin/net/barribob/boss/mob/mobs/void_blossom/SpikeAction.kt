@@ -4,10 +4,13 @@ import net.barribob.boss.Mod
 import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.mob.ai.action.IActionWithCooldown
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithUtils
+import net.barribob.boss.mob.mobs.void_blossom.hitbox.HitboxId
+import net.barribob.boss.mob.mobs.void_blossom.hitbox.NetworkedHitboxManager
 import net.barribob.boss.particle.Particles
 import net.barribob.boss.utils.ModUtils.playSound
 import net.barribob.boss.utils.NetworkUtils.Companion.sendSpikePacket
 import net.barribob.maelstrom.general.event.EventScheduler
+import net.barribob.maelstrom.general.event.EventSeries
 import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.static_utilities.MathUtils
 import net.minecraft.entity.attribute.EntityAttributes
@@ -50,6 +53,17 @@ class SpikeAction(
             range = 32.0
         )
 
+        eventScheduler.addEvent(
+            EventSeries(
+                TimedEvent({
+                    entity.dataTracker.set(NetworkedHitboxManager.hitbox, HitboxId.Spike.id)
+                }, 20, shouldCancel = shouldCancel),
+                TimedEvent({
+                    entity.dataTracker.set(NetworkedHitboxManager.hitbox, HitboxId.Idle.id)
+                }, 100)
+            )
+        )
+
         for (i in 0 until 3) {
             val timeBetweenRifts = 30
             val initialDelay = 30
@@ -64,6 +78,8 @@ class SpikeAction(
                     range = 32.0
                 )
 
+                val successfulSpikes = circlePoints.flatMap { riftBurst.tryPlaceRift(placement.add(it)) }
+
                 eventScheduler.addEvent(TimedEvent({
                     target.serverWorld.playSound(
                         placement,
@@ -72,11 +88,6 @@ class SpikeAction(
                         1.2f,
                         range = 32.0
                     )
-                }, indicatorDelay, shouldCancel = shouldCancel))
-
-                val successfulSpikes = circlePoints.flatMap { riftBurst.tryPlaceRift(placement.add(it)) }
-
-                eventScheduler.addEvent(TimedEvent({
                     entity.sendSpikePacket(successfulSpikes)
                 }, indicatorDelay, shouldCancel = shouldCancel))
             }, initialDelay + i * timeBetweenRifts, shouldCancel = shouldCancel))

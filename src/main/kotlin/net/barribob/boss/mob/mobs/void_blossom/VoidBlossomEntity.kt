@@ -9,10 +9,10 @@ import net.barribob.boss.mob.ai.goals.FindTargetGoal
 import net.barribob.boss.mob.damage.CompositeDamageHandler
 import net.barribob.boss.mob.damage.StagedDamageHandler
 import net.barribob.boss.mob.mobs.gauntlet.AnimationHolder
+import net.barribob.boss.mob.mobs.void_blossom.hitbox.*
 import net.barribob.boss.mob.utils.BaseEntity
 import net.barribob.boss.mob.utils.CompositeEntityTick
 import net.barribob.boss.mob.utils.CompositeStatusHandler
-import net.barribob.boss.utils.AnimationUtils
 import net.barribob.maelstrom.general.data.BooleanFlag
 import net.barribob.maelstrom.static_utilities.eyePos
 import net.minecraft.entity.EntityType
@@ -25,7 +25,6 @@ import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.Box
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
-import software.bernie.geckolib3.core.controller.AnimationController
 import software.bernie.geckolib3.core.manager.AnimationData
 
 class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: World) : BaseEntity(entityType, world),
@@ -40,6 +39,8 @@ class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: Worl
         ),
         VoidBlossomAttacks.stopAttackAnimation
     )
+    private val hitboxes = VoidBlossomHitboxes(this)
+    private val hitboxHelper = NetworkedHitboxManager(this, hitboxes.getMap())
     override val statusHandler = CompositeStatusHandler(animationHolder, ClientSporeEffectHandler(this, preTickEvents))
     private var shouldSpawnBlossoms = BooleanFlag()
     val hpMilestones = listOf(0.0f, 0.25f, 0.5f, 0.75f, 1.0f)
@@ -47,11 +48,9 @@ class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: Worl
     override val bossBar = ServerBossBar(this.displayName, BossBar.Color.PINK, BossBar.Style.NOTCHED_12)
     val clientSpikeHandler = VoidBlossomClientSpikeHandler()
     override val clientTick = clientSpikeHandler
-    private val hitboxHelper = VoidBlossomHitboxes(this)
-    override val serverTick = CompositeEntityTick(LightBlockPlacer(this), VoidBlossomSpikeTick(this), hitboxHelper)
+    override val serverTick = CompositeEntityTick(LightBlockPlacer(this), VoidBlossomSpikeTick(this), hitboxes.getTickers())
     override val deathServerTick = LightBlockRemover(this)
-    override val damageHandler = CompositeDamageHandler(hitboxHelper, hpDetector)
-
+    override val damageHandler = CompositeDamageHandler(hpDetector, hitboxes.getDamageHandlers())
     init {
         ignoreCameraFrustum = true
 
@@ -86,8 +85,8 @@ class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: Worl
         return false
     }
 
-    override fun getCompoundBoundingBox(bounds: Box?): CompoundOrientedBox = hitboxHelper.getHitbox().getBox(bounds)
-    override fun getBounds(): EntityBounds = hitboxHelper.getHitbox()
+    override fun getCompoundBoundingBox(bounds: Box?): CompoundOrientedBox = hitboxHelper.getBounds().getBox(bounds)
+    override fun getBounds(): EntityBounds = hitboxHelper.getBounds()
     override fun isInsideWall(): Boolean = false
 
     override fun onSetPos(x: Double, y: Double, z: Double) {

@@ -3,10 +3,13 @@ package net.barribob.boss.mob.mobs.void_blossom
 import net.barribob.boss.Mod
 import net.barribob.boss.block.ModBlocks
 import net.barribob.boss.mob.ai.action.IActionWithCooldown
+import net.barribob.boss.mob.mobs.void_blossom.hitbox.HitboxId
+import net.barribob.boss.mob.mobs.void_blossom.hitbox.NetworkedHitboxManager
 import net.barribob.boss.utils.ModUtils.playSound
 import net.barribob.boss.utils.ModUtils.randomPitch
 import net.barribob.boss.utils.NetworkUtils.Companion.sendPlacePacket
 import net.barribob.maelstrom.general.event.EventScheduler
+import net.barribob.maelstrom.general.event.EventSeries
 import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.static_utilities.VecUtils
 import net.barribob.maelstrom.static_utilities.asVec3d
@@ -33,6 +36,18 @@ class BlossomAction(
     override fun perform(): Int {
         val serverWorld = entity.world
         if (serverWorld !is ServerWorld) return 80
+
+        eventScheduler.addEvent(
+            EventSeries(
+                TimedEvent({
+                    entity.dataTracker.set(NetworkedHitboxManager.hitbox, HitboxId.SpikeWave3.id)
+                }, 20, shouldCancel = shouldCancel),
+                TimedEvent({
+                    entity.dataTracker.set(NetworkedHitboxManager.hitbox, HitboxId.Idle.id)
+                }, 80)
+            )
+        )
+
         placeBlossoms(serverWorld)
         return 120
     }
