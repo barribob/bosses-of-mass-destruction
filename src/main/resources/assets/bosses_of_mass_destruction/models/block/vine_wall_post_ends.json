@@ -1,8 +1,8 @@
 {
     "ambientocclusion": false,
     "textures": {
-        "particle": "minecraft:block/cave_vines_plant",
-        "edge": "minecraft:block/cave_vines_plant"
+        "particle": "bosses_of_mass_destruction:block/vine_wall",
+        "edge": "bosses_of_mass_destruction:block/vine_wall"
     },
     "elements": [
         {   "from": [ 7, 0.001, 7 ],
