@@ -5,11 +5,12 @@ import net.barribob.maelstrom.general.random.WeightedRandom
 
 class VoidBlossomMoveLogic(private val actions: Map<Byte, IActionWithCooldown>, val entity: VoidBlossomEntity, private val doBlossom: () -> Boolean) : IActionWithCooldown {
     override fun perform(): Int {
+        val healthPercentage = entity.health / entity.maxHealth
         val random = WeightedRandom<Byte>()
         val spikeWeight = 1.0
         val spikeWaveWeight = 1.0
-        val sporeWeight = 1.0
-        val bladeWeight = 1.0
+        val sporeWeight = if(healthPercentage < entity.hpMilestones[3]) 1.0 else 0.0
+        val bladeWeight = if(healthPercentage < entity.hpMilestones[2]) 1.0 else 0.0
 
         val moveByte = if (doBlossom()) {
             VoidBlossomAttacks.blossomAction

@@ -8,12 +8,12 @@ import software.bernie.geckolib3.core.builder.AnimationBuilder
 import software.bernie.geckolib3.core.controller.AnimationController
 import software.bernie.geckolib3.core.manager.AnimationData
 
-class AnimationHolder(val entity: BaseEntity, private val animationStatusFlags: Map<Byte, Animation>, private val stopAttackByte: Byte) : IStatusHandler {
+class AnimationHolder(val entity: BaseEntity, private val animationStatusFlags: Map<Byte, Animation>, private val stopAttackByte: Byte, private val transition: Float = 5f) : IStatusHandler {
     private var nextAnimation: Animation? = null
     private var doIdleAnimation = true
 
     fun registerControllers(data: AnimationData) {
-        data.addAnimationController(AnimationController(entity, "attack", 5f, attack))
+        data.addAnimationController(AnimationController(entity, "attack", transition, attack))
     }
 
     override fun handleClientStatus(status: Byte) {

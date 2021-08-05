@@ -9,7 +9,8 @@ import net.barribob.boss.mob.ai.goals.FindTargetGoal
 import net.barribob.boss.mob.damage.CompositeDamageHandler
 import net.barribob.boss.mob.damage.StagedDamageHandler
 import net.barribob.boss.mob.mobs.gauntlet.AnimationHolder
-import net.barribob.boss.mob.mobs.void_blossom.hitbox.*
+import net.barribob.boss.mob.mobs.void_blossom.hitbox.NetworkedHitboxManager
+import net.barribob.boss.mob.mobs.void_blossom.hitbox.VoidBlossomHitboxes
 import net.barribob.boss.mob.utils.BaseEntity
 import net.barribob.boss.mob.utils.CompositeEntityTick
 import net.barribob.boss.mob.utils.CompositeStatusHandler
@@ -36,12 +37,18 @@ class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: Worl
             Pair(VoidBlossomAttacks.sporeAttack, AnimationHolder.Animation("spore", "idle")),
             Pair(VoidBlossomAttacks.bladeAttack, AnimationHolder.Animation("leaf_blade", "idle")),
             Pair(VoidBlossomAttacks.blossomAction, AnimationHolder.Animation("blossom", "idle")),
+            Pair(3, AnimationHolder.Animation("death", "idle")),
         ),
-        VoidBlossomAttacks.stopAttackAnimation
+        VoidBlossomAttacks.stopAttackAnimation,
+        0f
     )
     private val hitboxes = VoidBlossomHitboxes(this)
     private val hitboxHelper = NetworkedHitboxManager(this, hitboxes.getMap())
-    override val statusHandler = CompositeStatusHandler(animationHolder, ClientSporeEffectHandler(this, preTickEvents))
+    override val statusHandler = CompositeStatusHandler(
+        animationHolder,
+        ClientSporeEffectHandler(this, preTickEvents),
+        ClientDeathEffectHandler(this, preTickEvents)
+    )
     private var shouldSpawnBlossoms = BooleanFlag()
     val hpMilestones = listOf(0.0f, 0.25f, 0.5f, 0.75f, 1.0f)
     private val hpDetector = StagedDamageHandler(hpMilestones) { shouldSpawnBlossoms.flag() }

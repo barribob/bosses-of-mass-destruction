@@ -263,9 +263,12 @@ object Entities {
                 animationTimer,
                 VoidBlossomCodeAnimations()
             )
+            val boneLight = VoidBlossomBoneLight()
+            val overlay = NoRedOnDeathOverlay()
             SimpleLivingGeoRenderer(
                 context, modelProvider, deathRotation = false,
-                renderer = VoidBlossomSpikeRenderer(), iBoneLight = VoidBlossomBoneLight()
+                renderer = CompositeRenderer(VoidBlossomSpikeRenderer(), boneLight, overlay),
+                iBoneLight = boneLight, overlayOverride = overlay
             )
         }
 

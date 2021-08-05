@@ -39,7 +39,7 @@
 				{
 					"name": "Stem3X",
 					"parent": "Stem2Y",
-					"pivot": [0, 47.5, 0]
+					"pivot": [0, 87.5, 0]
 				},
 				{
 					"name": "Strem3Y",
@@ -52,7 +52,7 @@
 				{
 					"name": "Stem4X",
 					"parent": "Strem3Y",
-					"pivot": [0, 86.5, 0]
+					"pivot": [0, 110.5, 0]
 				},
 				{
 					"name": "Steam4Y",
