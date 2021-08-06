@@ -16,17 +16,20 @@ import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.minecraft.block.Block
 import net.minecraft.block.BlockState
+import net.minecraft.block.Blocks
 import net.minecraft.block.ShapeContext
 import net.minecraft.client.world.ClientWorld
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Box
+import net.minecraft.util.math.Direction
 import net.minecraft.util.math.Vec3d
 import net.minecraft.util.shape.VoxelShape
 import net.minecraft.world.BlockView
 import net.minecraft.world.World
 import net.minecraft.world.WorldAccess
+import net.minecraft.world.WorldView
 import java.util.*
 
 class VoidBlossomBlock(settings: Settings?) : Block(settings) {
@@ -62,10 +65,30 @@ class VoidBlossomBlock(settings: Settings?) : Block(settings) {
         world.blockTickScheduler.schedule(pos, this, 1)
     }
 
+    override fun canPlaceAt(state: BlockState?, world: WorldView, pos: BlockPos): Boolean {
+        return sideCoversSmallSquare(world, pos.down(), Direction.UP) && !world.isWater(pos)
+    }
+
+    override fun getStateForNeighborUpdate(
+        state: BlockState,
+        direction: Direction,
+        neighborState: BlockState?,
+        world: WorldAccess,
+        pos: BlockPos,
+        neighborPos: BlockPos?
+    ): BlockState? {
+        return if (direction == Direction.DOWN && !canPlaceAt(state, world, pos)) {
+            onBroken(world, pos, state)
+            Blocks.AIR.defaultState
+        } else {
+            super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos)
+        }
+    }
+
     override fun onBroken(world: WorldAccess, pos: BlockPos, state: BlockState) {
         for(x in -1..1) {
             for (z in -1..1) {
-                for(y in 0..2) {
+                for(y in -1..1) {
                     if((x != 0 || z != 0)) {
                         val pos1 = pos.add(x, y, z)
                         if(world.getBlockState(pos1).block == ModBlocks.vineWall) {

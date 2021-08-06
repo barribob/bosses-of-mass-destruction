@@ -13,6 +13,7 @@ import net.barribob.maelstrom.general.event.EventSeries
 import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.static_utilities.VecUtils
 import net.barribob.maelstrom.static_utilities.asVec3d
+import net.minecraft.block.Blocks
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
 import net.minecraft.util.math.BlockPos
@@ -62,7 +63,8 @@ class BlossomAction(
         for(i in 0 until 8) {
             eventScheduler.addEvent(TimedEvent({
                 val blossomPos = positions[i]
-                world.setBlockState(blossomPos, ModBlocks.voidBlossom.defaultState)
+                world.setBlockState(blossomPos, Blocks.MOSS_BLOCK.defaultState)
+                world.setBlockState(blossomPos.up(), ModBlocks.voidBlossom.defaultState)
                 entity.sendPlacePacket(blossomPos.asVec3d().add(VecUtils.unit.multiply(0.5)))
                 world.playSound(blossomPos.asVec3d(), Mod.sounds.petalBlade, SoundCategory.HOSTILE, 1.0f, entity.random.randomPitch(), 64.0)
 
