@@ -50,9 +50,8 @@ class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: Worl
         ClientDeathEffectHandler(this, preTickEvents)
     )
     private var shouldSpawnBlossoms = BooleanFlag()
-    val hpMilestones = listOf(0.0f, 0.25f, 0.5f, 0.75f, 1.0f)
     private val hpDetector = StagedDamageHandler(hpMilestones) { shouldSpawnBlossoms.flag() }
-    override val bossBar = ServerBossBar(this.displayName, BossBar.Color.PINK, BossBar.Style.NOTCHED_12)
+    override val bossBar = ServerBossBar(this.displayName, BossBar.Color.GREEN, BossBar.Style.NOTCHED_12)
     val clientSpikeHandler = VoidBlossomClientSpikeHandler()
     override val clientTick = clientSpikeHandler
     override val serverTick = CompositeEntityTick(LightBlockPlacer(this), VoidBlossomSpikeTick(this), hitboxes.getTickers())
@@ -102,5 +101,9 @@ class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: Worl
 
     override fun setNextDamagedPart(part: String?) {
         hitboxHelper.setNextDamagedPart(part)
+    }
+
+    companion object {
+        val hpMilestones = listOf(0.0f, 0.25f, 0.5f, 0.75f, 1.0f)
     }
 }

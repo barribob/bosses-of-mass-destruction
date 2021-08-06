@@ -5,6 +5,7 @@ import net.barribob.boss.Mod;
 import net.barribob.boss.mob.Entities;
 import net.barribob.boss.mob.mobs.lich.LichUtils;
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithUtils;
+import net.barribob.boss.mob.mobs.void_blossom.VoidBlossomEntity;
 import net.barribob.boss.render.NodeBossBarRenderer;
 import net.minecraft.client.gui.hud.BossBarHud;
 import net.minecraft.client.util.math.MatrixStack;
@@ -28,6 +29,11 @@ public abstract class BossBarHudMixin {
             LichUtils.INSTANCE.getHpPercentRageModes(),
                     Mod.INSTANCE.identifier("textures/gui/lich_boss_bar_dividers.png"),
                     LichUtils.textureSize);
+    private static final NodeBossBarRenderer voidBlossomBarRenderer =
+            new NodeBossBarRenderer(Entities.INSTANCE.getVOID_BLOSSOM().getTranslationKey(),
+                    VoidBlossomEntity.Companion.getHpMilestones(),
+                    Mod.INSTANCE.identifier("textures/gui/void_blossom_boss_bar_dividers.png"),
+                    LichUtils.textureSize);
 
     @Inject(
             method = "renderBossBar",
@@ -36,6 +42,7 @@ public abstract class BossBarHudMixin {
     )
     private void renderCustomBossBar(MatrixStack matrices, int x, int y, BossBar bossBar, CallbackInfo ci) {
         lichBossBarRenderer.renderBossBar(matrices, x, y, bossBar, ci);
+        voidBlossomBarRenderer.renderBossBar(matrices, x, y, bossBar, ci);
         ObsidilithUtils.INSTANCE.getObsidilithBossBarRenderer().renderBossBar(matrices, x, y, bossBar, ci);
         RenderSystem.setShaderTexture(0, BARS_TEXTURE);
     }

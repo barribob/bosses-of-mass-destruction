@@ -9,8 +9,8 @@ class VoidBlossomMoveLogic(private val actions: Map<Byte, IActionWithCooldown>, 
         val random = WeightedRandom<Byte>()
         val spikeWeight = 1.0
         val spikeWaveWeight = 1.0
-        val sporeWeight = if(healthPercentage < entity.hpMilestones[3]) 1.0 else 0.0
-        val bladeWeight = if(healthPercentage < entity.hpMilestones[2]) 1.0 else 0.0
+        val sporeWeight = if(healthPercentage < VoidBlossomEntity.hpMilestones[3]) 1.0 else 0.0
+        val bladeWeight = if(healthPercentage < VoidBlossomEntity.hpMilestones[2]) 1.0 else 0.0
 
         val moveByte = if (doBlossom()) {
             VoidBlossomAttacks.blossomAction

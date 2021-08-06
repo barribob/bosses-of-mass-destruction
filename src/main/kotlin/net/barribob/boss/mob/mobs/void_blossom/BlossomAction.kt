@@ -55,7 +55,7 @@ class BlossomAction(
     private fun placeBlossoms(world: ServerWorld) {
         val positions = blossomPositions.map { BlockPos(it.add(entity.pos)) }.shuffled()
         val hpRatio = entity.health / entity.maxHealth
-        val protectedPositions = if(hpRatio < entity.hpMilestones[1]) 6 else if (hpRatio < entity.hpMilestones[2]) 3 else 0
+        val protectedPositions = if(hpRatio < VoidBlossomEntity.hpMilestones[1]) 6 else if (hpRatio < VoidBlossomEntity.hpMilestones[2]) 3 else 0
 
         world.playSound(entity.pos, Mod.sounds.waveIndicator, SoundCategory.HOSTILE, 2.0f, 0.7f, 64.0)
 

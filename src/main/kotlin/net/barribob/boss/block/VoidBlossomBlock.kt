@@ -3,6 +3,7 @@ package net.barribob.boss.block
 import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.mob.Entities
 import net.barribob.boss.mob.mobs.lich.LichUtils
+import net.barribob.boss.mob.mobs.void_blossom.VoidBlossomEntity
 import net.barribob.boss.mob.utils.EntityAdapter
 import net.barribob.boss.mob.utils.EntityStats
 import net.barribob.boss.particle.ClientParticleBuilder
@@ -40,7 +41,7 @@ class VoidBlossomBlock(settings: Settings?) : Block(settings) {
     private fun healNearbyEntities(world: ServerWorld, pos: BlockPos) {
         world.getEntitiesByType(Entities.VOID_BLOSSOM, Box(pos).expand(40.0, 20.0, 40.0)) { true }.forEach {
             ModComponents.getWorldEventScheduler(world).addEvent(TimedEvent({
-                LichUtils.cappedHeal(EntityAdapter(it), EntityStats(it), it.hpMilestones, 10f, it::heal)
+                LichUtils.cappedHeal(EntityAdapter(it), EntityStats(it), VoidBlossomEntity.hpMilestones, 10f, it::heal)
             }, 32))
             it.sendHealPacket(pos.asVec3d().add(VecUtils.unit.multiply(0.5)), it.pos.add(VecUtils.yAxis.multiply(0.5)))
         }

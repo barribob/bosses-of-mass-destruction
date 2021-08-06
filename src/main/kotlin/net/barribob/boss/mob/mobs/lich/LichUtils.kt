@@ -5,6 +5,7 @@ import net.barribob.boss.mob.utils.IEntityStats
 import net.barribob.boss.utils.ModColors
 import net.barribob.maelstrom.static_utilities.MathUtils
 import net.minecraft.server.world.ServerWorld
+import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
 
 object LichUtils {
@@ -31,8 +32,10 @@ object LichUtils {
     ) {
         if (iEntity.isAlive()) {
             val targetHealthRatio = MathUtils.roundedStep(stats.getHealth() / stats.getMaxHealth(), hpPercentRageModes)
-            if ((stats.getHealth() + healingStrength) / stats.getMaxHealth() < targetHealthRatio) {
-                heal(healingStrength)
+            val healAmt = MathHelper.clamp(targetHealthRatio * stats.getMaxHealth() - stats.getHealth() - 1, 0f, healingStrength)
+
+            if (healAmt > 0) {
+                heal(healAmt)
             }
         }
     }
