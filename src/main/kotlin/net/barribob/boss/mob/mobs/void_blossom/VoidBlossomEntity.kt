@@ -71,8 +71,6 @@ class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: Worl
         }
     }
 
-    private fun canContinueAttack() = isAlive && target != null
-
     private fun lookAtTarget() {
         val target = target
         if (target != null) {
@@ -90,10 +88,8 @@ class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: Worl
         super.move(type, Vec3d(0.0, movement.y, 0.0))
     }
 
-    override fun isOnFire(): Boolean {
-        return false
-    }
-
+    private fun canContinueAttack() = isAlive && target != null
+    override fun isOnFire() = false
     override fun getCompoundBoundingBox(bounds: Box?): CompoundOrientedBox = hitboxHelper.getBounds().getBox(bounds)
     override fun getBounds(): EntityBounds = hitboxHelper.getBounds()
     override fun isInsideWall(): Boolean = false
