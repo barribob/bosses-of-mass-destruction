@@ -78,7 +78,7 @@ class SpikeWaveAction(
         createSpikeWave(
             {
                 createBurst(spikeGenerator, firstCirclePoints)
-                world.playSound(entity.pos, Mod.sounds.waveIndicator, SoundCategory.HOSTILE, 2.0f, 0.7f, 64.0)
+                world.playSound(entity.pos, Mod.sounds.spikeWaveIndicator, SoundCategory.HOSTILE, 2.0f, 0.7f, 64.0)
             },
             { world.playSound(entity.pos, Mod.sounds.voidBlossomSpike, SoundCategory.HOSTILE, 1.2f, range = 64.0) },
             firstBurstDelay
@@ -86,7 +86,7 @@ class SpikeWaveAction(
         createSpikeWave(
             {
                 createBurst(spikeGenerator, secondCirclePoints)
-                playSoundsInRadius(world, secondRadius, Mod.sounds.waveIndicator, 2.0f, 0.7f)
+                playSoundsInRadius(world, secondRadius, Mod.sounds.spikeWaveIndicator, 2.0f, 0.7f)
             },
             { playSoundsInRadius(world, secondRadius, Mod.sounds.voidBlossomSpike, 1.2f, entity.random.randomPitch()) },
             secondBurstDelay
@@ -94,7 +94,7 @@ class SpikeWaveAction(
         createSpikeWave(
             {
                 createBurst(spikeGenerator, thirdCirclePoints)
-                playSoundsInRadius(world, thirdRadius, Mod.sounds.waveIndicator, 2.0f, 0.7f)
+                playSoundsInRadius(world, thirdRadius, Mod.sounds.spikeWaveIndicator, 2.0f, 0.7f)
             },
             { playSoundsInRadius(world, thirdRadius, Mod.sounds.voidBlossomSpike, 1.2f, entity.random.randomPitch()) },
             thirdBurstDelay

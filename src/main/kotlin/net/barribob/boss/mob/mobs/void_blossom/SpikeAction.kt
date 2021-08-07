@@ -72,7 +72,7 @@ class SpikeAction(
                     ObsidilithUtils.approximatePlayerNextPosition(ModComponents.getPlayerPositions(target), target.pos)
                 target.serverWorld.playSound(
                     placement,
-                    Mod.sounds.spikeIndicator,
+                    Mod.sounds.voidSpikeIndicator,
                     SoundCategory.HOSTILE,
                     1.0f,
                     range = 32.0

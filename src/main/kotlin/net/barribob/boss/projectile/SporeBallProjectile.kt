@@ -24,7 +24,6 @@ import net.minecraft.entity.projectile.thrown.ThrownItemEntity
 import net.minecraft.item.AutomaticItemPlacementContext
 import net.minecraft.item.ItemStack
 import net.minecraft.server.world.ServerWorld
-import net.minecraft.sound.SoundEvents
 import net.minecraft.util.hit.BlockHitResult
 import net.minecraft.util.hit.EntityHitResult
 import net.minecraft.util.hit.HitResult
@@ -100,7 +99,7 @@ class SporeBallProjectile : BaseThrownItemEntity, IAnimatable {
 
     private fun doExplosion(owner: LivingEntity) {
         world.sendEntityStatus(this, particle)
-        playSound(SoundEvents.ENTITY_SLIME_SQUISH, 1.0f, random.randomPitch() - 0.2f)
+        playSound(Mod.sounds.sporeBallLand, 1.0f, random.randomPitch() - 0.2f)
         val eventScheduler = ModComponents.getWorldEventScheduler(world)
         val onImpact: (LivingEntity) -> Unit = {
             val damage = owner.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE).toFloat()

@@ -71,6 +71,17 @@
   "subtitles.bosses_of_mass_destruction.comet_shoot" : "Lich Launches Comet",
   "subtitles.bosses_of_mass_destruction.blue_fireball_land" : "Iceball Lands",
 
+  "subtitles.bosses_of_mass_destruction.void_blossom_burrow" : "Blossom Burrows",
+  "subtitles.bosses_of_mass_destruction.void_blossom_spike" : "Spikes",
+  "subtitles.bosses_of_mass_destruction.spore_impact" : "Poison Explodes",
+  "subtitles.bosses_of_mass_destruction.petal_blade" : "Petals",
+  "subtitles.bosses_of_mass_destruction.spore_prepare" : "Poison Bubbling",
+  "subtitles.bosses_of_mass_destruction.spike_wave_indicator" : "Ground Trembles",
+  "subtitles.bosses_of_mass_destruction.spore_ball_land" : "Poison Lands",
+  "subtitles.bosses_of_mass_destruction.void_spike_indicator" : "Spikes Gather",
+  "subtitles.bosses_of_mass_destruction.void_blossom_hurt" : "Blossom Hurts",
+  "subtitles.bosses_of_mass_destruction.void_blossom_fall" : "Blossom Falls",
+
   "text.autoconfig.bosses_of_mass_destruction.title" : "All changes require mc restart",
 
   "text.autoconfig.bosses_of_mass_destruction.category.Lich" : "Lich",

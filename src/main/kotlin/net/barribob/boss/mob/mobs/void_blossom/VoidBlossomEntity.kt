@@ -3,6 +3,7 @@ package net.barribob.boss.mob.mobs.void_blossom
 import io.github.stuff_stuffs.multipart_entities.common.entity.EntityBounds
 import io.github.stuff_stuffs.multipart_entities.common.entity.MultipartAwareEntity
 import io.github.stuff_stuffs.multipart_entities.common.util.CompoundOrientedBox
+import net.barribob.boss.Mod
 import net.barribob.boss.mob.ai.goals.ActionGoal
 import net.barribob.boss.mob.ai.goals.CompositeGoal
 import net.barribob.boss.mob.ai.goals.FindTargetGoal
@@ -20,9 +21,11 @@ import net.minecraft.entity.EntityType
 import net.minecraft.entity.MovementType
 import net.minecraft.entity.boss.BossBar
 import net.minecraft.entity.boss.ServerBossBar
+import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.mob.PathAwareEntity
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.server.world.ServerWorld
+import net.minecraft.sound.SoundEvent
 import net.minecraft.util.math.Box
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
@@ -94,6 +97,9 @@ class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: Worl
     override fun getCompoundBoundingBox(bounds: Box?): CompoundOrientedBox = hitboxHelper.getBounds().getBox(bounds)
     override fun getBounds(): EntityBounds = hitboxHelper.getBounds()
     override fun isInsideWall(): Boolean = false
+    override fun getHurtSound(source: DamageSource?): SoundEvent = Mod.sounds.voidBlossomHurt
+    override fun getDeathSound(): SoundEvent = Mod.sounds.voidBlossomHurt
+    override fun getSoundVolume(): Float = 1.5f
 
     override fun onSetPos(x: Double, y: Double, z: Double) {
         if (hitboxHelper != null) hitboxHelper.updatePosition()
