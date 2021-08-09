@@ -15,6 +15,7 @@ import net.barribob.boss.mob.mobs.void_blossom.hitbox.VoidBlossomHitboxes
 import net.barribob.boss.mob.utils.BaseEntity
 import net.barribob.boss.mob.utils.CompositeEntityTick
 import net.barribob.boss.mob.utils.CompositeStatusHandler
+import net.barribob.boss.utils.ModUtils
 import net.barribob.maelstrom.general.data.BooleanFlag
 import net.barribob.maelstrom.static_utilities.eyePos
 import net.minecraft.entity.EntityType
@@ -96,6 +97,7 @@ class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: Worl
     override fun getHurtSound(source: DamageSource?): SoundEvent = Mod.sounds.voidBlossomHurt
     override fun getDeathSound(): SoundEvent = Mod.sounds.voidBlossomHurt
     override fun getSoundVolume(): Float = 1.5f
+    override fun checkDespawn() = ModUtils.preventDespawnExceptPeaceful(this, world)
 
     override fun onSetPos(x: Double, y: Double, z: Double) {
         if (hitboxHelper != null) hitboxHelper.updatePosition()

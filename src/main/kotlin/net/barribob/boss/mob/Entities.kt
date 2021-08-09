@@ -79,7 +79,7 @@ object Entities {
 
     val VOID_BLOSSOM: EntityType<VoidBlossomEntity> = registerConfiguredMob("void_blossom",
         { type, world -> VoidBlossomEntity(type, world) },
-        { it.fireImmune().dimensions(EntityDimensions.fixed(8.0f, 10.0f)) })
+        { it.fireImmune().dimensions(EntityDimensions.fixed(8.0f, 10.0f)).trackRangeChunks(3) })
 
     val SPORE_BALL: EntityType<SporeBallProjectile> = Registry.register(
         Registry.ENTITY_TYPE,
@@ -142,7 +142,7 @@ object Entities {
             HostileEntity.createHostileAttributes()
                 .add(EntityAttributes.GENERIC_MAX_HEALTH, 300.0)
                 .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 32.0)
-                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 8.0)
+                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 12.0)
                 .add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 10.0)
                 .add(EntityAttributes.GENERIC_ARMOR, .0)
         )

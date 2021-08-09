@@ -164,7 +164,7 @@ class SporeBallProjectile : BaseThrownItemEntity, IAnimatable {
         if (owner is LivingEntity) {
             if (entity != owner) {
                 val damage = owner.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE).toFloat()
-                entity.damage(DamageSource.magic(this, owner), damage)
+                entity.damage(DamageSource.thrownProjectile(this, owner), damage)
             }
         }
     }
