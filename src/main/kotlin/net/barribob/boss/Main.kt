@@ -64,6 +64,7 @@ fun clientInit() {
     Entities.clientInit(animationTimer)
     Particles.clientInit()
     ModBlocks.clientInit(animationTimer)
+    Mod.items.clientInit()
 
     if(MaelstromMod.isDevelopmentEnvironment) initClientDev()
 }
@@ -83,6 +84,7 @@ private fun initDev() {
     MaelstromMod.testCommand.addId(inGameTests::lichSpawn.name, inGameTests::lichSpawn)
     MaelstromMod.testCommand.addId(inGameTests::verifySpawnPosition.name, inGameTests::verifySpawnPosition)
     MaelstromMod.testCommand.addId(inGameTests::levitationPerformance.name, inGameTests::levitationPerformance)
+    MaelstromMod.testCommand.addId(inGameTests::wallTeleport.name, inGameTests::wallTeleport)
 }
 
 @Environment(EnvType.CLIENT)

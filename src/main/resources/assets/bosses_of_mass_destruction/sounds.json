@@ -284,5 +284,12 @@
     "sounds": [
       "bosses_of_mass_destruction:void_blossom_fall"
     ]
+  },
+  "earthdive_spear_throw": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.earthdive_spear_throw",
+    "sounds": [
+      "bosses_of_mass_destruction:earthdive_spear_throw",
+      "bosses_of_mass_destruction:earthdive_spear_throw2"
+    ]
   }
 }

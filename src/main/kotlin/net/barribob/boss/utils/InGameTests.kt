@@ -5,6 +5,7 @@ import net.barribob.boss.Mod
 import net.barribob.boss.block.MonolithBlock
 import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.item.SoulStarItem
+import net.barribob.boss.item.WallTeleport
 import net.barribob.boss.mob.mobs.obsidilith.BurstAction
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithUtils
 import net.barribob.boss.mob.mobs.obsidilith.PillarAction
@@ -179,5 +180,9 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
     fun levitationPerformance(source: ServerCommandSource){
 //        LevitationBlockEntity.tickFlight(source.player)
         MonolithBlock.getExplosionPower(source.world, BlockPos(source.position), 2.0f)
+    }
+
+    fun wallTeleport(source: ServerCommandSource) {
+        WallTeleport(source.world, source.player).tryTeleport(source.player.rotationVector, source.player.eyePos)
     }
 }

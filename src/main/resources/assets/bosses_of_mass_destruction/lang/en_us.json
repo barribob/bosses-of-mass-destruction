@@ -29,6 +29,9 @@
   "block.bosses_of_mass_destruction.levitation_block" : "Table of Elevation",
   "item.bosses_of_mass_destruction.levitation_block.tooltip" : "When placed, grants creative flight in a 7x7 column",
 
+  "item.bosses_of_mass_destruction.earthdive_spear.tooltip" : "Throw to teleport through up to 16 solid blocks",
+  "item.bosses_of_mass_destruction.earthdive_spear" : "Earthdive Spear",
+
   "advancements.nether.gauntlet_defeat.title": "Through the Gauntlet",
   "advancements.nether.gauntlet_defeat.description" : "Defeat the Nether Gauntlet Boss",
 
@@ -81,6 +84,7 @@
   "subtitles.bosses_of_mass_destruction.void_spike_indicator" : "Spikes Gather",
   "subtitles.bosses_of_mass_destruction.void_blossom_hurt" : "Blossom Hurts",
   "subtitles.bosses_of_mass_destruction.void_blossom_fall" : "Blossom Falls",
+  "subtitles.bosses_of_mass_destruction.earthdive_spear_throw" : "Spear Throws",
 
   "text.autoconfig.bosses_of_mass_destruction.title" : "All changes require mc restart",
 
