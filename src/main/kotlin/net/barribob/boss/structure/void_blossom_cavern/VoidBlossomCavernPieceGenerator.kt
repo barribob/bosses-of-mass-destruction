@@ -38,7 +38,8 @@ class VoidBlossomCavernPieceGenerator : IPieceGenerator {
             SpikeCaveDecorator(minY),
             MossFloorCaveDecorator(minY, random),
             MossCeilingCaveDecorator(minY, random),
-            SporeBlossomCaveDecorator(minY, random)
+            SporeBlossomCaveDecorator(minY, random),
+            BossBlockDecorator(minY)
         )
 
         generateCave(world, pos.up(17), structurePiece, random, boundingBox, caveDecorators, chunkGenerator.minimumY)

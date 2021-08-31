@@ -59,6 +59,12 @@ object ModBlocks {
         .luminance { 4 }
         .strength(10.0F, 1200.0F))
 
+    var voidBlossomSummonBlockEntityType: BlockEntityType<VoidBlossomSummonBlockEntity>? = null
+    private val voidBlossomSummonBlockEntityFactory = FabricBlockEntityTypeBuilder.Factory { pos, state ->
+        VoidBlossomSummonBlockEntity(voidBlossomSummonBlockEntityType, pos, state)
+    }
+    val voidBlossomSummonBlock = VoidBlossomSummonBlock(voidBlossomSummonBlockEntityFactory, FabricBlockSettings.copy(Blocks.AIR))
+
     fun init() {
         registerBlockAndItem(Mod.identifier("obsidilith_rune"), obsidilithRune)
         registerBlockAndItem(Mod.identifier("obsidilith_end_frame"), obsidilithSummonBlock)
@@ -71,10 +77,12 @@ object ModBlocks {
         val mobWardId = Mod.identifier("mob_ward")
         val monolithBlockId = Mod.identifier("monolith_block")
         val levitationBlockId = Mod.identifier("levitation_block")
+        val voidBlossomBlockId = Mod.identifier("void_blossom_block")
 
         registerBlockAndItem(mobWardId, mobWard, FabricItemSettings().group(Mod.items.itemGroup).fireproof())
         registerBlockAndItem(monolithBlockId, monolithBlock, FabricItemSettings().group(Mod.items.itemGroup).fireproof())
         registerBlockAndItem(levitationBlockId, levitationBlock, FabricItemSettings().group(Mod.items.itemGroup).fireproof())
+        registerBlockAndItem(voidBlossomBlockId, voidBlossomSummonBlock, FabricItemSettings().fireproof())
 
         mobWardEntityType = Registry.register(
             Registry.BLOCK_ENTITY_TYPE,
@@ -92,6 +100,12 @@ object ModBlocks {
             Registry.BLOCK_ENTITY_TYPE,
             levitationBlockId,
             FabricBlockEntityTypeBuilder.create(levitationBlockEntityFactory, levitationBlock).build(null)
+        )
+
+        voidBlossomSummonBlockEntityType = Registry.register(
+            Registry.BLOCK_ENTITY_TYPE,
+            voidBlossomBlockId,
+            FabricBlockEntityTypeBuilder.create(voidBlossomSummonBlockEntityFactory, voidBlossomSummonBlock).build(null)
         )
     }
 
