@@ -19,6 +19,7 @@
   "item.bosses_of_mass_destruction.ancient_anima" : "Ancient Anima",
   "item.bosses_of_mass_destruction.blazing_eye" : "Blazing Eye",
   "item.bosses_of_mass_destruction.obsidian_heart" : "Obsidian Heart",
+  "item.bosses_of_mass_destruction.void_thorn" : "Void Thorn",
 
   "block.bosses_of_mass_destruction.mob_ward" : "Staff of Suppression",
   "item.bosses_of_mass_destruction.mob_ward.tooltip" : "When placed, mobs won't spawn in any 64 block direction",

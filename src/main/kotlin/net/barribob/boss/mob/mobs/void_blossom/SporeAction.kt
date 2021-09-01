@@ -46,7 +46,7 @@ class SporeAction(private val entity: VoidBlossomEntity, private val eventSchedu
                 projectile.setPosition(entity.eyePos)
                 ProjectileData(projectile, 0.75f, 0f)
             }.throwProjectile(target.eyePos)
-        }, 50, shouldCancel = shouldCancel))
+        }, 45, shouldCancel = shouldCancel))
 
         return 100
     }

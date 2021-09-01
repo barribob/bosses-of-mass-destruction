@@ -59,7 +59,7 @@ class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: Worl
     val clientSpikeHandler = VoidBlossomClientSpikeHandler()
     override val clientTick = clientSpikeHandler
     override val serverTick = CompositeEntityTick(LightBlockPlacer(this), VoidBlossomSpikeTick(this), hitboxes.getTickers())
-    override val deathServerTick = LightBlockRemover(this)
+    override val deathServerTick = CompositeEntityTick(LightBlockRemover(this), VoidBlossomDropExpDeathTick(this, preTickEvents, 1000))
     override val damageHandler = CompositeDamageHandler(hpDetector, hitboxes.getDamageHandlers())
     init {
         ignoreCameraFrustum = true

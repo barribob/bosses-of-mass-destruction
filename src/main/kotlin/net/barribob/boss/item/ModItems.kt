@@ -18,20 +18,22 @@ class ModItems {
     private val ancientAnima = Item(FabricItemSettings().group(itemGroup))
     private val blazingEye = Item(FabricItemSettings().group(itemGroup).fireproof())
     private val obsidianHeart = Item(FabricItemSettings().group(itemGroup).fireproof())
-    private val staff = EarthdiveSpear(FabricItemSettings().group(itemGroup).fireproof().maxDamage(250))
+    private val earthdiveSpear = EarthdiveSpear(FabricItemSettings().group(itemGroup).fireproof().maxDamage(250))
+    private val voidThorn = Item(FabricItemSettings().group(itemGroup).fireproof())
 
     fun init() {
         Registry.register(Registry.ITEM, Mod.identifier("soul_star"), soulStar)
         Registry.register(Registry.ITEM, Mod.identifier("ancient_anima"), ancientAnima)
         Registry.register(Registry.ITEM, Mod.identifier("blazing_eye"), blazingEye)
         Registry.register(Registry.ITEM, Mod.identifier("obsidian_heart"), obsidianHeart)
-        Registry.register(Registry.ITEM, Mod.identifier("earthdive_spear"), staff)
+        Registry.register(Registry.ITEM, Mod.identifier("earthdive_spear"), earthdiveSpear)
+        Registry.register(Registry.ITEM, Mod.identifier("void_thorn"), voidThorn)
     }
 
     @Environment(EnvType.CLIENT)
     fun clientInit() {
         FabricModelPredicateProviderRegistry.register(
-            staff,
+            earthdiveSpear,
             Identifier("throwing")
         ) { itemStack, _, livingEntity, _ ->
             if (livingEntity == null) {
