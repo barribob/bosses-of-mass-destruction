@@ -73,7 +73,7 @@ object ModStructures {
         Mod.identifier("void_blossom_structure_piece"),
         StructureFactories.voidBlossomStructure
     )
-    private val voidBlossomArenaStructure = VoidBlossomArenaStructureFeature(DefaultFeatureConfig.CODEC)
+    val voidBlossomArenaStructure = VoidBlossomArenaStructureFeature(DefaultFeatureConfig.CODEC)
     private val configuredVoidBlossomArenaStructure = voidBlossomArenaStructure.configure(DefaultFeatureConfig.DEFAULT)
 
     private val emptyStructureSpawn = IStructureSpawns { listOf() }

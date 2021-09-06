@@ -15,6 +15,7 @@ import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes
 import net.minecraft.client.particle.SpriteProvider
 import net.minecraft.particle.DefaultParticleType
+import net.minecraft.util.math.Vec3d
 import net.minecraft.util.registry.Registry
 import kotlin.math.sin
 
@@ -160,6 +161,12 @@ object Particles {
     val FLUFF: DefaultParticleType = Registry.register(
         Registry.PARTICLE_TYPE,
         Mod.identifier("fluff"),
+        FabricParticleTypes.simple()
+    )
+
+    val POLLEN: DefaultParticleType = Registry.register(
+        Registry.PARTICLE_TYPE,
+        Mod.identifier("pollen"),
         FabricParticleTypes.simple()
     )
 
@@ -383,6 +390,20 @@ object Particles {
         particleFactory.register(PETAL) { provider: SpriteProvider ->
             SimpleParticleFactory(provider) {
                 SimpleParticle(it, RandomUtils.range(15, 20), VanillaCopies::buildBillboardGeometry, false)
+            }
+        }
+
+        particleFactory.register(POLLEN) { provider: SpriteProvider ->
+            SimpleParticleFactory(provider) { c ->
+                val particle = SimpleParticle(c, RandomUtils.range(15, 20), VanillaCopies::buildBillboardGeometry, false)
+                particle.setColorOverride { Vec3d(1.0, 0.9, 0.4) }
+                particle.setColorVariation(0.15)
+                particle.setBrightnessOverride { FULL_BRIGHT }
+                particle.setScaleOverride { 0.05f * (1 - it * 0.25f) }
+                val randomRot = RandomUtils.range(0, 360)
+                val angularMomentum = RandomUtils.randSign() * 4f
+                particle.setRotationOverride { randomRot + it.getAge() * angularMomentum }
+                particle
             }
         }
 

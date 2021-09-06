@@ -22,7 +22,7 @@ object ModUtils {
     /**
      * Look at [ClientPlayNetworkHandler.onParticle]
      */
-    fun ServerWorld.spawnParticle(particleType: ParticleEffect, pos: Vec3d, velOrOffset: Vec3d, count: Int = 0) =
+    fun ServerWorld.spawnParticle(particleType: ParticleEffect, pos: Vec3d, velOrOffset: Vec3d, count: Int = 0, speed: Double = 0.0) =
         this.spawnParticles(
             particleType,
             pos.x,
@@ -32,7 +32,7 @@ object ModUtils {
             velOrOffset.x,
             velOrOffset.y,
             velOrOffset.z,
-            0.0
+            speed
         )
 
     fun ServerWorld.playSound(

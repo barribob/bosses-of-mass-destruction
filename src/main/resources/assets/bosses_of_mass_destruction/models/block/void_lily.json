@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "bosses_of_mass_destruction:block/void_lily"
+  }
+}

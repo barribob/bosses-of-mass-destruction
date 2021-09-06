@@ -11,7 +11,10 @@ import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap
 import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings
 import net.fabricmc.fabric.api.tool.attribute.v1.FabricToolTags
-import net.minecraft.block.*
+import net.minecraft.block.Block
+import net.minecraft.block.Blocks
+import net.minecraft.block.MapColor
+import net.minecraft.block.Material
 import net.minecraft.block.entity.BlockEntityType
 import net.minecraft.client.render.RenderLayer
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory
@@ -65,6 +68,14 @@ object ModBlocks {
     }
     val voidBlossomSummonBlock = VoidBlossomSummonBlock(voidBlossomSummonBlockEntityFactory, FabricBlockSettings.copy(Blocks.AIR))
 
+    var voidLilyBlockEntityType: BlockEntityType<VoidLilyBlockEntity>? = null
+    private val voidLilyBlockEntityFactory = FabricBlockEntityTypeBuilder.Factory { pos, state ->
+        VoidLilyBlockEntity(voidLilyBlockEntityType, pos, state)
+    }
+    private val voidLilyBlock = VoidLilyBlock(voidLilyBlockEntityFactory,
+        FabricBlockSettings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly()
+            .sounds(BlockSoundGroup.GRASS).luminance { 8 })
+
     fun init() {
         registerBlockAndItem(Mod.identifier("obsidilith_rune"), obsidilithRune)
         registerBlockAndItem(Mod.identifier("obsidilith_end_frame"), obsidilithSummonBlock)
@@ -78,11 +89,13 @@ object ModBlocks {
         val monolithBlockId = Mod.identifier("monolith_block")
         val levitationBlockId = Mod.identifier("levitation_block")
         val voidBlossomBlockId = Mod.identifier("void_blossom_block")
+        val voidLilyBlockId = Mod.identifier("void_lily")
 
         registerBlockAndItem(mobWardId, mobWard, FabricItemSettings().group(Mod.items.itemGroup).fireproof())
         registerBlockAndItem(monolithBlockId, monolithBlock, FabricItemSettings().group(Mod.items.itemGroup).fireproof())
         registerBlockAndItem(levitationBlockId, levitationBlock, FabricItemSettings().group(Mod.items.itemGroup).fireproof())
         registerBlockAndItem(voidBlossomBlockId, voidBlossomSummonBlock, FabricItemSettings().fireproof())
+        registerBlockAndItem(voidLilyBlockId, voidLilyBlock, FabricItemSettings().group(Mod.items.itemGroup))
 
         mobWardEntityType = Registry.register(
             Registry.BLOCK_ENTITY_TYPE,
@@ -107,12 +120,19 @@ object ModBlocks {
             voidBlossomBlockId,
             FabricBlockEntityTypeBuilder.create(voidBlossomSummonBlockEntityFactory, voidBlossomSummonBlock).build(null)
         )
+
+        voidLilyBlockEntityType = Registry.register(
+            Registry.BLOCK_ENTITY_TYPE,
+            voidLilyBlockId,
+            FabricBlockEntityTypeBuilder.create(voidLilyBlockEntityFactory, voidLilyBlock).build(null)
+        )
     }
 
     fun clientInit(animationTimer: IAnimationTimer) {
         BlockRenderLayerMap.INSTANCE.putBlock(mobWard, RenderLayer.getCutout())
         BlockRenderLayerMap.INSTANCE.putBlock(voidBlossom, RenderLayer.getCutout())
         BlockRenderLayerMap.INSTANCE.putBlock(vineWall, RenderLayer.getCutout())
+        BlockRenderLayerMap.INSTANCE.putBlock(voidLilyBlock, RenderLayer.getCutout())
 
         BlockEntityRendererRegistry.INSTANCE.register(levitationBlockEntityType, BlockEntityRendererFactory {
             ModBlockEntityRenderer(
