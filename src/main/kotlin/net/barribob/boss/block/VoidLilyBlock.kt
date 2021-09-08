@@ -7,8 +7,14 @@ import net.minecraft.block.FlowerBlock
 import net.minecraft.block.entity.BlockEntity
 import net.minecraft.block.entity.BlockEntityTicker
 import net.minecraft.block.entity.BlockEntityType
+import net.minecraft.client.item.TooltipContext
 import net.minecraft.entity.effect.StatusEffects
+import net.minecraft.item.ItemStack
+import net.minecraft.text.Text
+import net.minecraft.text.TranslatableText
+import net.minecraft.util.Formatting
 import net.minecraft.util.math.BlockPos
+import net.minecraft.world.BlockView
 import net.minecraft.world.World
 
 class VoidLilyBlock(
@@ -27,5 +33,14 @@ class VoidLilyBlock(
             tickerState,
             blockEntity
         )
+    }
+
+    override fun appendTooltip(
+        stack: ItemStack?,
+        world: BlockView?,
+        tooltip: MutableList<Text>,
+        options: TooltipContext?
+    ) {
+        tooltip.add(TranslatableText("block.bosses_of_mass_destruction.void_lily.tooltip").formatted(Formatting.DARK_GRAY))
     }
 }

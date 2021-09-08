@@ -1,6 +1,6 @@
 {
   "parent": "bosses_of_mass_destruction:item/throwing",
   "textures": {
-    "layer0": "minecraft:item/trident"
+    "layer0": "bosses_of_mass_destruction:item/earthdive_spear"
   }
 }

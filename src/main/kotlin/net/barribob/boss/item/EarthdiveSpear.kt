@@ -1,9 +1,16 @@
 package net.barribob.boss.item
 
+import com.google.common.collect.ImmutableMultimap
+import com.google.common.collect.Multimap
 import net.barribob.boss.Mod
 import net.barribob.boss.utils.ModUtils.randomPitch
+import net.minecraft.block.BlockState
 import net.minecraft.client.item.TooltipContext
+import net.minecraft.entity.EquipmentSlot
 import net.minecraft.entity.LivingEntity
+import net.minecraft.entity.attribute.EntityAttribute
+import net.minecraft.entity.attribute.EntityAttributeModifier
+import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
@@ -16,9 +23,35 @@ import net.minecraft.util.Formatting
 import net.minecraft.util.Hand
 import net.minecraft.util.TypedActionResult
 import net.minecraft.util.UseAction
+import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 
 class EarthdiveSpear(settings: Settings?) : Item(settings) {
+    private val attributeModifiers: Multimap<EntityAttribute?, EntityAttributeModifier?>
+
+    init {
+        val builder = ImmutableMultimap.builder<EntityAttribute, EntityAttributeModifier>()
+        builder.put(
+            EntityAttributes.GENERIC_ATTACK_DAMAGE,
+            EntityAttributeModifier(
+                ATTACK_DAMAGE_MODIFIER_ID,
+                "Tool modifier",
+                8.0,
+                EntityAttributeModifier.Operation.ADDITION
+            )
+        )
+        builder.put(
+            EntityAttributes.GENERIC_ATTACK_SPEED,
+            EntityAttributeModifier(
+                ATTACK_SPEED_MODIFIER_ID,
+                "Tool modifier",
+                -2.9000000953674316,
+                EntityAttributeModifier.Operation.ADDITION
+            )
+        )
+        this.attributeModifiers = builder.build()
+    }
+
     override fun appendTooltip(
         stack: ItemStack?,
         world: World?,
@@ -52,6 +85,28 @@ class EarthdiveSpear(settings: Settings?) : Item(settings) {
         }
     }
 
+    override fun postHit(stack: ItemStack, target: LivingEntity?, attacker: LivingEntity): Boolean {
+        stack.damage(1, attacker) {
+            it.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND)
+        }
+        return true
+    }
+
+    override fun postMine(
+        stack: ItemStack,
+        world: World?,
+        state: BlockState,
+        pos: BlockPos?,
+        miner: LivingEntity
+    ): Boolean {
+        if (state.getHardness(world, pos).toDouble() != 0.0) {
+            stack.damage(2, miner) {
+                it.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND)
+            }
+        }
+        return true
+    }
+
     override fun use(world: World?, user: PlayerEntity, hand: Hand?): TypedActionResult<ItemStack>? {
         val itemStack = user.getStackInHand(hand)
         return if (itemStack.damage >= itemStack.maxDamage - 1) {
@@ -62,6 +117,11 @@ class EarthdiveSpear(settings: Settings?) : Item(settings) {
         }
     }
 
+    override fun getAttributeModifiers(slot: EquipmentSlot): Multimap<EntityAttribute?, EntityAttributeModifier?>? {
+        return if (slot == EquipmentSlot.MAINHAND) attributeModifiers else super.getAttributeModifiers(slot)
+    }
+
     override fun getMaxUseTime(stack: ItemStack?) = 72000
     override fun getUseAction(stack: ItemStack?) = UseAction.SPEAR
+    override fun getEnchantability() = 1
 }

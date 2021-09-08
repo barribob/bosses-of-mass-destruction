@@ -1,7 +1,7 @@
 {
-  "parent": "minecraft:item/handheld",
+  "parent": "bosses_of_mass_destruction:item/spear",
   "textures": {
-    "layer0": "minecraft:item/trident"
+    "layer0": "bosses_of_mass_destruction:item/earthdive_spear"
   },
   "overrides": [
     {
