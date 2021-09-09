@@ -58,7 +58,11 @@ class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: Worl
     override val bossBar = ServerBossBar(this.displayName, BossBar.Color.GREEN, BossBar.Style.NOTCHED_12)
     val clientSpikeHandler = VoidBlossomClientSpikeHandler()
     override val clientTick = clientSpikeHandler
-    override val serverTick = CompositeEntityTick(LightBlockPlacer(this), VoidBlossomSpikeTick(this), hitboxes.getTickers())
+    override val serverTick = CompositeEntityTick(
+        LightBlockPlacer(this),
+        VoidBlossomSpikeTick(this),
+        hitboxes.getTickers(),
+        CappedHeal(this, hpMilestones, 0.5f))
     override val deathServerTick = CompositeEntityTick(LightBlockRemover(this), VoidBlossomDropExpDeathTick(this, preTickEvents, 1000))
     override val damageHandler = CompositeDamageHandler(hpDetector, hitboxes.getDamageHandlers())
     init {
@@ -98,6 +102,7 @@ class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: Worl
     override fun getDeathSound(): SoundEvent = Mod.sounds.voidBlossomHurt
     override fun getSoundVolume(): Float = 1.5f
     override fun checkDespawn() = ModUtils.preventDespawnExceptPeaceful(this, world)
+    override fun getArmor(): Int = if (target != null) super.getArmor() else 20
 
     override fun onSetPos(x: Double, y: Double, z: Double) {
         if (hitboxHelper != null) hitboxHelper.updatePosition()

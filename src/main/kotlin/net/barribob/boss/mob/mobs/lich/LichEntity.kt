@@ -16,6 +16,7 @@ import net.barribob.boss.mob.damage.CompositeDamageHandler
 import net.barribob.boss.mob.damage.DamagedAttackerNotSeen
 import net.barribob.boss.mob.damage.StagedDamageHandler
 import net.barribob.boss.mob.mobs.lich.LichUtils.hpPercentRageModes
+import net.barribob.boss.mob.mobs.void_blossom.CappedHeal
 import net.barribob.boss.mob.spawn.*
 import net.barribob.boss.mob.utils.*
 import net.barribob.boss.mob.utils.animation.AnimationPredicate
@@ -157,6 +158,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
         DamagedAttackerNotSeen(iEntity) { buildTeleportAction({ isAlive }, { it }) })
     private val priorityMoves = mutableListOf<IActionWithCooldown>()
     override val bossBar = ServerBossBar(this.displayName, BossBar.Color.BLUE, BossBar.Style.PROGRESS)
+    override val serverTick = CappedHeal(this, hpPercentRageModes, healingStrength)
 
     private val summonMissileParticleBuilder = ParticleFactories.soulFlame().age(2).colorVariation(0.5)
     private val teleportParticleBuilder = ClientParticleBuilder(Particles.DISAPPEARING_SWIRL)
@@ -589,10 +591,6 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, mobConfig
 
     override fun serverTick(serverWorld: ServerWorld) {
         positionalHistory.set(pos)
-
-        if(this.target == null) {
-            LichUtils.cappedHeal(iEntity, EntityStats(this), hpPercentRageModes, healingStrength, ::heal)
-        }
 
         if (shouldSetToNighttime) {
             serverWorld.timeOfDay = LichUtils.timeToNighttime(serverWorld.timeOfDay)

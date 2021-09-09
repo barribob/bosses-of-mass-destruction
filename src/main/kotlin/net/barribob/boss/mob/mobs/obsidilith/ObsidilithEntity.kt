@@ -8,10 +8,8 @@ import net.barribob.boss.mob.ai.action.CooldownAction
 import net.barribob.boss.mob.ai.goals.ActionGoal
 import net.barribob.boss.mob.ai.goals.FindTargetGoal
 import net.barribob.boss.mob.damage.CompositeDamageHandler
-import net.barribob.boss.mob.mobs.lich.LichUtils
+import net.barribob.boss.mob.mobs.void_blossom.CappedHeal
 import net.barribob.boss.mob.utils.BaseEntity
-import net.barribob.boss.mob.utils.EntityAdapter
-import net.barribob.boss.mob.utils.EntityStats
 import net.barribob.boss.mob.utils.StatusImmunity
 import net.barribob.boss.mob.utils.animation.AnimationPredicate
 import net.barribob.boss.particle.Particles
@@ -60,8 +58,8 @@ class ObsidilithEntity(
     private val effectHandler = ObsidilithEffectHandler(this, ModComponents.getWorldEventScheduler(world))
     override val damageHandler = CompositeDamageHandler(moveLogic, ShieldDamageHandler(::isShielded))
     private val activePillars = mutableSetOf<BlockPos>()
-    private val iEntity = EntityAdapter(this)
     override val statusEffectHandler = StatusImmunity(StatusEffects.WITHER, StatusEffects.POISON)
+    override val serverTick = CappedHeal(this, ObsidilithUtils.hpPillarShieldMilestones, mobConfig.idleHealingPerTick)
 
     init {
         ignoreCameraFrustum = true
@@ -88,16 +86,6 @@ class ObsidilithEntity(
 
     override fun serverTick(serverWorld: ServerWorld) {
         super.serverTick(serverWorld)
-
-        if(this.target == null) {
-            LichUtils.cappedHeal(
-                iEntity,
-                EntityStats(this),
-                ObsidilithUtils.hpPillarShieldMilestones,
-                mobConfig.idleHealingPerTick,
-                ::heal
-            )
-        }
 
         activePillars.removeIf {
             world.getBlockState(it).block != ModBlocks.obsidilithRune || !it.isWithinDistance(
@@ -126,7 +114,7 @@ class ObsidilithEntity(
     override fun onDeath(source: DamageSource?) {
         if (mobConfig.spawnPillarOnDeath) {
             ObsidilithUtils.onDeath(this, mobConfig.experienceDrop)
-            if(world.isClient) effectHandler.handleStatus(ObsidilithUtils.deathStatus)
+            if (world.isClient) effectHandler.handleStatus(ObsidilithUtils.deathStatus)
         }
 
         super.onDeath(source)
@@ -155,10 +143,10 @@ class ObsidilithEntity(
     override fun registerControllers(data: AnimationData) {
         data.shouldPlayWhilePaused = true
         data.addAnimationController(AnimationController(this, "summon", 0f, AnimationPredicate<ObsidilithEntity> {
-                it.controller.setAnimation(
-                    AnimationBuilder().addAnimation("summon", false)
-                )
-                PlayState.CONTINUE
+            it.controller.setAnimation(
+                AnimationBuilder().addAnimation("summon", false)
+            )
+            PlayState.CONTINUE
         }))
     }
 
