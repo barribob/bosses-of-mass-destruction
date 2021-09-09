@@ -137,5 +137,16 @@
   "text.autoconfig.bosses_of_mass_destruction.option.gauntletConfig.arenaGeneration" : "Arena Generation",
   "text.autoconfig.bosses_of_mass_destruction.option.gauntletConfig.arenaGeneration.generationSpacing" : "Generation Spacing",
   "text.autoconfig.bosses_of_mass_destruction.option.gauntletConfig.arenaGeneration.generationSeparation" : "Generation Separation",
-  "text.autoconfig.bosses_of_mass_destruction.option.gauntletConfig.arenaGeneration.generationEnabled" : "Generation Enabled"
+  "text.autoconfig.bosses_of_mass_destruction.option.gauntletConfig.arenaGeneration.generationEnabled" : "Generation Enabled",
+
+  "text.autoconfig.bosses_of_mass_destruction.category.VoidBlossom" : "Void Blossom",
+  "text.autoconfig.bosses_of_mass_destruction.option.voidBlossomConfig.health" : "Health",
+  "text.autoconfig.bosses_of_mass_destruction.option.voidBlossomConfig.armor" : "Armor",
+  "text.autoconfig.bosses_of_mass_destruction.option.voidBlossomConfig.attack" : "Attack",
+  "text.autoconfig.bosses_of_mass_destruction.option.voidBlossomConfig.idleHealingPerTick" : "Idle Healing per Tick",
+  "text.autoconfig.bosses_of_mass_destruction.option.voidBlossomConfig.experienceDrop" : "Experience Drop",
+  "text.autoconfig.bosses_of_mass_destruction.option.voidBlossomConfig.arenaGeneration" : "Arena Generation",
+  "text.autoconfig.bosses_of_mass_destruction.option.voidBlossomConfig.arenaGeneration.generationSpacing" : "Generation Spacing",
+  "text.autoconfig.bosses_of_mass_destruction.option.voidBlossomConfig.arenaGeneration.generationSeparation" : "Generation Separation",
+  "text.autoconfig.bosses_of_mass_destruction.option.voidBlossomConfig.arenaGeneration.generationEnabled" : "Generation Enabled"
 }

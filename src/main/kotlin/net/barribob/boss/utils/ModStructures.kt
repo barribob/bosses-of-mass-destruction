@@ -86,6 +86,7 @@ object ModStructures {
     fun init() {
         val obsidilithGenConfig = modConfig.obsidilithConfig.arenaGeneration
         val gauntletGenConfig = modConfig.gauntletConfig.arenaGeneration
+        val voidBlossomGenConfig = modConfig.voidBlossomConfig.arenaGeneration
 
         FabricStructureBuilder.create(Mod.identifier("obsidilith_arena"), obsidilithArenaStructure)
             .step(GenerationStep.Feature.SURFACE_STRUCTURES)
@@ -104,7 +105,7 @@ object ModStructures {
 
         FabricStructureBuilder.create(Mod.identifier("void_blossom"), voidBlossomArenaStructure)
             .step(GenerationStep.Feature.UNDERGROUND_STRUCTURES)
-            .defaultConfig(32, 24, 574839)
+            .defaultConfig(voidBlossomGenConfig.generationSpacing, voidBlossomGenConfig.generationSeparation, 574839)
             .register()
 
         if (obsidilithGenConfig.generationEnabled) {
@@ -127,10 +128,12 @@ object ModStructures {
             )
         }
 
-        BiomeModifications.addStructure(
-            BiomeSelectors.foundInOverworld()::test,
-            register(Mod.identifier("configured_void_blossom_arena"), configuredVoidBlossomArenaStructure)
-        )
+        if (voidBlossomGenConfig.generationEnabled) {
+            BiomeModifications.addStructure(
+                BiomeSelectors.foundInOverworld()::test,
+                register(Mod.identifier("configured_void_blossom_arena"), configuredVoidBlossomArenaStructure)
+            )
+        }
 
         ServerWorldEvents.LOAD.register(ServerWorldEvents.Load { _, world ->
             val chunkGenerator = world.chunkManager.chunkGenerator

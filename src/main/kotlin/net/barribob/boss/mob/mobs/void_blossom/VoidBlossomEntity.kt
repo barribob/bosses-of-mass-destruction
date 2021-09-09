@@ -4,6 +4,7 @@ import io.github.stuff_stuffs.multipart_entities.common.entity.EntityBounds
 import io.github.stuff_stuffs.multipart_entities.common.entity.MultipartAwareEntity
 import io.github.stuff_stuffs.multipart_entities.common.util.CompoundOrientedBox
 import net.barribob.boss.Mod
+import net.barribob.boss.config.VoidBlossomConfig
 import net.barribob.boss.mob.ai.goals.ActionGoal
 import net.barribob.boss.mob.ai.goals.CompositeGoal
 import net.barribob.boss.mob.ai.goals.FindTargetGoal
@@ -32,7 +33,7 @@ import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import software.bernie.geckolib3.core.manager.AnimationData
 
-class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: World) : BaseEntity(entityType, world),
+class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: World, config: VoidBlossomConfig) : BaseEntity(entityType, world),
     MultipartAwareEntity {
     private val animationHolder = AnimationHolder(
         this, mapOf(
@@ -62,8 +63,11 @@ class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: Worl
         LightBlockPlacer(this),
         VoidBlossomSpikeTick(this),
         hitboxes.getTickers(),
-        CappedHeal(this, hpMilestones, 0.5f))
-    override val deathServerTick = CompositeEntityTick(LightBlockRemover(this), VoidBlossomDropExpDeathTick(this, preTickEvents, 1000))
+        CappedHeal(this, hpMilestones, config.idleHealingPerTick))
+    override val deathServerTick = CompositeEntityTick(
+        LightBlockRemover(this),
+        VoidBlossomDropExpDeathTick(this, preTickEvents, config.experienceDrop)
+    )
     override val damageHandler = CompositeDamageHandler(hpDetector, hitboxes.getDamageHandlers())
     init {
         ignoreCameraFrustum = true
