@@ -13,7 +13,7 @@ class VoidBlossomBoneLight : IBoneLight, IRenderer<VoidBlossomEntity> {
     private var partialTicks: Float? = null
 
     override fun getLightForBone(bone: GeoBone, packedLight: Int): Int {
-        return if (bone.name.contains("Spike") || bone.name.contains("Thorn")) {
+        return if (bone.name.contains("Spike") || bone.name.contains("Thorn") || bone.name.contains("FlowerCenter")) {
             IBoneLight.fullbright
         } else {
             packedLight
