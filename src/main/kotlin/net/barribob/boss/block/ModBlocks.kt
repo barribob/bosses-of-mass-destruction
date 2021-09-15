@@ -66,7 +66,7 @@ object ModBlocks {
     private val voidBlossomSummonBlockEntityFactory = FabricBlockEntityTypeBuilder.Factory { pos, state ->
         VoidBlossomSummonBlockEntity(voidBlossomSummonBlockEntityType, pos, state)
     }
-    val voidBlossomSummonBlock = VoidBlossomSummonBlock(voidBlossomSummonBlockEntityFactory, FabricBlockSettings.copy(Blocks.AIR))
+    val voidBlossomSummonBlock = VoidBlossomSummonBlock(voidBlossomSummonBlockEntityFactory, FabricBlockSettings.copy(Blocks.BEDROCK))
 
     var voidLilyBlockEntityType: BlockEntityType<VoidLilyBlockEntity>? = null
     private val voidLilyBlockEntityFactory = FabricBlockEntityTypeBuilder.Factory { pos, state ->
