@@ -170,6 +170,12 @@ object Particles {
         FabricParticleTypes.simple()
     )
 
+    val EARTHDIVE_INDICATOR: DefaultParticleType = Registry.register(
+        Registry.PARTICLE_TYPE,
+        Mod.identifier("earthdive_indicator"),
+        FabricParticleTypes.simple()
+    )
+
     const val FULL_BRIGHT = 15728880
 
     fun clientInit() {
@@ -436,6 +442,17 @@ object Particles {
         particleFactory.register(FLUFF) { provider: SpriteProvider ->
             SimpleParticleFactory(provider) {
                 SimpleParticle(it, RandomUtils.range(15, 20), VanillaCopies::buildBillboardGeometry)
+            }
+        }
+
+        particleFactory.register(EARTHDIVE_INDICATOR) { provider: SpriteProvider ->
+            SimpleParticleFactory(provider) { context ->
+                val particle = SimpleParticle(context, RandomUtils.range(15, 20), VanillaCopies::buildBillboardGeometry, doCollision = false)
+                particle.setColorOverride { ModColors.RUNIC_BROWN }
+                particle.setColorVariation(0.25)
+                particle.setBrightnessOverride { FULL_BRIGHT }
+                particle.setScaleOverride { (1 - (it * 0.25f)) * 0.25f }
+                particle
             }
         }
     }

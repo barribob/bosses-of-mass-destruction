@@ -3,7 +3,10 @@ package net.barribob.boss.item
 import com.google.common.collect.ImmutableMultimap
 import com.google.common.collect.Multimap
 import net.barribob.boss.Mod
+import net.barribob.boss.particle.Particles
 import net.barribob.boss.utils.ModUtils.randomPitch
+import net.barribob.boss.utils.ModUtils.spawnParticle
+import net.barribob.maelstrom.static_utilities.RandomUtils
 import net.minecraft.block.BlockState
 import net.minecraft.client.item.TooltipContext
 import net.minecraft.entity.EquipmentSlot
@@ -63,8 +66,7 @@ class EarthdiveSpear(settings: Settings?) : Item(settings) {
 
     override fun onStoppedUsing(stack: ItemStack, world: World, user: LivingEntity, remainingUseTicks: Int) {
         if (user is PlayerEntity) {
-            val i = getMaxUseTime(stack) - remainingUseTicks
-            if (i >= 10) {
+            if (isCharged(stack, remainingUseTicks)) {
                 if (!world.isClient && world is ServerWorld) {
                     if (WallTeleport(world, user).tryTeleport(user.rotationVector, user.eyePos) ||
                         WallTeleport(world, user).tryTeleport(user.rotationVector, user.eyePos.add(0.0, -1.0, 0.0))
@@ -116,6 +118,27 @@ class EarthdiveSpear(settings: Settings?) : Item(settings) {
             TypedActionResult.consume(itemStack)
         }
     }
+
+    override fun usageTick(world: World, user: LivingEntity, stack: ItemStack, remainingUseTicks: Int) {
+        super.usageTick(world, user, stack, remainingUseTicks)
+        if (world is ServerWorld) {
+            if (isCharged(stack, remainingUseTicks)) {
+                val teleportAction: (BlockPos) -> Unit = { spawnTeleportParticles(world, user) }
+                val wallTeleport = WallTeleport(world, user)
+                if (!wallTeleport.tryTeleport(user.rotationVector, user.eyePos, teleportAction)) {
+                    wallTeleport.tryTeleport(user.rotationVector, user.eyePos.add(0.0, -1.0, 0.0), teleportAction)
+                }
+            }
+        }
+    }
+
+    private fun spawnTeleportParticles(world: ServerWorld, user: LivingEntity) {
+        val pos = user.eyePos.add(user.rotationVector.multiply(0.15)).add(RandomUtils.randVec())
+        val vel = user.eyePos.add(user.rotationVector.multiply(4.0)).subtract(pos)
+        world.spawnParticle(Particles.EARTHDIVE_INDICATOR, pos, vel, speed = 0.07)
+    }
+
+    private fun isCharged(stack: ItemStack, remainingUseTicks: Int): Boolean = getMaxUseTime(stack) - remainingUseTicks >= 10
 
     override fun getAttributeModifiers(slot: EquipmentSlot): Multimap<EntityAttribute?, EntityAttributeModifier?>? {
         return if (slot == EquipmentSlot.MAINHAND) attributeModifiers else super.getAttributeModifiers(slot)

@@ -11,13 +11,13 @@ class WallTeleport(private val world: ServerWorld, private val entity: Entity) {
     private val startRange = 3.0
     private val endRange = 16.0
 
-    fun tryTeleport(direction: Vec3d, position: Vec3d): Boolean {
+    fun tryTeleport(direction: Vec3d, position: Vec3d, action: (BlockPos) -> Unit = ::teleportTo): Boolean {
         val context = Context(direction, position)
         val teleportStart = getTeleportStart(context)
         if (teleportStart != null) {
             val teleportEnd = getTeleportEnd(context, teleportStart)
             if (teleportEnd != null) {
-                teleportTo(teleportEnd)
+                action(teleportEnd)
                 return true
             }
         }

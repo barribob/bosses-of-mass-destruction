@@ -15,7 +15,8 @@ class SimpleParticle(
     private val particleContext: ParticleContext,
     particleAge: Int,
     private val particleGeometry: IParticleGeometry,
-    private val cycleSprites: Boolean = true
+    private val cycleSprites: Boolean = true,
+    doCollision: Boolean = true
 ) :
     SpriteBillboardParticle(
         particleContext.world,
@@ -174,5 +175,6 @@ class SimpleParticle(
         velocityX = particleContext.vel.x
         velocityY = particleContext.vel.y
         velocityZ = particleContext.vel.z
+        collidesWithWorld = doCollision
     }
 }
