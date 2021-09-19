@@ -73,6 +73,8 @@ class ObsidilithEntity(
                 world.playSound(pos, Mod.sounds.waveIndicator, SoundCategory.HOSTILE, 1.5f, 0.7f)
             }, 1))
         }
+
+        dataTracker.startTracking(ObsidilithUtils.isShielded, false)
     }
 
     private fun buildAttackGoal(): ActionGoal {
@@ -130,11 +132,6 @@ class ObsidilithEntity(
             preTickEvents.addEvent(TimedEvent({ currentAttack = 0 }, 40))
         }
         super.handleStatus(status)
-    }
-
-    override fun initDataTracker() {
-        super.initDataTracker()
-        dataTracker.startTracking(ObsidilithUtils.isShielded, false)
     }
 
     override fun getHurtSound(source: DamageSource?) = Mod.sounds.obsidilithHurt

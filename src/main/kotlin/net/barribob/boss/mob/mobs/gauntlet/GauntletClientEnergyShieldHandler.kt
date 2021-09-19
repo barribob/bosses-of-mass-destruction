@@ -1,5 +1,6 @@
 package net.barribob.boss.mob.mobs.gauntlet
 
+import net.barribob.boss.mob.mobs.gauntlet.GauntletEntity.Companion.isEnergized
 import net.barribob.boss.mob.utils.ITrackedDataHandler
 import net.barribob.boss.particle.ClientParticleBuilder
 import net.barribob.boss.particle.Particles
@@ -27,13 +28,13 @@ class GauntletClientEnergyShieldHandler(
     fun getRenderAlpha() = energizedRenderAlpha
 
     override fun onTrackedDataSet(data: TrackedData<*>) {
-        if (SwirlPunchAction.isEnergized == data && entity.dataTracker.get(SwirlPunchAction.isEnergized) && entity.world.isClient) {
+        if (isEnergized == data && entity.dataTracker.get(isEnergized) && entity.world.isClient) {
             eventScheduler.addEvent(TimedEvent({ energizedRenderAlpha += 0.1f }, 0, 10))
             eventScheduler.addEvent(
                 Event(
                     { true },
                     ::spawnParticles,
-                    { !entity.isAlive || !entity.dataTracker.get(SwirlPunchAction.isEnergized) })
+                    { !entity.isAlive || !entity.dataTracker.get(isEnergized) })
             )
         } else {
             energizedRenderAlpha = 0.0f
@@ -50,6 +51,6 @@ class GauntletClientEnergyShieldHandler(
     }
 
     fun initDataTracker() {
-        entity.dataTracker.startTracking(SwirlPunchAction.isEnergized, false)
+        entity.dataTracker.startTracking(isEnergized, false)
     }
 }

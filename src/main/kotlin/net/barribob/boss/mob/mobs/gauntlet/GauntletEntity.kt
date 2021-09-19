@@ -17,6 +17,9 @@ import net.minecraft.entity.EntityType
 import net.minecraft.entity.boss.BossBar
 import net.minecraft.entity.boss.ServerBossBar
 import net.minecraft.entity.damage.DamageSource
+import net.minecraft.entity.data.DataTracker
+import net.minecraft.entity.data.TrackedData
+import net.minecraft.entity.data.TrackedDataHandlerRegistry
 import net.minecraft.entity.effect.StatusEffects
 import net.minecraft.entity.mob.PathAwareEntity
 import net.minecraft.server.world.ServerWorld
@@ -103,4 +106,11 @@ class GauntletEntity(entityType: EntityType<out PathAwareEntity>, world: World, 
     override fun getDeathSound() = Mod.sounds.gauntletDeath
     override fun getSoundVolume() = 2.0f
     override fun checkDespawn() = ModUtils.preventDespawnExceptPeaceful(this, world)
+
+    companion object {
+        val laserTarget: TrackedData<Int> =
+            DataTracker.registerData(GauntletEntity::class.java, TrackedDataHandlerRegistry.INTEGER)
+        val isEnergized: TrackedData<Boolean> =
+            DataTracker.registerData(GauntletEntity::class.java, TrackedDataHandlerRegistry.BOOLEAN)
+    }
 }

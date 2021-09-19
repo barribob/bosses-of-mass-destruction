@@ -3,7 +3,6 @@
   "package": "net.barribob.boss.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "BossBarHudMixin",
     "EnderEyeUseMixin",
     "ExplosionMixin",
     "IceBlockMixin",
@@ -11,6 +10,9 @@
     "SpawnEntryMixin",
     "SpawnHelperMixin",
     "StructuresConfigAccessor"
+  ],
+  "client": [
+    "BossBarHudMixin"
   ],
   "injectors": {
     "defaultRequire": 1
