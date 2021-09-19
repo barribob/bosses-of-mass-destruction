@@ -2,9 +2,12 @@
   "entity.bosses_of_mass_destruction.comet": "Comet",
   "entity.bosses_of_mass_destruction.lich": "Night Lich",
   "entity.bosses_of_mass_destruction.blue_fireball": "Blue Fireball",
+  "entity.bosses_of_mass_destruction.soul_star": "Soul Star",
   "entity.bosses_of_mass_destruction.obsidilith" : "Obsidilith",
   "entity.bosses_of_mass_destruction.gauntlet" : "Nether Gauntlet",
   "entity.bosses_of_mass_destruction.void_blossom" : "Void Blossom",
+  "entity.bosses_of_mass_destruction.spore_ball" : "Spore",
+  "entity.bosses_of_mass_destruction.petal_blade" : "Petal Blade",
 
   "block.bosses_of_mass_destruction.obsidilith_end_frame" : "Obsidian Altar",
   "block.bosses_of_mass_destruction.obsidilith_rune" : "Obsidian Rune",
@@ -14,6 +17,8 @@
   "block.bosses_of_mass_destruction.void_blossom_block" : "Void Blossom Boss Spawner",
   "block.bosses_of_mass_destruction.void_lily" : "Void Lily",
   "block.bosses_of_mass_destruction.void_lily.tooltip" : "Where does the pollen lead?",
+  "block.bosses_of_mass_destruction.void_blossom" : "Void Blossom",
+  "block.bosses_of_mass_destruction.vine_wall" : "Bramble Wall",
 
   "itemGroup.bosses_of_mass_destruction.items" : "Bosses of Mass Destruction",
 
@@ -34,7 +39,7 @@
   "block.bosses_of_mass_destruction.levitation_block" : "Table of Elevation",
   "item.bosses_of_mass_destruction.levitation_block.tooltip" : "When placed, grants creative flight in a 7x7 column",
 
-  "item.bosses_of_mass_destruction.earthdive_spear.tooltip" : "Throw to teleport through up to 16 solid blocks",
+  "item.bosses_of_mass_destruction.earthdive_spear.tooltip" : "Grants short range teleport through solid blocks",
   "item.bosses_of_mass_destruction.earthdive_spear" : "Earthdive Spear",
 
   "advancements.nether.gauntlet_defeat.title": "Through the Gauntlet",

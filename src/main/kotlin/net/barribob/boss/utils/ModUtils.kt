@@ -56,17 +56,14 @@ object ModUtils {
 
     fun Random.randomPitch() = (this.nextFloat() - this.nextFloat()) * 0.2f + 1.0f
 
-    /**
-     * From Maelstrom Mod ModUtils.java
-     */
     fun World.findGroundBelow(pos: BlockPos, isOpenBlock: (BlockPos) -> Boolean = { true }): BlockPos {
-        for (i in pos.y downTo 1) {
+        for (i in pos.y downTo this.bottomY + 1) {
             val tempPos = BlockPos(pos.x, i, pos.z)
             if (this.getBlockState(tempPos).isSideSolid(this, tempPos, Direction.UP, SideShapeType.FULL) && isOpenBlock(tempPos.up())) {
                 return tempPos
             }
         }
-        return BlockPos(pos.x, 0, pos.z)
+        return BlockPos(pos.x, this.bottomY, pos.z)
     }
 
     fun preventDespawnExceptPeaceful(entity: MobEntity, world: World) {

@@ -370,8 +370,8 @@ object Particles {
                     indicatorDelay + RandomUtils.range(-1, 2),
                     VanillaCopies::buildFlatGeometry
                 )
-                particle.setColorOverride { ModColors.DARK_PURPLE }
-                particle.setColorVariation(0.3)
+                particle.setColorOverride { ModColors.ENDER_PURPLE }
+                particle.setColorVariation(0.2)
                 particle.setBrightnessOverride { FULL_BRIGHT }
                 particle.setScaleOverride { (1 + it) * 0.25f }
                 particle
@@ -385,8 +385,8 @@ object Particles {
                     SpikeWaveAction.indicatorDelay + RandomUtils.range(-1, 2),
                     VanillaCopies::buildFlatGeometry
                 )
-                particle.setColorOverride { ModColors.DARK_PURPLE }
-                particle.setColorVariation(0.3)
+                particle.setColorOverride { ModColors.ENDER_PURPLE }
+                particle.setColorVariation(0.2)
                 particle.setBrightnessOverride { FULL_BRIGHT }
                 particle.setScaleOverride { (1 + it) * 0.25f }
                 particle
