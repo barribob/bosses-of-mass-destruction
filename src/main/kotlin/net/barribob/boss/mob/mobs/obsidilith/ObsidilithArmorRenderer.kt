@@ -51,7 +51,7 @@ class ObsidilithArmorRenderer(geoModel: AnimatedGeoModel<ObsidilithEntity>) : IR
                 ObsidilithUtils.anvilAttackStatus -> ModColors.ENDER_PURPLE
                 ObsidilithUtils.pillarDefenseStatus -> ModColors.WHITE
                 else -> ModColors.WHITE
-            }.add(VecUtils.unit).normalize().multiply(0.8)
+            }.add(VecUtils.unit).normalize().multiply(0.6)
 
             geoModelProvider.render(
                 model,
@@ -99,7 +99,7 @@ class ObsidilithArmorRenderer(geoModel: AnimatedGeoModel<ObsidilithEntity>) : IR
             alpha: Float
         ) {
             matrixStack.push()
-            matrixStack.scale(1.1f, 1.05f, 1.1f)
+            matrixStack.scale(1.08f, 1.05f, 1.08f)
             super.renderCube(cube, matrixStack, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha)
             matrixStack.pop()
         }
