@@ -18,15 +18,17 @@ class ClientDeathEffectHandler(private val entity: VoidBlossomEntity, private va
         .scale(0.3f)
 
     override fun handleClientStatus(status: Byte) {
-        val delay = 30
-        val fallDirection = entity.rotationVecClient.planeProject(VecUtils.yAxis).rotateY(180f)
-        val originPos = entity.pos.add(VecUtils.yAxis.multiply(2.0))
-        eventScheduler.addEvent(TimedEvent({
-            val pos = originPos
-                .add(RandomUtils.randVec().multiply(5.0))
-                .add(fallDirection.multiply(RandomUtils.double(6.0) + 6.0))
-            val vel = RandomUtils.randVec().add(VecUtils.yAxis).multiply(0.05)
-            deathParticle.build(pos, vel)
-        }, delay, LightBlockRemover.deathMaxAge.toInt() - delay))
+        if(status.toInt() == 3) {
+            val delay = 30
+            val fallDirection = entity.rotationVecClient.planeProject(VecUtils.yAxis).rotateY(180f)
+            val originPos = entity.pos.add(VecUtils.yAxis.multiply(2.0))
+            eventScheduler.addEvent(TimedEvent({
+                val pos = originPos
+                    .add(RandomUtils.randVec().multiply(5.0))
+                    .add(fallDirection.multiply(RandomUtils.double(6.0) + 6.0))
+                val vel = RandomUtils.randVec().add(VecUtils.yAxis).multiply(0.05)
+                deathParticle.build(pos, vel)
+            }, delay, LightBlockRemover.deathMaxAge.toInt() - delay))
+        }
     }
 }
