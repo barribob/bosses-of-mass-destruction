@@ -51,6 +51,9 @@
   "advancements.adventure.night_lich_defeat.title": "Night Vanquisher",
   "advancements.adventure.night_lich_defeat.description" : "Defeat the Night Lich Boss",
 
+  "advancements.adventure.void_blossom_defeat.title": "Extreme Weeding",
+  "advancements.adventure.void_blossom_defeat.description" : "Defeat the Void Blossom Boss",
+
   "subtitles.bosses_of_mass_destruction.gauntlet_idle" : "Gauntlet Breathes",
   "subtitles.bosses_of_mass_destruction.gauntlet_hurt" : "Gauntlet Hurts",
   "subtitles.bosses_of_mass_destruction.gauntlet_cast" : "Gauntlet Casts",
