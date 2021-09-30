@@ -7,15 +7,21 @@ import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.static_utilities.RandomUtils
 import net.barribob.maelstrom.static_utilities.VecUtils
 import net.barribob.maelstrom.static_utilities.planeProject
-import net.minecraft.entity.Entity
+import net.minecraft.entity.LivingEntity
 import net.minecraft.server.world.ServerWorld
 
 class VoidBlossomDropExpDeathTick(
-    private val entity: Entity,
+    private val entity: LivingEntity,
     private val eventScheduler: EventScheduler,
     private val exp: Int,
 ) : IEntityTick<ServerWorld> {
     override fun tick(world: ServerWorld) {
+        if(entity.deathTime == 1) {
+            scheduleExp()
+        }
+    }
+
+    private fun scheduleExp() {
         val expTicks = 20
         val expPerTick = (exp / expTicks.toFloat()).toInt()
         val fallDirection = entity.rotationVecClient.planeProject(VecUtils.yAxis).rotateY(180f)
@@ -31,6 +37,6 @@ class VoidBlossomDropExpDeathTick(
                 pos,
                 entity.world
             )
-        }, 60, expTicks))
+        }, (LightBlockRemover.deathMaxAge - expTicks - 1).toInt(), expTicks))
     }
 }
