@@ -15,12 +15,14 @@ class VoidBlossomHitboxes(entity: VoidBlossomEntity) {
     private val rootBoxYaw = "rootYaw"
     private val neck = "neck"
     private val flower = "flower"
+    private val flowerBottom = "flowerBottom"
     private val idleHitbox = VoidBlossomCompoundHitbox(
         entity,
         EntityBounds.builder()
             .add(rootBoxYaw).setBounds(1.0, 5.5, 1.5).setOffset(.0, 2.75, 0.0).build()
             .add(neck).setBounds(1.0, 1.0, 3.5).setOffset(.0, 3.75, 1.25).setParent(rootBoxYaw).build()
             .add(flower).setBounds(4.0, 4.0, 1.0).setOffset(.0, 3.75, 3.5).setParent(rootBoxYaw).build()
+            .add(flowerBottom).setBounds(1.0, 1.0, 0.5).setOffset(0.0, -2.5, -.5).setParent(flower).build()
             .overrideCollisionBox(collisionHitbox).factory.create(),
         rootBoxYaw,
         collisionHitbox,
@@ -88,7 +90,7 @@ class VoidBlossomHitboxes(entity: VoidBlossomEntity) {
     )
 
     init{
-        spikeHitbox.getBounds().getPart(flower).setRotation(10.0, 0.0, 0.0, true)
+        spikeHitbox.getBounds().getPart(flower).setRotation(20.0, 0.0, 0.0, true)
 
         idleHitbox.getBounds().getPart(neck).setRotation(-15.0, 0.0, 0.0, true)
         idleHitbox.getBounds().getPart(flower).setRotation(10.0, 0.0, 0.0, true)
