@@ -45,13 +45,13 @@ class VoidBlossomBlock(settings: Settings?) : Block(settings) {
         world.getEntitiesByType(Entities.VOID_BLOSSOM, Box(pos).expand(40.0, 20.0, 40.0)) { true }.forEach {
             ModComponents.getWorldEventScheduler(world).addEvent(TimedEvent({
                 LichUtils.cappedHeal(EntityAdapter(it), EntityStats(it), VoidBlossomEntity.hpMilestones, 10f, it::heal)
-            }, 32))
+            }, healAnimationDelay))
             it.sendHealPacket(pos.asVec3d().add(VecUtils.unit.multiply(0.5)), it.pos.add(VecUtils.yAxis.multiply(0.5)))
         }
     }
 
     override fun scheduledTick(state: BlockState, world: ServerWorld, pos: BlockPos, random: Random) {
-        world.blockTickScheduler.schedule(pos, this, 64)
+        world.blockTickScheduler.schedule(pos, this, healDelay)
         healNearbyEntities(world, pos)
     }
 
@@ -120,6 +120,8 @@ class VoidBlossomBlock(settings: Settings?) : Block(settings) {
     }
 
     companion object {
+        private const val healAnimationDelay = 16
+        private const val healDelay = 64
         private val healParticleFactory = ClientParticleBuilder(Particles.OBSIDILITH_BURST)
             .color { MathUtils.lerpVec(it, ModColors.PINK, ModColors.ULTRA_DARK_PURPLE) }
             .colorVariation(0.15)
@@ -136,8 +138,25 @@ class VoidBlossomBlock(settings: Settings?) : Block(settings) {
 
         @Environment(EnvType.CLIENT)
         fun handleVoidBlossomHeal(world: ClientWorld, source: Vec3d, dest: Vec3d) {
+            spawnHealParticle(dest, source, world)
+            spawnChargeParticle(source, world)
+        }
+
+        @Environment(EnvType.CLIENT)
+        private fun spawnChargeParticle(source: Vec3d, world: ClientWorld) {
+            ModComponents.getWorldEventScheduler(world).addEvent(TimedEvent({
+                healParticleFactory.build(source.add(RandomUtils.randVec().multiply(0.1)))
+            }, 32, 32))
+        }
+
+        @Environment(EnvType.CLIENT)
+        private fun spawnHealParticle(
+            dest: Vec3d,
+            source: Vec3d,
+            world: ClientWorld
+        ) {
             val particlePositions = mutableListOf<Vec3d>()
-            val numCirclePoints = 16
+            val numCirclePoints = healAnimationDelay
             val circlePoints = MathUtils.circlePoints(0.5, numCirclePoints, dest.subtract(source).normalize()).toList()
             MathUtils.lineCallback(source, dest, 32) { pos, i ->
                 particlePositions.add(pos.add(circlePoints[i % numCirclePoints]))
@@ -148,7 +167,7 @@ class VoidBlossomBlock(settings: Settings?) : Block(settings) {
                 healParticleFactory.build(particlePositions[i])
                 healParticleFactory.build(particlePositions[i + 1])
                 i += 2
-            }, 0, 16))
+            }, 0, healAnimationDelay))
         }
 
         fun handleVoidBlossomPlace(pos: Vec3d) {
