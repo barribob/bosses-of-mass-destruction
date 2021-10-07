@@ -36,7 +36,6 @@ import kotlin.math.sqrt
 /**
  * Sourced from [EyeOfEnderEntity]
  */
-@EnvironmentInterfaces(EnvironmentInterface(value = EnvType.CLIENT, itf = FlyingItemEntity::class))
 class SoulStarEntity(entityType: EntityType<out SoulStarEntity?>?, world: World?) :
     Entity(entityType, world), FlyingItemEntity {
     private var targetX = 0.0
