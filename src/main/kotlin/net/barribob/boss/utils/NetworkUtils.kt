@@ -3,8 +3,10 @@ package net.barribob.boss.utils
 import io.netty.buffer.Unpooled
 import net.barribob.boss.Mod
 import net.barribob.boss.block.VoidBlossomBlock
+import net.barribob.boss.block.VoidLilyBlockEntity
 import net.barribob.boss.mob.mobs.gauntlet.GauntletEntity
 import net.barribob.boss.mob.mobs.void_blossom.VoidBlossomEntity
+import net.barribob.maelstrom.static_utilities.asVec3d
 import net.barribob.maelstrom.static_utilities.readVec3d
 import net.barribob.maelstrom.static_utilities.writeVec3d
 import net.fabricmc.api.EnvType
@@ -21,6 +23,7 @@ import net.minecraft.network.Packet
 import net.minecraft.network.PacketByteBuf
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket
 import net.minecraft.server.network.ServerPlayerEntity
+import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 
@@ -34,6 +37,7 @@ class NetworkUtils {
         private val voidBlossomSpikePacketId = Mod.identifier("void_blossom_spikes")
         private val voidBlossomHealId = Mod.identifier("void_blossom_head")
         private val voidBlossomPlaceId = Mod.identifier("void_blossom_place")
+        private val voidLilyParticleId = Mod.identifier("void_lily_pollen")
 
         fun LivingEntity.sendVelocity(velocity: Vec3d) {
             this.velocity = velocity
@@ -91,6 +95,15 @@ class NetworkUtils {
                 ServerPlayNetworking.send(player, voidBlossomPlaceId, buf)
             }
         }
+
+        fun sendParticlePacket(world: ServerWorld, pos: BlockPos, dir: Vec3d) {
+            val buf: PacketByteBuf = PacketByteBufs.create()
+            buf.writeVec3d(pos.asVec3d())
+            buf.writeVec3d(dir)
+            for (player in PlayerLookup.tracking(world, pos)) {
+                ServerPlayNetworking.send(player, voidLilyParticleId, buf)
+            }
+        }
     }
 
     @Environment(EnvType.CLIENT)
@@ -115,6 +128,9 @@ class NetworkUtils {
         }
         ClientPlayNetworking.registerGlobalReceiver(voidBlossomPlaceId) { client, _, buf, _ ->
             handleVoidBlossomPlace(client, buf)
+        }
+        ClientPlayNetworking.registerGlobalReceiver(voidLilyParticleId) { client, _, buf, _ ->
+            handleVoidLilyParticles(client, buf)
         }
     }
 
@@ -207,6 +223,19 @@ class NetworkUtils {
 
         client.execute {
             VoidBlossomBlock.handleVoidBlossomPlace(pos)
+        }
+    }
+
+    @Environment(EnvType.CLIENT)
+    private fun handleVoidLilyParticles(client: MinecraftClient, buf: PacketByteBuf) {
+        val pos = buf.readVec3d()
+        val dir = buf.readVec3d()
+
+        client.execute {
+            val world = client.world
+            if(world != null) {
+                VoidLilyBlockEntity.spawnVoidLilyParticles(world, pos, dir)
+            }
         }
     }
 }
