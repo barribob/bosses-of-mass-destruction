@@ -451,7 +451,7 @@ object Particles {
                 particle.setColorOverride { ModColors.RUNIC_BROWN }
                 particle.setColorVariation(0.25)
                 particle.setBrightnessOverride { FULL_BRIGHT }
-                particle.setScaleOverride { (1 - (it * 0.25f)) * 0.25f }
+                particle.setScaleOverride { (1 - (it * 0.25f)) * 0.35f }
                 particle
             }
         }

@@ -9,7 +9,7 @@ import net.minecraft.util.math.Vec3d
 
 class WallTeleport(private val world: ServerWorld, private val entity: Entity) {
     private val startRange = 3.0
-    private val endRange = 16.0
+    private val endRange = 20.0
 
     fun tryTeleport(direction: Vec3d, position: Vec3d, action: (BlockPos) -> Unit = ::teleportTo): Boolean {
         val context = Context(direction, position)
