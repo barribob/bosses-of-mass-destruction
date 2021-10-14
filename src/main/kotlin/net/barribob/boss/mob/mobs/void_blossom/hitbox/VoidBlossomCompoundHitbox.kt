@@ -42,7 +42,7 @@ class VoidBlossomCompoundHitbox(
         nextDamagedPart = null
 
         if (result) {
-            if (spikedBoxes.contains(part)) {
+            if (spikedBoxes.contains(part) && !damageSource.isProjectile) {
                 val damage = entity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE).toFloat()
                 damageSource.attacker?.damage(DamageSource.thorns(entity), damage)
             }
