@@ -19,7 +19,7 @@ class VoidBlossomConfig {
         val generationSpacing: Int = 32,
 
         @ConfigEntry.BoundedDiscrete(min = 1, max = 256)
-        val generationSeparation: Int = 24,
+        val generationSeparation: Int = 16,
         val generationEnabled: Boolean = true
     )
 }
