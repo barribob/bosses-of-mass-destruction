@@ -144,8 +144,9 @@ class VoidBlossomBlock(settings: Settings?) : Block(settings) {
 
         @Environment(EnvType.CLIENT)
         private fun spawnChargeParticle(source: Vec3d, world: ClientWorld) {
+            val particlePos = source.add(VecUtils.yAxis.multiply(0.25))
             ModComponents.getWorldEventScheduler(world).addEvent(TimedEvent({
-                healParticleFactory.build(source.add(RandomUtils.randVec().multiply(0.1)))
+                healParticleFactory.build(particlePos.add(RandomUtils.randVec().multiply(0.2)))
             }, 32, 32))
         }
 
