@@ -8,7 +8,7 @@ class LichConfig {
     @ConfigEntry.BoundedDiscrete(min = 0, max = 10000)
     val experienceDrop = 1500
     val idleHealingPerTick = 0.2f
-    val health = 200.0
+    val health = 300.0
     val generateLichTower = true
 
     @ConfigEntry.Gui.CollapsibleObject

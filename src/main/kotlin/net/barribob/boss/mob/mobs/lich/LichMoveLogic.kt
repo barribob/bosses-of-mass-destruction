@@ -2,56 +2,82 @@ package net.barribob.boss.mob.mobs.lich
 
 import net.barribob.boss.mob.ai.action.IActionWithCooldown
 import net.barribob.boss.mob.damage.IDamageHandler
-import net.barribob.boss.mob.utils.IEntity
+import net.barribob.boss.mob.damage.StagedDamageHandler
 import net.barribob.boss.mob.utils.IEntityStats
+import net.barribob.boss.mob.utils.IEntityTick
 import net.barribob.maelstrom.general.data.HistoricalData
-import net.barribob.maelstrom.general.data.IHistoricalData
 import net.barribob.maelstrom.general.random.WeightedRandom
 import net.minecraft.entity.damage.DamageSource
+import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.Vec3d
 
 class LichMoveLogic(
-    private val cometThrowAction: IActionWithCooldown,
-    private val missileAction: IActionWithCooldown,
-    private val minionAction: IActionWithCooldown,
-    private val teleportAction: IActionWithCooldown,
-    private val positionalHistory: () -> IHistoricalData<Vec3d>,
-    private val moveHistory: () -> IHistoricalData<IActionWithCooldown>,
-    private val inLineOfSight: (Vec3d, IEntity) -> Boolean,
-    private val actor: IEntity,
-    private val target: IEntity
-): IDamageHandler {
+    private val actions: Map<Byte, IActionWithCooldown>,
+    private val actor: LichEntity,
+): IDamageHandler, IActionWithCooldown, IEntityTick<ServerWorld> {
     private val damageHistory = HistoricalData(0, 3)
-    fun chooseRegularMove(): IActionWithCooldown {
-        val random = WeightedRandom<IActionWithCooldown>()
-        val (teleportWeight, minionWeight) = getWeights()
-
-        random.addAll(
-            listOf(
-                Pair(1.0, cometThrowAction),
-                Pair(1.0, missileAction),
-                Pair(minionWeight, minionAction),
-                Pair(teleportWeight, teleportAction)
-            )
-        )
-        return random.next()
-    }
-
-    private fun getWeights(): Pair<Double, Double> {
-        val distanceTraveled = positionalHistory().getAll().zipWithNext()
-            .fold(0.0) { acc, pair -> acc + pair.first.distanceTo(pair.second) }
-        val damage = damageHistory.getAll()
-        val hasBeenRapidlyDamaged = damage.size > 2 && damage.last() - damage.first() < 60
-        val teleportWeight = 0.0 +
-                (if (inLineOfSight(actor.getEyePos(), target)) 0.0 else 4.0) +
-                (if (distanceTraveled > 0.25) 0.0 else 8.0) +
-                (if (actor.getPos().distanceTo(target.getPos()) < 6.0) 8.0 else 0.0) +
-                (if (hasBeenRapidlyDamaged) 8.0 else 0.0)
-        val minionWeight = if (moveHistory().getAll().contains(minionAction)) 0.0 else 2.0
-        return Pair(teleportWeight, minionWeight)
+    private val moveHistory = HistoricalData<Byte>(0, 4)
+    private val positionalHistory = HistoricalData(Vec3d.ZERO, 10)
+    private val priorityMoves = mutableListOf<Byte>()
+    private val stagedDamageHandler = StagedDamageHandler(LichUtils.hpPercentRageModes) {
+        priorityMoves.addAll(listOf(
+            LichActions.cometRageAttack, LichActions.volleyRageAttack, LichActions.minionRageAttack
+        ))
     }
 
     override fun afterDamage(stats: IEntityStats, damageSource: DamageSource, amount: Float, result: Boolean) {
-        damageHistory.set(actor.getAge())
+        damageHistory.set(actor.age)
+        stagedDamageHandler.afterDamage(stats, damageSource, amount, result)
+    }
+
+    override fun beforeDamage(stats: IEntityStats, damageSource: DamageSource, amount: Float) {
+        stagedDamageHandler.beforeDamage(stats, damageSource, amount)
+    }
+
+    override fun perform(): Int {
+        val moveByte = if (priorityMoves.any()) {
+            priorityMoves.removeFirst()
+        } else {
+            chooseRegularMove()
+        }
+        val action = actions[moveByte] ?: error("$moveByte action not registered as an attack")
+        actor.world.sendEntityStatus(actor, moveByte)
+        return action.perform()
+    }
+
+    private fun chooseRegularMove(): Byte {
+        val random = WeightedRandom<Byte>()
+        val teleportWeight = getTeleportWeight()
+        val minionWeight = if (moveHistory.getAll().contains(LichActions.minionAttack)) 0.0 else 2.0
+
+        random.addAll(
+            listOf(
+                Pair(1.0, LichActions.cometAttack),
+                Pair(1.0, LichActions.volleyAttack),
+                Pair(minionWeight, LichActions.minionAttack),
+                Pair(teleportWeight, LichActions.teleportAction)
+            )
+        )
+
+        val nextMove = random.next()
+        moveHistory.set(nextMove)
+
+        return nextMove
+    }
+
+    private fun getTeleportWeight(): Double {
+        val distanceTraveled = positionalHistory.getAll().zipWithNext()
+            .fold(0.0) { acc, pair -> acc + pair.first.distanceTo(pair.second) }
+        val damage = damageHistory.getAll()
+        val hasBeenRapidlyDamaged = damage.size > 2 && damage.last() - damage.first() < 60
+        val target = actor.target ?: return 0.0
+        return  (if (actor.inLineOfSight(target)) 0.0 else 4.0) +
+                (if (distanceTraveled > 0.25) 0.0 else 8.0) +
+                (if (actor.pos.distanceTo(target.pos) < 6.0) 8.0 else 0.0) +
+                (if (hasBeenRapidlyDamaged) 8.0 else 0.0)
+    }
+
+    override fun tick(world: ServerWorld) {
+        positionalHistory.set(actor.pos)
     }
 }

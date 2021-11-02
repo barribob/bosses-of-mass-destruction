@@ -43,7 +43,7 @@
 				}
 			}
 		},
-		"arms_idle": {
+		"idle": {
 			"loop": true,
 			"animation_length": 2.08,
 			"bones": {
