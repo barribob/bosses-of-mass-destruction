@@ -95,7 +95,7 @@ class GauntletEntity(entityType: EntityType<out PathAwareEntity>, world: World, 
 
     override fun isClimbing(): Boolean = false
     override fun handleFallDamage(fallDistance: Float, damageMultiplier: Float, damageSource: DamageSource?) = false
-    override fun getLookPitchSpeed(): Int = 90
+    override fun getMaxLookPitchChange(): Int = 90
     override fun getCompoundBoundingBox(box: Box): CompoundOrientedBox = hitboxHelper.getHitbox().getBox(box)
     override fun getBounds(): EntityBounds = hitboxHelper.getHitbox()
     override fun getActiveEyeHeight(pose: EntityPose, dimensions: EntityDimensions) = dimensions.height * 0.4f

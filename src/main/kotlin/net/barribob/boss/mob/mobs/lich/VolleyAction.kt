@@ -7,6 +7,7 @@ import net.barribob.boss.mob.utils.ProjectileData
 import net.barribob.boss.mob.utils.ProjectileThrower
 import net.barribob.boss.projectile.MagicMissileProjectile
 import net.barribob.boss.utils.ModUtils.playSound
+import net.barribob.boss.utils.ModUtils.serverWorld
 import net.barribob.maelstrom.general.event.EventScheduler
 import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.static_utilities.*

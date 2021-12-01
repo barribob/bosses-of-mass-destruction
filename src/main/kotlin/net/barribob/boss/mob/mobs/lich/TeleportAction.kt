@@ -7,6 +7,7 @@ import net.barribob.boss.mob.spawn.MobEntitySpawnPredicate
 import net.barribob.boss.mob.spawn.MobPlacementLogic
 import net.barribob.boss.mob.spawn.RangedSpawnPosition
 import net.barribob.boss.utils.ModUtils.playSound
+import net.barribob.boss.utils.ModUtils.serverWorld
 import net.barribob.maelstrom.general.event.EventScheduler
 import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.general.random.ModRandom

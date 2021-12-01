@@ -5,6 +5,7 @@ import net.barribob.boss.mob.ai.action.IActionWithCooldown
 import net.barribob.boss.mob.spawn.*
 import net.barribob.boss.particle.Particles
 import net.barribob.boss.utils.ModUtils.playSound
+import net.barribob.boss.utils.ModUtils.serverWorld
 import net.barribob.boss.utils.ModUtils.spawnParticle
 import net.barribob.maelstrom.general.event.EventScheduler
 import net.barribob.maelstrom.general.event.TimedEvent

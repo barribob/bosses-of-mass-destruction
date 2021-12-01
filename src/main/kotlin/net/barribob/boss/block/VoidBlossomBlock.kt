@@ -51,7 +51,7 @@ class VoidBlossomBlock(settings: Settings?) : Block(settings) {
     }
 
     override fun scheduledTick(state: BlockState, world: ServerWorld, pos: BlockPos, random: Random) {
-        world.blockTickScheduler.schedule(pos, this, healDelay)
+        world.createAndScheduleBlockTick(pos, this, healDelay)
         healNearbyEntities(world, pos)
     }
 
@@ -62,7 +62,7 @@ class VoidBlossomBlock(settings: Settings?) : Block(settings) {
         oldState: BlockState,
         notify: Boolean
     ) {
-        world.blockTickScheduler.schedule(pos, this, 1)
+        world.createAndScheduleBlockTick(pos, this, 1)
     }
 
     override fun canPlaceAt(state: BlockState?, world: WorldView, pos: BlockPos): Boolean {
@@ -92,7 +92,7 @@ class VoidBlossomBlock(settings: Settings?) : Block(settings) {
                     if((x != 0 || z != 0)) {
                         val pos1 = pos.add(x, y, z)
                         if(world.getBlockState(pos1).block == ModBlocks.vineWall) {
-                            world.blockTickScheduler.schedule(pos1, ModBlocks.vineWall, (2 - y) * 20 + RandomUtils.range(0, 19))
+                            world.createAndScheduleBlockTick(pos1, ModBlocks.vineWall, (2 - y) * 20 + RandomUtils.range(0, 19))
                         }
                     }
                 }

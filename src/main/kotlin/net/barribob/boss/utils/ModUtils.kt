@@ -2,18 +2,17 @@ package net.barribob.boss.utils
 
 import net.minecraft.block.SideShapeType
 import net.minecraft.client.network.ClientPlayNetworkHandler
+import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.entity.Entity
 import net.minecraft.entity.mob.MobEntity
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket
 import net.minecraft.particle.ParticleEffect
+import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvent
-import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Box
-import net.minecraft.util.math.Direction
-import net.minecraft.util.math.Vec3d
+import net.minecraft.util.math.*
 import net.minecraft.world.Difficulty
 import net.minecraft.world.World
 import java.util.*
@@ -79,4 +78,13 @@ object ModUtils {
      */
     fun World.findEntitiesInLine(start: Vec3d, end: Vec3d, toExclude: Entity?): List<Entity> =
         this.getOtherEntities(toExclude, Box(start, end)) { it.boundingBox.raycast(start, end).isPresent }
+
+    val ServerPlayerEntity.serverWorld: ServerWorld
+        get() = this.getWorld()
+
+    val MatrixStack.Entry.normal: Matrix3f
+        get() = this.normalMatrix
+
+    val MatrixStack.Entry.model: Matrix4f
+        get() = this.positionMatrix
 }

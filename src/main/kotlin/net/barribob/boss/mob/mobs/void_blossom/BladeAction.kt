@@ -9,6 +9,7 @@ import net.barribob.boss.mob.utils.ProjectileThrower
 import net.barribob.boss.projectile.PetalBladeProjectile
 import net.barribob.boss.utils.ModUtils.playSound
 import net.barribob.boss.utils.ModUtils.randomPitch
+import net.barribob.boss.utils.ModUtils.serverWorld
 import net.barribob.maelstrom.general.event.EventScheduler
 import net.barribob.maelstrom.general.event.EventSeries
 import net.barribob.maelstrom.general.event.TimedEvent

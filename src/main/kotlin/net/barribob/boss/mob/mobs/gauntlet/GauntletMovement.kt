@@ -50,7 +50,7 @@ class GauntletMovement(val entity: GauntletEntity) {
         val target = entity.target
         if (target != null) {
             entity.lookControl.lookAt(target.eyePos())
-            entity.lookAtEntity(target, entity.bodyYawSpeed.toFloat(), entity.lookPitchSpeed.toFloat())
+            entity.lookAtEntity(target, entity.maxLookYawChange.toFloat(), entity.maxLookPitchChange.toFloat())
         }
     }
 

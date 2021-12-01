@@ -1,11 +1,7 @@
 package net.barribob.boss.structure
 
 import net.minecraft.nbt.NbtCompound
-import net.minecraft.server.world.ServerWorld
-import net.minecraft.structure.SimpleStructurePiece
-import net.minecraft.structure.StructureManager
-import net.minecraft.structure.StructurePieceType
-import net.minecraft.structure.StructurePlacementData
+import net.minecraft.structure.*
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor
 import net.minecraft.util.BlockMirror
 import net.minecraft.util.BlockRotation
@@ -21,10 +17,10 @@ import java.util.*
 class ModStructurePiece : SimpleStructurePiece {
     private val rot: BlockRotation
 
-    constructor(serverWorld: ServerWorld, NbtCompound: NbtCompound, type: StructurePieceType) : super(
+    constructor(manager: StructureManager, NbtCompound: NbtCompound, type: StructurePieceType) : super(
         type,
         NbtCompound,
-        serverWorld,
+        manager,
         {
             StructurePlacementData()
             .setRotation(BlockRotation.valueOf(NbtCompound.getString("Rot")))
@@ -50,8 +46,8 @@ class ModStructurePiece : SimpleStructurePiece {
         this.rot = rotation
     }
 
-    override fun writeNbt(world: ServerWorld?, nbt: NbtCompound) {
-        super.writeNbt(world, nbt)
+    override fun writeNbt(context: StructureContext?, nbt: NbtCompound) {
+        super.writeNbt(context, nbt)
         nbt.putString("Rot", this.rot.name)
     }
 

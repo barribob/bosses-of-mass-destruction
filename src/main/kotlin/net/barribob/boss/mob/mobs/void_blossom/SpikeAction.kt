@@ -8,6 +8,7 @@ import net.barribob.boss.mob.mobs.void_blossom.hitbox.HitboxId
 import net.barribob.boss.mob.mobs.void_blossom.hitbox.NetworkedHitboxManager
 import net.barribob.boss.particle.Particles
 import net.barribob.boss.utils.ModUtils.playSound
+import net.barribob.boss.utils.ModUtils.serverWorld
 import net.barribob.boss.utils.NetworkUtils.Companion.sendSpikePacket
 import net.barribob.maelstrom.general.event.EventScheduler
 import net.barribob.maelstrom.general.event.EventSeries

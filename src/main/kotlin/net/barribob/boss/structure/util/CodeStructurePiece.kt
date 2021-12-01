@@ -2,7 +2,7 @@ package net.barribob.boss.structure.util
 
 import net.minecraft.block.BlockState
 import net.minecraft.nbt.NbtCompound
-import net.minecraft.server.world.ServerWorld
+import net.minecraft.structure.StructureContext
 import net.minecraft.structure.StructurePiece
 import net.minecraft.structure.StructurePieceType
 import net.minecraft.util.BlockMirror
@@ -29,7 +29,7 @@ class CodeStructurePiece : StructurePiece, IStructurePiece {
         setOrientation(Direction.NORTH)
     }
 
-    override fun writeNbt(world: ServerWorld?, nbt: NbtCompound?) {
+    override fun writeNbt(context: StructureContext?, nbt: NbtCompound?) {
     }
 
     override fun generate(
@@ -40,8 +40,8 @@ class CodeStructurePiece : StructurePiece, IStructurePiece {
         boundingBox: BlockBox,
         chunkPos: ChunkPos,
         pos: BlockPos
-    ): Boolean {
-        return pieceGenerator.generate(
+    ) {
+        pieceGenerator.generate(
             world,
             structureAccessor,
             chunkGenerator,

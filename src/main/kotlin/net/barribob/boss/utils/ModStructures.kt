@@ -87,6 +87,7 @@ object ModStructures {
         val obsidilithGenConfig = modConfig.obsidilithConfig.arenaGeneration
         val gauntletGenConfig = modConfig.gauntletConfig.arenaGeneration
         val voidBlossomGenConfig = modConfig.voidBlossomConfig.arenaGeneration
+        val lichConfig = modConfig.lichConfig.towerGeneration
 
         FabricStructureBuilder.create(Mod.identifier("obsidilith_arena"), obsidilithArenaStructure)
             .step(GenerationStep.Feature.SURFACE_STRUCTURES)
@@ -100,7 +101,7 @@ object ModStructures {
 
         FabricStructureBuilder.create(Mod.identifier("lich_tower"), lichTowerStructure)
             .step(GenerationStep.Feature.SURFACE_STRUCTURES)
-            .defaultConfig(24, 12, 1230784)
+            .defaultConfig(lichConfig.lichTowerGenerationSpacing, lichConfig.lichTowerGenerationSeparation, 1230784)
             .register()
 
         FabricStructureBuilder.create(Mod.identifier("void_blossom"), voidBlossomArenaStructure)
@@ -121,7 +122,7 @@ object ModStructures {
             )
         }
 
-        if (modConfig.lichConfig.generateLichTower) {
+        if (lichConfig.generateLichTower) {
             BiomeModifications.addStructure(
                 { it.biome.temperature <= 0.05 && BiomeSelectors.foundInOverworld().test(it) },
                 register(Mod.identifier("configured_lich_tower"), configuredLichTowerStructure)
@@ -168,17 +169,17 @@ object ModStructures {
     ) {
         if (spawnGroup == SpawnGroup.MONSTER) {
             val spawnRegistryEntry = structureSpawnRegistry.entries.firstOrNull {
-                structureAccessor.getStructureAt(blockPos, false, it.key).hasChildren()
+                structureAccessor.getStructureAt(blockPos, it.key).hasChildren()
             } ?: return
             cir.returnValue = Pool.of(spawnRegistryEntry.value.getMonsterSpawnList())
         }
     }
 
     private object StructureFactories {
-        val obsidilithArena = StructurePieceType { m, t -> ModStructurePiece(m, t, obsidilithArenaPiece) }
-        val gauntletArena = StructurePieceType { m, t -> ModStructurePiece(m, t, gauntletArenaPiece) }
-        val lichTower = StructurePieceType { m, t -> ModStructurePiece(m, t, lichTowerPiece) }
-        val voidBlossomStructure = StructurePieceType { m, t -> ModStructurePiece(m, t, voidBlossomStructurePiece) }
+        val obsidilithArena = StructurePieceType { m, t -> ModStructurePiece(m.structureManager, t, obsidilithArenaPiece) }
+        val gauntletArena = StructurePieceType { m, t -> ModStructurePiece(m.structureManager, t, gauntletArenaPiece) }
+        val lichTower = StructurePieceType { m, t -> ModStructurePiece(m.structureManager, t, lichTowerPiece) }
+        val voidBlossomStructure = StructurePieceType { m, t -> ModStructurePiece(m.structureManager, t, voidBlossomStructurePiece) }
         val voidBlossom: StructurePieceType = StructurePieceType { _, t -> CodeStructurePiece(voidBlossomPiece, t, VoidBlossomCavernPieceGenerator()) }
     }
 }

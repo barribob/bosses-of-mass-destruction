@@ -52,7 +52,7 @@ class LichMovement(val entity: LichEntity) {
 
         if (entity.target != null) {
             entity.lookControl.lookAt(entity.target!!.pos)
-            entity.lookAtTarget(entity.target!!.pos, entity.bodyYawSpeed.toFloat(), entity.lookPitchSpeed.toFloat())
+            entity.lookAtTarget(entity.target!!.pos, entity.maxLookYawChange.toFloat(), entity.maxLookPitchChange.toFloat())
         }
     }
 
@@ -90,6 +90,6 @@ class LichMovement(val entity: LichEntity) {
 
         val lookTarget = entity.pos.add(newVec3d(y = entity.standingEyeHeight.toDouble())).add(velocity)
         entity.lookControl.lookAt(lookTarget)
-        entity.lookAtTarget(lookTarget, entity.bodyYawSpeed.toFloat(), entity.lookPitchSpeed.toFloat())
+        entity.lookAtTarget(lookTarget, entity.maxLookYawChange.toFloat(), entity.maxLookPitchChange.toFloat())
     }
 }

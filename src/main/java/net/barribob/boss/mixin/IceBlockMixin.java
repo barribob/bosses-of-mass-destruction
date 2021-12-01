@@ -20,11 +20,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(IceBlock.class)
 public abstract class IceBlockMixin {
-    @Inject(method = "afterBreak", at = @At("TAIL"), cancellable = true)
+    @Inject(method = "afterBreak", at = @At("TAIL"))
     private void onAfterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack stack, CallbackInfo ci) {
         if (EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, stack) == 0
                 && world instanceof ServerWorld
-                && ((ServerWorld) world).getStructureAccessor().getStructureAt(pos, true, ModStructures.INSTANCE.getLichTowerStructure()).hasChildren()) {
+                && ((ServerWorld) world).getStructureAccessor().getStructureAt(pos, ModStructures.INSTANCE.getLichTowerStructure()).hasChildren()) {
             world.setBlockState(pos, Blocks.AIR.getDefaultState());
         }
     }

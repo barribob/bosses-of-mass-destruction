@@ -1,6 +1,8 @@
 package net.barribob.boss.mob.utils
 
 import net.barribob.boss.render.*
+import net.barribob.boss.utils.ModUtils.model
+import net.barribob.boss.utils.ModUtils.normal
 import net.minecraft.client.render.RenderLayer
 import net.minecraft.client.render.VertexConsumer
 import net.minecraft.client.render.VertexConsumerProvider

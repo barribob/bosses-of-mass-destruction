@@ -84,7 +84,7 @@ class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: Worl
         val target = target
         if (target != null) {
             lookControl.lookAt(target.eyePos())
-            lookAtEntity(target, bodyYawSpeed.toFloat(), lookPitchSpeed.toFloat())
+            lookAtEntity(target, maxLookYawChange.toFloat(), maxLookPitchChange.toFloat())
         }
     }
 

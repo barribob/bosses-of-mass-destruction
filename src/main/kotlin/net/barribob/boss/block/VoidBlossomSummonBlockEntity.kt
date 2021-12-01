@@ -16,7 +16,7 @@ class VoidBlossomSummonBlockEntity(type: BlockEntityType<*>?, pos: BlockPos?, st
 
     companion object {
         fun tick(world: World, pos: BlockPos, state: BlockState, entity: VoidBlossomSummonBlockEntity) {
-            if(entity.age % 20 == 0) {
+            if(!world.isClient && entity.age % 20 == 0) {
                 val playersInBox = world.getNonSpectatingEntities(PlayerEntity::class.java, Box(pos).expand(40.0)).any()
                 if (playersInBox) {
                     val spawnPos = pos.asVec3d().add(Vec3d(0.5, 0.0, 0.5))

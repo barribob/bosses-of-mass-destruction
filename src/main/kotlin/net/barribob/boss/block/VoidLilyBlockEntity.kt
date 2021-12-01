@@ -32,14 +32,14 @@ class VoidLilyBlockEntity(type: BlockEntityType<*>?, pos: BlockPos?, state: Bloc
         super.readNbt(nbt)
     }
 
-    override fun writeNbt(nbt: NbtCompound): NbtCompound {
+    override fun writeNbt(nbt: NbtCompound) {
         val dir = structureDirection
         if (dir != null) {
             nbt.putDouble("dirX", dir.x)
             nbt.putDouble("dirY", dir.y)
             nbt.putDouble("dirZ", dir.z)
         }
-        return super.writeNbt(nbt)
+        super.writeNbt(nbt)
     }
 
     companion object {

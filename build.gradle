@@ -4,8 +4,8 @@ plugins {
     id "org.jetbrains.kotlin.jvm"
 }
 
-sourceCompatibility = JavaVersion.VERSION_16
-targetCompatibility = JavaVersion.VERSION_16
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
 
 archivesBaseName = project.archives_base_name
 version = project.mod_version + "-" + project.minecraft_version
@@ -47,13 +47,8 @@ dependencies {
     )
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${project.junit_version}")
 
-    if(project.doBuild.toBoolean()) {
-        modImplementation "net.barribob:maelstrom-library:${project.maelstrom_version}-${project.minecraft_maelstrom_version}"
-        modImplementation "io.github.stuff_stuffs.multipart_entities:MultipartEntities:${project.multipart_version}"
-    } else {
-        implementation "net.barribob:maelstrom-library:${project.maelstrom_version}-${project.minecraft_maelstrom_version}"
-        implementation "io.github.stuff_stuffs.multipart_entities:MultipartEntities:${project.multipart_version}"
-    }
+    modImplementation "net.barribob:maelstrom-library:${project.maelstrom_version}-${project.minecraft_maelstrom_version}"
+    modImplementation "io.github.stuff_stuffs.multipart_entities:MultipartEntities:${project.multipart_version}"
 
     include "net.barribob:maelstrom-library:${project.maelstrom_version}-${project.minecraft_maelstrom_version}"
     include "io.github.stuff_stuffs.multipart_entities:MultipartEntities:${project.multipart_version}"
@@ -98,8 +93,7 @@ tasks.withType(JavaCompile).configureEach {
     if (JavaVersion.current().isJava9Compatible()) {
         it.options.release = targetVersion
     }
-    // Minecraft 1.17 (21w19a) upwards uses Java 16.
-    it.options.release = 16
+    it.options.release = 17
 }
 
 // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task

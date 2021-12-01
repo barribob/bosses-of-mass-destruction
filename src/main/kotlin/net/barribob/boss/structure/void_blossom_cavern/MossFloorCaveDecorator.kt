@@ -9,6 +9,7 @@ import net.minecraft.world.StructureWorldAccess
 import net.minecraft.world.gen.chunk.ChunkGenerator
 import net.minecraft.world.gen.feature.ConfiguredFeatures
 import net.minecraft.world.gen.feature.Feature
+import net.minecraft.world.gen.feature.UndergroundConfiguredFeatures
 import net.minecraft.world.gen.feature.util.FeatureContext
 import java.util.*
 
@@ -34,11 +35,12 @@ class MossFloorCaveDecorator(private val bottomOfWorld: Int, private val random:
             if (boundingBox.contains(mossPos)) {
                 Feature.VEGETATION_PATCH.generate(
                     FeatureContext(
+                        Optional.of(UndergroundConfiguredFeatures.MOSS_PATCH),
                         world,
                         chunkGenerator,
                         random,
                         mossPos,
-                        ConfiguredFeatures.MOSS_PATCH.getConfig()
+                        UndergroundConfiguredFeatures.MOSS_PATCH.getConfig()
                     )
                 )
             }

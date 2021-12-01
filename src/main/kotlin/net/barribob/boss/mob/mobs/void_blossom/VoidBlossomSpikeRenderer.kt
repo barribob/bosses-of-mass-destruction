@@ -3,6 +3,8 @@ package net.barribob.boss.mob.mobs.void_blossom
 import net.barribob.boss.Mod
 import net.barribob.boss.render.IRenderer
 import net.barribob.boss.utils.ModColors
+import net.barribob.boss.utils.ModUtils.model
+import net.barribob.boss.utils.ModUtils.normal
 import net.barribob.boss.utils.VanillaCopies
 import net.minecraft.client.render.RenderLayer
 import net.minecraft.client.render.VertexConsumer

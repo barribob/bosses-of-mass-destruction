@@ -27,6 +27,6 @@ class ObsidilithRuneBlock(settings: Settings) : Block(settings) {
         oldState: BlockState,
         notify: Boolean
     ) {
-        world.blockTickScheduler.schedule(pos, this, 10)
+        world.createAndScheduleBlockTick(pos, this, 10)
     }
 }

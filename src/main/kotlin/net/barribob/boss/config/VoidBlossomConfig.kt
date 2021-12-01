@@ -16,10 +16,10 @@ class VoidBlossomConfig {
 
     data class ArenaGeneration(
         @ConfigEntry.BoundedDiscrete(min = 1, max = 256)
-        val generationSpacing: Int = 32,
+        val generationSpacing: Int = 64,
 
         @ConfigEntry.BoundedDiscrete(min = 1, max = 256)
-        val generationSeparation: Int = 16,
+        val generationSeparation: Int = 24,
         val generationEnabled: Boolean = true
     )
 }

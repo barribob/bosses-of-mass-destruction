@@ -9,7 +9,6 @@ class LichConfig {
     val experienceDrop = 1500
     val idleHealingPerTick = 0.2f
     val health = 300.0
-    val generateLichTower = true
 
     @ConfigEntry.Gui.CollapsibleObject
     val missile = Missile()
@@ -19,6 +18,9 @@ class LichConfig {
 
     @ConfigEntry.Gui.CollapsibleObject
     val summonMechanic = SummonMechanic()
+
+    @ConfigEntry.Gui.CollapsibleObject
+    val towerGeneration = Generation()
 
     data class Missile(
         val statusEffectId: String = "minecraft:slowness",
@@ -43,5 +45,11 @@ class LichConfig {
 
         @ConfigEntry.BoundedDiscrete(min = 1, max = 1000)
         val numEntitiesKilledToDropSoulStar: Int = 50
+    )
+
+    data class Generation(
+        val generateLichTower: Boolean = true,
+        val lichTowerGenerationSpacing: Int = 100,
+        val lichTowerGenerationSeparation: Int = 50
     )
 }
