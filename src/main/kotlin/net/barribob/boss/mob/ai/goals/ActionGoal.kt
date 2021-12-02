@@ -12,7 +12,7 @@ class ActionGoal(
     private val endAction: IActionStop = IActionStop{}
 ) : Goal() {
     override fun canStart(): Boolean = hasTarget()
-
+    override fun shouldRunEveryTick() = true
     override fun shouldContinue(): Boolean = canContinue()
 
     override fun start() {

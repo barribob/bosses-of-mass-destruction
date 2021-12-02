@@ -117,6 +117,6 @@ class LevitationBlockEntity(
         }
 
         private fun getAffectingBox(world: World, pos: Vec3d) =
-            Box(pos.x, 0.0, pos.z, (pos.x + 1), world.height.toDouble(), (pos.z + 1)).expand(3.0, 0.0, 3.0)
+            Box(pos.x, world.bottomY.toDouble(), pos.z, (pos.x + 1), world.height.toDouble(), (pos.z + 1)).expand(3.0, 0.0, 3.0)
     }
 }

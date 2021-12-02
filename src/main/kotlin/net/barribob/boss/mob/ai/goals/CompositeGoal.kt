@@ -10,6 +10,7 @@ class CompositeGoal(vararg goals: Goal) : Goal() {
 
     override fun canStart(): Boolean = goals.all { it.canStart() }
     override fun canStop(): Boolean = goals.all { it.canStop() }
+    override fun shouldRunEveryTick() = true
 
     override fun tick() {
         goals.forEach { it.tick() }
