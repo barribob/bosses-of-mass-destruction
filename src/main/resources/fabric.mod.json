@@ -43,7 +43,12 @@
     "fabric": "*",
     "fabric-language-kotlin": "*",
     "minecraft": "1.18.x",
-    "java": ">=17"
+    "java": ">=17",
+    "cardinal-components-base": ">=4.0.0",
+    "cardinal-components-world": ">=4.0.0",
+    "cardinal-components-entity": ">=4.0.0",
+    "geckolib3": ">=3.0.19",
+    "cloth-config": ">=6.0.42"
   },
   "custom":  {
     "cardinal-components": [
