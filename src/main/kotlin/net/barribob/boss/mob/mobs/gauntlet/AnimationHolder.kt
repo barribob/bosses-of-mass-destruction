@@ -33,7 +33,6 @@ class AnimationHolder(val entity: BaseEntity, private val animationStatusFlags: 
                 AnimationBuilder()
                     .addAnimation(animationData.animationName, false)
                     .addAnimation(animationData.idleAnimationName, true)
-                    .addAnimation(animationData.idleAnimationName, true)
             )
         }
 

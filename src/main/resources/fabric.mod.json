@@ -47,7 +47,7 @@
     "cardinal-components-base": ">=4.0.0",
     "cardinal-components-world": ">=4.0.0",
     "cardinal-components-entity": ">=4.0.0",
-    "geckolib3": ">=3.0.19",
+    "geckolib3": ">=3.0.22",
     "cloth-config": ">=6.0.42"
   },
   "custom":  {
