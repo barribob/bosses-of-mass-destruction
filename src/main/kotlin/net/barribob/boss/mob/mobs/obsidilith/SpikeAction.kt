@@ -2,6 +2,7 @@ package net.barribob.boss.mob.mobs.obsidilith
 
 import net.barribob.boss.Mod
 import net.barribob.boss.cardinalComponents.ModComponents
+import net.barribob.boss.damageSource.UnshieldableDamageSource
 import net.barribob.boss.mob.ai.action.IActionWithCooldown
 import net.barribob.boss.particle.Particles
 import net.barribob.boss.utils.ModUtils.playSound
@@ -10,7 +11,6 @@ import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.static_utilities.MathUtils
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.attribute.EntityAttributes
-import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.effect.StatusEffectInstance
 import net.minecraft.entity.effect.StatusEffects
 import net.minecraft.entity.mob.MobEntity
@@ -69,7 +69,7 @@ class SpikeAction(val entity: MobEntity) : IActionWithCooldown {
 
     private fun damageEntity(entity: LivingEntity) {
         val damage = this.entity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE).toFloat()
-        entity.damage(DamageSource.mob(this.entity), damage)
+        entity.damage(UnshieldableDamageSource(this.entity), damage)
         entity.addStatusEffect(StatusEffectInstance(StatusEffects.SLOWNESS, 120, 2))
     }
 }

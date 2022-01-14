@@ -6,6 +6,7 @@
     "EnderEyeUseMixin",
     "ExplosionMixin",
     "IceBlockMixin",
+    "LivingEntityMixin",
     "ServerPlayerEntityMixin",
     "SpawnEntryMixin",
     "SpawnHelperMixin",

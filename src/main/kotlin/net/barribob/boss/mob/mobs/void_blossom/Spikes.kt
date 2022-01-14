@@ -1,5 +1,6 @@
 package net.barribob.boss.mob.mobs.void_blossom
 
+import net.barribob.boss.damageSource.UnshieldableDamageSource
 import net.barribob.boss.utils.ModUtils.findGroundBelow
 import net.barribob.boss.utils.ModUtils.spawnParticle
 import net.barribob.maelstrom.general.event.EventScheduler
@@ -8,6 +9,7 @@ import net.barribob.maelstrom.static_utilities.VecUtils
 import net.barribob.maelstrom.static_utilities.asVec3d
 import net.minecraft.block.Blocks
 import net.minecraft.entity.LivingEntity
+import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.item.AutomaticItemPlacementContext
 import net.minecraft.item.ItemStack
 import net.minecraft.particle.ParticleEffect
@@ -23,7 +25,6 @@ class Spikes(
     private val indicatorParticle: ParticleEffect,
     private val riftTime: Int,
     val eventScheduler: EventScheduler,
-    val onImpact: (LivingEntity) -> Unit,
     private val shouldCancel: () -> Boolean
 ) {
     fun tryPlaceRift(pos: Vec3d): List<BlockPos> {
@@ -54,10 +55,15 @@ class Spikes(
 
             entities.forEach {
                 if (it != entity) {
-                    onImpact(it)
+                    damageEntity(it)
                 }
             }
         }, riftTime, shouldCancel = shouldCancel))
+    }
+
+    private fun damageEntity(it: LivingEntity) {
+        val damage = entity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE).toFloat()
+        it.damage(UnshieldableDamageSource(entity), damage)
     }
 
     private fun isOpenBlock(up: BlockPos?) = world.getBlockState(up).canReplace(

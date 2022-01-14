@@ -2,6 +2,7 @@ package net.barribob.boss.projectile
 
 import net.barribob.boss.Mod
 import net.barribob.boss.cardinalComponents.ModComponents
+import net.barribob.boss.damageSource.UnshieldableDamageSource
 import net.barribob.boss.mob.Entities
 import net.barribob.boss.mob.mobs.obsidilith.RiftBurst
 import net.barribob.boss.particle.ClientParticleBuilder
@@ -103,7 +104,7 @@ class SporeBallProjectile : BaseThrownItemEntity, IAnimatable {
         val eventScheduler = ModComponents.getWorldEventScheduler(world)
         val onImpact: (LivingEntity) -> Unit = {
             val damage = owner.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE).toFloat()
-            it.damage(DamageSource.mob(it), damage)
+            it.damage(UnshieldableDamageSource(this.owner), damage)
             it.addStatusEffect(StatusEffectInstance(StatusEffects.POISON, 140), this.owner)
         }
 

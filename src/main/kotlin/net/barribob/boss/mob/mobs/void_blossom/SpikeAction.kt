@@ -14,8 +14,6 @@ import net.barribob.maelstrom.general.event.EventScheduler
 import net.barribob.maelstrom.general.event.EventSeries
 import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.static_utilities.MathUtils
-import net.minecraft.entity.attribute.EntityAttributes
-import net.minecraft.entity.damage.DamageSource
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.sound.SoundCategory
 
@@ -40,10 +38,7 @@ class SpikeAction(
             Particles.VOID_BLOSSOM_SPIKE_INDICATOR,
             indicatorDelay,
             eventScheduler,
-            {
-                val damage = entity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE).toFloat()
-                it.damage(DamageSource.mob(entity), damage)
-            }, shouldCancel
+            shouldCancel
         )
 
         target.serverWorld.playSound(

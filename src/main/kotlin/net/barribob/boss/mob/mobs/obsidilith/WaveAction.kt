@@ -2,6 +2,7 @@ package net.barribob.boss.mob.mobs.obsidilith
 
 import net.barribob.boss.Mod
 import net.barribob.boss.cardinalComponents.ModComponents
+import net.barribob.boss.damageSource.UnshieldableDamageSource
 import net.barribob.boss.mob.ai.action.IActionWithCooldown
 import net.barribob.boss.particle.Particles
 import net.barribob.boss.utils.ModUtils.playSound
@@ -10,7 +11,6 @@ import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.static_utilities.MathUtils
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.attribute.EntityAttributes
-import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.mob.MobEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
@@ -66,7 +66,7 @@ class WaveAction(val entity: MobEntity) :
         val damage = this.entity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE).toFloat()
         entity.sendVelocity(Vec3d(entity.velocity.x, 0.8, entity.velocity.z))
         entity.setOnFireFor(5)
-        entity.damage(DamageSource.mob(this.entity), damage)
+        entity.damage(UnshieldableDamageSource(this.entity), damage)
     }
 
     companion object {
