@@ -6,20 +6,27 @@ import net.fabricmc.api.Environment
 import net.fabricmc.fabric.api.`object`.builder.v1.client.model.FabricModelPredicateProviderRegistry
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings
-import net.minecraft.item.Item
-import net.minecraft.item.ItemGroup
-import net.minecraft.item.ItemStack
+import net.minecraft.entity.effect.StatusEffectInstance
+import net.minecraft.entity.effect.StatusEffects
+import net.minecraft.item.*
 import net.minecraft.util.Identifier
+import net.minecraft.util.Rarity
 import net.minecraft.util.registry.Registry
 
 class ModItems {
     val itemGroup: ItemGroup = FabricItemGroupBuilder.build(Mod.identifier("items")) { ItemStack(soulStar) }
     val soulStar = SoulStarItem(FabricItemSettings().group(itemGroup))
-    private val ancientAnima = Item(FabricItemSettings().group(itemGroup))
-    private val blazingEye = Item(FabricItemSettings().group(itemGroup).fireproof())
-    private val obsidianHeart = Item(FabricItemSettings().group(itemGroup).fireproof())
+    private val ancientAnima = Item(FabricItemSettings().rarity(Rarity.RARE).group(itemGroup))
+    private val blazingEye = Item(FabricItemSettings().rarity(Rarity.RARE).group(itemGroup).fireproof())
+    private val obsidianHeart = Item(FabricItemSettings().rarity(Rarity.RARE).group(itemGroup).fireproof())
     private val earthdiveSpear = EarthdiveSpear(FabricItemSettings().group(itemGroup).fireproof().maxDamage(250))
-    private val voidThorn = Item(FabricItemSettings().group(itemGroup).fireproof())
+    private val voidThorn = Item(FabricItemSettings().group(itemGroup).rarity(Rarity.RARE).fireproof())
+    private val crystalFruitFoodComponent = FoodComponent.Builder().hunger(4).saturationModifier(1.2f)
+        .statusEffect(StatusEffectInstance(StatusEffects.REGENERATION, 300, 1), 1.0f)
+        .statusEffect(StatusEffectInstance(StatusEffects.INSTANT_HEALTH, 1), 1.0f)
+        .statusEffect(StatusEffectInstance(StatusEffects.RESISTANCE, 600, 0), 1.0f)
+        .alwaysEdible().build()
+    private val crystalFruit = CrystalFruitItem(FabricItemSettings().group(itemGroup).rarity(Rarity.RARE).fireproof().food(crystalFruitFoodComponent))
 
     fun init() {
         Registry.register(Registry.ITEM, Mod.identifier("soul_star"), soulStar)
@@ -28,6 +35,7 @@ class ModItems {
         Registry.register(Registry.ITEM, Mod.identifier("obsidian_heart"), obsidianHeart)
         Registry.register(Registry.ITEM, Mod.identifier("earthdive_spear"), earthdiveSpear)
         Registry.register(Registry.ITEM, Mod.identifier("void_thorn"), voidThorn)
+        Registry.register(Registry.ITEM, Mod.identifier("crystal_fruit"), crystalFruit)
     }
 
     @Environment(EnvType.CLIENT)

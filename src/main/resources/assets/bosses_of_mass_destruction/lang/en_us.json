@@ -28,6 +28,8 @@
   "item.bosses_of_mass_destruction.blazing_eye" : "Blazing Eye",
   "item.bosses_of_mass_destruction.obsidian_heart" : "Obsidian Heart",
   "item.bosses_of_mass_destruction.void_thorn" : "Void Thorn",
+  "item.bosses_of_mass_destruction.crystal_fruit" : "Crystal Fruit",
+  "item.bosses_of_mass_destruction.crystal_fruit.tooltip" : "Grants brief regen and resistance",
 
   "block.bosses_of_mass_destruction.mob_ward" : "Staff of Suppression",
   "item.bosses_of_mass_destruction.mob_ward.tooltip" : "When placed, mobs won't spawn in any 64 block direction",
