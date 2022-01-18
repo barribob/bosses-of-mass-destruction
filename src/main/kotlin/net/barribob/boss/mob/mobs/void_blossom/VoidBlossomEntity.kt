@@ -5,10 +5,12 @@ import io.github.stuff_stuffs.multipart_entities.common.entity.MultipartAwareEnt
 import io.github.stuff_stuffs.multipart_entities.common.util.CompoundOrientedBox
 import net.barribob.boss.Mod
 import net.barribob.boss.config.VoidBlossomConfig
+import net.barribob.boss.mob.ai.TargetSwitcher
 import net.barribob.boss.mob.ai.goals.ActionGoal
 import net.barribob.boss.mob.ai.goals.CompositeGoal
 import net.barribob.boss.mob.ai.goals.FindTargetGoal
 import net.barribob.boss.mob.damage.CompositeDamageHandler
+import net.barribob.boss.mob.damage.DamageMemory
 import net.barribob.boss.mob.damage.StagedDamageHandler
 import net.barribob.boss.mob.mobs.gauntlet.AnimationHolder
 import net.barribob.boss.mob.mobs.void_blossom.hitbox.NetworkedHitboxManager
@@ -54,6 +56,8 @@ class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: Worl
         ClientSporeEffectHandler(this, preTickEvents),
         ClientDeathEffectHandler(this, preTickEvents)
     )
+    private val damageMemory = DamageMemory(10, this)
+    private val targetSwitcher = TargetSwitcher(this, damageMemory)
     private var shouldSpawnBlossoms = BooleanFlag()
     private val hpDetector = StagedDamageHandler(hpMilestones) { shouldSpawnBlossoms.flag() }
     override val bossBar = ServerBossBar(this.displayName, BossBar.Color.GREEN, BossBar.Style.NOTCHED_12)
@@ -68,12 +72,12 @@ class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: Worl
         LightBlockRemover(this),
         VoidBlossomDropExpDeathTick(this, preTickEvents, config.experienceDrop)
     )
-    override val damageHandler = CompositeDamageHandler(hpDetector, hitboxes.getDamageHandlers())
+    override val damageHandler = CompositeDamageHandler(hpDetector, hitboxes.getDamageHandlers(), damageMemory)
     init {
         ignoreCameraFrustum = true
 
         if (!world.isClient && world is ServerWorld) {
-            val attackHandler = VoidBlossomAttacks(this, preTickEvents) { shouldSpawnBlossoms.getAndReset() }
+            val attackHandler = VoidBlossomAttacks(this, preTickEvents, { shouldSpawnBlossoms.getAndReset() }, targetSwitcher)
             goalSelector.add(2, CompositeGoal()) // Idle goal
             goalSelector.add(1, CompositeGoal(attackHandler.buildAttackGoal(), ActionGoal(::canContinueAttack, tickAction = ::lookAtTarget)))
             targetSelector.add(2, FindTargetGoal(this, PlayerEntity::class.java, { boundingBox.expand(it) }))

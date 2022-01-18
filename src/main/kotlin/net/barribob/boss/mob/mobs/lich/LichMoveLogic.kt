@@ -1,6 +1,8 @@
 package net.barribob.boss.mob.mobs.lich
 
+import net.barribob.boss.mob.ai.TargetSwitcher
 import net.barribob.boss.mob.ai.action.IActionWithCooldown
+import net.barribob.boss.mob.damage.DamageMemory
 import net.barribob.boss.mob.damage.IDamageHandler
 import net.barribob.boss.mob.damage.StagedDamageHandler
 import net.barribob.boss.mob.utils.IEntityStats
@@ -14,6 +16,7 @@ import net.minecraft.util.math.Vec3d
 class LichMoveLogic(
     private val actions: Map<Byte, IActionWithCooldown>,
     private val actor: LichEntity,
+    damageMemory: DamageMemory
 ): IDamageHandler, IActionWithCooldown, IEntityTick<ServerWorld> {
     private val damageHistory = HistoricalData(0, 3)
     private val moveHistory = HistoricalData<Byte>(0, 4)
@@ -24,6 +27,7 @@ class LichMoveLogic(
             LichActions.cometRageAttack, LichActions.volleyRageAttack, LichActions.minionRageAttack
         ))
     }
+    private val targetSwitcher = TargetSwitcher(actor, damageMemory)
 
     override fun afterDamage(stats: IEntityStats, damageSource: DamageSource, amount: Float, result: Boolean) {
         damageHistory.set(actor.age)
@@ -46,6 +50,7 @@ class LichMoveLogic(
     }
 
     private fun chooseRegularMove(): Byte {
+        targetSwitcher.trySwitchTarget()
         val random = WeightedRandom<Byte>()
         val teleportWeight = getTeleportWeight()
         val minionWeight = if (moveHistory.getAll().contains(LichActions.minionAttack)) 0.0 else 2.0

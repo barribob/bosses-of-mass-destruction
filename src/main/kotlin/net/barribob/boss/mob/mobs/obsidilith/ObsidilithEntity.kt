@@ -8,6 +8,7 @@ import net.barribob.boss.mob.ai.action.CooldownAction
 import net.barribob.boss.mob.ai.goals.ActionGoal
 import net.barribob.boss.mob.ai.goals.FindTargetGoal
 import net.barribob.boss.mob.damage.CompositeDamageHandler
+import net.barribob.boss.mob.damage.DamageMemory
 import net.barribob.boss.mob.mobs.void_blossom.CappedHeal
 import net.barribob.boss.mob.utils.BaseEntity
 import net.barribob.boss.mob.utils.StatusImmunity
@@ -54,9 +55,10 @@ class ObsidilithEntity(
         Pair(ObsidilithUtils.anvilAttackStatus, AnvilAction(this, mobConfig.anvilAttackExplosionStrength)),
         Pair(ObsidilithUtils.pillarDefenseStatus, PillarAction(this))
     )
-    private val moveLogic = ObsidilithMoveLogic(statusRegistry, this)
+    private val damageMemory = DamageMemory(10, this)
+    private val moveLogic = ObsidilithMoveLogic(statusRegistry, this, damageMemory)
     private val effectHandler = ObsidilithEffectHandler(this, ModComponents.getWorldEventScheduler(world))
-    override val damageHandler = CompositeDamageHandler(moveLogic, ShieldDamageHandler(::isShielded))
+    override val damageHandler = CompositeDamageHandler(moveLogic, ShieldDamageHandler(::isShielded), damageMemory)
     private val activePillars = mutableSetOf<BlockPos>()
     override val statusEffectHandler = StatusImmunity(StatusEffects.WITHER, StatusEffects.POISON)
     override val serverTick = CappedHeal(this, ObsidilithUtils.hpPillarShieldMilestones, mobConfig.idleHealingPerTick)

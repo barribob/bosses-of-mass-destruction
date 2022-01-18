@@ -85,6 +85,7 @@ private fun initDev() {
     MaelstromMod.testCommand.addId(inGameTests::verifySpawnPosition.name, inGameTests::verifySpawnPosition)
     MaelstromMod.testCommand.addId(inGameTests::levitationPerformance.name, inGameTests::levitationPerformance)
     MaelstromMod.testCommand.addId(inGameTests::wallTeleport.name, inGameTests::wallTeleport)
+    MaelstromMod.testCommand.addId(inGameTests::attackRepeatedly.name, inGameTests::attackRepeatedly)
 }
 
 @Environment(EnvType.CLIENT)

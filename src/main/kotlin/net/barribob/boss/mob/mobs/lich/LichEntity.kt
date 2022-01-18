@@ -5,6 +5,7 @@ import net.barribob.boss.config.LichConfig
 import net.barribob.boss.mob.ai.goals.CompositeGoal
 import net.barribob.boss.mob.ai.goals.FindTargetGoal
 import net.barribob.boss.mob.damage.CompositeDamageHandler
+import net.barribob.boss.mob.damage.DamageMemory
 import net.barribob.boss.mob.damage.DamagedAttackerNotSeen
 import net.barribob.boss.mob.damage.StagedDamageHandler
 import net.barribob.boss.mob.mobs.gauntlet.AnimationHolder
@@ -68,7 +69,8 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, private v
         Pair(LichActions.cometRageAttack, CometRageAction(this, preTickEvents, ::cancelAttackAction, mobConfig)),
         Pair(LichActions.volleyRageAttack, VolleyRageAction(this, mobConfig, preTickEvents, ::cancelAttackAction)),
     )
-    private val moveLogic = LichMoveLogic(statusRegistry, this)
+    private val damageMemory = DamageMemory(5, this)
+    private val moveLogic = LichMoveLogic(statusRegistry, this, damageMemory)
     private val lichParticles = LichParticleHandler(this, preTickEvents)
 
     val shouldSetToNighttime = mobConfig.eternalNighttime
@@ -81,7 +83,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, private v
     override val damageHandler = CompositeDamageHandler(
         StagedDamageHandler(hpPercentRageModes) { world.sendEntityStatus(this, hpBelowThresholdStatus) },
         DamagedAttackerNotSeen(this) { if(it is ServerPlayerEntity) teleportAction.performTeleport(it) },
-        moveLogic )
+        moveLogic, damageMemory )
     override val bossBar = ServerBossBar(this.displayName, BossBar.Color.BLUE, BossBar.Style.PROGRESS)
     override val serverTick = CompositeEntityTick(cappedHeal, moveLogic)
     override val clientTick = lichParticles

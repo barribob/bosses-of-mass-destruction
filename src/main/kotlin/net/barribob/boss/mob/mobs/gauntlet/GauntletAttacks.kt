@@ -14,7 +14,7 @@ class GauntletAttacks(val entity: GauntletEntity, eventScheduler: EventScheduler
         Pair(swirlPunchAttack, SwirlPunchAction(entity, eventScheduler, mobConfig, cancelAttackAction, serverWorld)),
         Pair(blindnessAttack, BlindnessAction(entity, eventScheduler, cancelAttackAction, serverWorld))
     )
-    private val moveLogic = GauntletMoveLogic(statusRegistry, entity)
+    private val moveLogic = GauntletMoveLogic(statusRegistry, entity, entity.damageMemory)
 
     fun buildAttackGoal(): ActionGoal {
         val attackAction = CooldownAction(moveLogic, 80)

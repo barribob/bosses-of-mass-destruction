@@ -6,6 +6,7 @@ import net.barribob.boss.block.MonolithBlock
 import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.item.SoulStarItem
 import net.barribob.boss.item.WallTeleport
+import net.barribob.boss.mob.Entities
 import net.barribob.boss.mob.mobs.obsidilith.BurstAction
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithUtils
 import net.barribob.boss.mob.mobs.obsidilith.PillarAction
@@ -184,5 +185,14 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
 
     fun wallTeleport(source: ServerCommandSource) {
         WallTeleport(source.world, source.player).tryTeleport(source.player.rotationVector, source.player.eyePos)
+    }
+
+    fun attackRepeatedly(source: ServerCommandSource) {
+        val target = source.world.getEntitiesByType(Entities.GAUNTLET) { true }.firstOrNull()
+        for(i in 0..240 step 80) {
+            ModComponents.getWorldEventScheduler(source.world).addEvent(TimedEvent({
+               target?.damage(DamageSource.player(source.player), 9.0f)
+            }, i))
+        }
     }
 }

@@ -1,11 +1,13 @@
 package net.barribob.boss.mob.mobs.void_blossom
 
+import net.barribob.boss.mob.ai.TargetSwitcher
 import net.barribob.boss.mob.ai.action.IActionWithCooldown
 import net.barribob.maelstrom.general.random.WeightedRandom
 import net.minecraft.entity.LivingEntity
 
-class VoidBlossomMoveLogic(private val actions: Map<Byte, IActionWithCooldown>, val entity: VoidBlossomEntity, private val doBlossom: () -> Boolean) : IActionWithCooldown {
+class VoidBlossomMoveLogic(private val actions: Map<Byte, IActionWithCooldown>, val entity: VoidBlossomEntity, private val doBlossom: () -> Boolean, private val targetSwitcher: TargetSwitcher) : IActionWithCooldown {
     override fun perform(): Int {
+        targetSwitcher.trySwitchTarget()
         val target = entity.target
         if(target !is LivingEntity) return 20
         val healthPercentage = entity.health / entity.maxHealth

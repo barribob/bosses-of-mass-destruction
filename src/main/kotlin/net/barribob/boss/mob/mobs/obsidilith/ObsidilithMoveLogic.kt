@@ -1,6 +1,8 @@
 package net.barribob.boss.mob.mobs.obsidilith
 
+import net.barribob.boss.mob.ai.TargetSwitcher
 import net.barribob.boss.mob.ai.action.IActionWithCooldown
+import net.barribob.boss.mob.damage.DamageMemory
 import net.barribob.boss.mob.damage.IDamageHandler
 import net.barribob.boss.mob.damage.StagedDamageHandler
 import net.barribob.boss.mob.utils.IEntityStats
@@ -9,12 +11,13 @@ import net.barribob.maelstrom.general.random.WeightedRandom
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.damage.DamageSource
 
-class ObsidilithMoveLogic(private val actions: Map<Byte, IActionWithCooldown>, val entity: ObsidilithEntity) : IActionWithCooldown, IDamageHandler {
+class ObsidilithMoveLogic(private val actions: Map<Byte, IActionWithCooldown>, val entity: ObsidilithEntity, damageMemory: DamageMemory) : IActionWithCooldown, IDamageHandler {
     private val moveHistory = HistoricalData<Byte>(0)
     private var shouldDoPillarDefense = false
     private val damageHandler = StagedDamageHandler(ObsidilithUtils.hpPillarShieldMilestones) {
         shouldDoPillarDefense = true
     }
+    private val targetSwitcher = TargetSwitcher(entity, damageMemory)
 
     private fun chooseMove(): Byte {
         val target = entity.target
@@ -47,6 +50,7 @@ class ObsidilithMoveLogic(private val actions: Map<Byte, IActionWithCooldown>, v
     }
 
     override fun perform(): Int {
+        targetSwitcher.trySwitchTarget()
         val moveByte = chooseMove()
         val action = actions[moveByte] ?: error("$moveByte action not registered as an attack")
         entity.world.sendEntityStatus(entity, moveByte)

@@ -7,6 +7,7 @@ import net.barribob.boss.Mod
 import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.config.GauntletConfig
 import net.barribob.boss.mob.damage.CompositeDamageHandler
+import net.barribob.boss.mob.damage.DamageMemory
 import net.barribob.boss.mob.utils.*
 import net.barribob.boss.utils.ModUtils
 import net.barribob.boss.utils.VanillaCopies
@@ -36,6 +37,7 @@ class GauntletEntity(entityType: EntityType<out PathAwareEntity>, world: World, 
     val laserHandler = GauntletClientLaserHandler(this, postTickEvents)
     val energyShieldHandler = GauntletClientEnergyShieldHandler(this, postTickEvents)
     val clientBlindnessHandler = GauntletBlindnessIndicatorParticles(this, preTickEvents)
+    val damageMemory = DamageMemory(5, this)
     private val gauntletGoalHandler = GauntletGoalHandler(this, goalSelector, targetSelector, postTickEvents, mobConfig)
     private val animationHandler = AnimationHolder(
         this, mapOf(
@@ -50,7 +52,7 @@ class GauntletEntity(entityType: EntityType<out PathAwareEntity>, world: World, 
         ),
         GauntletAttacks.stopAttackAnimation
     )
-    override val damageHandler = CompositeDamageHandler(hitboxHelper, gauntletGoalHandler)
+    override val damageHandler = CompositeDamageHandler(hitboxHelper, gauntletGoalHandler, damageMemory)
     override val statusHandler = CompositeStatusHandler(animationHandler, laserHandler, clientBlindnessHandler)
     override val trackedDataHandler = CompositeTrackedDataHandler(laserHandler, energyShieldHandler)
     override val clientTick = laserHandler

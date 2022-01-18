@@ -1,10 +1,11 @@
 package net.barribob.boss.mob.mobs.void_blossom
 
+import net.barribob.boss.mob.ai.TargetSwitcher
 import net.barribob.boss.mob.ai.action.CooldownAction
 import net.barribob.boss.mob.ai.goals.ActionGoal
 import net.barribob.maelstrom.general.event.EventScheduler
 
-class VoidBlossomAttacks(val entity: VoidBlossomEntity, eventScheduler: EventScheduler, doBlossom: () -> Boolean) {
+class VoidBlossomAttacks(val entity: VoidBlossomEntity, eventScheduler: EventScheduler, doBlossom: () -> Boolean, targetSwitcher: TargetSwitcher) {
     private val cancelAttackAction: () -> Boolean = { entity.isDead || entity.target == null }
     private val statusRegistry = mapOf(
         Pair(spikeAttack, SpikeAction(entity, eventScheduler, cancelAttackAction)),
@@ -13,7 +14,7 @@ class VoidBlossomAttacks(val entity: VoidBlossomEntity, eventScheduler: EventSch
         Pair(bladeAttack, BladeAction(entity, eventScheduler, cancelAttackAction)),
         Pair(blossomAction, BlossomAction(entity, eventScheduler, cancelAttackAction)),
     )
-    private val moveLogic = VoidBlossomMoveLogic(statusRegistry, entity, doBlossom)
+    private val moveLogic = VoidBlossomMoveLogic(statusRegistry, entity, doBlossom, targetSwitcher)
 
     fun buildAttackGoal(): ActionGoal {
         val attackAction = CooldownAction(moveLogic, 80)
