@@ -46,7 +46,7 @@ class VoidBlossomBlock(settings: Settings?) : Block(settings) {
             ModComponents.getWorldEventScheduler(world).addEvent(TimedEvent({
                 LichUtils.cappedHeal(EntityAdapter(it), EntityStats(it), VoidBlossomEntity.hpMilestones, 10f, it::heal)
             }, healAnimationDelay))
-            it.sendHealPacket(pos.asVec3d().add(VecUtils.unit.multiply(0.5)), it.pos.add(VecUtils.yAxis.multiply(0.5)))
+            it.sendHealPacket(pos.asVec3d().add(VecUtils.unit.multiply(0.5)), it.pos.add(VecUtils.yAxis.multiply(5.0)))
         }
     }
 
