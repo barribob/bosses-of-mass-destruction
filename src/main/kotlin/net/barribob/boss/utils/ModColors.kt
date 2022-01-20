@@ -21,4 +21,6 @@ object ModColors {
     val PINK = Vec3d(0.9, 0.6, 0.8)
     val ULTRA_DARK_PURPLE = Vec3d(0.3, 0.0, 0.2)
     val DARK_GREY = Vec3d(0.3, 0.3, 0.3)
+    val LIGHT_ENDER_PEARL: Vec3d = Vec3d(140.0, 244.0, 226.0).multiply(1 / 255.0)
+    val DARK_ENDER_PEARL: Vec3d = Vec3d(3.0, 38.0, 32.0).multiply(1 / 255.0)
 }

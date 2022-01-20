@@ -41,6 +41,11 @@ class ClientParticleBuilder(private val effect: ParticleEffect) {
         return this
     }
 
+    fun rotation(rotation: Float): ClientParticleBuilder {
+        this.getRotation = { rotation }
+        return this
+    }
+
     fun brightness(brightness: Int): ClientParticleBuilder {
         this.brightness = { brightness }
         return this

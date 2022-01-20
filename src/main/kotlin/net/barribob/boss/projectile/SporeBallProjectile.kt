@@ -90,8 +90,11 @@ class SporeBallProjectile : BaseThrownItemEntity, IAnimatable {
         impactedPitch = pitch
         impacted = true
         val owner = owner
-        if (owner != null && owner is LivingEntity) {
+        if (owner is LivingEntity) {
             doExplosion(owner)
+        }
+        else {
+            discard()
         }
     }
 

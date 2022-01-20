@@ -176,6 +176,18 @@ object Particles {
         FabricParticleTypes.simple()
     )
 
+    val ROD: DefaultParticleType = Registry.register(
+        Registry.PARTICLE_TYPE,
+        Mod.identifier("rod"),
+        FabricParticleTypes.simple()
+    )
+
+    val HORIZONTAL_ROD: DefaultParticleType = Registry.register(
+        Registry.PARTICLE_TYPE,
+        Mod.identifier("ground_rod"),
+        FabricParticleTypes.simple()
+    )
+
     const val FULL_BRIGHT = 15728880
 
     fun clientInit() {
@@ -360,6 +372,18 @@ object Particles {
         particleFactory.register(LINE) { provider: SpriteProvider ->
             SimpleParticleFactory(provider) {
                 SimpleParticle(it, RandomUtils.range(20, 30), VanillaCopies::buildBillboardGeometry)
+            }
+        }
+
+        particleFactory.register(ROD) { provider: SpriteProvider ->
+            SimpleParticleFactory(provider) {
+                SimpleParticle(it, RandomUtils.range(8, 10), VanillaCopies::buildBillboardGeometry)
+            }
+        }
+
+        particleFactory.register(HORIZONTAL_ROD) { provider: SpriteProvider ->
+            SimpleParticleFactory(provider) {
+                SimpleParticle(it, RandomUtils.range(8, 10), VanillaCopies::buildFlatGeometry)
             }
         }
 

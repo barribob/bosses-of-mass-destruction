@@ -238,6 +238,7 @@ object VanillaCopies {
 
         for (k in 0..3) {
             val vector3f2 = vector3fs[k]
+            vector3f2.rotate(Vec3f.POSITIVE_Y.getDegreesQuaternion(rotation))
             vector3f2.scale(scale)
             vector3f2.add(f, g, h)
         }
