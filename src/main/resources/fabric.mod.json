@@ -56,7 +56,7 @@
       "bosses_of_mass_destruction:lich_summon_counter",
       "bosses_of_mass_destruction:player_move_history",
       "bosses_of_mass_destruction:chunk_block_cache_component",
-      "bosses_of_mass_destruction:shredder_pearl_cooldown_component"
+      "bosses_of_mass_destruction:charged_ender_pearl_cooldown_component"
     ]
   }
 }

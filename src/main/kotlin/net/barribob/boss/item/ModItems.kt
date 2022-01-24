@@ -27,7 +27,7 @@ class ModItems {
         .statusEffect(StatusEffectInstance(StatusEffects.RESISTANCE, 600, 0), 1.0f)
         .alwaysEdible().build()
     private val crystalFruit = CrystalFruitItem(FabricItemSettings().group(itemGroup).rarity(Rarity.RARE).fireproof().food(crystalFruitFoodComponent))
-    val shredderPearl = ShredderPearlItem(FabricItemSettings().group(itemGroup).rarity(Rarity.RARE).fireproof())
+    val chargedEnderPearl = ChargedEnderPearlItem(FabricItemSettings().group(itemGroup).rarity(Rarity.RARE).fireproof())
 
     fun init() {
         Registry.register(Registry.ITEM, Mod.identifier("soul_star"), soulStar)
@@ -37,7 +37,7 @@ class ModItems {
         Registry.register(Registry.ITEM, Mod.identifier("earthdive_spear"), earthdiveSpear)
         Registry.register(Registry.ITEM, Mod.identifier("void_thorn"), voidThorn)
         Registry.register(Registry.ITEM, Mod.identifier("crystal_fruit"), crystalFruit)
-        Registry.register(Registry.ITEM, Mod.identifier("shredder_pearl"), shredderPearl)
+        Registry.register(Registry.ITEM, Mod.identifier("charged_ender_pearl"), chargedEnderPearl)
     }
 
     @Environment(EnvType.CLIENT)

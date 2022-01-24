@@ -5,7 +5,7 @@ import net.barribob.boss.Mod
 import net.barribob.boss.animation.IAnimationTimer
 import net.barribob.boss.animation.PauseAnimationTimer
 import net.barribob.boss.config.ModConfig
-import net.barribob.boss.item.ShredderPearlEntity
+import net.barribob.boss.item.ChargedEnderPearlEntity
 import net.barribob.boss.item.SoulStarEntity
 import net.barribob.boss.mob.mobs.gauntlet.*
 import net.barribob.boss.mob.mobs.lich.*
@@ -70,10 +70,10 @@ object Entities {
             .dimensions(EntityDimensions.fixed(0.25f, 0.25f)).build()
     )
 
-    val SHREDDER_PEARL: EntityType<ShredderPearlEntity> = Registry.register(
+    val CHARGED_ENDER_PEARL: EntityType<ChargedEnderPearlEntity> = Registry.register(
         Registry.ENTITY_TYPE,
-        Mod.identifier("shredder_pearl"),
-        FabricEntityTypeBuilder.create(SpawnGroup.MISC, ::ShredderPearlEntity)
+        Mod.identifier("charged_ender_pearl"),
+        FabricEntityTypeBuilder.create(SpawnGroup.MISC, ::ChargedEnderPearlEntity)
             .dimensions(EntityDimensions.fixed(0.25f, 0.25f)).build()
     )
 
@@ -218,7 +218,7 @@ object Entities {
             FlyingItemEntityRenderer(context, 1.0f, true)
         }
 
-        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(SHREDDER_PEARL) { context ->
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(CHARGED_ENDER_PEARL) { context ->
             FlyingItemEntityRenderer(context, 1.0f, true)
         }
 

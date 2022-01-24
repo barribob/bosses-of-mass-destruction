@@ -4,7 +4,7 @@ import io.netty.buffer.Unpooled
 import net.barribob.boss.Mod
 import net.barribob.boss.block.VoidBlossomBlock
 import net.barribob.boss.block.VoidLilyBlockEntity
-import net.barribob.boss.item.ShredderPearlEntity
+import net.barribob.boss.item.ChargedEnderPearlEntity
 import net.barribob.boss.mob.mobs.gauntlet.GauntletEntity
 import net.barribob.boss.mob.mobs.void_blossom.VoidBlossomEntity
 import net.barribob.maelstrom.static_utilities.asVec3d
@@ -39,7 +39,7 @@ class NetworkUtils {
         private val voidBlossomHealId = Mod.identifier("void_blossom_head")
         private val voidBlossomPlaceId = Mod.identifier("void_blossom_place")
         private val voidLilyParticleId = Mod.identifier("void_lily_pollen")
-        private val shredderPearlImpactId = Mod.identifier("shredder_pearl_impact")
+        private val chargedEnderPearlImpactId = Mod.identifier("charged_ender_pearl_impact")
 
         fun LivingEntity.sendVelocity(velocity: Vec3d) {
             this.velocity = velocity
@@ -111,7 +111,7 @@ class NetworkUtils {
             val buf: PacketByteBuf = PacketByteBufs.create()
             buf.writeVec3d(pos)
             for (player in PlayerLookup.tracking(world, BlockPos(pos))) {
-                ServerPlayNetworking.send(player, shredderPearlImpactId, buf)
+                ServerPlayNetworking.send(player, chargedEnderPearlImpactId, buf)
             }
         }
     }
@@ -142,8 +142,8 @@ class NetworkUtils {
         ClientPlayNetworking.registerGlobalReceiver(voidLilyParticleId) { client, _, buf, _ ->
             handleVoidLilyParticles(client, buf)
         }
-        ClientPlayNetworking.registerGlobalReceiver(shredderPearlImpactId) { client, _, buf, _ ->
-            handleShredderPearlImpact(client, buf)
+        ClientPlayNetworking.registerGlobalReceiver(chargedEnderPearlImpactId) { client, _, buf, _ ->
+            handlePearlImpact(client, buf)
         }
     }
 
@@ -253,13 +253,13 @@ class NetworkUtils {
     }
 
     @Environment(EnvType.CLIENT)
-    private fun handleShredderPearlImpact(client: MinecraftClient, buf: PacketByteBuf) {
+    private fun handlePearlImpact(client: MinecraftClient, buf: PacketByteBuf) {
         val pos = buf.readVec3d()
 
         client.execute {
             val world = client.world
             if(world != null) {
-                ShredderPearlEntity.handleShredderPearlImpact(world, pos)
+                ChargedEnderPearlEntity.handlePearlImpact(pos)
             }
         }
     }

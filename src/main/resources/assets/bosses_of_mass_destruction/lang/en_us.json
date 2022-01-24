@@ -30,6 +30,9 @@
   "item.bosses_of_mass_destruction.void_thorn" : "Void Thorn",
   "item.bosses_of_mass_destruction.crystal_fruit" : "Crystal Fruit",
   "item.bosses_of_mass_destruction.crystal_fruit.tooltip" : "Grants brief regen and resistance",
+  "item.bosses_of_mass_destruction.charged_ender_pearl" : "Charged Ender Pearl",
+  "item.bosses_of_mass_destruction.charged_ender_pearl.tooltip" : "Reusable and gives brief",
+  "item.bosses_of_mass_destruction.charged_ender_pearl.tooltip2" : "resistance after teleport",
 
   "block.bosses_of_mass_destruction.mob_ward" : "Staff of Suppression",
   "item.bosses_of_mass_destruction.mob_ward.tooltip" : "When placed, mobs won't spawn in any 64 block direction",
@@ -100,6 +103,7 @@
   "subtitles.bosses_of_mass_destruction.void_blossom_hurt" : "Blossom Hurts",
   "subtitles.bosses_of_mass_destruction.void_blossom_fall" : "Blossom Falls",
   "subtitles.bosses_of_mass_destruction.earthdive_spear_throw" : "Spear Throws",
+  "subtitles.bosses_of_mass_destruction.charged_ender_pearl" : "Pearl Lands",
 
   "text.autoconfig.bosses_of_mass_destruction.title" : "All changes require mc restart",
 

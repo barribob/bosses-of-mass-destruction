@@ -291,5 +291,12 @@
       "bosses_of_mass_destruction:earthdive_spear_throw",
       "bosses_of_mass_destruction:earthdive_spear_throw2"
     ]
+  },
+  "charged_ender_pearl": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.charged_ender_pearl",
+    "sounds": [
+      "mob/endermen/portal",
+      "mob/endermen/portal2"
+    ]
   }
 }
