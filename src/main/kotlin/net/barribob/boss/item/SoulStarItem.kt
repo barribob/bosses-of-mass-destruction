@@ -91,19 +91,45 @@ class SoulStarItem(settings: Settings?) : Item(settings) {
             state.contains(ChiseledStoneAltarBlock.lit) && state.get(ChiseledStoneAltarBlock.lit)
         }
         if (numberOfAltarsFilled == 3) {
-            val eventScheduler = ModComponents.getWorldEventScheduler(world)
-            eventScheduler.addEvent(TimedEvent({
-                allPotentialAltarPositions.forEach {
-                    if (world.getBlockState(blockPos.add(it))
-                            .contains(ChiseledStoneAltarBlock.lit)
-                    ) world.breakBlock(blockPos.add(it), false)
-                }
-
-                world.breakBlock(blockPos, false)
-
-                spawnLich(blockPos, world)
-            }, 20))
+            startSummonEvent(world, allPotentialAltarPositions, blockPos)
         }
+    }
+
+    private fun startSummonEvent(
+        world: World,
+        allPotentialAltarPositions: List<BlockPos>,
+        blockPos: BlockPos
+    ) {
+        val eventScheduler = ModComponents.getWorldEventScheduler(world)
+        eventScheduler.addEvent(TimedEvent({
+            resetBlocks(allPotentialAltarPositions, blockPos, world)
+            spawnLich(blockPos, world)
+            world.playSound(
+                null as PlayerEntity?,
+                blockPos.x.toDouble(),
+                blockPos.y.toDouble(),
+                blockPos.z.toDouble(),
+                Mod.sounds.lichSummon,
+                SoundCategory.NEUTRAL,
+                1.0f,
+                Random().randomPitch()
+            )
+        }, 20))
+    }
+
+    private fun resetBlocks(
+        allPotentialAltarPositions: List<BlockPos>,
+        blockPos: BlockPos,
+        world: World
+    ) {
+        allPotentialAltarPositions.forEach {
+            val pos = blockPos.add(it)
+            val state = world.getBlockState(pos)
+            if (state.contains(ChiseledStoneAltarBlock.lit))
+                world.setBlockState(pos, state.with(ChiseledStoneAltarBlock.lit, false))
+        }
+
+        world.setBlockState(blockPos, world.getBlockState(blockPos).with(ChiseledStoneAltarBlock.lit, false))
     }
 
     @Environment(EnvType.CLIENT)
