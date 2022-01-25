@@ -16,11 +16,11 @@ import net.minecraft.util.registry.Registry
 class ModItems {
     val itemGroup: ItemGroup = FabricItemGroupBuilder.build(Mod.identifier("items")) { ItemStack(soulStar) }
     val soulStar = SoulStarItem(FabricItemSettings().group(itemGroup))
-    private val ancientAnima = Item(FabricItemSettings().rarity(Rarity.RARE).group(itemGroup))
-    private val blazingEye = Item(FabricItemSettings().rarity(Rarity.RARE).group(itemGroup).fireproof())
-    private val obsidianHeart = Item(FabricItemSettings().rarity(Rarity.RARE).group(itemGroup).fireproof())
+    private val ancientAnima = MaterialItem(FabricItemSettings().rarity(Rarity.RARE).group(itemGroup))
+    private val blazingEye = MaterialItem(FabricItemSettings().rarity(Rarity.RARE).group(itemGroup).fireproof())
+    private val obsidianHeart = MaterialItem(FabricItemSettings().rarity(Rarity.RARE).group(itemGroup).fireproof())
     private val earthdiveSpear = EarthdiveSpear(FabricItemSettings().group(itemGroup).fireproof().maxDamage(250))
-    private val voidThorn = Item(FabricItemSettings().group(itemGroup).rarity(Rarity.RARE).fireproof())
+    private val voidThorn = MaterialItem(FabricItemSettings().group(itemGroup).rarity(Rarity.RARE).fireproof())
     private val crystalFruitFoodComponent = FoodComponent.Builder().hunger(4).saturationModifier(1.2f)
         .statusEffect(StatusEffectInstance(StatusEffects.REGENERATION, 300, 1), 1.0f)
         .statusEffect(StatusEffectInstance(StatusEffects.INSTANT_HEALTH, 1), 1.0f)
