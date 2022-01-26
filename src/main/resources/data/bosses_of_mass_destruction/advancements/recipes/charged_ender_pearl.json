@@ -1,0 +1,47 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "bosses_of_mass_destruction:charged_ender_pearl"
+    ]
+  },
+  "criteria": {
+    "has_void_thorn": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "bosses_of_mass_destruction:void_thorn"
+            ]
+          }
+        ]
+      }
+    },
+    "has_ancient_anima": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "bosses_of_mass_destruction:ancient_anima"
+            ]
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "bosses_of_mass_destruction:charged_ender_pearl"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_void_thorn",
+      "has_ancient_anima",
+      "has_the_recipe"
+    ]
+  ]
+}
