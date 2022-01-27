@@ -298,11 +298,5 @@
       "mob/endermen/portal",
       "mob/endermen/portal2"
     ]
-  },
-  "lich_summon": {
-    "subtitle": "subtitles.bosses_of_mass_destruction.lich_summon",
-    "sounds": [
-      "bosses_of_mass_destruction:lich_summon"
-    ]
   }
 }
