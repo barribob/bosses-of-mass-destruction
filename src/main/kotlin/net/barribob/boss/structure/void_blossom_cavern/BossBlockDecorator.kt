@@ -21,6 +21,10 @@ class BossBlockDecorator(private val bottomOfWorld: Int) : ICaveDecorator {
         pos: BlockPos,
         structurePiece: IStructurePiece
     ) {
-        structurePiece.addBlock(world, ModBlocks.voidBlossomSummonBlock.defaultState, BlockPos(pos.x + 3, bottomOfWorld + 5, pos.z + 3), boundingBox)
+        structurePiece.addBlock(world, ModBlocks.voidBlossomSummonBlock.defaultState, bossBlockOffset(pos, bottomOfWorld), boundingBox)
+    }
+
+    companion object {
+        fun bossBlockOffset(pos: BlockPos, bottomOfWorld: Int) = BlockPos(pos.x + 3, bottomOfWorld + 5, pos.z + 3)
     }
 }

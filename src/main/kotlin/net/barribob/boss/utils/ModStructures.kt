@@ -43,7 +43,7 @@ object ModStructures {
         Mod.identifier("obsidilith_arena_piece"),
         StructureFactories.obsidilithArena
     )
-    private val obsidilithArenaStructure =
+    val obsidilithArenaStructure =
         ObsidilithArenaStructureFeature(DefaultFeatureConfig.CODEC, modConfig.obsidilithConfig)
     private val configuredObsidilithStructure = obsidilithArenaStructure.configure(DefaultFeatureConfig.DEFAULT)
 
@@ -52,7 +52,7 @@ object ModStructures {
         Mod.identifier("gauntlet_arena_piece"),
         StructureFactories.gauntletArena
     )
-    private val gauntletArenaStructure = GauntletArenaStructureFeature(DefaultFeatureConfig.CODEC)
+    val gauntletArenaStructure = GauntletArenaStructureFeature(DefaultFeatureConfig.CODEC)
     private val configuredGauntletStructure = gauntletArenaStructure.configure(DefaultFeatureConfig.DEFAULT)
 
     val lichTowerPiece: StructurePieceType = Registry.register(

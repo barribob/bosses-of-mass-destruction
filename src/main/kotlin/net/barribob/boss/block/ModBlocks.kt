@@ -2,6 +2,10 @@ package net.barribob.boss.block
 
 import net.barribob.boss.Mod
 import net.barribob.boss.animation.IAnimationTimer
+import net.barribob.boss.block.structure_repair.GauntletStructureRepair
+import net.barribob.boss.block.structure_repair.LichStructureRepair
+import net.barribob.boss.block.structure_repair.ObsidilithStructureRepair
+import net.barribob.boss.block.structure_repair.VoidBlossomStructureRepair
 import net.barribob.boss.mob.GeoModel
 import net.barribob.boss.render.IBoneLight
 import net.barribob.boss.render.ModBlockEntityRenderer
@@ -29,8 +33,8 @@ object ModBlocks {
     val voidBlossom = VoidBlossomBlock(FabricBlockSettings.of(Material.PLANT, MapColor.PURPLE).breakInstantly().noCollision().luminance { 11 }.sounds(BlockSoundGroup.SPORE_BLOSSOM))
     val vineWall = VineWallBlock(FabricBlockSettings.of(Material.PLANT, MapColor.DARK_GREEN).sounds(BlockSoundGroup.WOOD).strength(2.0f, 6.0f))
     val obsidilithSummonBlock = ObsidilithSummonBlock(FabricBlockSettings.copy(Blocks.END_PORTAL_FRAME))
-    private val gauntletBlackstone = GauntletBlackstoneBlock(FabricBlockSettings.of(Material.STONE, MapColor.BLACK).requiresTool().breakByTool(FabricToolTags.PICKAXES, 3).strength(50.0F, 1200.0F))
-    private val sealedBlackstone = Block(FabricBlockSettings.copy(Blocks.BEDROCK))
+    val gauntletBlackstone = GauntletBlackstoneBlock(FabricBlockSettings.of(Material.STONE, MapColor.BLACK).requiresTool().breakByTool(FabricToolTags.PICKAXES, 3).strength(50.0F, 1200.0F))
+    val sealedBlackstone = Block(FabricBlockSettings.copy(Blocks.BEDROCK))
     val chiseledStoneAltar = ChiseledStoneAltarBlock(
         FabricBlockSettings.copy(Blocks.BEDROCK)
             .luminance { if (it.get(Properties.LIT)) 11 else 0 })
@@ -76,6 +80,11 @@ object ModBlocks {
         FabricBlockSettings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly()
             .sounds(BlockSoundGroup.GRASS).luminance { 8 })
 
+    private val bossRespawnBlock = BossRespawnBlock(FabricBlockSettings.of(Material.STONE, MapColor.BLACK)
+        .requiresTool().breakByTool(FabricToolTags.PICKAXES, 3).strength(50.0F, 1200.0F), listOf(
+        VoidBlossomStructureRepair(), GauntletStructureRepair(), ObsidilithStructureRepair(), LichStructureRepair()
+    ))
+
     fun init() {
         registerBlockAndItem(Mod.identifier("obsidilith_rune"), obsidilithRune)
         registerBlockAndItem(Mod.identifier("obsidilith_end_frame"), obsidilithSummonBlock)
@@ -84,6 +93,7 @@ object ModBlocks {
         registerBlockAndItem(Mod.identifier("chiseled_stone_altar"), chiseledStoneAltar)
         registerBlockAndItem(Mod.identifier("void_blossom"), voidBlossom)
         registerBlockAndItem(Mod.identifier("vine_wall"), vineWall)
+        registerBlockAndItem(Mod.identifier("boss_respawn_block"), bossRespawnBlock)
 
         val mobWardId = Mod.identifier("mob_ward")
         val monolithBlockId = Mod.identifier("monolith_block")
