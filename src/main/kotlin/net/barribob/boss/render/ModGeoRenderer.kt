@@ -19,6 +19,7 @@ import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3f
 import software.bernie.geckolib3.core.IAnimatable
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent
+import software.bernie.geckolib3.core.util.Color
 import software.bernie.geckolib3.model.AnimatedGeoModel
 import software.bernie.geckolib3.model.provider.GeoModelProvider
 import software.bernie.geckolib3.model.provider.data.EntityModelData
@@ -92,7 +93,7 @@ open class ModGeoRenderer<T>(
         stack.translate(0.0, 0.009999999776482582, 0.0)
         MinecraftClient.getInstance().textureManager.bindTexture(getTexture(entity))
         val model = modelProvider.getModel(modelProvider.getModelLocation(entity))
-        val renderColor = getRenderColor(entity, partialTicks, stack, bufferIn, null as VertexConsumer?, packedLightIn)
+        val renderColor = Color.ofRGBA(255, 255, 255, 255)
         val renderType = getRenderType(entity, partialTicks, stack, bufferIn, null as VertexConsumer?, packedLightIn,
             getTexture(entity))
         this.render(model,
