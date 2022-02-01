@@ -36,5 +36,6 @@ class VoidBlossomAttacks(val entity: VoidBlossomEntity, eventScheduler: EventSch
         const val sporeAttack: Byte = 7
         const val bladeAttack: Byte = 8
         const val blossomAction: Byte = 9
+        const val spawnAction: Byte = 10
     }
 }

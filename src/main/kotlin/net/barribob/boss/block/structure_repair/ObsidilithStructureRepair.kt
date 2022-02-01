@@ -3,16 +3,20 @@ package net.barribob.boss.block.structure_repair
 import net.barribob.boss.block.ModBlocks
 import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.mob.Entities
+import net.barribob.boss.mob.mobs.obsidilith.ObsidilithEffectHandler
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithUtils
 import net.barribob.boss.utils.ModStructures
 import net.barribob.boss.utils.ModUtils.randomPitch
+import net.barribob.boss.utils.NetworkUtils
 import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.static_utilities.asVec3d
+import net.minecraft.client.world.ClientWorld
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvents
 import net.minecraft.structure.StructureStart
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.Vec3d
 import net.minecraft.world.gen.feature.StructureFeature
 import java.util.*
 
@@ -22,6 +26,7 @@ class ObsidilithStructureRepair : StructureRepair {
     override fun repairStructure(world: ServerWorld, structureStart: StructureStart<*>) {
         val topCenter = getTopCenter(structureStart)
         val worldEventScheduler = ModComponents.getWorldEventScheduler(world)
+        NetworkUtils.sendObsidilithRevivePacket(world, topCenter.asVec3d().add(0.5, 0.5, 0.5))
 
         for (y in 0..ObsidilithUtils.deathPillarHeight) {
             worldEventScheduler.addEvent(TimedEvent({
@@ -46,5 +51,11 @@ class ObsidilithStructureRepair : StructureRepair {
         val noBoss = world.getEntitiesByType(Entities.OBSIDILITH) { it.squaredDistanceTo(topCenter.asVec3d()) < 100 * 100 }.none()
         val hasAltar = world.getBlockState(topCenter).block == ModBlocks.obsidilithSummonBlock
         return noBoss && !hasAltar
+    }
+
+    companion object {
+        fun handleObsidilithRevivePacket(pos: Vec3d, world: ClientWorld) {
+            ObsidilithEffectHandler.spawnPillarParticles(pos, ModComponents.getWorldEventScheduler(world))
+        }
     }
 }

@@ -4,6 +4,8 @@ import io.netty.buffer.Unpooled
 import net.barribob.boss.Mod
 import net.barribob.boss.block.VoidBlossomBlock
 import net.barribob.boss.block.VoidLilyBlockEntity
+import net.barribob.boss.block.structure_repair.ObsidilithStructureRepair
+import net.barribob.boss.block.structure_repair.VoidBlossomStructureRepair
 import net.barribob.boss.item.ChargedEnderPearlEntity
 import net.barribob.boss.mob.mobs.gauntlet.GauntletEntity
 import net.barribob.boss.mob.mobs.void_blossom.VoidBlossomEntity
@@ -40,6 +42,8 @@ class NetworkUtils {
         private val voidBlossomPlaceId = Mod.identifier("void_blossom_place")
         private val voidLilyParticleId = Mod.identifier("void_lily_pollen")
         private val chargedEnderPearlImpactId = Mod.identifier("charged_ender_pearl_impact")
+        private val voidBlossomReviveId = Mod.identifier("void_blossom_revive")
+        private val obsidilithReviveId = Mod.identifier("obsidilith_revive")
 
         fun LivingEntity.sendVelocity(velocity: Vec3d) {
             this.velocity = velocity
@@ -98,6 +102,23 @@ class NetworkUtils {
             }
         }
 
+        fun sendVoidBlossomRevivePacket(world: ServerWorld, pos: Vec3d) {
+            val buf: PacketByteBuf = PacketByteBufs.create()
+            buf.writeVec3d(pos)
+            for (player in PlayerLookup.tracking(world, BlockPos(pos))) {
+                ServerPlayNetworking.send(player, voidBlossomReviveId, buf)
+            }
+        }
+
+        fun sendObsidilithRevivePacket(world: ServerWorld, pos: Vec3d) {
+            val buf: PacketByteBuf = PacketByteBufs.create()
+            buf.writeVec3d(pos)
+            for (player in PlayerLookup.tracking(world, BlockPos(pos))) {
+                ServerPlayNetworking.send(player, obsidilithReviveId, buf)
+            }
+        }
+
+
         fun sendParticlePacket(world: ServerWorld, pos: BlockPos, dir: Vec3d) {
             val buf: PacketByteBuf = PacketByteBufs.create()
             buf.writeVec3d(pos.asVec3d())
@@ -144,6 +165,12 @@ class NetworkUtils {
         }
         ClientPlayNetworking.registerGlobalReceiver(chargedEnderPearlImpactId) { client, _, buf, _ ->
             handlePearlImpact(client, buf)
+        }
+        ClientPlayNetworking.registerGlobalReceiver(voidBlossomReviveId) { client, _, buf, _ ->
+            handleVoidBlossomRevivePacket(client, buf)
+        }
+        ClientPlayNetworking.registerGlobalReceiver(obsidilithReviveId) { client, _, buf, _ ->
+            handleObsidilithRevivePacket(client, buf)
         }
     }
 
@@ -260,6 +287,30 @@ class NetworkUtils {
             val world = client.world
             if(world != null) {
                 ChargedEnderPearlEntity.handlePearlImpact(pos)
+            }
+        }
+    }
+
+    @Environment(EnvType.CLIENT)
+    private fun handleVoidBlossomRevivePacket(client: MinecraftClient, buf: PacketByteBuf) {
+        val pos = buf.readVec3d()
+
+        client.execute {
+            val world = client.world
+            if(world != null) {
+                VoidBlossomStructureRepair.handleVoidBlossomRevivePacket(pos, world)
+            }
+        }
+    }
+
+    @Environment(EnvType.CLIENT)
+    private fun handleObsidilithRevivePacket(client: MinecraftClient, buf: PacketByteBuf) {
+        val pos = buf.readVec3d()
+
+        client.execute {
+            val world = client.world
+            if(world != null) {
+                ObsidilithStructureRepair.handleObsidilithRevivePacket(pos, world)
             }
         }
     }

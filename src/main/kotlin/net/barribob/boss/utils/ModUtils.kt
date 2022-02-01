@@ -1,5 +1,8 @@
 package net.barribob.boss.utils
 
+import net.barribob.boss.particle.ClientParticleBuilder
+import net.barribob.maelstrom.static_utilities.RandomUtils
+import net.barribob.maelstrom.static_utilities.VecUtils
 import net.minecraft.block.SideShapeType
 import net.minecraft.client.network.ClientPlayNetworkHandler
 import net.minecraft.client.util.math.MatrixStack
@@ -87,4 +90,26 @@ object ModUtils {
 
     val MatrixStack.Entry.model: Matrix4f
         get() = this.positionMatrix
+
+    data class RotatingParticles(val pos: Vec3d, val particleBuilder: ClientParticleBuilder, val minRadius: Double, val maxRadius: Double, val minSpeed: Double, val maxSpeed: Double)
+
+    fun spawnRotatingParticles(particleParams: RotatingParticles) {
+            val startingRotation = kotlin.random.Random.nextInt(360)
+            val randomRadius = RandomUtils.range(particleParams.minRadius, particleParams.maxRadius)
+            val rotationSpeed = RandomUtils.range(particleParams.minSpeed, particleParams.maxSpeed)
+            particleParams.particleBuilder
+                .continuousPosition { rotateAroundPos(particleParams.pos, it.getAge(), startingRotation, randomRadius, rotationSpeed) }
+                .build(rotateAroundPos(particleParams.pos, 0, startingRotation, randomRadius, rotationSpeed), Vec3d.ZERO)
+    }
+
+    private fun rotateAroundPos(
+        pos: Vec3d,
+        age: Int,
+        startingRotation: Int,
+        radius: Double,
+        rotationSpeed: Double
+    ): Vec3d {
+        val xzOffset = VecUtils.xAxis.rotateY(Math.toRadians(age * rotationSpeed + startingRotation).toFloat())
+        return pos.add(xzOffset.multiply(radius))
+    }
 }

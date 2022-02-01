@@ -21,6 +21,7 @@ class BossRespawnBlock(settings: Settings, private val structureRepairs: List<St
             for (structureRepair in structureRepairs) {
                 val structureStart = world.structureAccessor.getStructureAt(pos, structureRepair.associatedStructure())
                 if(structureStart.hasChildren() && structureRepair.shouldRepairStructure(world, structureStart)) {
+                    world.breakBlock(pos, false)
                     structureRepair.repairStructure(world, structureStart)
                 }
             }

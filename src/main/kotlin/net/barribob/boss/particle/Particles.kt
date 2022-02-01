@@ -116,6 +116,12 @@ object Particles {
         FabricParticleTypes.simple(true)
     )
 
+    val GAUNTLET_REVIVE_SPARKLES: DefaultParticleType = Registry.register(
+        Registry.PARTICLE_TYPE,
+        Mod.identifier("gauntlet_revive_sparkles"),
+        FabricParticleTypes.simple(true)
+    )
+
     val EYE: DefaultParticleType = Registry.register(
         Registry.PARTICLE_TYPE,
         Mod.identifier("eye_open"),
@@ -360,6 +366,16 @@ object Particles {
         particleFactory.register(SPARKLES) { provider: SpriteProvider ->
             SimpleParticleFactory(provider) {
                 SimpleParticle(it, RandomUtils.range(15, 20), VanillaCopies::buildBillboardGeometry)
+            }
+        }
+
+        particleFactory.register(GAUNTLET_REVIVE_SPARKLES) { provider: SpriteProvider ->
+            SimpleParticleFactory(provider) {
+                val particle = SimpleParticle(it, RandomUtils.range(15, 20), VanillaCopies::buildBillboardGeometry)
+                particle.setColorOverride { ModColors.LASER_RED }
+                particle.setColorVariation(0.25)
+                particle.setBrightnessOverride { FULL_BRIGHT }
+                particle
             }
         }
 

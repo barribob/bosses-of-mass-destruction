@@ -20,6 +20,7 @@ import net.barribob.boss.mob.utils.CompositeEntityTick
 import net.barribob.boss.mob.utils.CompositeStatusHandler
 import net.barribob.boss.utils.ModUtils
 import net.barribob.maelstrom.general.data.BooleanFlag
+import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.static_utilities.eyePos
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.MovementType
@@ -44,6 +45,7 @@ class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: Worl
             Pair(VoidBlossomAttacks.sporeAttack, AnimationHolder.Animation("spore", "idle")),
             Pair(VoidBlossomAttacks.bladeAttack, AnimationHolder.Animation("leaf_blade", "idle")),
             Pair(VoidBlossomAttacks.blossomAction, AnimationHolder.Animation("blossom", "idle")),
+            Pair(VoidBlossomAttacks.spawnAction, AnimationHolder.Animation("spawn", "idle")),
             Pair(3, AnimationHolder.Animation("death", "idle")),
         ),
         VoidBlossomAttacks.stopAttackAnimation,
@@ -81,6 +83,13 @@ class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: Worl
             goalSelector.add(2, CompositeGoal()) // Idle goal
             goalSelector.add(1, CompositeGoal(attackHandler.buildAttackGoal(), ActionGoal(::canContinueAttack, tickAction = ::lookAtTarget)))
             targetSelector.add(2, FindTargetGoal(this, PlayerEntity::class.java, { boundingBox.expand(it) }))
+            preTickEvents.addEvent(TimedEvent({
+                playSound(Mod.sounds.spikeWaveIndicator, 2.0f, 0.7f)
+            }, 1))
+        }
+        else if(world.isClient)
+        {
+            animationHolder.handleClientStatus(VoidBlossomAttacks.spawnAction)
         }
     }
 
