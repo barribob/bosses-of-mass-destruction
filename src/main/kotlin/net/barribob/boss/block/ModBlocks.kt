@@ -80,11 +80,6 @@ object ModBlocks {
         FabricBlockSettings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly()
             .sounds(BlockSoundGroup.GRASS).luminance { 8 })
 
-    private val bossRespawnBlock = BossRespawnBlock(FabricBlockSettings.of(Material.STONE, MapColor.BLACK)
-        .requiresTool().breakByTool(FabricToolTags.PICKAXES, 3).strength(50.0F, 1200.0F), listOf(
-        VoidBlossomStructureRepair(), GauntletStructureRepair(), ObsidilithStructureRepair(), LichStructureRepair()
-    ))
-
     fun init() {
         registerBlockAndItem(Mod.identifier("obsidilith_rune"), obsidilithRune)
         registerBlockAndItem(Mod.identifier("obsidilith_end_frame"), obsidilithSummonBlock)
@@ -93,7 +88,6 @@ object ModBlocks {
         registerBlockAndItem(Mod.identifier("chiseled_stone_altar"), chiseledStoneAltar)
         registerBlockAndItem(Mod.identifier("void_blossom"), voidBlossom)
         registerBlockAndItem(Mod.identifier("vine_wall"), vineWall)
-        registerBlockAndItem(Mod.identifier("boss_respawn_block"), bossRespawnBlock)
 
         val mobWardId = Mod.identifier("mob_ward")
         val monolithBlockId = Mod.identifier("monolith_block")

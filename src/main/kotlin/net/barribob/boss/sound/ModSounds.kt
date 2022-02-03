@@ -50,6 +50,7 @@ class ModSounds {
     val voidBlossomFall = newSound("void_blossom_fall")
     val earthdiveSpearThrow = newSound("earthdive_spear_throw")
     val chargedEnderPearl = newSound("charged_ender_pearl")
+    val brimstone = newSound("brimstone")
 
     fun init() {
         registerSound(cometShoot)
@@ -94,6 +95,7 @@ class ModSounds {
         registerSound(voidBlossomFall)
         registerSound(earthdiveSpearThrow)
         registerSound(chargedEnderPearl)
+        registerSound(brimstone)
     }
 
     private fun registerSound(event: SoundEvent) {

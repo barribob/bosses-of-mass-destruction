@@ -3,6 +3,7 @@ package net.barribob.boss
 import me.shedaniel.autoconfig.AutoConfig
 import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer
 import net.barribob.boss.Mod.networkUtils
+import net.barribob.boss.Mod.vec3dNetwork
 import net.barribob.boss.animation.PauseAnimationTimer
 import net.barribob.boss.block.ModBlocks
 import net.barribob.boss.config.ModConfig
@@ -13,6 +14,7 @@ import net.barribob.boss.sound.ModSounds
 import net.barribob.boss.utils.InGameTests
 import net.barribob.boss.utils.ModStructures
 import net.barribob.boss.utils.NetworkUtils
+import net.barribob.boss.utils.Vec3dNetworkHandler
 import net.barribob.maelstrom.MaelstromMod
 import net.barribob.maelstrom.general.io.ConsoleLogger
 import net.fabricmc.api.EnvType
@@ -32,6 +34,7 @@ object Mod {
     val items: ModItems = ModItems()
 
     val networkUtils = NetworkUtils()
+    val vec3dNetwork = Vec3dNetworkHandler()
 
     fun identifier(path: String) = Identifier(MODID, path)
 }
@@ -65,6 +68,7 @@ fun clientInit() {
     Particles.clientInit()
     ModBlocks.clientInit(animationTimer)
     Mod.items.clientInit()
+    vec3dNetwork.clientInit()
 
     if(MaelstromMod.isDevelopmentEnvironment) initClientDev()
 }

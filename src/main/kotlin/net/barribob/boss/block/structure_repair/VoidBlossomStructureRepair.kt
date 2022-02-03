@@ -47,7 +47,7 @@ class VoidBlossomStructureRepair : StructureRepair {
     }
 
     companion object {
-        private val spikeParticleFactory = ClientParticleBuilder(Particles.SPARKLES)
+        private fun spikeParticleFactory() = ClientParticleBuilder(Particles.SPARKLES)
             .color(ModColors.VOID_PURPLE)
             .colorVariation(0.25)
             .brightness(Particles.FULL_BRIGHT)
@@ -55,11 +55,12 @@ class VoidBlossomStructureRepair : StructureRepair {
             .age(20)
 
         fun handleVoidBlossomRevivePacket(pos: Vec3d, world: ClientWorld) {
+            val particleBuilder = spikeParticleFactory()
             ModComponents.getWorldEventScheduler(world).addEvent(TimedEvent({
                 ModUtils.spawnRotatingParticles(
                     ModUtils.RotatingParticles(
                         pos.add(VecUtils.yAxis.multiply(RandomUtils.range(1.0, 10.0))),
-                        spikeParticleFactory,
+                        particleBuilder,
                         1.0,
                         2.0,
                         3.0,

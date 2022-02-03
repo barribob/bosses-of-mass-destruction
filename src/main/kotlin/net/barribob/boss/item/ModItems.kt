@@ -1,6 +1,11 @@
 package net.barribob.boss.item
 
 import net.barribob.boss.Mod
+import net.barribob.boss.block.BrimstoneNectarItem
+import net.barribob.boss.block.structure_repair.GauntletStructureRepair
+import net.barribob.boss.block.structure_repair.LichStructureRepair
+import net.barribob.boss.block.structure_repair.ObsidilithStructureRepair
+import net.barribob.boss.block.structure_repair.VoidBlossomStructureRepair
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.fabricmc.fabric.api.`object`.builder.v1.client.model.FabricModelPredicateProviderRegistry
@@ -27,7 +32,11 @@ class ModItems {
         .statusEffect(StatusEffectInstance(StatusEffects.RESISTANCE, 600, 0), 1.0f)
         .alwaysEdible().build()
     private val crystalFruit = CrystalFruitItem(FabricItemSettings().group(itemGroup).rarity(Rarity.RARE).fireproof().food(crystalFruitFoodComponent))
-    val chargedEnderPearl = ChargedEnderPearlItem(FabricItemSettings().group(itemGroup).fireproof())
+    val chargedEnderPearl = ChargedEnderPearlItem(FabricItemSettings().group(itemGroup).fireproof().maxCount(1))
+    private val brimstoneNectar = BrimstoneNectarItem(
+        FabricItemSettings().group(itemGroup).rarity(Rarity.RARE).fireproof(), listOf(
+        VoidBlossomStructureRepair(), GauntletStructureRepair(), ObsidilithStructureRepair(), LichStructureRepair()
+    ))
 
     fun init() {
         Registry.register(Registry.ITEM, Mod.identifier("soul_star"), soulStar)
@@ -38,6 +47,7 @@ class ModItems {
         Registry.register(Registry.ITEM, Mod.identifier("void_thorn"), voidThorn)
         Registry.register(Registry.ITEM, Mod.identifier("crystal_fruit"), crystalFruit)
         Registry.register(Registry.ITEM, Mod.identifier("charged_ender_pearl"), chargedEnderPearl)
+        Registry.register(Registry.ITEM, Mod.identifier("brimstone_nectar"), brimstoneNectar)
     }
 
     @Environment(EnvType.CLIENT)

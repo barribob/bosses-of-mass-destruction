@@ -34,6 +34,8 @@
   "item.bosses_of_mass_destruction.charged_ender_pearl.tooltip" : "Reusable and gives brief",
   "item.bosses_of_mass_destruction.charged_ender_pearl.tooltip2" : "resistance after teleport",
   "item.bosses_of_mass_destruction.crafting_material.tooltip" : "Crafting material",
+  "item.bosses_of_mass_destruction.brimstone_nectar" : "Brimstone Nectar",
+  "item.bosses_of_mass_destruction.brimstone_nectar.tooltip" : "Resets nearby boss structures on use",
 
   "block.bosses_of_mass_destruction.mob_ward" : "Staff of Suppression",
   "item.bosses_of_mass_destruction.mob_ward.tooltip" : "When placed, mobs won't spawn in any 64 block direction",

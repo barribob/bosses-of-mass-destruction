@@ -36,10 +36,7 @@ class LichStructureRepair : StructureRepair {
         val centerX = boundingBox.center.x
         val centerZ = boundingBox.center.z
         val gridPos = (-2..2).flatMap { x -> (-2..2).map { z -> Pair(x + centerX, z + centerZ) } }
-            .maxByOrNull { xzPair ->
-                val count = countChestsInColumn(boundingBox, world, xzPair)
-                MaelstromMod.debugPoints.drawDebugPoints((0..count).map { BlockPos(xzPair.first, yPos, xzPair.second).asVec3d().add(0.5, it * 0.1, 0.5) }, 40, BlockPos(xzPair.first, yPos, xzPair.second).asVec3d(), world)
-                count
+            .maxByOrNull { xzPair -> countChestsInColumn(boundingBox, world, xzPair)
         }
         return BlockPos(gridPos!!.first, yPos, gridPos.second)
     }
