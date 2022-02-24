@@ -35,12 +35,12 @@ class MossFloorCaveDecorator(private val bottomOfWorld: Int, private val random:
             if (boundingBox.contains(mossPos)) {
                 Feature.VEGETATION_PATCH.generate(
                     FeatureContext(
-                        Optional.of(UndergroundConfiguredFeatures.MOSS_PATCH),
+                        Optional.of(UndergroundConfiguredFeatures.MOSS_PATCH.value()),
                         world,
                         chunkGenerator,
                         random,
                         mossPos,
-                        UndergroundConfiguredFeatures.MOSS_PATCH.getConfig()
+                        UndergroundConfiguredFeatures.MOSS_PATCH.value().config()
                     )
                 )
             }

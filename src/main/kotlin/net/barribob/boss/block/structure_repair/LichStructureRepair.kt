@@ -5,7 +5,6 @@ import net.barribob.boss.mob.Entities
 import net.barribob.boss.particle.Particles
 import net.barribob.boss.utils.ModStructures
 import net.barribob.boss.utils.ModUtils.spawnParticle
-import net.barribob.maelstrom.MaelstromMod
 import net.barribob.maelstrom.static_utilities.VecUtils
 import net.barribob.maelstrom.static_utilities.asVec3d
 import net.minecraft.block.Blocks
@@ -13,12 +12,12 @@ import net.minecraft.server.world.ServerWorld
 import net.minecraft.structure.StructureStart
 import net.minecraft.util.math.BlockBox
 import net.minecraft.util.math.BlockPos
-import net.minecraft.world.gen.feature.StructureFeature
+import net.minecraft.world.gen.feature.ConfiguredStructureFeature
 
 class LichStructureRepair : StructureRepair {
-    override fun associatedStructure(): StructureFeature<*> = ModStructures.lichTowerStructure
+    override fun associatedStructure(): ConfiguredStructureFeature<*, *> = ModStructures.configuredLichTowerStructure
 
-    override fun repairStructure(world: ServerWorld, structureStart: StructureStart<*>) {
+    override fun repairStructure(world: ServerWorld, structureStart: StructureStart) {
         val pos = altarCenter(world, structureStart)
 
         val altar = ModBlocks.chiseledStoneAltar.defaultState
@@ -30,7 +29,7 @@ class LichStructureRepair : StructureRepair {
         }
     }
 
-    private fun altarCenter(world: ServerWorld, structureStart: StructureStart<*>): BlockPos {
+    private fun altarCenter(world: ServerWorld, structureStart: StructureStart): BlockPos {
         val boundingBox = structureStart.boundingBox
         val yPos = boundingBox.center.down(16).y
         val centerX = boundingBox.center.x
@@ -55,7 +54,7 @@ class LichStructureRepair : StructureRepair {
         ).block == Blocks.CHEST
     }
 
-    override fun shouldRepairStructure(world: ServerWorld, structureStart: StructureStart<*>): Boolean {
+    override fun shouldRepairStructure(world: ServerWorld, structureStart: StructureStart): Boolean {
         val pos = altarCenter(world, structureStart)
         val hasAltar = world.getBlockState(pos.west(6)).block == ModBlocks.chiseledStoneAltar
         val noBoss = world.getEntitiesByType(Entities.LICH) { it.squaredDistanceTo(pos.asVec3d()) < 100 * 100 }.none()

@@ -92,7 +92,7 @@ class VoidBlossomCavernPieceGenerator : IPieceGenerator {
             ++r
         }
 
-        val predicate = Feature.notInBlockTagPredicate(BlockTags.FEATURES_CANNOT_REPLACE.id)
+        val predicate = Feature.notInBlockTagPredicate(BlockTags.FEATURES_CANNOT_REPLACE)
         val positions: Iterator<BlockPos> =
             BlockPos.iterate(pos.add(minXZ, minY, minXZ), pos.add(maxXZ, maxY, maxXZ)).iterator()
         while (true) {

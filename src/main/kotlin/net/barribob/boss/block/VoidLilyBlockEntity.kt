@@ -61,7 +61,7 @@ class VoidLilyBlockEntity(type: BlockEntityType<*>?, pos: BlockPos?, state: Bloc
             pos: BlockPos,
             entity: VoidLilyBlockEntity
         ) {
-            val blockPos = world.locateStructure(ModStructures.voidBlossomArenaStructure, pos, 50, false)
+            val blockPos = world.locateStructure(ModStructures.voidBlossomStructureArenaTagKey, pos, 50, false)
             if (blockPos != null) {
                 entity.structureDirection = blockPos.subtract(pos).asVec3d().normalize()
             } else {

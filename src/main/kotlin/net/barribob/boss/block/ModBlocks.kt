@@ -2,10 +2,6 @@ package net.barribob.boss.block
 
 import net.barribob.boss.Mod
 import net.barribob.boss.animation.IAnimationTimer
-import net.barribob.boss.block.structure_repair.GauntletStructureRepair
-import net.barribob.boss.block.structure_repair.LichStructureRepair
-import net.barribob.boss.block.structure_repair.ObsidilithStructureRepair
-import net.barribob.boss.block.structure_repair.VoidBlossomStructureRepair
 import net.barribob.boss.mob.GeoModel
 import net.barribob.boss.render.IBoneLight
 import net.barribob.boss.render.ModBlockEntityRenderer
@@ -14,7 +10,6 @@ import net.fabricmc.fabric.api.`object`.builder.v1.block.entity.FabricBlockEntit
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap
 import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings
-import net.fabricmc.fabric.api.tool.attribute.v1.FabricToolTags
 import net.minecraft.block.Block
 import net.minecraft.block.Blocks
 import net.minecraft.block.MapColor
@@ -29,11 +24,11 @@ import net.minecraft.util.Identifier
 import net.minecraft.util.registry.Registry
 
 object ModBlocks {
-    val obsidilithRune = ObsidilithRuneBlock(FabricBlockSettings.of(Material.STONE, MapColor.BLACK).requiresTool().breakByTool(FabricToolTags.PICKAXES, 3).strength(50.0F, 1200.0F))
+    val obsidilithRune = ObsidilithRuneBlock(FabricBlockSettings.of(Material.STONE, MapColor.BLACK).requiresTool().strength(50.0F, 1200.0F))
     val voidBlossom = VoidBlossomBlock(FabricBlockSettings.of(Material.PLANT, MapColor.PURPLE).breakInstantly().noCollision().luminance { 11 }.sounds(BlockSoundGroup.SPORE_BLOSSOM))
     val vineWall = VineWallBlock(FabricBlockSettings.of(Material.PLANT, MapColor.DARK_GREEN).sounds(BlockSoundGroup.WOOD).strength(2.0f, 6.0f))
     val obsidilithSummonBlock = ObsidilithSummonBlock(FabricBlockSettings.copy(Blocks.END_PORTAL_FRAME))
-    val gauntletBlackstone = GauntletBlackstoneBlock(FabricBlockSettings.of(Material.STONE, MapColor.BLACK).requiresTool().breakByTool(FabricToolTags.PICKAXES, 3).strength(50.0F, 1200.0F))
+    val gauntletBlackstone = GauntletBlackstoneBlock(FabricBlockSettings.of(Material.STONE, MapColor.BLACK).requiresTool().strength(50.0F, 1200.0F))
     val sealedBlackstone = Block(FabricBlockSettings.copy(Blocks.BEDROCK))
     val chiseledStoneAltar = ChiseledStoneAltarBlock(
         FabricBlockSettings.copy(Blocks.BEDROCK)
@@ -43,7 +38,7 @@ object ModBlocks {
     private val mobWardBlockEntityFactory = FabricBlockEntityTypeBuilder.Factory { pos, state ->
         ChunkCacheBlockEntity(mobWard, mobWardEntityType, pos, state)
     }
-    val mobWard: MobWardBlock = MobWardBlock(mobWardBlockEntityFactory, FabricBlockSettings.of(Material.STONE, MapColor.BLACK).requiresTool().breakByTool(FabricToolTags.PICKAXES, 3)
+    val mobWard: MobWardBlock = MobWardBlock(mobWardBlockEntityFactory, FabricBlockSettings.of(Material.STONE, MapColor.BLACK).requiresTool()
         .nonOpaque()
         .luminance { 15 }
         .strength(10.0F, 1200.0F))
@@ -52,7 +47,7 @@ object ModBlocks {
     private val monolithBlockEntityFactory = FabricBlockEntityTypeBuilder.Factory { pos, state ->
         ChunkCacheBlockEntity(monolithBlock, monolithEntityType, pos, state)
     }
-    val monolithBlock: MonolithBlock = MonolithBlock(monolithBlockEntityFactory, FabricBlockSettings.of(Material.METAL, MapColor.BLACK).requiresTool().breakByTool(FabricToolTags.PICKAXES, 3)
+    val monolithBlock: MonolithBlock = MonolithBlock(monolithBlockEntityFactory, FabricBlockSettings.of(Material.METAL, MapColor.BLACK).requiresTool()
         .nonOpaque()
         .luminance { 4 }
         .strength(10.0F, 1200.0F))
@@ -61,7 +56,7 @@ object ModBlocks {
     private val levitationBlockEntityFactory = FabricBlockEntityTypeBuilder.Factory { pos, state ->
         LevitationBlockEntity(levitationBlock, levitationBlockEntityType, pos, state)
     }
-    val levitationBlock: LevitationBlock = LevitationBlock(levitationBlockEntityFactory, FabricBlockSettings.of(Material.STONE, MapColor.BLUE).requiresTool().breakByTool(FabricToolTags.PICKAXES, 3)
+    val levitationBlock: LevitationBlock = LevitationBlock(levitationBlockEntityFactory, FabricBlockSettings.of(Material.STONE, MapColor.BLUE).requiresTool()
         .nonOpaque()
         .luminance { 4 }
         .strength(10.0F, 1200.0F))

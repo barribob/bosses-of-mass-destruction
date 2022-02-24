@@ -154,19 +154,19 @@ class SimpleParticle(
         vertexConsumer!!.vertex(
             vector3fs[0].x.toDouble(), vector3fs[0].y.toDouble(),
             vector3fs[0].z.toDouble()
-        ).texture(m, o).color(colorRed, colorGreen, colorBlue, colorAlpha).light(p).next()
+        ).texture(m, o).color(red, green, blue, alpha).light(p).next()
         vertexConsumer.vertex(
             vector3fs[1].x.toDouble(), vector3fs[1].y.toDouble(),
             vector3fs[1].z.toDouble()
-        ).texture(m, n).color(colorRed, colorGreen, colorBlue, colorAlpha).light(p).next()
+        ).texture(m, n).color(red, green, blue, alpha).light(p).next()
         vertexConsumer.vertex(
             vector3fs[2].x.toDouble(), vector3fs[2].y.toDouble(),
             vector3fs[2].z.toDouble()
-        ).texture(l, n).color(colorRed, colorGreen, colorBlue, colorAlpha).light(p).next()
+        ).texture(l, n).color(red, green, blue, alpha).light(p).next()
         vertexConsumer.vertex(
             vector3fs[3].x.toDouble(), vector3fs[3].y.toDouble(),
             vector3fs[3].z.toDouble()
-        ).texture(l, o).color(colorRed, colorGreen, colorBlue, colorAlpha).light(p).next()
+        ).texture(l, o).color(red, green, blue, alpha).light(p).next()
     }
 
     init {

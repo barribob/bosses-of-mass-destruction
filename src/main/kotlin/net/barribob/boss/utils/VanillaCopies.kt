@@ -301,10 +301,9 @@ object VanillaCopies {
                 for (q in k..n) {
                     val blockPos = BlockPos(o, p, q)
                     val blockState: BlockState = this.world.getBlockState(blockPos)
-                    val block = blockState.block
                     if (!blockState.isAir && blockState.material != Material.FIRE) {
                         if (this.world.gameRules.getBoolean(GameRules.DO_MOB_GRIEFING)
-                            && !BlockTags.WITHER_IMMUNE.contains(block)
+                            && !blockState.isIn(BlockTags.WITHER_IMMUNE)
                         ) {
                             bl2 = this.world.breakBlock(blockPos, false) || bl2
                         } else {

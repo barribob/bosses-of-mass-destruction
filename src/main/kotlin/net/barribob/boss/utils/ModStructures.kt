@@ -3,7 +3,6 @@ package net.barribob.boss.utils
 import me.shedaniel.autoconfig.AutoConfig
 import net.barribob.boss.Mod
 import net.barribob.boss.config.ModConfig
-import net.barribob.boss.mixin.StructuresConfigAccessor
 import net.barribob.boss.structure.GauntletArenaStructureFeature
 import net.barribob.boss.structure.LichTowerStructureFeature
 import net.barribob.boss.structure.ModStructurePiece
@@ -12,24 +11,18 @@ import net.barribob.boss.structure.util.CodeStructurePiece
 import net.barribob.boss.structure.util.IStructureSpawns
 import net.barribob.boss.structure.void_blossom_cavern.VoidBlossomArenaStructureFeature
 import net.barribob.boss.structure.void_blossom_cavern.VoidBlossomCavernPieceGenerator
-import net.fabricmc.fabric.api.biome.v1.BiomeModifications
-import net.fabricmc.fabric.api.biome.v1.BiomeSelectors
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents
-import net.fabricmc.fabric.api.structure.v1.FabricStructureBuilder
+import net.minecraft.class_6908
 import net.minecraft.entity.SpawnGroup
 import net.minecraft.structure.StructurePieceType
+import net.minecraft.tag.TagKey
 import net.minecraft.util.Identifier
 import net.minecraft.util.collection.Pool
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.registry.BuiltinRegistries
 import net.minecraft.util.registry.Registry
 import net.minecraft.util.registry.RegistryKey
-import net.minecraft.world.World
-import net.minecraft.world.biome.BiomeKeys
 import net.minecraft.world.biome.SpawnSettings
-import net.minecraft.world.gen.GenerationStep
 import net.minecraft.world.gen.StructureAccessor
-import net.minecraft.world.gen.chunk.FlatChunkGenerator
 import net.minecraft.world.gen.feature.ConfiguredStructureFeature
 import net.minecraft.world.gen.feature.DefaultFeatureConfig
 import net.minecraft.world.gen.feature.StructureFeature
@@ -43,9 +36,10 @@ object ModStructures {
         Mod.identifier("obsidilith_arena_piece"),
         StructureFactories.obsidilithArena
     )
+    val obsidilithArenaStructureTagKey = TagKey.of(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, Mod.identifier("obsidilith_arena"))
     val obsidilithArenaStructure =
         ObsidilithArenaStructureFeature(DefaultFeatureConfig.CODEC, modConfig.obsidilithConfig)
-    private val configuredObsidilithStructure = obsidilithArenaStructure.configure(DefaultFeatureConfig.DEFAULT)
+    val configuredObsidilithStructure = obsidilithArenaStructure.configure(DefaultFeatureConfig.DEFAULT, class_6908.MINESHAFT_HAS_STRUCTURE)
 
     val gauntletArenaPiece: StructurePieceType = Registry.register(
         Registry.STRUCTURE_PIECE,
@@ -53,16 +47,18 @@ object ModStructures {
         StructureFactories.gauntletArena
     )
     val gauntletArenaStructure = GauntletArenaStructureFeature(DefaultFeatureConfig.CODEC)
-    private val configuredGauntletStructure = gauntletArenaStructure.configure(DefaultFeatureConfig.DEFAULT)
+    val configuredGauntletStructure = gauntletArenaStructure.configure(DefaultFeatureConfig.DEFAULT, class_6908.MINESHAFT_HAS_STRUCTURE)
 
+    val lichStructureTagKey = TagKey.of(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, Mod.identifier("lich_tower"))
     val lichTowerPiece: StructurePieceType = Registry.register(
         Registry.STRUCTURE_PIECE,
         Mod.identifier("lich_tower_piece"),
         StructureFactories.lichTower
     )
     val lichTowerStructure = LichTowerStructureFeature(DefaultFeatureConfig.CODEC)
-    private val configuredLichTowerStructure = lichTowerStructure.configure(DefaultFeatureConfig.DEFAULT)
+    val configuredLichTowerStructure = lichTowerStructure.configure(DefaultFeatureConfig.DEFAULT, class_6908.MINESHAFT_HAS_STRUCTURE)
 
+    val voidBlossomStructureArenaTagKey = TagKey.of(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, Mod.identifier("void_blossom"))
     val voidBlossomPiece: StructurePieceType = Registry.register(
         Registry.STRUCTURE_PIECE,
         Mod.identifier("void_blossom_piece"),
@@ -74,7 +70,7 @@ object ModStructures {
         StructureFactories.voidBlossomStructure
     )
     val voidBlossomArenaStructure = VoidBlossomArenaStructureFeature(DefaultFeatureConfig.CODEC)
-    private val configuredVoidBlossomArenaStructure = voidBlossomArenaStructure.configure(DefaultFeatureConfig.DEFAULT)
+    val configuredVoidBlossomArenaStructure = voidBlossomArenaStructure.configure(DefaultFeatureConfig.DEFAULT, class_6908.MINESHAFT_HAS_STRUCTURE)
 
     private val emptyStructureSpawn = IStructureSpawns { listOf() }
     private val structureSpawnRegistry: Map<StructureFeature<*>, IStructureSpawns> = mapOf(
@@ -89,67 +85,72 @@ object ModStructures {
         val voidBlossomGenConfig = modConfig.voidBlossomConfig.arenaGeneration
         val lichConfig = modConfig.lichConfig.towerGeneration
 
-        FabricStructureBuilder.create(Mod.identifier("obsidilith_arena"), obsidilithArenaStructure)
-            .step(GenerationStep.Feature.SURFACE_STRUCTURES)
-            .defaultConfig(obsidilithGenConfig.generationSpacing, obsidilithGenConfig.generationSeparation, 499672)
-            .register()
+//        FabricStructureBuilder.create(Mod.identifier("obsidilith_arena"), obsidilithArenaStructure)
+//            .step(GenerationStep.Feature.SURFACE_STRUCTURES)
+//            .defaultConfig(obsidilithGenConfig.generationSpacing, obsidilithGenConfig.generationSeparation, 499672)
+//            .register()
+//
+//
+//        FabricStructureBuilder.create(Mod.identifier("gauntlet_arena"), gauntletArenaStructure)
+//            .step(GenerationStep.Feature.UNDERGROUND_DECORATION)
+//            .defaultConfig(gauntletGenConfig.generationSpacing, gauntletGenConfig.generationSeparation, 499672)
+//            .register()
+//
+//        FabricStructureBuilder.create(Mod.identifier("lich_tower"), lichTowerStructure)
+//            .step(GenerationStep.Feature.SURFACE_STRUCTURES)
+//            .defaultConfig(lichConfig.lichTowerGenerationSpacing, lichConfig.lichTowerGenerationSeparation, 1230784)
+//            .register()
+//
+//        FabricStructureBuilder.create(Mod.identifier("void_blossom"), voidBlossomArenaStructure)
+//            .step(GenerationStep.Feature.UNDERGROUND_STRUCTURES)
+//            .defaultConfig(voidBlossomGenConfig.generationSpacing, voidBlossomGenConfig.generationSeparation, 574839)
+//            .register()
 
-        FabricStructureBuilder.create(Mod.identifier("gauntlet_arena"), gauntletArenaStructure)
-            .step(GenerationStep.Feature.UNDERGROUND_DECORATION)
-            .defaultConfig(gauntletGenConfig.generationSpacing, gauntletGenConfig.generationSeparation, 499672)
-            .register()
+        register(Mod.identifier("configured_obsidilith_arena"), configuredObsidilithStructure)
+        register(Mod.identifier("configured_gauntlet_arena"), configuredGauntletStructure)
+        register(Mod.identifier("configured_lich_tower"), configuredLichTowerStructure)
+        register(Mod.identifier("configured_void_blossom_arena"), configuredVoidBlossomArenaStructure)
+//        if (obsidilithGenConfig.generationEnabled) {
+//            BiomeModifications.({
+//                BiomeSelectors.foundInTheEnd().test(it) && it.biomeKey != BiomeKeys.THE_END
+//            }, register(Mod.identifier("configured_obsidilith_arena"), configuredObsidilithStructure))
+//        }
+//
+//        if (gauntletGenConfig.generationEnabled) {
+//            BiomeModifications.addStructure(
+//                BiomeSelectors.foundInTheNether()::test,
+//                register(Mod.identifier("configured_gauntlet_arena"), configuredGauntletStructure)
+//            )
+//        }
+//
+//        if (lichConfig.generateLichTower) {
+//            BiomeModifications.addStructure(
+//                { it.biome.temperature <= 0.05 && BiomeSelectors.foundInOverworld().test(it) },
+//                register(Mod.identifier("configured_lich_tower"), configuredLichTowerStructure)
+//            )
+//        }
+//
+//        if (voidBlossomGenConfig.generationEnabled) {
+//            BiomeModifications.addStructure(
+//                BiomeSelectors.foundInOverworld()::test,
+//                register(Mod.identifier("configured_void_blossom_arena"), configuredVoidBlossomArenaStructure)
+//            )
+//        }
 
-        FabricStructureBuilder.create(Mod.identifier("lich_tower"), lichTowerStructure)
-            .step(GenerationStep.Feature.SURFACE_STRUCTURES)
-            .defaultConfig(lichConfig.lichTowerGenerationSpacing, lichConfig.lichTowerGenerationSeparation, 1230784)
-            .register()
-
-        FabricStructureBuilder.create(Mod.identifier("void_blossom"), voidBlossomArenaStructure)
-            .step(GenerationStep.Feature.UNDERGROUND_STRUCTURES)
-            .defaultConfig(voidBlossomGenConfig.generationSpacing, voidBlossomGenConfig.generationSeparation, 574839)
-            .register()
-
-        if (obsidilithGenConfig.generationEnabled) {
-            BiomeModifications.addStructure({
-                BiomeSelectors.foundInTheEnd().test(it) && it.biomeKey != BiomeKeys.THE_END
-            }, register(Mod.identifier("configured_obsidilith_arena"), configuredObsidilithStructure))
-        }
-
-        if (gauntletGenConfig.generationEnabled) {
-            BiomeModifications.addStructure(
-                BiomeSelectors.foundInTheNether()::test,
-                register(Mod.identifier("configured_gauntlet_arena"), configuredGauntletStructure)
-            )
-        }
-
-        if (lichConfig.generateLichTower) {
-            BiomeModifications.addStructure(
-                { it.biome.temperature <= 0.05 && BiomeSelectors.foundInOverworld().test(it) },
-                register(Mod.identifier("configured_lich_tower"), configuredLichTowerStructure)
-            )
-        }
-
-        if (voidBlossomGenConfig.generationEnabled) {
-            BiomeModifications.addStructure(
-                BiomeSelectors.foundInOverworld()::test,
-                register(Mod.identifier("configured_void_blossom_arena"), configuredVoidBlossomArenaStructure)
-            )
-        }
-
-        ServerWorldEvents.LOAD.register(ServerWorldEvents.Load { _, world ->
-            val chunkGenerator = world.chunkManager.chunkGenerator
-            if (chunkGenerator is FlatChunkGenerator && world.registryKey == World.OVERWORLD) {
-                val map = chunkGenerator.structuresConfig.structures.filter {
-                    !listOf(
-                        obsidilithArenaStructure,
-                        lichTowerStructure,
-                        gauntletArenaStructure,
-                        voidBlossomArenaStructure
-                    ).contains(it.key)
-                }.toMap()
-                (chunkGenerator.structuresConfig as StructuresConfigAccessor).bossesOfMassDestruction_setStructures(map)
-            }
-        })
+//        ServerWorldEvents.LOAD.register(ServerWorldEvents.Load { _, world ->
+//            val chunkGenerator = world.chunkManager.chunkGenerator
+//            if (chunkGenerator is FlatChunkGenerator && world.registryKey == World.OVERWORLD) {
+//                val map = chunkGenerator.structuresConfig.structures.filter {
+//                    !listOf(
+//                        obsidilithArenaStructure,
+//                        lichTowerStructure,
+//                        gauntletArenaStructure,
+//                        voidBlossomArenaStructure
+//                    ).contains(it.key)
+//                }.toMap()
+//                (chunkGenerator.structuresConfig as StructuresConfigAccessor).bossesOfMassDestruction_setStructures(map)
+//            }
+//        })
     }
 
     private fun register(
@@ -167,12 +168,12 @@ object ModStructures {
         blockPos: BlockPos,
         cir: CallbackInfoReturnable<Pool<SpawnSettings.SpawnEntry>>
     ) {
-        if (spawnGroup == SpawnGroup.MONSTER) {
-            val spawnRegistryEntry = structureSpawnRegistry.entries.firstOrNull {
-                structureAccessor.getStructureAt(blockPos, it.key).hasChildren()
-            } ?: return
-            cir.returnValue = Pool.of(spawnRegistryEntry.value.getMonsterSpawnList())
-        }
+//        if (spawnGroup == SpawnGroup.MONSTER) {
+//            val spawnRegistryEntry = structureSpawnRegistry.entries.firstOrNull {
+//                structureAccessor.getStructureAt(blockPos, it.key).hasChildren()
+//            } ?: return
+//            cir.returnValue = Pool.of(spawnRegistryEntry.value.getMonsterSpawnList())
+//        }
     }
 
     private object StructureFactories {

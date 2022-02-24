@@ -10,11 +10,11 @@ import net.barribob.maelstrom.static_utilities.asVec3d
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.structure.StructureStart
 import net.minecraft.util.math.BlockPos
-import net.minecraft.world.gen.feature.StructureFeature
+import net.minecraft.world.gen.feature.ConfiguredStructureFeature
 
 class GauntletStructureRepair : StructureRepair {
-    override fun associatedStructure(): StructureFeature<*> = ModStructures.gauntletArenaStructure
-    override fun repairStructure(world: ServerWorld, structureStart: StructureStart<*>) {
+    override fun associatedStructure(): ConfiguredStructureFeature<*,*> = ModStructures.configuredGauntletStructure
+    override fun repairStructure(world: ServerWorld, structureStart: StructureStart) {
         val pos = runeCenter(structureStart)
 
         world.spawnParticle(Particles.GAUNTLET_REVIVE_SPARKLES, pos.up(5).asVec3d(), VecUtils.unit.multiply(3.0), 100)
@@ -39,11 +39,11 @@ class GauntletStructureRepair : StructureRepair {
         world.setBlockState(up.south(), seal)
     }
 
-    private fun runeCenter(structureStart: StructureStart<*>): BlockPos {
+    private fun runeCenter(structureStart: StructureStart): BlockPos {
         return structureStart.boundingBox.center.down(10)
     }
 
-    override fun shouldRepairStructure(world: ServerWorld, structureStart: StructureStart<*>): Boolean {
+    override fun shouldRepairStructure(world: ServerWorld, structureStart: StructureStart): Boolean {
         val pos = runeCenter(structureStart)
         val hasSealAlready = world.getBlockState(pos.up()).block == ModBlocks.gauntletBlackstone
         val noBoss = world.getEntitiesByType(Entities.GAUNTLET) { it.squaredDistanceTo(pos.asVec3d()) < 100 * 100 }.none()

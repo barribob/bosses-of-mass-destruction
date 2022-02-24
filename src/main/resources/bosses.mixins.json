@@ -9,8 +9,7 @@
     "LivingEntityMixin",
     "ServerPlayerEntityMixin",
     "SpawnEntryMixin",
-    "SpawnHelperMixin",
-    "StructuresConfigAccessor"
+    "SpawnHelperMixin"
   ],
   "client": [
     "BossBarHudMixin"

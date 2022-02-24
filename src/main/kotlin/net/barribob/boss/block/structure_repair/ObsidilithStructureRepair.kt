@@ -17,13 +17,14 @@ import net.minecraft.sound.SoundEvents
 import net.minecraft.structure.StructureStart
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
+import net.minecraft.world.gen.feature.ConfiguredStructureFeature
 import net.minecraft.world.gen.feature.StructureFeature
 import java.util.*
 
 class ObsidilithStructureRepair : StructureRepair {
-    override fun associatedStructure(): StructureFeature<*> = ModStructures.obsidilithArenaStructure
+    override fun associatedStructure(): ConfiguredStructureFeature<*,*> = ModStructures.configuredObsidilithStructure
 
-    override fun repairStructure(world: ServerWorld, structureStart: StructureStart<*>) {
+    override fun repairStructure(world: ServerWorld, structureStart: StructureStart) {
         val topCenter = getTopCenter(structureStart)
         val worldEventScheduler = ModComponents.getWorldEventScheduler(world)
         NetworkUtils.sendObsidilithRevivePacket(world, topCenter.asVec3d().add(0.5, 0.5, 0.5))
@@ -41,12 +42,12 @@ class ObsidilithStructureRepair : StructureRepair {
         }
     }
 
-    private fun getTopCenter(structureStart: StructureStart<*>): BlockPos {
+    private fun getTopCenter(structureStart: StructureStart): BlockPos {
         val centerPos = structureStart.boundingBox.center
         return BlockPos(centerPos.x, structureStart.boundingBox.maxY, centerPos.z)
     }
 
-    override fun shouldRepairStructure(world: ServerWorld, structureStart: StructureStart<*>): Boolean {
+    override fun shouldRepairStructure(world: ServerWorld, structureStart: StructureStart): Boolean {
         val topCenter = getTopCenter(structureStart)
         val noBoss = world.getEntitiesByType(Entities.OBSIDILITH) { it.squaredDistanceTo(topCenter.asVec3d()) < 100 * 100 }.none()
         val hasAltar = world.getBlockState(topCenter).block == ModBlocks.obsidilithSummonBlock

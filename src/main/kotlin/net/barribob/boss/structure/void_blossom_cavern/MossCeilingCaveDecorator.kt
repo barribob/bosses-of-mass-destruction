@@ -32,7 +32,7 @@ class MossCeilingCaveDecorator(private val bottomOfWorld: Int, private val rando
             mossCeilingPositions.groupBy { Pair(it.x shr 3, it.z shr 3) }.map { it.value.first() }
         for (mossPos in spacedMossCeilingPositions) {
             if (boundingBox.contains(mossPos)) {
-                UndergroundConfiguredFeatures.MOSS_PATCH_CEILING.generate(world, chunkGenerator, random, mossPos)
+                UndergroundConfiguredFeatures.MOSS_PATCH_CEILING.value().generate(world, chunkGenerator, random, mossPos)
             }
         }
     }

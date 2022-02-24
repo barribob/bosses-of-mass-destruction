@@ -20,11 +20,11 @@ import net.minecraft.server.world.ServerWorld
 import net.minecraft.structure.StructureStart
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
-import net.minecraft.world.gen.feature.StructureFeature
+import net.minecraft.world.gen.feature.ConfiguredStructureFeature
 
 class VoidBlossomStructureRepair : StructureRepair {
-    override fun associatedStructure(): StructureFeature<*> = ModStructures.voidBlossomArenaStructure
-    override fun repairStructure(world: ServerWorld, structureStart: StructureStart<*>) {
+    override fun associatedStructure(): ConfiguredStructureFeature<*,*> = ModStructures.configuredVoidBlossomArenaStructure
+    override fun repairStructure(world: ServerWorld, structureStart: StructureStart) {
         val offset = getCenterSpawn(structureStart, world)
         NetworkUtils.sendVoidBlossomRevivePacket(world, offset.asVec3d())
 
@@ -33,13 +33,13 @@ class VoidBlossomStructureRepair : StructureRepair {
         }, 60))
     }
 
-    override fun shouldRepairStructure(world: ServerWorld, structureStart: StructureStart<*>): Boolean {
+    override fun shouldRepairStructure(world: ServerWorld, structureStart: StructureStart): Boolean {
         val centerPos = getCenterSpawn(structureStart, world)
         return world.getEntitiesByType(Entities.VOID_BLOSSOM) { it.squaredDistanceTo(centerPos.asVec3d()) < 100 * 100 }.none()
     }
 
     private fun getCenterSpawn(
-        structureStart: StructureStart<*>,
+        structureStart: StructureStart,
         world: ServerWorld
     ): BlockPos {
         val pos = structureStart.boundingBox.center
