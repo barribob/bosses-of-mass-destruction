@@ -18,6 +18,10 @@ test {
     useJUnitPlatform()
 }
 
+loom {
+    accessWidenerPath = file("src/main/resources/bomd.accesswidener")
+}
+
 repositories {
     maven { url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
     maven {
@@ -62,9 +66,6 @@ dependencies {
     modApi "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${project.cardinal_components_version}"
     modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${project.cardinal_components_version}"
     modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${project.cardinal_components_version}"
-    include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${project.cardinal_components_version}"
-    include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${project.cardinal_components_version}"
-    include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${project.cardinal_components_version}"
 
     modCompileOnly("com.terraformersmc:modmenu:${project.modmenu_version}") {
         exclude module: "fabric-api"

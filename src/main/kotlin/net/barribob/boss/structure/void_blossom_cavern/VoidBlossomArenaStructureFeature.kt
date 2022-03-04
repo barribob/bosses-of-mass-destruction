@@ -26,7 +26,7 @@ class VoidBlossomArenaStructureFeature(codec: Codec<DefaultFeatureConfig>) :
             val y = 35 + context.chunkGenerator.minimumY
             collector.addPiece(
                 CodeStructurePiece(
-                    ModStructures.voidBlossomPiece,
+                    ModStructures.voidBlossomCavernPiece,
                     BlockBox(BlockPos(x, y, z)).expand(32),
                     VoidBlossomCavernPieceGenerator()
                 )

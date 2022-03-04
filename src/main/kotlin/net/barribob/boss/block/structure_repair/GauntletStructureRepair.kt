@@ -10,10 +10,11 @@ import net.barribob.maelstrom.static_utilities.asVec3d
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.structure.StructureStart
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.registry.RegistryKey
 import net.minecraft.world.gen.feature.ConfiguredStructureFeature
 
 class GauntletStructureRepair : StructureRepair {
-    override fun associatedStructure(): ConfiguredStructureFeature<*,*> = ModStructures.configuredGauntletStructure
+    override fun associatedStructure(): RegistryKey<ConfiguredStructureFeature<*, *>> = ModStructures.gauntletStructureRegistry.configuredStructureKey
     override fun repairStructure(world: ServerWorld, structureStart: StructureStart) {
         val pos = runeCenter(structureStart)
 

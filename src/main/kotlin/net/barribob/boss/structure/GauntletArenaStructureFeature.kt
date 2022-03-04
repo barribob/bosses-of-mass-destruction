@@ -21,7 +21,7 @@ class GauntletArenaStructureFeature(codec: Codec<DefaultFeatureConfig>) : Struct
         fun addPieces(collector : StructurePiecesCollector, context : StructurePiecesGenerator.Context<DefaultFeatureConfig>) {
             val blockPos = BlockPos(context.chunkPos().startX, 15, context.chunkPos().startZ)
             val rotation = BlockRotation.random(context.random)
-            collector.addPiece(ModStructurePiece(context.structureManager, blockPos, template, rotation, ModStructures.gauntletArenaPiece))
+            collector.addPiece(ModStructurePiece(context.structureManager, blockPos, template, rotation, ModStructures.gauntletStructurePiece))
         }
     }
 }

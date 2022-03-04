@@ -129,7 +129,7 @@ class SoulStarItem(settings: Settings?) : Item(settings) {
         } else {
             user.setCurrentHand(hand)
             if (world is ServerWorld) {
-                val blockPos = world.locateStructure(ModStructures.lichStructureTagKey, user.blockPos,  100, false)
+                val blockPos = world.locateStructure(ModStructures.soulStarStructureKey, user.blockPos,  100, false)
                 if (blockPos != null) {
                     val entity = SoulStarEntity(world, user.x, user.eyeY, user.z)
                     entity.setItem(itemStack)

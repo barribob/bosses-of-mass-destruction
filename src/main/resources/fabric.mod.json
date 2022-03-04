@@ -58,5 +58,6 @@
       "bosses_of_mass_destruction:chunk_block_cache_component",
       "bosses_of_mass_destruction:charged_ender_pearl_cooldown_component"
     ]
-  }
+  },
+  "accessWidener": "bomd.accesswidener"
 }

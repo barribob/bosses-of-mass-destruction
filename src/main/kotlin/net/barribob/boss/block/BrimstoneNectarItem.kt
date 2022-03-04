@@ -20,6 +20,7 @@ import net.minecraft.util.Formatting
 import net.minecraft.util.Hand
 import net.minecraft.util.TypedActionResult
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.registry.Registry
 import net.minecraft.world.World
 
 class BrimstoneNectarItem(settings: Settings, private val structureRepairs: List<StructureRepair>) : Item(settings) {
@@ -79,7 +80,7 @@ class BrimstoneNectarItem(settings: Settings, private val structureRepairs: List
         world: ServerWorld,
         blockPos: BlockPos,
         it: StructureRepair
-    ) = world.structureAccessor.getStructureAt(blockPos, it.associatedStructure())
+    ) = world.structureAccessor.getStructureAt(blockPos, world.structureAccessor.method_41036().get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY).get(it.associatedStructure()))
 
     private fun playSound(world: World, user: PlayerEntity) {
         world.playSound(

@@ -17,12 +17,12 @@ import net.minecraft.sound.SoundEvents
 import net.minecraft.structure.StructureStart
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
+import net.minecraft.util.registry.RegistryKey
 import net.minecraft.world.gen.feature.ConfiguredStructureFeature
-import net.minecraft.world.gen.feature.StructureFeature
 import java.util.*
 
 class ObsidilithStructureRepair : StructureRepair {
-    override fun associatedStructure(): ConfiguredStructureFeature<*,*> = ModStructures.configuredObsidilithStructure
+    override fun associatedStructure(): RegistryKey<ConfiguredStructureFeature<*, *>> = ModStructures.obsidilithStructureRegistry.configuredStructureKey
 
     override fun repairStructure(world: ServerWorld, structureStart: StructureStart) {
         val topCenter = getTopCenter(structureStart)

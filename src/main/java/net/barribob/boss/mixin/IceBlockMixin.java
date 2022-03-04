@@ -11,6 +11,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,8 +24,8 @@ public abstract class IceBlockMixin {
     @Inject(method = "afterBreak", at = @At("TAIL"))
     private void onAfterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack stack, CallbackInfo ci) {
         if (EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, stack) == 0
-                && world instanceof ServerWorld
-                && ((ServerWorld) world).getStructureAccessor().getStructureAt(pos, ModStructures.INSTANCE.getConfiguredLichTowerStructure()).hasChildren()) {
+                && world instanceof ServerWorld serverWorld
+                && serverWorld.getStructureAccessor().getStructureAt(pos, serverWorld.getStructureAccessor().method_41036().get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY).get(ModStructures.INSTANCE.getLichStructureRegistry().getConfiguredStructureKey())).hasChildren()) {
             world.setBlockState(pos, Blocks.AIR.getDefaultState());
         }
     }

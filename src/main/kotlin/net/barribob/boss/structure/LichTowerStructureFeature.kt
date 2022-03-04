@@ -32,7 +32,7 @@ class LichTowerStructureFeature(codec: Codec<DefaultFeatureConfig>) :
                     blockPos,
                     Mod.identifier("lich_tower_1"),
                     rotation,
-                    ModStructures.lichTowerPiece
+                    ModStructures.lichStructurePiece
                 )
             )
             collector.addPiece(
@@ -41,7 +41,7 @@ class LichTowerStructureFeature(codec: Codec<DefaultFeatureConfig>) :
                     blockPos.up(59 - 11),
                     Mod.identifier("lich_tower_2"),
                     rotation,
-                    ModStructures.lichTowerPiece
+                    ModStructures.lichStructurePiece
                 )
             )
         }
