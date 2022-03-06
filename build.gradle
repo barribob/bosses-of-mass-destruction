@@ -29,9 +29,9 @@ repositories {
         url = 'https://ladysnake.jfrog.io/artifactory/mods'
     }
     mavenCentral()
-    mavenLocal()
     maven { url "https://maven.shedaniel.me/" }
     maven { url "https://maven.terraformersmc.com/" }
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -51,11 +51,11 @@ dependencies {
     )
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${project.junit_version}")
 
-    modImplementation "net.barribob:maelstrom-library:${project.maelstrom_version}-${project.minecraft_maelstrom_version}"
-    modImplementation "io.github.stuff_stuffs.multipart_entities:MultipartEntities:${project.multipart_version}"
+    modImplementation "com.github.miyo6032:maelstrom-lib:${project.maelstrom_commit_hash}"
+    modImplementation "com.github.miyo6032:MultipartEntities:${project.multipart_commit_hash}"
 
-    include "net.barribob:maelstrom-library:${project.maelstrom_version}-${project.minecraft_maelstrom_version}"
-    include "io.github.stuff_stuffs.multipart_entities:MultipartEntities:${project.multipart_version}"
+    include "com.github.miyo6032:maelstrom-lib:${project.maelstrom_commit_hash}"
+    include "com.github.miyo6032:MultipartEntities:${project.multipart_commit_hash}"
 
     modImplementation "software.bernie.geckolib:geckolib-${project.geckolib_minecraft_version}:${project.geckolib_version}"
 
