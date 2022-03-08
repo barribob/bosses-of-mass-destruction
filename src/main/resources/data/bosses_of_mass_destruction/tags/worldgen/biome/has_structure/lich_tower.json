@@ -5,6 +5,9 @@
     "minecraft:snowy_plains",
     "minecraft:snowy_slopes",
     "minecraft:ice_spikes",
-    "minecraft:snowy_plains"
+    "minecraft:snowy_plains",
+    "minecraft:frozen_peaks",
+    "minecraft:snowy_beach",
+    "minecraft:frozen_ocean"
   ]
 }
