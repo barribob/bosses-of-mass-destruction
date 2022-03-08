@@ -32,12 +32,6 @@ class ModComponents : WorldComponentInitializer, EntityComponentInitializer {
                 IChunkBlockCacheComponent::class.java
             )
 
-        private val chargedEnderPearlCooldownComponentKey: ComponentKey<IPlayerChargedEnderPearlCooldownComponent> =
-            ComponentRegistryV3.INSTANCE.getOrCreate(
-                Mod.identifier("charged_ender_pearl_cooldown_component"),
-                IPlayerChargedEnderPearlCooldownComponent::class.java
-            )
-
         override fun getWorldEventScheduler(world: World) = eventSchedulerComponentKey.get(world).get()
 
         override fun getPlayerPositions(serverPlayerEntity: ServerPlayerEntity): List<Vec3d> =
@@ -54,6 +48,5 @@ class ModComponents : WorldComponentInitializer, EntityComponentInitializer {
 
     override fun registerEntityComponentFactories(registry: EntityComponentFactoryRegistry) {
         registry.registerFor(ServerPlayerEntity::class.java, playerMoveHistoryComponentKey, ::PlayerMoveHistory)
-        registry.registerFor(ServerPlayerEntity::class.java, chargedEnderPearlCooldownComponentKey, ::PlayerChargedEnderPearlCooldownComponent)
     }
 }

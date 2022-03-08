@@ -10,7 +10,6 @@ import net.barribob.boss.structure.ObsidilithArenaStructureFeature
 import net.barribob.boss.structure.util.CodeStructurePiece
 import net.barribob.boss.structure.void_blossom_cavern.VoidBlossomArenaStructureFeature
 import net.barribob.boss.structure.void_blossom_cavern.VoidBlossomCavernPieceGenerator
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents
 import net.minecraft.entity.SpawnGroup
 import net.minecraft.structure.StructurePieceType
 import net.minecraft.tag.TagKey
