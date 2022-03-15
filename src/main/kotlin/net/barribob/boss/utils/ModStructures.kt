@@ -37,7 +37,6 @@ object ModStructures {
 
     val voidLilyStructureKey: TagKey<ConfiguredStructureFeature<*, *>> = TagKey.of(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, Mod.identifier("void_lily_target"))
     val voidBlossomCavernPiece: StructurePieceType = createStructurePiece(Mod.identifier("void_blossom_piece"), StructureFactories.voidBlossom)
-    val voidBlossomStructurePiece: StructurePieceType = createStructurePiece(Mod.identifier("void_blossom_structure_piece"), StructureFactories.voidBlossomStructure)
     val voidBlossomStructureRegistry = StructureRegister(Mod.identifier("void_blossom"))
 
     fun init() {
@@ -80,7 +79,6 @@ object ModStructures {
         val obsidilithArena = StructurePieceType { m, t -> ModStructurePiece(m.structureManager, t, obsidilithStructurePiece) }
         val gauntletArena = StructurePieceType { m, t -> ModStructurePiece(m.structureManager, t, gauntletStructurePiece) }
         val lichTower = StructurePieceType { m, t -> ModStructurePiece(m.structureManager, t, lichStructurePiece) }
-        val voidBlossomStructure = StructurePieceType { m, t -> ModStructurePiece(m.structureManager, t, voidBlossomStructurePiece) }
         val voidBlossom: StructurePieceType = StructurePieceType { _, t -> CodeStructurePiece(voidBlossomCavernPiece, t, VoidBlossomCavernPieceGenerator()) }
     }
 }

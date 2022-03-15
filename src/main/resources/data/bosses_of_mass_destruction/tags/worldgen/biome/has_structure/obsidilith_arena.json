@@ -1,9 +1,6 @@
 {
   "replace": false,
   "values": [
-    "minecraft:end_highlands",
-    "minecraft:end_midlands",
-    "minecraft:small_end_islands",
-    "minecraft:end_barrens"
+    "#bosses_of_mass_destruction:collections/in_end"
   ]
 }
