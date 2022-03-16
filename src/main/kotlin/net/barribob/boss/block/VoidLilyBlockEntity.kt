@@ -63,7 +63,7 @@ class VoidLilyBlockEntity(type: BlockEntityType<*>?, pos: BlockPos?, state: Bloc
         ) {
             val blockPos = world.locateStructure(ModStructures.voidLilyStructureKey, pos, 50, false)
             if (blockPos != null) {
-                entity.structureDirection = blockPos.subtract(pos).asVec3d().normalize()
+                entity.structureDirection = BlockPos(blockPos.x, world.bottomY, blockPos.z).subtract(pos).asVec3d().normalize()
             } else {
                 entity.structureDirection = VecUtils.yAxis
             }
