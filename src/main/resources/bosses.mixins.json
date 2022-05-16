@@ -9,6 +9,7 @@
     "IceBlockMixin",
     "LivingEntityMixin",
     "ServerPlayerEntityMixin",
+    "SpawnHelperMixin",
     "StructureFeatureRegisterInvoker"
   ],
   "client": [
