@@ -3,8 +3,6 @@ package net.barribob.boss.config
 import me.shedaniel.autoconfig.annotation.ConfigEntry
 
 class LichConfig {
-    val eternalNighttime = true
-
     @ConfigEntry.BoundedDiscrete(min = 0, max = 10000)
     val experienceDrop = 1500
     val idleHealingPerTick = 0.2f

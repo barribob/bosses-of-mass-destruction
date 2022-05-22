@@ -171,7 +171,6 @@ object Entities {
                 ),
                 BoundedLighting(5),
                 LichBoneLight(),
-                EternalNightRenderer(),
                 renderLayer = RenderLayer.getEntityCutoutNoCull(texture)
             )
         }

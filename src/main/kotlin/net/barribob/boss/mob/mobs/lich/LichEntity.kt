@@ -73,7 +73,6 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, private v
     private val moveLogic = LichMoveLogic(statusRegistry, this, damageMemory)
     private val lichParticles = LichParticleHandler(this, preTickEvents)
 
-    val shouldSetToNighttime = mobConfig.eternalNighttime
     val velocityHistory = HistoricalData(Vec3d.ZERO)
     var collides = true
 
@@ -84,7 +83,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, private v
         StagedDamageHandler(hpPercentRageModes) { world.sendEntityStatus(this, hpBelowThresholdStatus) },
         DamagedAttackerNotSeen(this) { if(it is ServerPlayerEntity) teleportAction.performTeleport(it) },
         moveLogic, damageMemory )
-    override val bossBar = ServerBossBar(this.displayName, BossBar.Color.BLUE, BossBar.Style.PROGRESS)
+    override val bossBar = ServerBossBar(this.displayName, BossBar.Color.BLUE, BossBar.Style.PROGRESS).setDarkenSky(true).setThickenFog(true) as ServerBossBar
     override val serverTick = CompositeEntityTick(cappedHeal, moveLogic)
     override val clientTick = lichParticles
 
@@ -120,12 +119,6 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, private v
 
     override fun clientTick() {
         velocityHistory.set(velocity)
-    }
-
-    override fun serverTick(serverWorld: ServerWorld) {
-        if (shouldSetToNighttime) {
-            serverWorld.timeOfDay = LichUtils.timeToNighttime(serverWorld.timeOfDay)
-        }
     }
 
     override fun collides(): Boolean = collides

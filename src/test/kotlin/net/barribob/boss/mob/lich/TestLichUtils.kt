@@ -9,35 +9,6 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 
 class TestLichUtils {
-    private val fullDay = 24000L
-    private val midnight = 16000L
-
-    @Test
-    fun timeToNighttime_SwitchesDayToNight() {
-        val time = (fullDay * 2) + 5000
-        val actual = LichUtils.timeToNighttime(time)
-        val expected = (fullDay * 2) + midnight
-
-        Assertions.assertEquals(expected, actual)
-    }
-
-    @Test
-    fun timeToNighttime_StaysAtSameTime() {
-        val time = (fullDay * 2) + midnight
-        val actual = LichUtils.timeToNighttime(time)
-
-        Assertions.assertEquals(time, actual)
-    }
-
-    @Test
-    fun timeToNighttime_StaysAtSameTime_With20TickLag() {
-        val time = (fullDay * 2) + midnight + 20
-        val actual = LichUtils.timeToNighttime(time)
-        val expected = (fullDay * 2) + midnight
-
-        Assertions.assertEquals(expected, actual)
-    }
-
     @ParameterizedTest
     @CsvSource(
         "8f, 3f, 1f",

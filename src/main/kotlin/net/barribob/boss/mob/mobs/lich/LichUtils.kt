@@ -14,15 +14,6 @@ object LichUtils {
     val blueColorFade: (Float) -> Vec3d =
         { MathUtils.lerpVec(it, ModColors.COMET_BLUE, ModColors.FADED_COMET_BLUE) }
 
-    /**
-     * Info from [ServerWorld.tick]
-     */
-    fun timeToNighttime(currentTime: Long): Long {
-        val dayLength = 24000L
-        val midnight = 16000L
-        return (currentTime - (currentTime % dayLength)) + midnight
-    }
-
     fun cappedHeal(
         iEntity: IEntity,
         stats: IEntityStats,
