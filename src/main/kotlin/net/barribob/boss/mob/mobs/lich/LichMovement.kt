@@ -48,7 +48,7 @@ class LichMovement(val entity: LichEntity) {
     }
 
     private fun moveWhileAttacking(velocity: Vec3d) {
-        entity.addVelocity(velocity)
+//        entity.addVelocity(velocity)
 
         if (entity.target != null) {
             entity.lookControl.lookAt(entity.target!!.pos)

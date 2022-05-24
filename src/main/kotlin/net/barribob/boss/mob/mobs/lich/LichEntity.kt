@@ -96,7 +96,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, private v
 
             goalSelector.add(1, SwimGoal(this))
             goalSelector.add(3, CompositeGoal(moveHelper.buildAttackMovement(), attackHelper.buildAttackGoal()))
-            goalSelector.add(4, moveHelper.buildWanderGoal())
+//            goalSelector.add(4, moveHelper.buildWanderGoal())
 
             targetSelector.add(2, FindTargetGoal(this, PlayerEntity::class.java, { this.boundingBox.expand(it) }))
         }
@@ -149,6 +149,6 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, private v
     }
 
     override fun travel(movementInput: Vec3d) {
-        VanillaCopies.travel(movementInput, this)
+        VanillaCopies.travel(movementInput, this, 0.85f)
     }
 }

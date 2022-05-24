@@ -126,6 +126,7 @@ object Entities {
                 .add(EntityAttributes.GENERIC_FLYING_SPEED, 5.0)
                 .add(EntityAttributes.GENERIC_MAX_HEALTH, mobConfig.lichConfig.health)
                 .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 64.0)
+                .add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 10.0)
                 .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, mobConfig.lichConfig.missile.damage)
         )
 
