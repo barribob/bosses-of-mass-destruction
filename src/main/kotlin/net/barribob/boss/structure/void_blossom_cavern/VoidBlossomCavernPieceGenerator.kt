@@ -36,7 +36,7 @@ class VoidBlossomCavernPieceGenerator : IPieceGenerator {
     ): Boolean {
         val minY = chunkGenerator.minimumY
         val caveDecorators = listOf(
-            SpikeCaveDecorator(minY),
+            SpikeCaveDecorator(minY, random),
             MossFloorCaveDecorator(minY, random),
             MossCeilingCaveDecorator(minY, random),
             SporeBlossomCaveDecorator(minY, random),

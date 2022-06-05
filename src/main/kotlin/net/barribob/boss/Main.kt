@@ -90,6 +90,7 @@ private fun initDev() {
     MaelstromMod.testCommand.addId(inGameTests::levitationPerformance.name, inGameTests::levitationPerformance)
     MaelstromMod.testCommand.addId(inGameTests::wallTeleport.name, inGameTests::wallTeleport)
     MaelstromMod.testCommand.addId(inGameTests::attackRepeatedly.name, inGameTests::attackRepeatedly)
+    MaelstromMod.testCommand.addId(inGameTests::buildBlockCircle.name, inGameTests::buildBlockCircle)
 }
 
 @Environment(EnvType.CLIENT)

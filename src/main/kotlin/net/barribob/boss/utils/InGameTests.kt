@@ -195,4 +195,8 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
             }, i))
         }
     }
+
+    fun buildBlockCircle(source: ServerCommandSource) {
+        debugPoints.drawDebugPoints(MathUtils.buildBlockCircle(4.2).map{ it.add(source.position) }, 100, source.position, source.world)
+    }
 }
