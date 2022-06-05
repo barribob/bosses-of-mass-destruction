@@ -6,13 +6,13 @@
     ]
   },
   "criteria": {
-    "has_dragon_breath": {
+    "has_amethyst_shard": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
             "items": [
-              "minecraft:dragon_breath"
+              "minecraft:amethyst_shard"
             ]
           }
         ]
@@ -27,7 +27,7 @@
   },
   "requirements": [
     [
-      "has_dragon_breath",
+      "has_amethyst_shard",
       "has_the_recipe"
     ]
   ]

@@ -16,7 +16,6 @@ import net.minecraft.util.math.noise.DoublePerlinNoiseSampler
 import net.minecraft.util.math.random.CheckedRandom
 import net.minecraft.util.math.random.ChunkRandom
 import net.minecraft.util.math.random.Random
-import net.minecraft.util.math.random.Xoroshiro128PlusPlusRandom
 import net.minecraft.world.StructureWorldAccess
 import net.minecraft.world.gen.StructureAccessor
 import net.minecraft.world.gen.chunk.ChunkGenerator
@@ -37,7 +36,7 @@ class VoidBlossomCavernPieceGenerator : IPieceGenerator {
     ): Boolean {
         val minY = chunkGenerator.minimumY
         val caveDecorators = listOf(
-            SpikeCaveDecorator(minY),
+            SpikeCaveDecorator(minY, random),
             MossFloorCaveDecorator(minY, random),
             MossCeilingCaveDecorator(minY, random),
             SporeBlossomCaveDecorator(minY, random),
