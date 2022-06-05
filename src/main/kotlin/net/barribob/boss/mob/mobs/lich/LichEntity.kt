@@ -30,11 +30,13 @@ import net.minecraft.entity.ai.goal.SwimGoal
 import net.minecraft.entity.boss.BossBar
 import net.minecraft.entity.boss.ServerBossBar
 import net.minecraft.entity.damage.DamageSource
+import net.minecraft.entity.mob.PhantomEntity
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundEvent
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.Box
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import software.bernie.geckolib3.core.controller.AnimationController
@@ -143,6 +145,9 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, private v
         preTickEvents.addEvent(TimedEvent({
             VanillaCopies.awardExperience(expPerTick, eyePos(), world)
         }, 0, expTicks))
+
+        world.getEntitiesByType(EntityType.PHANTOM, Box(blockPos).expand(100.0, 100.0, 100.0)) { true }.forEach(PhantomEntity::kill)
+
         super.onDeath(source)
     }
 
