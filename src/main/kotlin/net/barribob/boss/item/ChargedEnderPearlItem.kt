@@ -8,7 +8,6 @@ import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvents
 import net.minecraft.stat.Stats
 import net.minecraft.text.Text
-import net.minecraft.text.TranslatableText
 import net.minecraft.util.Formatting
 import net.minecraft.util.Hand
 import net.minecraft.util.TypedActionResult
@@ -48,7 +47,7 @@ class ChargedEnderPearlItem(settings: Settings?) : Item(settings) {
         tooltip: MutableList<Text>,
         context: TooltipContext?
     ) {
-        tooltip.add(TranslatableText("item.bosses_of_mass_destruction.charged_ender_pearl.tooltip").formatted(Formatting.DARK_GRAY))
-        tooltip.add(TranslatableText("item.bosses_of_mass_destruction.charged_ender_pearl.tooltip2").formatted(Formatting.DARK_GRAY))
+        tooltip.add(Text.translatable("item.bosses_of_mass_destruction.charged_ender_pearl.tooltip").formatted(Formatting.DARK_GRAY))
+        tooltip.add(Text.translatable("item.bosses_of_mass_destruction.charged_ender_pearl.tooltip2").formatted(Formatting.DARK_GRAY))
     }
 }

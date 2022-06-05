@@ -27,7 +27,7 @@ import net.barribob.maelstrom.static_utilities.RandomUtils
 import net.barribob.maelstrom.static_utilities.VecUtils
 import net.fabricmc.fabric.api.`object`.builder.v1.entity.FabricDefaultAttributeRegistry
 import net.fabricmc.fabric.api.`object`.builder.v1.entity.FabricEntityTypeBuilder
-import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry
+import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityCombatEvents
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.render.RenderLayer
@@ -156,17 +156,16 @@ object Entities {
         )
     }
 
-    fun clientInit(animationTimer: IAnimationTimer) {
+    fun clientInit() {
         val pauseSecondTimer = PauseAnimationTimer({ GlfwUtil.getTime() }, { MinecraftClient.getInstance().isPaused })
 
-        EntityRendererRegistry.INSTANCE.register(LICH) { context ->
+        EntityRendererRegistry.register(LICH) { context ->
             val texture = Mod.identifier("textures/entity/lich.png")
             SimpleLivingGeoRenderer(
                 context, GeoModel(
                     { Mod.identifier("geo/lich.geo.json") },
                     { texture },
                     Mod.identifier("animations/lich.animation.json"),
-                    animationTimer,
                     LichCodeAnimations()
                 ),
                 BoundedLighting(5),
@@ -176,13 +175,12 @@ object Entities {
             )
         }
 
-        EntityRendererRegistry.INSTANCE.register(OBSIDILITH) { context ->
+        EntityRendererRegistry.register(OBSIDILITH) { context ->
             val runeColorHandler = ObsidilithBoneLight()
             val modelProvider = GeoModel<ObsidilithEntity>(
                 { Mod.identifier("geo/obsidilith.geo.json") },
                 { Mod.identifier("textures/entity/obsidilith.png") },
                 Mod.identifier("animations/obsidilith.animation.json"),
-                animationTimer,
             )
             val armorRenderer = ObsidilithArmorRenderer(modelProvider)
             val obsidilithRenderer = SimpleLivingGeoRenderer(
@@ -198,7 +196,7 @@ object Entities {
 
         val missileTexture = Mod.identifier("textures/entity/blue_magic_missile.png")
         val magicMissileRenderLayer = RenderLayer.getEntityCutoutNoCull(missileTexture)
-        EntityRendererRegistry.INSTANCE.register(MAGIC_MISSILE) { context ->
+        EntityRendererRegistry.register(MAGIC_MISSILE) { context ->
             SimpleEntityRenderer(
                 context,
                 CompositeRenderer(
@@ -214,20 +212,19 @@ object Entities {
             )
         }
 
-        EntityRendererRegistry.INSTANCE.register(SOUL_STAR) { context ->
+        EntityRendererRegistry.register(SOUL_STAR) { context ->
             FlyingItemEntityRenderer(context, 1.0f, true)
         }
 
-        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(CHARGED_ENDER_PEARL) { context ->
+        EntityRendererRegistry.register(CHARGED_ENDER_PEARL) { context ->
             FlyingItemEntityRenderer(context, 1.0f, true)
         }
 
-        EntityRendererRegistry.INSTANCE.register(COMET) { context ->
+        EntityRendererRegistry.register(COMET) { context ->
             ModGeoRenderer(context, GeoModel(
                 { Mod.identifier("geo/comet.geo.json") },
                 { Mod.identifier("textures/entity/comet.png") },
                 Mod.identifier("animations/comet.animation.json"),
-                animationTimer,
                 CometCodeAnimations()
             ),
                 ConditionalRenderer(
@@ -239,12 +236,11 @@ object Entities {
             )
         }
 
-        EntityRendererRegistry.INSTANCE.register(GAUNTLET) { context ->
+        EntityRendererRegistry.register(GAUNTLET) { context ->
             val modelProvider = GeoModel(
                 { Mod.identifier("geo/gauntlet.geo.json") },
                 GauntletTextureProvider(),
                 Mod.identifier("animations/gauntlet.animation.json"),
-                animationTimer,
                 GauntletCodeAnimations()
             )
             val energyRenderer = GauntletEnergyRenderer(modelProvider)
@@ -266,13 +262,12 @@ object Entities {
             )
         }
 
-        EntityRendererRegistry.INSTANCE.register(VOID_BLOSSOM) { context ->
+        EntityRendererRegistry.register(VOID_BLOSSOM) { context ->
             val texture = Mod.identifier("textures/entity/void_blossom.png")
             val modelProvider = GeoModel(
                 { Mod.identifier("geo/void_blossom.geo.json") },
                 { texture },
                 Mod.identifier("animations/void_blossom.animation.json"),
-                animationTimer,
                 VoidBlossomCodeAnimations()
             )
             val boneLight = VoidBlossomBoneLight()
@@ -284,13 +279,12 @@ object Entities {
             )
         }
 
-        EntityRendererRegistry.INSTANCE.register(SPORE_BALL) { context ->
+        EntityRendererRegistry.register(SPORE_BALL) { context ->
             val explosionFlasher = SporeBallOverlay()
             ModGeoRenderer(context, GeoModel(
                 { Mod.identifier("geo/comet.geo.json") },
                 { Mod.identifier("textures/entity/spore.png") },
                 Mod.identifier("animations/comet.animation.json"),
-                animationTimer,
                 SporeCodeAnimations()
             ),
                 CompositeRenderer(ConditionalRenderer(
@@ -311,7 +305,7 @@ object Entities {
 
         val petalTexture = Mod.identifier("textures/entity/petal_blade.png")
         val petalBladeRenderLayer = RenderLayer.getEntityCutoutNoCull(petalTexture)
-        EntityRendererRegistry.INSTANCE.register(PETAL_BLADE) { context ->
+        EntityRendererRegistry.register(PETAL_BLADE) { context ->
             SimpleEntityRenderer(
                 context,
                 CompositeRenderer(

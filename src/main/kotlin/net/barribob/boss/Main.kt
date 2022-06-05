@@ -20,7 +20,6 @@ import net.barribob.maelstrom.general.io.ConsoleLogger
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.minecraft.client.MinecraftClient
-import net.minecraft.client.util.GlfwUtil
 import net.minecraft.util.Identifier
 import org.apache.logging.log4j.LogManager
 import software.bernie.geckolib3.GeckoLib
@@ -62,11 +61,9 @@ fun init() {
 fun clientInit() {
     networkUtils.registerClientHandlers()
 
-    val animationTimer = PauseAnimationTimer({ GlfwUtil.getTime() * 20 }, { MinecraftClient.getInstance().isPaused })
-
-    Entities.clientInit(animationTimer)
+    Entities.clientInit()
     Particles.clientInit()
-    ModBlocks.clientInit(animationTimer)
+    ModBlocks.clientInit()
     Mod.items.clientInit()
     vec3dNetwork.clientInit()
 

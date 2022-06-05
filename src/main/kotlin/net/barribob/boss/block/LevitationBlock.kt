@@ -8,7 +8,6 @@ import net.minecraft.block.entity.BlockEntityType
 import net.minecraft.client.item.TooltipContext
 import net.minecraft.item.ItemStack
 import net.minecraft.text.Text
-import net.minecraft.text.TranslatableText
 import net.minecraft.util.Formatting
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.shape.VoxelShape
@@ -23,7 +22,7 @@ class LevitationBlock(private val factory: (FabricBlockEntityTypeBuilder.Factory
         tooltip: MutableList<Text>,
         options: TooltipContext?
     ) {
-        tooltip.add(TranslatableText("item.bosses_of_mass_destruction.levitation_block.tooltip").formatted(Formatting.DARK_GRAY))
+        tooltip.add(Text.translatable("item.bosses_of_mass_destruction.levitation_block.tooltip").formatted(Formatting.DARK_GRAY))
     }
 
     override fun getOutlineShape(

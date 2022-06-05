@@ -22,7 +22,6 @@ import net.minecraft.server.world.ServerWorld
 import net.minecraft.state.StateManager
 import net.minecraft.state.property.EnumProperty
 import net.minecraft.text.Text
-import net.minecraft.text.TranslatableText
 import net.minecraft.util.BlockMirror
 import net.minecraft.util.BlockRotation
 import net.minecraft.util.Formatting
@@ -30,13 +29,13 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.ChunkPos
 import net.minecraft.util.math.Direction
 import net.minecraft.util.math.Vec3d
+import net.minecraft.util.math.random.Random
 import net.minecraft.util.shape.VoxelShape
 import net.minecraft.world.BlockView
 import net.minecraft.world.World
 import net.minecraft.world.WorldAccess
 import net.minecraft.world.WorldView
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
-import java.util.*
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sin
@@ -66,7 +65,7 @@ class MobWardBlock(private val factory: (FabricBlockEntityTypeBuilder.Factory<Ch
         tooltip: MutableList<Text>,
         options: TooltipContext?
     ) {
-        tooltip.add(TranslatableText("item.bosses_of_mass_destruction.mob_ward.tooltip").formatted(Formatting.DARK_GRAY))
+        tooltip.add(Text.translatable("item.bosses_of_mass_destruction.mob_ward.tooltip").formatted(Formatting.DARK_GRAY))
     }
 
     override fun getStateForNeighborUpdate(

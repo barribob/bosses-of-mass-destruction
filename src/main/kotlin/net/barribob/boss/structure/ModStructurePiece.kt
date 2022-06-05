@@ -8,8 +8,8 @@ import net.minecraft.util.BlockRotation
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockBox
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.random.Random
 import net.minecraft.world.ServerWorldAccess
-import java.util.*
 
 /**
  * Credit: https://fabricmc.net/wiki/tutorial:structures
@@ -51,9 +51,6 @@ class ModStructurePiece : SimpleStructurePiece {
         nbt.putString("Rot", this.rot.name)
     }
 
-    override fun handleMetadata(
-        metadata: String, pos: BlockPos, serverWorldAccess: ServerWorldAccess, random: Random, boundingBox: BlockBox
-    ) {
-
+    override fun handleMetadata(metadata: String?, pos: BlockPos?, world: ServerWorldAccess?, random: Random?, boundingBox: BlockBox?) {
     }
 }

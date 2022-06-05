@@ -1,29 +1,21 @@
 package net.barribob.boss.structure
 
-import com.mojang.serialization.Codec
 import net.barribob.boss.Mod
 import net.barribob.boss.utils.ModStructures
-import net.minecraft.structure.StructureGeneratorFactory
 import net.minecraft.structure.StructurePiecesCollector
-import net.minecraft.structure.StructurePiecesGenerator
 import net.minecraft.util.BlockRotation
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.Heightmap
-import net.minecraft.world.gen.feature.DefaultFeatureConfig
-import net.minecraft.world.gen.feature.StructureFeature
+import net.minecraft.world.gen.structure.StructureType
+import java.util.*
 
-class LichTowerStructureFeature(codec: Codec<DefaultFeatureConfig>) :
-    StructureFeature<DefaultFeatureConfig>(codec,
-        StructureGeneratorFactory.simple(
-            StructureGeneratorFactory.checkForBiomeOnTop(Heightmap.Type.WORLD_SURFACE_WG),
-            ::addPieces
-        )) {
+class LichTowerStructureFeature(codec: Config) : StructureType(codec) {
 
     companion object {
-        fun addPieces(collector : StructurePiecesCollector, context : StructurePiecesGenerator.Context<DefaultFeatureConfig>) {
+        fun addPieces(collector : StructurePiecesCollector, context : Context) {
             val x = context.chunkPos().startX
             val z = context.chunkPos().startZ
-            val y = context.chunkGenerator.getHeight(x, z, Heightmap.Type.WORLD_SURFACE_WG, context.world) - 7
+            val y = context.chunkGenerator.getHeight(x, z, Heightmap.Type.WORLD_SURFACE_WG, context.world, context.noiseConfig) - 7
             val rotation = BlockRotation.random(context.random)
             val blockPos = BlockPos(x, y, z).add(BlockPos(-15, 0, -15).rotate(rotation))
             collector.addPiece(
@@ -45,5 +37,16 @@ class LichTowerStructureFeature(codec: Codec<DefaultFeatureConfig>) :
                 )
             )
         }
+    }
+
+    override fun getStructurePosition(context: Context): Optional<StructurePosition> {
+        return getStructurePosition(
+            context, Heightmap.Type.WORLD_SURFACE_WG
+        ) { collector: StructurePiecesCollector? -> addPieces(collector as StructurePiecesCollector, context) }
+    }
+
+
+    override fun getType(): net.minecraft.structure.StructureType<*> {
+        return ModStructures.lichStructureRegistry.structureTypeKey
     }
 }

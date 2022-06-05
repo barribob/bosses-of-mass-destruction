@@ -10,9 +10,9 @@ import net.minecraft.block.Block
 import net.minecraft.block.Blocks
 import net.minecraft.util.math.BlockBox
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.random.Random
 import net.minecraft.world.StructureWorldAccess
 import net.minecraft.world.gen.chunk.ChunkGenerator
-import java.util.*
 
 class SpikeCaveDecorator(private val bottomOfWorld: Int) : ICaveDecorator {
     private val spikePositions = mutableListOf<BlockPos>()

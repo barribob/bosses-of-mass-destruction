@@ -16,7 +16,6 @@ import net.minecraft.item.ItemStack
 import net.minecraft.state.StateManager
 import net.minecraft.state.property.Properties
 import net.minecraft.text.Text
-import net.minecraft.text.TranslatableText
 import net.minecraft.util.BlockMirror
 import net.minecraft.util.BlockRotation
 import net.minecraft.util.Formatting
@@ -45,8 +44,8 @@ class MonolithBlock(private val factory: (FabricBlockEntityTypeBuilder.Factory<C
         tooltip: MutableList<Text>,
         options: TooltipContext?
     ) {
-        tooltip.add(TranslatableText("item.bosses_of_mass_destruction.monolith_block.tooltip_0").formatted(Formatting.DARK_GRAY))
-        tooltip.add(TranslatableText("item.bosses_of_mass_destruction.monolith_block.tooltip_1").formatted(Formatting.DARK_GRAY))
+        tooltip.add(Text.translatable("item.bosses_of_mass_destruction.monolith_block.tooltip_0").formatted(Formatting.DARK_GRAY))
+        tooltip.add(Text.translatable("item.bosses_of_mass_destruction.monolith_block.tooltip_1").formatted(Formatting.DARK_GRAY))
     }
 
     override fun createBlockEntity(pos: BlockPos?, state: BlockState?): BlockEntity? = factory?.create(pos, state)

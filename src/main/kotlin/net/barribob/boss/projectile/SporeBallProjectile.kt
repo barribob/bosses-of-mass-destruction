@@ -93,7 +93,7 @@ class SporeBallProjectile : BaseThrownItemEntity, IAnimatable {
         if (owner is LivingEntity) {
             doExplosion(owner)
         }
-        else {
+        else if(!world.isClient) {
             discard()
         }
     }

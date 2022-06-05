@@ -27,7 +27,7 @@ class ModBlockEntityRenderer<T>(
         packedLightIn: Int,
         textureLocation: Identifier?
     ): RenderLayer {
-        return RenderLayer.getEntityCutoutNoCull(geoModelProvider.getTextureLocation(animatable))
+        return RenderLayer.getEntityCutoutNoCull(geoModelProvider.getTextureResource(animatable))
     }
 
     override fun renderRecursively(

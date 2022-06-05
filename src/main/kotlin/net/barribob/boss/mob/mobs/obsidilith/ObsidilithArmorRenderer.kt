@@ -85,7 +85,7 @@ class ObsidilithArmorRenderer(geoModel: AnimatedGeoModel<ObsidilithEntity>) : IR
 
     private class RenderHelper(val geoModel: AnimatedGeoModel<ObsidilithEntity>) : IGeoRenderer<ObsidilithEntity> {
         override fun getGeoModelProvider(): GeoModelProvider<*> = geoModel
-        override fun getTextureLocation(p0: ObsidilithEntity?): Identifier = Identifier("unused")
+        override fun getTextureResource(p0: ObsidilithEntity?): Identifier = Identifier("unused")
 
         override fun renderCube(
             cube: GeoCube,

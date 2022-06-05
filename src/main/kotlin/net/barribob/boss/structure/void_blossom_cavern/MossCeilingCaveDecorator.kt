@@ -6,10 +6,10 @@ import net.minecraft.block.Block
 import net.minecraft.block.Blocks
 import net.minecraft.util.math.BlockBox
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.random.Random
 import net.minecraft.world.StructureWorldAccess
 import net.minecraft.world.gen.chunk.ChunkGenerator
 import net.minecraft.world.gen.feature.UndergroundConfiguredFeatures
-import java.util.*
 
 class MossCeilingCaveDecorator(private val bottomOfWorld: Int, private val random: Random) : ICaveDecorator {
     private val mossCeilingPositions = mutableListOf<BlockPos>()
@@ -20,14 +20,7 @@ class MossCeilingCaveDecorator(private val bottomOfWorld: Int, private val rando
         }
     }
 
-    override fun generate(
-        world: StructureWorldAccess,
-        chunkGenerator: ChunkGenerator,
-        random: Random,
-        boundingBox: BlockBox,
-        pos: BlockPos,
-        structurePiece: IStructurePiece
-    ) {
+    override fun generate(world: StructureWorldAccess, chunkGenerator: ChunkGenerator, random: Random, boundingBox: BlockBox, pos: BlockPos, structurePiece: IStructurePiece) {
         val spacedMossCeilingPositions =
             mossCeilingPositions.groupBy { Pair(it.x shr 3, it.z shr 3) }.map { it.value.first() }
         for (mossPos in spacedMossCeilingPositions) {

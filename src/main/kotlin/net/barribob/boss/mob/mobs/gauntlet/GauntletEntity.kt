@@ -71,7 +71,6 @@ class GauntletEntity(entityType: EntityType<out PathAwareEntity>, world: World, 
     }
 
     override fun registerControllers(data: AnimationData) {
-        data.shouldPlayWhilePaused = true
         animationHandler.registerControllers(data)
     }
 

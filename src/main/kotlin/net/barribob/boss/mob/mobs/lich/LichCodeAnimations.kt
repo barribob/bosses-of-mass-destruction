@@ -22,7 +22,7 @@ class LichCodeAnimations : ICodeAnimations<LichEntity> {
         val yaw = headYaw - bodyYaw
         val adjustedHeadPitch = headPitch - bodyPitch
 
-        val model = geoModel.getModel(geoModel.getModelLocation(animatable))
+        val model = geoModel.getModel(geoModel.getModelResource(animatable))
         model.getBone("code_root").ifPresent { it.rotationX = -Math.toRadians(bodyPitch).toFloat() }
         model.getBone("headBase").ifPresent { it.rotationX = -Math.toRadians(adjustedHeadPitch).toFloat() }
         model.getBone("headBase").ifPresent { it.rotationY = Math.toRadians(yaw.toDouble()).toFloat() }

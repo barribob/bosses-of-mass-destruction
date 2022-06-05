@@ -13,7 +13,7 @@ class CometCodeAnimations : ICodeAnimations<CometProjectile> {
     ) {
         val pitch = MathHelper.lerpAngleDegrees(data.partialTick, animatable.prevPitch, animatable.pitch)
 
-        val model = geoModel.getModel(geoModel.getModelLocation(animatable))
+        val model = geoModel.getModel(geoModel.getModelResource(animatable))
 
         model.getBone("root1").ifPresent { it.rotationX = Math.toRadians(pitch.toDouble()).toFloat() }
     }

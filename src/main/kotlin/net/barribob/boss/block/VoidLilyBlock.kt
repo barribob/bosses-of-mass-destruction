@@ -11,7 +11,6 @@ import net.minecraft.client.item.TooltipContext
 import net.minecraft.entity.effect.StatusEffects
 import net.minecraft.item.ItemStack
 import net.minecraft.text.Text
-import net.minecraft.text.TranslatableText
 import net.minecraft.util.Formatting
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.BlockView
@@ -41,6 +40,6 @@ class VoidLilyBlock(
         tooltip: MutableList<Text>,
         options: TooltipContext?
     ) {
-        tooltip.add(TranslatableText("block.bosses_of_mass_destruction.void_lily.tooltip").formatted(Formatting.DARK_GRAY))
+        tooltip.add(Text.translatable("block.bosses_of_mass_destruction.void_lily.tooltip").formatted(Formatting.DARK_GRAY))
     }
 }

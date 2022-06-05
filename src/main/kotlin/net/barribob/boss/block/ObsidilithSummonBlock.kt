@@ -119,7 +119,7 @@ open class ObsidilithSummonBlock(settings: Settings) : Block(settings) {
                 world.setBlockState(blockPos, Blocks.AIR.defaultState)
                 val obsidilithEntity = Entities.OBSIDILITH.create(world)
                 if (obsidilithEntity != null) {
-                    obsidilithEntity.updateTrackedPosition(pos)
+                    obsidilithEntity.updateTrackedPosition(pos.x, pos.y, pos.z)
                     obsidilithEntity.updatePosition(pos.x, pos.y, pos.z)
                     world.spawnEntity(obsidilithEntity)
                 }

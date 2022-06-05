@@ -92,7 +92,7 @@ open class ModGeoRenderer<T>(
         preRenderers?.render(entity, entityYaw, partialTicks, stack, bufferIn, packedLightIn)
         stack.translate(0.0, 0.009999999776482582, 0.0)
         MinecraftClient.getInstance().textureManager.bindTexture(getTexture(entity))
-        val model = modelProvider.getModel(modelProvider.getModelLocation(entity))
+        val model = modelProvider.getModel(modelProvider.getModelResource(entity))
         val renderColor = Color.ofRGBA(255, 255, 255, 255)
         val renderType = getRenderType(entity, partialTicks, stack, bufferIn, null as VertexConsumer?, packedLightIn,
             getTexture(entity))
@@ -134,7 +134,7 @@ open class ModGeoRenderer<T>(
     }
 
     override fun getTexture(entity: T): Identifier {
-        return modelProvider.getTextureLocation(entity)
+        return modelProvider.getTextureResource(entity)
     }
 
     override fun getGeoModelProvider(): GeoModelProvider<*> {
@@ -156,8 +156,8 @@ open class ModGeoRenderer<T>(
         return livingBase.age.toFloat() + partialTicks
     }
 
-    override fun getTextureLocation(instance: T): Identifier {
-        return modelProvider.getTextureLocation(instance)
+    override fun getTextureResource(instance: T): Identifier {
+        return modelProvider.getTextureResource(instance)
     }
 
     fun addLayer(layer: GeoLayerRenderer<T>): Boolean {

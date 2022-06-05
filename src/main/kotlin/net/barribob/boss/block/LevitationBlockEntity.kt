@@ -19,6 +19,7 @@ import net.minecraft.util.math.ChunkPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import software.bernie.geckolib3.core.IAnimatable
+import software.bernie.geckolib3.core.IAnimationTickable
 import software.bernie.geckolib3.core.controller.AnimationController
 import software.bernie.geckolib3.core.manager.AnimationData
 import software.bernie.geckolib3.core.manager.AnimationFactory
@@ -26,7 +27,7 @@ import software.bernie.geckolib3.core.manager.AnimationFactory
 class LevitationBlockEntity(
     block: Block, type: BlockEntityType<*>?,
     pos: BlockPos?, state: BlockState?
-) : ChunkCacheBlockEntity(block, type, pos, state), IAnimatable {
+) : ChunkCacheBlockEntity(block, type, pos, state), IAnimatable, IAnimationTickable {
     override fun registerControllers(data: AnimationData) {
         data.addAnimationController(
             AnimationController(
@@ -38,6 +39,7 @@ class LevitationBlockEntity(
         )
     }
 
+    var animationAge = 0
     private val animationFactory = AnimationFactory(this)
     override fun getFactory(): AnimationFactory = animationFactory
 
@@ -49,9 +51,10 @@ class LevitationBlockEntity(
             .colorVariation(0.5)
             .scale(0.075f)
 
-        fun tick(world: World, pos: BlockPos, state: BlockState, entity: ChunkCacheBlockEntity) {
+        fun tick(world: World, pos: BlockPos, state: BlockState, entity: LevitationBlockEntity) {
             ChunkCacheBlockEntity.tick(world, pos, state, entity)
             if (world.isClient) {
+                entity.animationAge++
                 val box = getAffectingBox(world, pos.asVec3d())
                 val playersInBox = world.getNonSpectatingEntities(PlayerEntity::class.java, box)
                 for (player in playersInBox) {
@@ -118,5 +121,12 @@ class LevitationBlockEntity(
 
         private fun getAffectingBox(world: World, pos: Vec3d) =
             Box(pos.x, world.bottomY.toDouble(), pos.z, (pos.x + 1), world.height.toDouble(), (pos.z + 1)).expand(3.0, 0.0, 3.0)
+    }
+
+    override fun tick() {
+    }
+
+    override fun tickTimer(): Int {
+        return animationAge
     }
 }

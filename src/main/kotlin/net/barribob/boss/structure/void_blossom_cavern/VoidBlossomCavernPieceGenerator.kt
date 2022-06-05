@@ -13,13 +13,14 @@ import net.minecraft.util.math.ChunkPos
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.intprovider.UniformIntProvider
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler
+import net.minecraft.util.math.random.CheckedRandom
+import net.minecraft.util.math.random.ChunkRandom
+import net.minecraft.util.math.random.Random
+import net.minecraft.util.math.random.Xoroshiro128PlusPlusRandom
 import net.minecraft.world.StructureWorldAccess
 import net.minecraft.world.gen.StructureAccessor
 import net.minecraft.world.gen.chunk.ChunkGenerator
 import net.minecraft.world.gen.feature.Feature
-import net.minecraft.world.gen.random.AtomicSimpleRandom
-import net.minecraft.world.gen.random.ChunkRandom
-import java.util.*
 import kotlin.math.sqrt
 
 class VoidBlossomCavernPieceGenerator : IPieceGenerator {
@@ -72,7 +73,7 @@ class VoidBlossomCavernPieceGenerator : IPieceGenerator {
         val distributionPoints = 5
 
         val randoms: MutableList<Pair<BlockPos, Int>> = Lists.newLinkedList()
-        val chunkRandom = ChunkRandom(AtomicSimpleRandom(world.seed))
+        val chunkRandom = ChunkRandom(CheckedRandom(world.seed))
         val doublePerlinNoiseSampler = DoublePerlinNoiseSampler.create(chunkRandom, -4, 1.0)
         val d = distributionPoints.toDouble() / outerWallDistance.max.toDouble()
         val airThickness = 1.0 / sqrt(25.2 + d)

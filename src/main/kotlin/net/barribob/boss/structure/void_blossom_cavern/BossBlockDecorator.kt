@@ -5,9 +5,9 @@ import net.barribob.boss.structure.util.IStructurePiece
 import net.minecraft.block.Block
 import net.minecraft.util.math.BlockBox
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.random.Random
 import net.minecraft.world.StructureWorldAccess
 import net.minecraft.world.gen.chunk.ChunkGenerator
-import java.util.*
 
 class BossBlockDecorator(private val bottomOfWorld: Int) : ICaveDecorator {
     override fun onBlockPlaced(pos: BlockPos, block: Block) {

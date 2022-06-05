@@ -5,9 +5,9 @@ import net.barribob.boss.structure.util.IStructurePiece
 import net.minecraft.block.Block
 import net.minecraft.util.math.BlockBox
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.random.Random
 import net.minecraft.world.StructureWorldAccess
 import net.minecraft.world.gen.chunk.ChunkGenerator
-import net.minecraft.world.gen.feature.ConfiguredFeatures
 import net.minecraft.world.gen.feature.Feature
 import net.minecraft.world.gen.feature.UndergroundConfiguredFeatures
 import net.minecraft.world.gen.feature.util.FeatureContext

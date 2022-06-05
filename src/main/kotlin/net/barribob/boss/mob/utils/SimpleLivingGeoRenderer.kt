@@ -152,7 +152,7 @@ class SimpleLivingGeoRenderer<T>(
     ) :
         IGeoRenderer<T> where T : IAnimatable, T : LivingEntity {
         override fun getGeoModelProvider(): GeoModelProvider<*> = geoModel
-        override fun getTextureLocation(p0: T): Identifier = textureLocation(p0)
+        override fun getTextureResource(p0: T): Identifier = textureLocation(p0)
         override fun renderRecursively(
             bone: GeoBone,
             stack: MatrixStack,

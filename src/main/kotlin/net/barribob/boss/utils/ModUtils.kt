@@ -16,9 +16,9 @@ import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvent
 import net.minecraft.util.math.*
+import net.minecraft.util.math.random.Random
 import net.minecraft.world.Difficulty
 import net.minecraft.world.World
-import java.util.*
 
 object ModUtils {
     /**
@@ -53,7 +53,7 @@ object ModUtils {
             pos.z,
             range,
             registryKey,
-            PlaySoundS2CPacket(soundEvent, soundCategory, pos.x, pos.y, pos.z, volume, pitch)
+            PlaySoundS2CPacket(soundEvent, soundCategory, pos.x, pos.y, pos.z, volume, pitch, random.nextLong())
         )
 
     fun Random.randomPitch() = (this.nextFloat() - this.nextFloat()) * 0.2f + 1.0f

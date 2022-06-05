@@ -104,7 +104,6 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, private v
     }
 
     override fun registerControllers(data: AnimationData) {
-        data.shouldPlayWhilePaused = true
         animationHolder.registerControllers(data)
         data.addAnimationController(AnimationController(this, "skull_float", 0f, AnimationUtils.createIdlePredicate("skull_float")))
         data.addAnimationController(AnimationController(this, "float", 0f, AnimationUtils.createIdlePredicate("float")))

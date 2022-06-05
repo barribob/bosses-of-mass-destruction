@@ -25,12 +25,12 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Box
 import net.minecraft.util.math.Direction
 import net.minecraft.util.math.Vec3d
+import net.minecraft.util.math.random.Random
 import net.minecraft.util.shape.VoxelShape
 import net.minecraft.world.BlockView
 import net.minecraft.world.World
 import net.minecraft.world.WorldAccess
 import net.minecraft.world.WorldView
-import java.util.*
 
 class VoidBlossomBlock(settings: Settings?) : Block(settings) {
     private val shape = createCuboidShape(2.0, 0.0, 2.0, 14.0, 3.0, 14.0)

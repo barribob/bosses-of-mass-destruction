@@ -1,26 +1,18 @@
 package net.barribob.boss.structure.void_blossom_cavern
 
-import com.mojang.serialization.Codec
 import net.barribob.boss.structure.util.CodeStructurePiece
 import net.barribob.boss.utils.ModStructures
-import net.minecraft.structure.StructureGeneratorFactory
 import net.minecraft.structure.StructurePiecesCollector
-import net.minecraft.structure.StructurePiecesGenerator
 import net.minecraft.util.math.BlockBox
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.Heightmap
-import net.minecraft.world.gen.feature.DefaultFeatureConfig
-import net.minecraft.world.gen.feature.StructureFeature
+import net.minecraft.world.gen.structure.StructureType
+import java.util.*
 
-class VoidBlossomArenaStructureFeature(codec: Codec<DefaultFeatureConfig>) :
-    StructureFeature<DefaultFeatureConfig>(codec,
-        StructureGeneratorFactory.simple(
-            StructureGeneratorFactory.checkForBiomeOnTop(Heightmap.Type.WORLD_SURFACE_WG),
-            ::addPieces
-        )) {
+class VoidBlossomArenaStructureFeature(codec: Config) : StructureType(codec) {
 
     companion object {
-        fun addPieces(collector : StructurePiecesCollector, context : StructurePiecesGenerator.Context<DefaultFeatureConfig>) {
+        fun addPieces(collector : StructurePiecesCollector, context : Context) {
             val x = context.chunkPos().startX
             val z = context.chunkPos().startZ
             val y = 35 + context.chunkGenerator.minimumY
@@ -32,5 +24,15 @@ class VoidBlossomArenaStructureFeature(codec: Codec<DefaultFeatureConfig>) :
                 )
             )
         }
+    }
+
+    override fun getStructurePosition(context: Context): Optional<StructurePosition> {
+        return getStructurePosition(
+            context, Heightmap.Type.WORLD_SURFACE_WG
+        ) { collector: StructurePiecesCollector? -> addPieces(collector as StructurePiecesCollector, context) }
+    }
+
+    override fun getType(): net.minecraft.structure.StructureType<*> {
+        return ModStructures.voidBlossomStructureRegistry.structureTypeKey
     }
 }

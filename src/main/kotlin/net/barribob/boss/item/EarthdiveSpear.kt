@@ -21,7 +21,6 @@ import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
 import net.minecraft.stat.Stats
 import net.minecraft.text.Text
-import net.minecraft.text.TranslatableText
 import net.minecraft.util.Formatting
 import net.minecraft.util.Hand
 import net.minecraft.util.TypedActionResult
@@ -61,7 +60,7 @@ class EarthdiveSpear(settings: Settings?) : Item(settings) {
         tooltip: MutableList<Text>,
         context: TooltipContext?
     ) {
-        tooltip.add(TranslatableText("item.bosses_of_mass_destruction.earthdive_spear.tooltip").formatted(Formatting.DARK_GRAY))
+        tooltip.add(Text.translatable("item.bosses_of_mass_destruction.earthdive_spear.tooltip").formatted(Formatting.DARK_GRAY))
     }
 
     override fun onStoppedUsing(stack: ItemStack, world: World, user: LivingEntity, remainingUseTicks: Int) {

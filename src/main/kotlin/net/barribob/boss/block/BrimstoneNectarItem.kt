@@ -15,7 +15,6 @@ import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
 import net.minecraft.stat.Stats
 import net.minecraft.text.Text
-import net.minecraft.text.TranslatableText
 import net.minecraft.util.Formatting
 import net.minecraft.util.Hand
 import net.minecraft.util.TypedActionResult
@@ -30,7 +29,7 @@ class BrimstoneNectarItem(settings: Settings, private val structureRepairs: List
         tooltip: MutableList<Text>,
         context: TooltipContext?
     ) {
-        tooltip.add(TranslatableText("item.bosses_of_mass_destruction.brimstone_nectar.tooltip").formatted(Formatting.DARK_GRAY))
+        tooltip.add(Text.translatable("item.bosses_of_mass_destruction.brimstone_nectar.tooltip").formatted(Formatting.DARK_GRAY))
     }
 
     override fun use(world: World, user: PlayerEntity, hand: Hand?): TypedActionResult<ItemStack>? {
@@ -80,7 +79,7 @@ class BrimstoneNectarItem(settings: Settings, private val structureRepairs: List
         world: ServerWorld,
         blockPos: BlockPos,
         it: StructureRepair
-    ) = world.structureAccessor.getStructureAt(blockPos, world.structureAccessor.method_41036().get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY).get(it.associatedStructure()))
+    ) = world.structureAccessor.getStructureAt(blockPos, world.structureAccessor.registryManager.get(Registry.STRUCTURE_KEY).get(it.associatedStructure()))
 
     private fun playSound(world: World, user: PlayerEntity) {
         world.playSound(

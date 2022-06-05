@@ -6,7 +6,7 @@ import net.minecraft.client.gui.DrawableHelper
 import net.minecraft.client.gui.hud.BossBarHud
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.entity.boss.BossBar
-import net.minecraft.text.TranslatableText
+import net.minecraft.text.TranslatableTextContent
 import net.minecraft.util.Identifier
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 
@@ -21,8 +21,8 @@ class NodeBossBarRenderer(
      */
     fun renderBossBar(matrices: MatrixStack, x: Int, y: Int, bossBar: BossBar, callbackInfo: CallbackInfo) {
 
-        val name = bossBar.name
-        if (name is TranslatableText && name.key.contains(entityTypeKey)) {
+        val barContent = bossBar.name.content
+        if (barContent is TranslatableTextContent && barContent.key.equals(entityTypeKey)) {
             val colorLocation = bossBar.color.ordinal * 5 * 2f
             DrawableHelper.drawTexture(
                 matrices, x, y, 0f, colorLocation, 182, 5,

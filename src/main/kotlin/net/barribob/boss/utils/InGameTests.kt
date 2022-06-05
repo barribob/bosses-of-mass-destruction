@@ -46,7 +46,7 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
     private val clientTestPacketId = Mod.identifier("client_test")
 
     fun provideGear(source: ServerCommandSource) {
-        val entity = source.player
+        val entity = source.playerOrThrow
         val armor = listOf(ItemStack(Items.NETHERITE_HELMET), ItemStack(Items.NETHERITE_CHESTPLATE), ItemStack(Items.NETHERITE_LEGGINGS), ItemStack(Items.NETHERITE_BOOTS))
         armor.forEach {
             it.addEnchantment(Enchantments.PROTECTION, 3)
@@ -109,14 +109,14 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
     }
 
     fun burstAction(source: ServerCommandSource) {
-        BurstAction(source.player).perform()
+        BurstAction(source.playerOrThrow).perform()
     }
 
     fun playerPosition(source: ServerCommandSource) {
-        val points = ModComponents.getPlayerPositions(source.player)
+        val points = ModComponents.getPlayerPositions(source.playerOrThrow)
         debugPoints.drawDebugPoints(points, 1, source.position, source.world)
         debugPoints.drawDebugPoints(
-            listOf(ObsidilithUtils.approximatePlayerNextPosition(points, source.player.pos)),
+            listOf(ObsidilithUtils.approximatePlayerNextPosition(points, source.playerOrThrow.pos)),
             1,
             source.position,
             source.world,
@@ -125,12 +125,12 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
     }
 
     fun placePillars(source: ServerCommandSource) {
-        val entity = source.player
+        val entity = source.playerOrThrow
         PillarAction(entity).perform()
     }
 
     fun obsidilithDeath(source: ServerCommandSource){
-        val entity = source.player
+        val entity = source.playerOrThrow
         ObsidilithUtils.onDeath(entity, 100)
     }
 
@@ -161,11 +161,11 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
 
     fun killZombies(source: ServerCommandSource) {
         val zombie = EntityType.ZOMBIE.create(source.world) ?: return
-        val pos = source.player.pos.add(VecUtils.yAxis.multiply(-5.0))
+        val pos = source.playerOrThrow.pos.add(VecUtils.yAxis.multiply(-5.0))
         zombie.setPos(pos)
         source.world.spawnEntity(zombie)
         ModComponents.getWorldEventScheduler(source.world).addEvent(TimedEvent({
-            zombie.damage(DamageSource.player(source.player), 30f)
+            zombie.damage(DamageSource.player(source.playerOrThrow), 30f)
         }, 2))
     }
 
@@ -179,19 +179,19 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
     }
 
     fun levitationPerformance(source: ServerCommandSource){
-//        LevitationBlockEntity.tickFlight(source.player)
+//        LevitationBlockEntity.tickFlight(source.playerOrThrow)
         MonolithBlock.getExplosionPower(source.world, BlockPos(source.position), 2.0f)
     }
 
     fun wallTeleport(source: ServerCommandSource) {
-        WallTeleport(source.world, source.player).tryTeleport(source.player.rotationVector, source.player.eyePos)
+        WallTeleport(source.world, source.playerOrThrow).tryTeleport(source.playerOrThrow.rotationVector, source.playerOrThrow.eyePos)
     }
 
     fun attackRepeatedly(source: ServerCommandSource) {
         val target = source.world.getEntitiesByType(Entities.GAUNTLET) { true }.firstOrNull()
         for(i in 0..240 step 80) {
             ModComponents.getWorldEventScheduler(source.world).addEvent(TimedEvent({
-               target?.damage(DamageSource.player(source.player), 9.0f)
+               target?.damage(DamageSource.player(source.playerOrThrow), 9.0f)
             }, i))
         }
     }

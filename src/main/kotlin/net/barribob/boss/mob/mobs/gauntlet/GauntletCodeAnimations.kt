@@ -8,7 +8,7 @@ import software.bernie.geckolib3.core.event.predicate.AnimationEvent
 class GauntletCodeAnimations: ICodeAnimations<GauntletEntity> {
     override fun animate(animatable: GauntletEntity, data: AnimationEvent<*>, geoModel: GeoModel<GauntletEntity>) {
         val headPitch = MathHelper.lerp(data.partialTick, animatable.prevPitch, animatable.pitch)
-        val model = geoModel.getModel(geoModel.getModelLocation(animatable))
+        val model = geoModel.getModel(geoModel.getModelResource(animatable))
 
         model.getBone("codeRoot").ifPresent { it.rotationX = -Math.toRadians(headPitch.toDouble()).toFloat() }
     }

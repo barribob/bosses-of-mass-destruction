@@ -102,7 +102,6 @@ class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: Worl
     }
 
     override fun registerControllers(data: AnimationData) {
-        data.shouldPlayWhilePaused = true
         animationHolder.registerControllers(data)
     }
 

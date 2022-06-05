@@ -140,7 +140,6 @@ class ObsidilithEntity(
     override fun getDeathSound(): SoundEvent = Mod.sounds.obsidilithDeath
 
     override fun registerControllers(data: AnimationData) {
-        data.shouldPlayWhilePaused = true
         data.addAnimationController(AnimationController(this, "summon", 0f, AnimationPredicate<ObsidilithEntity> {
             it.controller.setAnimation(
                 AnimationBuilder().addAnimation("summon", false)

@@ -18,11 +18,11 @@ import net.minecraft.structure.StructureStart
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.util.registry.RegistryKey
-import net.minecraft.world.gen.feature.ConfiguredStructureFeature
+import net.minecraft.world.gen.structure.StructureType
 import java.util.*
 
 class ObsidilithStructureRepair : StructureRepair {
-    override fun associatedStructure(): RegistryKey<ConfiguredStructureFeature<*, *>> = ModStructures.obsidilithStructureRegistry.configuredStructureKey
+    override fun associatedStructure(): RegistryKey<StructureType> = ModStructures.obsidilithStructureRegistry.configuredStructureKey
 
     override fun repairStructure(world: ServerWorld, structureStart: StructureStart) {
         val topCenter = getTopCenter(structureStart)
@@ -31,7 +31,7 @@ class ObsidilithStructureRepair : StructureRepair {
 
         for (y in 0..ObsidilithUtils.deathPillarHeight) {
             worldEventScheduler.addEvent(TimedEvent({
-                world.playSound(null, topCenter, SoundEvents.BLOCK_STONE_PLACE, SoundCategory.BLOCKS, 1.0f, Random().randomPitch())
+                world.playSound(null, topCenter, SoundEvents.BLOCK_STONE_PLACE, SoundCategory.BLOCKS, 1.0f, world.random.randomPitch())
                 for (pos in ObsidilithUtils.circlePos) {
                     world.removeBlock(BlockPos(pos.x.toInt(), y, pos.z.toInt()).add(topCenter), false)
                 }

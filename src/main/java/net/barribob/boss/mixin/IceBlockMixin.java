@@ -25,7 +25,7 @@ public abstract class IceBlockMixin {
     private void onAfterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack stack, CallbackInfo ci) {
         if (EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, stack) == 0
                 && world instanceof ServerWorld serverWorld
-                && serverWorld.getStructureAccessor().getStructureAt(pos, serverWorld.getStructureAccessor().method_41036().get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY).get(ModStructures.INSTANCE.getLichStructureRegistry().getConfiguredStructureKey())).hasChildren()) {
+                && serverWorld.getStructureAccessor().getStructureAt(pos, serverWorld.getStructureAccessor().getRegistryManager().get(Registry.STRUCTURE_KEY).get(ModStructures.INSTANCE.getLichStructureRegistry().getConfiguredStructureKey())).hasChildren()) {
             world.setBlockState(pos, Blocks.AIR.getDefaultState());
         }
     }

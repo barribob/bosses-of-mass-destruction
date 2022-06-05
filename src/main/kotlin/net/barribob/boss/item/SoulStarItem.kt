@@ -28,7 +28,6 @@ import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvents
 import net.minecraft.stat.Stats
 import net.minecraft.text.Text
-import net.minecraft.text.TranslatableText
 import net.minecraft.util.*
 import net.minecraft.util.hit.BlockHitResult
 import net.minecraft.util.hit.HitResult
@@ -45,7 +44,7 @@ class SoulStarItem(settings: Settings?) : Item(settings) {
         tooltip: MutableList<Text>,
         context: TooltipContext?
     ) {
-        tooltip.add(TranslatableText("item.bosses_of_mass_destruction.soul_star.tooltip").formatted(Formatting.DARK_GRAY))
+        tooltip.add(Text.translatable("item.bosses_of_mass_destruction.soul_star.tooltip").formatted(Formatting.DARK_GRAY))
     }
 
     override fun useOnBlock(context: ItemUsageContext): ActionResult {
@@ -66,7 +65,7 @@ class SoulStarItem(settings: Settings?) : Item(settings) {
                     Mod.sounds.soulStar,
                     SoundCategory.NEUTRAL,
                     0.5f,
-                    Random().randomPitch()
+                    world.random.randomPitch()
                 )
                 ActionResult.PASS
             }
@@ -175,7 +174,7 @@ class SoulStarItem(settings: Settings?) : Item(settings) {
                 val entity = Entities.LICH.create(world)
                 if (entity != null) {
                     val defaultSpawnPos = spawnPos.add(VecUtils.xAxis.multiply(5.0))
-                    entity.updateTrackedPosition(defaultSpawnPos)
+                    entity.updateTrackedPosition(defaultSpawnPos.x, defaultSpawnPos.y, defaultSpawnPos.z)
                     entity.updatePosition(defaultSpawnPos.x, defaultSpawnPos.y, defaultSpawnPos.z)
                     world.spawnEntity(entity)
                 }

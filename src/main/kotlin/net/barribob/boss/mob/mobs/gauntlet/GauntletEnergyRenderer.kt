@@ -78,7 +78,7 @@ class GauntletEnergyRenderer(val geoModel: AnimatedGeoModel<GauntletEntity>) : I
 
     private class RenderHelper(val geoModel: AnimatedGeoModel<GauntletEntity>) : IGeoRenderer<GauntletEntity> {
         override fun getGeoModelProvider(): GeoModelProvider<*> = geoModel
-        override fun getTextureLocation(p0: GauntletEntity?): Identifier = Identifier("unused")
+        override fun getTextureResource(p0: GauntletEntity?): Identifier = Identifier("unused")
 
         override fun renderCube(
             cube: GeoCube,

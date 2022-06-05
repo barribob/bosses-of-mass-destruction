@@ -39,16 +39,16 @@
     "bosses.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.11.3",
+    "fabricloader": ">=0.14.6",
     "fabric": "*",
     "fabric-language-kotlin": "*",
-    "minecraft": "1.18.x",
+    "minecraft": "1.19.x",
     "java": ">=17",
     "cardinal-components-base": ">=4.0.0",
     "cardinal-components-world": ">=4.0.0",
     "cardinal-components-entity": ">=4.0.0",
-    "geckolib3": ">=3.0.22",
-    "cloth-config": ">=6.0.42"
+    "geckolib3": ">=3.0.0",
+    "cloth-config": ">=7.0.42"
   },
   "custom":  {
     "cardinal-components": [

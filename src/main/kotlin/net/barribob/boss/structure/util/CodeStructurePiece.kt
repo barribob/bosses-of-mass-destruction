@@ -11,6 +11,7 @@ import net.minecraft.util.math.BlockBox
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.ChunkPos
 import net.minecraft.util.math.Direction
+import net.minecraft.util.math.random.CheckedRandom
 import net.minecraft.world.StructureWorldAccess
 import net.minecraft.world.gen.StructureAccessor
 import net.minecraft.world.gen.chunk.ChunkGenerator
@@ -32,21 +33,13 @@ class CodeStructurePiece : StructurePiece, IStructurePiece {
     override fun writeNbt(context: StructureContext?, nbt: NbtCompound?) {
     }
 
-    override fun generate(
-        world: StructureWorldAccess,
-        structureAccessor: StructureAccessor,
-        chunkGenerator: ChunkGenerator,
-        random: Random,
-        boundingBox: BlockBox,
-        chunkPos: ChunkPos,
-        pos: BlockPos
-    ) {
+    override fun generate(world: StructureWorldAccess, structureAccessor: StructureAccessor, chunkGenerator: ChunkGenerator, random: net.minecraft.util.math.random.Random?, chunkBox: BlockBox, chunkPos: ChunkPos, pos: BlockPos) {
         pieceGenerator.generate(
             world,
             structureAccessor,
             chunkGenerator,
-            Random(world.seed),
-            boundingBox,
+            CheckedRandom(world.seed),
+            chunkBox,
             chunkPos,
             pos,
             this

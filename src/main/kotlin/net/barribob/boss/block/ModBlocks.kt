@@ -8,7 +8,7 @@ import net.barribob.boss.render.ModBlockEntityRenderer
 import net.fabricmc.fabric.api.`object`.builder.v1.block.FabricBlockSettings
 import net.fabricmc.fabric.api.`object`.builder.v1.block.entity.FabricBlockEntityTypeBuilder
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap
-import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry
+import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings
 import net.minecraft.block.Block
 import net.minecraft.block.Blocks
@@ -127,19 +127,18 @@ object ModBlocks {
         )
     }
 
-    fun clientInit(animationTimer: IAnimationTimer) {
+    fun clientInit() {
         BlockRenderLayerMap.INSTANCE.putBlock(mobWard, RenderLayer.getCutout())
         BlockRenderLayerMap.INSTANCE.putBlock(voidBlossom, RenderLayer.getCutout())
         BlockRenderLayerMap.INSTANCE.putBlock(vineWall, RenderLayer.getCutout())
         BlockRenderLayerMap.INSTANCE.putBlock(voidLilyBlock, RenderLayer.getCutout())
 
-        BlockEntityRendererRegistry.INSTANCE.register(levitationBlockEntityType, BlockEntityRendererFactory {
+        BlockEntityRendererRegistry.register(levitationBlockEntityType, BlockEntityRendererFactory {
             ModBlockEntityRenderer(
                 GeoModel<LevitationBlockEntity>(
                     { Mod.identifier("geo/levitation_block.geo.json") },
                     { Mod.identifier("textures/block/levitation_block.png") },
                     Mod.identifier("animations/levitation_block.animation.json"),
-                    animationTimer
                 )
             ) { _, _ -> IBoneLight.fullbright }
         })

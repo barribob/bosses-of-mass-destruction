@@ -10,7 +10,7 @@ class SporeCodeAnimations : ICodeAnimations<SporeBallProjectile> {
     override fun animate(animatable: SporeBallProjectile, data: AnimationEvent<*>, geoModel: GeoModel<SporeBallProjectile>) {
         val pitch = if(animatable.impacted) animatable.pitch else MathHelper.lerpAngleDegrees(data.partialTick, animatable.pitch - 5, animatable.pitch)
 
-        val model = geoModel.getModel(geoModel.getModelLocation(animatable))
+        val model = geoModel.getModel(geoModel.getModelResource(animatable))
         model.getBone("root1").ifPresent { it.rotationX = Math.toRadians(pitch.toDouble()).toFloat() }
     }
 }

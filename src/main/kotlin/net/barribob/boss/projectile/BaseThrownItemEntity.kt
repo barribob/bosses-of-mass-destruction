@@ -10,9 +10,10 @@ import net.minecraft.network.Packet
 import net.minecraft.util.hit.EntityHitResult
 import net.minecraft.util.hit.HitResult
 import net.minecraft.world.World
+import software.bernie.geckolib3.core.IAnimationTickable
 import java.util.function.Predicate
 
-abstract class BaseThrownItemEntity : ThrownItemEntity {
+abstract class BaseThrownItemEntity : ThrownItemEntity, IAnimationTickable {
     protected val entityCollisionPredicate: Predicate<EntityHitResult>
     protected open val collisionPredicate: Predicate<HitResult> = Predicate<HitResult> { !world.isClient }
 
@@ -64,4 +65,8 @@ abstract class BaseThrownItemEntity : ThrownItemEntity {
     }
 
     override fun getDefaultItem(): Item = Items.SNOWBALL
+
+    override fun tickTimer(): Int {
+        return age
+    }
 }

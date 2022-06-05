@@ -1,27 +1,33 @@
 package net.barribob.boss.structure
 
-import com.mojang.serialization.Codec
 import net.barribob.boss.Mod
 import net.barribob.boss.utils.ModStructures
-import net.minecraft.structure.StructureGeneratorFactory
 import net.minecraft.structure.StructurePiecesCollector
-import net.minecraft.structure.StructurePiecesGenerator
 import net.minecraft.util.BlockRotation
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.Heightmap
-import net.minecraft.world.gen.feature.DefaultFeatureConfig
-import net.minecraft.world.gen.feature.StructureFeature
+import net.minecraft.world.gen.structure.StructureType
+import java.util.*
 
-class GauntletArenaStructureFeature(codec: Codec<DefaultFeatureConfig>) : StructureFeature<DefaultFeatureConfig>(codec,
-    StructureGeneratorFactory.simple(StructureGeneratorFactory.checkForBiomeOnTop(Heightmap.Type.WORLD_SURFACE_WG), ::addPieces)) {
+class GauntletArenaStructureFeature(codec: Config) : StructureType(codec) {
 
     companion object {
         private val template: Identifier = Mod.identifier("gauntlet_arena")
-        fun addPieces(collector : StructurePiecesCollector, context : StructurePiecesGenerator.Context<DefaultFeatureConfig>) {
+        fun addPieces(collector: StructurePiecesCollector, context: Context) {
             val blockPos = BlockPos(context.chunkPos().startX, 15, context.chunkPos().startZ)
             val rotation = BlockRotation.random(context.random)
             collector.addPiece(ModStructurePiece(context.structureManager, blockPos, template, rotation, ModStructures.gauntletStructurePiece))
         }
+    }
+
+    override fun getStructurePosition(context: Context): Optional<StructurePosition> {
+        return getStructurePosition(
+            context, Heightmap.Type.WORLD_SURFACE_WG
+        ) { collector: StructurePiecesCollector? -> addPieces(collector as StructurePiecesCollector, context) }
+    }
+
+    override fun getType(): net.minecraft.structure.StructureType<*> {
+        return ModStructures.gauntletStructureRegistry.structureTypeKey
     }
 }
