@@ -18,7 +18,6 @@ class LichMoveLogic(
     private val actor: LichEntity,
     damageMemory: DamageMemory
 ): IDamageHandler, IActionWithCooldown, IEntityTick<ServerWorld> {
-    private val damageHistory = HistoricalData(0, 3)
     private val moveHistory = HistoricalData<Byte>(0, 4)
     private val positionalHistory = HistoricalData(Vec3d.ZERO, 10)
     private val priorityMoves = mutableListOf<Byte>()
@@ -30,7 +29,6 @@ class LichMoveLogic(
     private val targetSwitcher = TargetSwitcher(actor, damageMemory)
 
     override fun afterDamage(stats: IEntityStats, damageSource: DamageSource, amount: Float, result: Boolean) {
-        damageHistory.set(actor.age)
         stagedDamageHandler.afterDamage(stats, damageSource, amount, result)
     }
 
@@ -73,13 +71,10 @@ class LichMoveLogic(
     private fun getTeleportWeight(): Double {
         val distanceTraveled = positionalHistory.getAll().zipWithNext()
             .fold(0.0) { acc, pair -> acc + pair.first.distanceTo(pair.second) }
-        val damage = damageHistory.getAll()
-        val hasBeenRapidlyDamaged = damage.size > 2 && damage.last() - damage.first() < 60
         val target = actor.target ?: return 0.0
         return  (if (actor.inLineOfSight(target)) 0.0 else 4.0) +
                 (if (distanceTraveled > 0.25) 0.0 else 8.0) +
-                (if (actor.pos.distanceTo(target.pos) < 6.0) 8.0 else 0.0) +
-                (if (hasBeenRapidlyDamaged) 8.0 else 0.0)
+                (if (actor.pos.distanceTo(target.pos) < 6.0) 8.0 else 0.0)
     }
 
     override fun tick(world: ServerWorld) {
