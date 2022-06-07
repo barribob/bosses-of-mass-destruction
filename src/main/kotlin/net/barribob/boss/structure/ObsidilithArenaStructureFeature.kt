@@ -8,6 +8,7 @@ import net.minecraft.util.BlockRotation
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.Heightmap
+import net.minecraft.world.gen.structure.Structure
 import net.minecraft.world.gen.structure.StructureType
 import java.util.*
 
@@ -16,7 +17,7 @@ class ObsidilithArenaStructureFeature(
     codec: Config,
     private val obsidilithConfig: ObsidilithConfig
 ) :
-    StructureType(codec) {
+    Structure(codec) {
 
     companion object {
         private val template: Identifier = Mod.identifier("obsidilith_arena")
@@ -26,7 +27,7 @@ class ObsidilithArenaStructureFeature(
             val y = obsidilithConfig.arenaGeneration.generationHeight
             val blockPos = BlockPos(x, y, z)
             val rotation = BlockRotation.random(context.random)
-            collector.addPiece(ModStructurePiece(context.structureManager, blockPos, template, rotation, ModStructures.obsidilithStructurePiece))
+            collector.addPiece(ModStructurePiece(context.structureTemplateManager, blockPos, template, rotation, ModStructures.obsidilithStructurePiece))
         }
 
     }
@@ -37,7 +38,7 @@ class ObsidilithArenaStructureFeature(
         ) { collector: StructurePiecesCollector? -> addPieces(collector as StructurePiecesCollector, context, obsidilithConfig) }
     }
 
-    override fun getType(): net.minecraft.structure.StructureType<*> {
+    override fun getType(): StructureType<*> {
         return ModStructures.obsidilithStructureRegistry.structureTypeKey
     }
 }

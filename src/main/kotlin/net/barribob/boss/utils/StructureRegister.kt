@@ -10,13 +10,14 @@ import net.minecraft.util.registry.Registry
 import net.minecraft.util.registry.RegistryEntry
 import net.minecraft.util.registry.RegistryKey
 import net.minecraft.world.gen.chunk.placement.StructurePlacement
+import net.minecraft.world.gen.structure.Structure
 import net.minecraft.world.gen.structure.StructureType
 
-class StructureRegister<S : StructureType>(private val structureIdentifier: Identifier, codec: Codec<S>) {
-    val structureTypeKey: net.minecraft.structure.StructureType<S> = Registry.register(Registry.STRUCTURE_TYPE, structureIdentifier.toString(), net.minecraft.structure.StructureType { codec })
-    val configuredStructureKey: RegistryKey<StructureType> = createConfigureStructureKey(structureIdentifier)
+class StructureRegister<S : Structure>(private val structureIdentifier: Identifier, codec: Codec<S>) {
+    val structureTypeKey: StructureType<S> = Registry.register(Registry.STRUCTURE_TYPE, structureIdentifier.toString(), StructureType { codec })
+    val configuredStructureKey: RegistryKey<Structure> = createConfigureStructureKey(structureIdentifier)
 
-    fun register(configuredStructure: StructureType, structurePlacement: StructurePlacement) {
+    fun register(configuredStructure: Structure, structurePlacement: StructurePlacement) {
         val configuredStructureEntry = registerConfiguredStructure(configuredStructureKey, configuredStructure)
         val structureSetKey = RegistryKey.of(Registry.STRUCTURE_SET_KEY, structureIdentifier)
         StructureSets.register(structureSetKey, configuredStructureEntry, structurePlacement)
@@ -26,7 +27,7 @@ class StructureRegister<S : StructureType>(private val structureIdentifier: Iden
     }
 
     private fun createConfigureStructureKey(identifier: Identifier) = RegistryKey.of(Registry.STRUCTURE_KEY,  identifier)
-    private fun registerConfiguredStructure(key: RegistryKey<StructureType>, configuredStructure: StructureType): RegistryEntry<StructureType> {
+    private fun registerConfiguredStructure(key: RegistryKey<Structure>, configuredStructure: Structure): RegistryEntry<Structure> {
         return BuiltinRegistries.add(BuiltinRegistries.STRUCTURE, key.value, configuredStructure)
     }
 }

@@ -6,10 +6,11 @@ import net.minecraft.structure.StructurePiecesCollector
 import net.minecraft.util.BlockRotation
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.Heightmap
+import net.minecraft.world.gen.structure.Structure
 import net.minecraft.world.gen.structure.StructureType
 import java.util.*
 
-class LichTowerStructureFeature(codec: Config) : StructureType(codec) {
+class LichTowerStructureFeature(codec: Config) : Structure(codec) {
 
     companion object {
         fun addPieces(collector : StructurePiecesCollector, context : Context) {
@@ -20,7 +21,7 @@ class LichTowerStructureFeature(codec: Config) : StructureType(codec) {
             val blockPos = BlockPos(x, y, z).add(BlockPos(-15, 0, -15).rotate(rotation))
             collector.addPiece(
                 ModStructurePiece(
-                    context.structureManager,
+                    context.structureTemplateManager,
                     blockPos,
                     Mod.identifier("lich_tower_1"),
                     rotation,
@@ -29,7 +30,7 @@ class LichTowerStructureFeature(codec: Config) : StructureType(codec) {
             )
             collector.addPiece(
                 ModStructurePiece(
-                    context.structureManager,
+                    context.structureTemplateManager,
                     blockPos.up(59 - 11),
                     Mod.identifier("lich_tower_2"),
                     rotation,
@@ -46,7 +47,7 @@ class LichTowerStructureFeature(codec: Config) : StructureType(codec) {
     }
 
 
-    override fun getType(): net.minecraft.structure.StructureType<*> {
+    override fun getType(): StructureType<*> {
         return ModStructures.lichStructureRegistry.structureTypeKey
     }
 }

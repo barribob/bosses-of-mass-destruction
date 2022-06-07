@@ -7,17 +7,18 @@ import net.minecraft.util.BlockRotation
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.Heightmap
+import net.minecraft.world.gen.structure.Structure
 import net.minecraft.world.gen.structure.StructureType
 import java.util.*
 
-class GauntletArenaStructureFeature(codec: Config) : StructureType(codec) {
+class GauntletArenaStructureFeature(codec: Config) : Structure(codec) {
 
     companion object {
         private val template: Identifier = Mod.identifier("gauntlet_arena")
         fun addPieces(collector: StructurePiecesCollector, context: Context) {
             val blockPos = BlockPos(context.chunkPos().startX, 15, context.chunkPos().startZ)
             val rotation = BlockRotation.random(context.random)
-            collector.addPiece(ModStructurePiece(context.structureManager, blockPos, template, rotation, ModStructures.gauntletStructurePiece))
+            collector.addPiece(ModStructurePiece(context.structureTemplateManager, blockPos, template, rotation, ModStructures.gauntletStructurePiece))
         }
     }
 
@@ -27,7 +28,7 @@ class GauntletArenaStructureFeature(codec: Config) : StructureType(codec) {
         ) { collector: StructurePiecesCollector? -> addPieces(collector as StructurePiecesCollector, context) }
     }
 
-    override fun getType(): net.minecraft.structure.StructureType<*> {
+    override fun getType(): StructureType<*> {
         return ModStructures.gauntletStructureRegistry.structureTypeKey
     }
 }

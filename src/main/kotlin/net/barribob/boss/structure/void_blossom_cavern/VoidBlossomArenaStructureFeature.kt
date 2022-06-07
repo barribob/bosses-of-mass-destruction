@@ -6,10 +6,11 @@ import net.minecraft.structure.StructurePiecesCollector
 import net.minecraft.util.math.BlockBox
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.Heightmap
+import net.minecraft.world.gen.structure.Structure
 import net.minecraft.world.gen.structure.StructureType
 import java.util.*
 
-class VoidBlossomArenaStructureFeature(codec: Config) : StructureType(codec) {
+class VoidBlossomArenaStructureFeature(codec: Config) : Structure(codec) {
 
     companion object {
         fun addPieces(collector : StructurePiecesCollector, context : Context) {
@@ -32,7 +33,7 @@ class VoidBlossomArenaStructureFeature(codec: Config) : StructureType(codec) {
         ) { collector: StructurePiecesCollector? -> addPieces(collector as StructurePiecesCollector, context) }
     }
 
-    override fun getType(): net.minecraft.structure.StructureType<*> {
+    override fun getType(): StructureType<*> {
         return ModStructures.voidBlossomStructureRegistry.structureTypeKey
     }
 }

@@ -11,10 +11,11 @@ import net.minecraft.server.world.ServerWorld
 import net.minecraft.structure.StructureStart
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.registry.RegistryKey
+import net.minecraft.world.gen.structure.Structure
 import net.minecraft.world.gen.structure.StructureType
 
 class GauntletStructureRepair : StructureRepair {
-    override fun associatedStructure(): RegistryKey<StructureType> = ModStructures.gauntletStructureRegistry.configuredStructureKey
+    override fun associatedStructure(): RegistryKey<Structure> = ModStructures.gauntletStructureRegistry.configuredStructureKey
     override fun repairStructure(world: ServerWorld, structureStart: StructureStart) {
         val pos = runeCenter(structureStart)
 

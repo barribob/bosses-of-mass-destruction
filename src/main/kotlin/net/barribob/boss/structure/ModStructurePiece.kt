@@ -17,7 +17,7 @@ import net.minecraft.world.ServerWorldAccess
 class ModStructurePiece : SimpleStructurePiece {
     private val rot: BlockRotation
 
-    constructor(manager: StructureManager, NbtCompound: NbtCompound, type: StructurePieceType) : super(
+    constructor(manager: StructureTemplateManager, NbtCompound: NbtCompound, type: StructurePieceType) : super(
         type,
         NbtCompound,
         manager,
@@ -31,7 +31,7 @@ class ModStructurePiece : SimpleStructurePiece {
     }
 
     constructor(
-        structureManager: StructureManager,
+        structureManager: StructureTemplateManager,
         pos: BlockPos,
         template: Identifier,
         rotation: BlockRotation,
