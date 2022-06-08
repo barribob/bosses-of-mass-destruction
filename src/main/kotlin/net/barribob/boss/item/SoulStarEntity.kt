@@ -12,8 +12,6 @@ import net.barribob.maelstrom.static_utilities.VecUtils
 import net.barribob.maelstrom.static_utilities.rotateVector
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
-import net.fabricmc.api.EnvironmentInterface
-import net.fabricmc.api.EnvironmentInterfaces
 import net.minecraft.entity.*
 import net.minecraft.entity.data.DataTracker
 import net.minecraft.entity.data.TrackedData

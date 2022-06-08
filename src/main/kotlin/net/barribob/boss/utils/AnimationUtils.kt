@@ -16,19 +16,4 @@ object AnimationUtils {
         PlayState.CONTINUE
     }
 
-    fun checkAttackAnimation(
-        it: AnimationEvent<*>,
-        booleanFlag: BooleanFlag,
-        animationName: String,
-        idleAnimationName: String,
-    ) {
-        if (booleanFlag.getAndReset()) {
-            it.controller.markNeedsReload()
-            it.controller.setAnimation(
-                AnimationBuilder()
-                    .addAnimation(animationName, false)
-                    .addAnimation(idleAnimationName, true)
-            )
-        }
-    }
 }

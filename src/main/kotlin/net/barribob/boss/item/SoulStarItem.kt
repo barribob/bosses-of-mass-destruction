@@ -35,7 +35,6 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.RaycastContext
 import net.minecraft.world.World
-import java.util.*
 
 class SoulStarItem(settings: Settings?) : Item(settings) {
     override fun appendTooltip(

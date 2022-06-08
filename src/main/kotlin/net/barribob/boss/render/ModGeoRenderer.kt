@@ -160,10 +160,6 @@ open class ModGeoRenderer<T>(
         return modelProvider.getTextureResource(instance)
     }
 
-    fun addLayer(layer: GeoLayerRenderer<T>): Boolean {
-        return layerRenderers.add(layer)
-    }
-
     companion object Init {
         fun getPackedOverlay(uIn: Float): Int {
             return OverlayTexture.getUv(OverlayTexture.getU(uIn).toFloat(), false)

@@ -15,7 +15,6 @@ import net.minecraft.util.math.random.CheckedRandom
 import net.minecraft.world.StructureWorldAccess
 import net.minecraft.world.gen.StructureAccessor
 import net.minecraft.world.gen.chunk.ChunkGenerator
-import java.util.*
 
 class CodeStructurePiece : StructurePiece, IStructurePiece {
     private val pieceGenerator: IPieceGenerator

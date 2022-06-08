@@ -4,7 +4,6 @@ import me.shedaniel.autoconfig.AutoConfig
 import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer
 import net.barribob.boss.Mod.networkUtils
 import net.barribob.boss.Mod.vec3dNetwork
-import net.barribob.boss.animation.PauseAnimationTimer
 import net.barribob.boss.block.ModBlocks
 import net.barribob.boss.config.ModConfig
 import net.barribob.boss.item.ModItems
@@ -19,7 +18,6 @@ import net.barribob.maelstrom.MaelstromMod
 import net.barribob.maelstrom.general.io.ConsoleLogger
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
-import net.minecraft.client.MinecraftClient
 import net.minecraft.util.Identifier
 import org.apache.logging.log4j.LogManager
 import software.bernie.geckolib3.GeckoLib

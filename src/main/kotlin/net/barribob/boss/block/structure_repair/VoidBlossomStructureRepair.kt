@@ -22,7 +22,6 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.util.registry.RegistryKey
 import net.minecraft.world.gen.structure.Structure
-import net.minecraft.world.gen.structure.StructureType
 
 class VoidBlossomStructureRepair : StructureRepair {
     override fun associatedStructure(): RegistryKey<Structure> = ModStructures.voidBlossomStructureRegistry.configuredStructureKey

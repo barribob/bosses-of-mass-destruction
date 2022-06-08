@@ -36,7 +36,7 @@ public abstract class BossBarHudMixin {
                     LichUtils.textureSize);
 
     @Inject(
-            method = "renderBossBar",
+            method = "renderBossBar*",
             at = @At("HEAD"),
             cancellable = true
     )

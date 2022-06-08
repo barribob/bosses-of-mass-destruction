@@ -1,7 +1,6 @@
 package net.barribob.boss.block
 
 import net.barribob.boss.Mod
-import net.barribob.boss.animation.IAnimationTimer
 import net.barribob.boss.mob.GeoModel
 import net.barribob.boss.render.IBoneLight
 import net.barribob.boss.render.ModBlockEntityRenderer
