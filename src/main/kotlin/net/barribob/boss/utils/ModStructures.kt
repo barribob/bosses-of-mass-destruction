@@ -46,27 +46,32 @@ object ModStructures {
         val gauntletGenConfig = modConfig.gauntletConfig.arenaGeneration
         val voidBlossomGenConfig = modConfig.voidBlossomConfig.arenaGeneration
         val lichConfig = modConfig.lichConfig.towerGeneration
+        val noneHasStructure = "has_structure/none"
 
-        val obsidilithStructureBiomeTag = getBiomeTag("has_structure/obsidilith_arena")
+        val obsidilithStructureBiomeTagName = if (obsidilithGenConfig.generationEnabled) "has_structure/obsidilith_arena" else noneHasStructure
+        val obsidilithStructureBiomeTag = getBiomeTag(obsidilithStructureBiomeTagName)
         val obsidilithStructure = ObsidilithArenaStructureFeature(DefaultFeatureConfig.CODEC, modConfig.obsidilithConfig)
         val obsidilithStructurePlacement = RandomSpreadStructurePlacement(obsidilithGenConfig.generationSpacing, obsidilithGenConfig.generationSeparation, SpreadType.LINEAR, 499672)
         val obsidilithConfiguredStructure = obsidilithStructure.configure(DefaultFeatureConfig.INSTANCE, obsidilithStructureBiomeTag, emptySpawns)
         obsidilithStructureRegistry.register(obsidilithStructure, obsidilithConfiguredStructure, obsidilithStructurePlacement)
 
+        val voidBlossomStructureBiomeTagName = if(voidBlossomGenConfig.generationEnabled) "has_structure/void_blossom" else noneHasStructure
         val voidBlossomStructurePlacement = RandomSpreadStructurePlacement(voidBlossomGenConfig.generationSpacing, voidBlossomGenConfig.generationSeparation, SpreadType.LINEAR, 574839)
         val voidBlossomStructure = VoidBlossomArenaStructureFeature(DefaultFeatureConfig.CODEC)
-        val voidBlossomStructureBiomeTag: TagKey<Biome> = getBiomeTag("has_structure/void_blossom")
+        val voidBlossomStructureBiomeTag: TagKey<Biome> = getBiomeTag(voidBlossomStructureBiomeTagName)
         val voidBlossomConfiguredStructure: ConfiguredStructureFeature<*, *> = voidBlossomStructure.configure(DefaultFeatureConfig.INSTANCE, voidBlossomStructureBiomeTag, emptySpawns)
         voidBlossomStructureRegistry.register(voidBlossomStructure, voidBlossomConfiguredStructure, voidBlossomStructurePlacement)
 
+        val gauntletStructureBiomeTagName = if(gauntletGenConfig.generationEnabled) "has_structure/gauntlet_arena" else noneHasStructure
         val gauntletStructurePlacement = RandomSpreadStructurePlacement(gauntletGenConfig.generationSpacing, gauntletGenConfig.generationSeparation, SpreadType.LINEAR, 499672)
-        val gauntletStructureBiomeTag = getBiomeTag("has_structure/gauntlet_arena")
+        val gauntletStructureBiomeTag = getBiomeTag(gauntletStructureBiomeTagName)
         val gauntletArenaStructure = GauntletArenaStructureFeature(DefaultFeatureConfig.CODEC)
         val gauntletConfiguredStructure = gauntletArenaStructure.configure(DefaultFeatureConfig.INSTANCE, gauntletStructureBiomeTag, emptySpawns)
         gauntletStructureRegistry.register(gauntletArenaStructure, gauntletConfiguredStructure, gauntletStructurePlacement)
 
+        val lichStructureBiomeTagName = if(lichConfig.generateLichTower) "has_structure/lich_tower" else noneHasStructure
         val lichStructurePlacement = RandomSpreadStructurePlacement(lichConfig.lichTowerGenerationSpacing, lichConfig.lichTowerGenerationSeparation, SpreadType.LINEAR, 1230784)
-        val lichStructureBiomeTag = getBiomeTag("has_structure/lich_tower")
+        val lichStructureBiomeTag = getBiomeTag(lichStructureBiomeTagName)
         val lichStructure = LichTowerStructureFeature(DefaultFeatureConfig.CODEC)
         val lichConfiguredStructure = lichStructure.configure(DefaultFeatureConfig.INSTANCE, lichStructureBiomeTag)
         lichStructureRegistry.register(lichStructure, lichConfiguredStructure, lichStructurePlacement)
