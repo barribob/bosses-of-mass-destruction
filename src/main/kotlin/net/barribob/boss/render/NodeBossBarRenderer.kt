@@ -20,8 +20,8 @@ class NodeBossBarRenderer(
      * Sourced from [BossBarHud.renderBossBar]
      */
     fun renderBossBar(matrices: MatrixStack, x: Int, y: Int, bossBar: BossBar, callbackInfo: CallbackInfo) {
-
-        val barContent = bossBar.name.content
+        val name = bossBar.name ?: return
+        val barContent = name.content
         if (barContent is TranslatableTextContent && barContent.key.equals(entityTypeKey)) {
             val colorLocation = bossBar.color.ordinal * 5 * 2f
             DrawableHelper.drawTexture(

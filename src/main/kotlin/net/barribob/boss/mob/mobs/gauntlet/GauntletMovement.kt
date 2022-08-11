@@ -21,10 +21,10 @@ class GauntletMovement(val entity: GauntletEntity) {
     private val tooCloseToTargetDistance = 5.0
 
     fun buildAttackMovement(): VelocityGoal {
-        val targetPos = { entity.target!!.pos }
+        val targetPos = { entity.safeGetTargetPos()}
         val tooCloseToTarget: (Vec3d) -> Boolean = getWithinDistancePredicate(tooCloseToTargetDistance, targetPos)
         val tooFarFromTarget: (Vec3d) -> Boolean = { !getWithinDistancePredicate(tooFarFromTargetDistance, targetPos)(it) }
-        val movingToTarget: (Vec3d) -> Boolean = { MathUtils.movingTowards(entity.target!!.pos, entity.pos, it) }
+        val movingToTarget: (Vec3d) -> Boolean = { MathUtils.movingTowards(entity.safeGetTargetPos(), entity.pos, it) }
 
         val canMoveTowardsPositionValidator = ValidDirectionAnd(
             listOf(

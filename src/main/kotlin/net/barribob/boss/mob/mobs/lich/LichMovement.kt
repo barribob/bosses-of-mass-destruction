@@ -24,10 +24,10 @@ class LichMovement(val entity: LichEntity) {
 
     fun buildAttackMovement(): VelocityGoal {
         val tooCloseToTarget: (Vec3d) -> Boolean =
-            getWithinDistancePredicate(tooCloseToTargetDistance) { entity.target!!.pos }
+            getWithinDistancePredicate(tooCloseToTargetDistance) { entity.safeGetTargetPos() }
         val tooFarFromTarget: (Vec3d) -> Boolean =
-            { !getWithinDistancePredicate(tooFarFromTargetDistance) { entity.target!!.pos }(it) }
-        val movingToTarget: (Vec3d) -> Boolean = { MathUtils.movingTowards(entity.target!!.pos, entity.pos, it) }
+            { !getWithinDistancePredicate(tooFarFromTargetDistance) { entity.safeGetTargetPos()}(it) }
+        val movingToTarget: (Vec3d) -> Boolean = { MathUtils.movingTowards(entity.safeGetTargetPos(), entity.pos, it) }
 
         val canMoveTowardsPositionValidator = ValidDirectionAnd(
             listOf(
@@ -50,9 +50,10 @@ class LichMovement(val entity: LichEntity) {
     private fun moveWhileAttacking(velocity: Vec3d) {
         entity.addVelocity(velocity)
 
-        if (entity.target != null) {
-            entity.lookControl.lookAt(entity.target!!.pos)
-            entity.lookAtTarget(entity.target!!.pos, entity.maxLookYawChange.toFloat(), entity.maxLookPitchChange.toFloat())
+        val target = entity.target
+        if (target != null) {
+            entity.lookControl.lookAt(target.pos)
+            entity.lookAtTarget(target.pos, entity.maxLookYawChange.toFloat(), entity.maxLookPitchChange.toFloat())
         }
     }
 

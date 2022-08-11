@@ -60,11 +60,9 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
         val sidedWorld = world
         if (sidedWorld.isClient && sidedWorld is ClientWorld && deathClientTick != null) {
             deathClientTick?.tick(sidedWorld)
-        }
-        else if(sidedWorld is ServerWorld && deathServerTick != null) {
+        } else if (sidedWorld is ServerWorld && deathServerTick != null) {
             deathServerTick?.tick(sidedWorld)
-        }
-        else {
+        } else {
             super.updatePostDeath()
         }
     }
@@ -122,7 +120,7 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
 
     final override fun canHaveStatusEffect(effect: StatusEffectInstance): Boolean {
         val statusEffectHandler = statusEffectHandler
-        if(statusEffectHandler != null) return statusEffectHandler.canHaveStatusEffect(effect)
+        if (statusEffectHandler != null) return statusEffectHandler.canHaveStatusEffect(effect)
         return super.canHaveStatusEffect(effect)
     }
 
@@ -150,7 +148,7 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
 
     override fun move(type: MovementType, movement: Vec3d) {
         val shouldDoDefault = moveHandler?.canMove(type, movement) == true
-        if(moveHandler == null || shouldDoDefault) super.move(type, movement)
+        if (moveHandler == null || shouldDoDefault) super.move(type, movement)
     }
 
     override fun writeNbt(nbt: NbtCompound?): NbtCompound {
@@ -160,5 +158,10 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
 
     override fun tickTimer(): Int {
         return age
+    }
+
+    fun safeGetTargetPos(): Vec3d {
+        val target = target
+        return if (target == null) Vec3d.ZERO else target.pos
     }
 }
