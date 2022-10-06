@@ -45,7 +45,7 @@ class GauntletEnergyRenderer(val geoModel: AnimatedGeoModel<GauntletEntity>) : I
         partialTicks: Float,
         type: RenderLayer,
         matrixStackIn: MatrixStack,
-        renderTypeBuffer: VertexConsumerProvider,
+        renderTypeBuffer: VertexConsumerProvider?,
         packedLightIn: Int,
         packedOverlayIn: Int,
         red: Float,
@@ -96,5 +96,17 @@ class GauntletEnergyRenderer(val geoModel: AnimatedGeoModel<GauntletEntity>) : I
             super.renderCube(cube, matrixStack, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha)
             matrixStack.pop()
         }
+
+        private var provider: VertexConsumerProvider? = null
+
+        override fun setCurrentRTB(rtb: VertexConsumerProvider?) {
+            provider = rtb
+        }
+
+        override fun getCurrentRTB(): VertexConsumerProvider? {
+            return provider
+        }
+
+       override fun getTextureLocation(instance: GauntletEntity?): Identifier = getTextureResource(instance)
     }
 }

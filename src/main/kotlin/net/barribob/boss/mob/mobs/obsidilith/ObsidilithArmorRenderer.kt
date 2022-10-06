@@ -31,7 +31,7 @@ class ObsidilithArmorRenderer(geoModel: AnimatedGeoModel<ObsidilithEntity>) : IR
         partialTicks: Float,
         type: RenderLayer,
         matrixStackIn: MatrixStack,
-        renderTypeBuffer: VertexConsumerProvider,
+        renderTypeBuffer: VertexConsumerProvider?,
         packedLightIn: Int,
         packedOverlayIn: Int,
         red: Float,
@@ -87,6 +87,8 @@ class ObsidilithArmorRenderer(geoModel: AnimatedGeoModel<ObsidilithEntity>) : IR
         override fun getGeoModelProvider(): GeoModelProvider<*> = geoModel
         override fun getTextureLocation(p0: ObsidilithEntity?): Identifier = Identifier("unused")
 
+        private var provider: VertexConsumerProvider? = null
+
         override fun renderCube(
             cube: GeoCube,
             matrixStack: MatrixStack,
@@ -103,5 +105,15 @@ class ObsidilithArmorRenderer(geoModel: AnimatedGeoModel<ObsidilithEntity>) : IR
             super.renderCube(cube, matrixStack, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha)
             matrixStack.pop()
         }
+
+        override fun setCurrentRTB(rtb: VertexConsumerProvider?) {
+            provider = rtb
+        }
+
+        override fun getCurrentRTB(): VertexConsumerProvider? {
+            return provider
+        }
+
+        override fun getTextureLocation(instance: ObsidilithEntity): Identifier = getTextureResource(instance)
     }
 }
