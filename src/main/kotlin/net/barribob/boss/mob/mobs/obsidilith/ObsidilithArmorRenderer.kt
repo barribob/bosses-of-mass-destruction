@@ -113,7 +113,5 @@ class ObsidilithArmorRenderer(geoModel: AnimatedGeoModel<ObsidilithEntity>) : IR
         override fun getCurrentRTB(): VertexConsumerProvider? {
             return provider
         }
-
-        override fun getTextureLocation(instance: ObsidilithEntity): Identifier = getTextureResource(instance)
     }
 }

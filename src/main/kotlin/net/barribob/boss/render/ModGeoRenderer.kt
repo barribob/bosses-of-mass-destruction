@@ -174,8 +174,6 @@ open class ModGeoRenderer<T>(
         return provider
     }
 
-    override fun getTextureLocation(instance: T): Identifier = getTextureResource(instance)
-
     companion object Init {
         fun getPackedOverlay(uIn: Float): Int {
             return OverlayTexture.getUv(OverlayTexture.getU(uIn).toFloat(), false)

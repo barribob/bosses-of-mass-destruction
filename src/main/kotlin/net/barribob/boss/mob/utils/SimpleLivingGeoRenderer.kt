@@ -177,7 +177,5 @@ class SimpleLivingGeoRenderer<T>(
         override fun getCurrentRTB(): VertexConsumerProvider? {
             return provider
         }
-
-        override fun getTextureLocation(instance: T): Identifier = textureLocation(instance)
     }
 }

@@ -106,7 +106,5 @@ class GauntletEnergyRenderer(val geoModel: AnimatedGeoModel<GauntletEntity>) : I
         override fun getCurrentRTB(): VertexConsumerProvider? {
             return provider
         }
-
-       override fun getTextureLocation(instance: GauntletEntity?): Identifier = getTextureResource(instance)
     }
 }
