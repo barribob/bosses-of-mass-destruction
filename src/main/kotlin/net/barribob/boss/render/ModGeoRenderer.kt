@@ -160,6 +160,18 @@ open class ModGeoRenderer<T>(
         return modelProvider.getTextureResource(instance)
     }
 
+    private var provider: VertexConsumerProvider? = null
+
+    override fun setCurrentRTB(rtb: VertexConsumerProvider?) {
+        provider = rtb
+    }
+
+    override fun getCurrentRTB(): VertexConsumerProvider? {
+        return provider
+    }
+
+    override fun getTextureLocation(instance: T): Identifier = getTextureResource(instance)
+
     companion object Init {
         fun getPackedOverlay(uIn: Float): Int {
             return OverlayTexture.getUv(OverlayTexture.getU(uIn).toFloat(), false)

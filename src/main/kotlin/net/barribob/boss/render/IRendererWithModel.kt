@@ -11,7 +11,7 @@ interface IRendererWithModel {
         partialTicks: Float,
         type: RenderLayer,
         matrixStackIn: MatrixStack,
-        renderTypeBuffer: VertexConsumerProvider,
+        renderTypeBuffer: VertexConsumerProvider?,
         packedLightIn: Int,
         packedOverlayIn: Int,
         red: Float,

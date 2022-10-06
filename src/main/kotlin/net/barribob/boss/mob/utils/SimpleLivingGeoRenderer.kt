@@ -97,7 +97,7 @@ class SimpleLivingGeoRenderer<T>(
         partialTicks: Float,
         type: RenderLayer,
         matrixStackIn: MatrixStack,
-        renderTypeBuffer: VertexConsumerProvider,
+        renderTypeBuffer: VertexConsumerProvider?,
         vertexBuilder: VertexConsumer?,
         packedLightIn: Int,
         packedOverlayIn: Int,
@@ -151,6 +151,9 @@ class SimpleLivingGeoRenderer<T>(
         private val renderer: SimpleLivingGeoRenderer<T>
     ) :
         IGeoRenderer<T> where T : IAnimatable, T : LivingEntity {
+
+        private var provider: VertexConsumerProvider? = null
+
         override fun getGeoModelProvider(): GeoModelProvider<*> = geoModel
         override fun getTextureResource(p0: T): Identifier = textureLocation(p0)
         override fun renderRecursively(
@@ -166,5 +169,15 @@ class SimpleLivingGeoRenderer<T>(
         ) {
             renderer.renderRecursively(bone, stack, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha)
         }
+
+        override fun setCurrentRTB(rtb: VertexConsumerProvider?) {
+            provider = rtb
+        }
+
+        override fun getCurrentRTB(): VertexConsumerProvider? {
+            return provider
+        }
+
+        override fun getTextureLocation(instance: T): Identifier = textureLocation(instance)
     }
 }
