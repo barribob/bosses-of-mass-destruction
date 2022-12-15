@@ -7,6 +7,7 @@ import net.barribob.boss.utils.ModUtils.randomPitch
 import net.barribob.boss.utils.NetworkUtils.Companion.changeHitbox
 import net.barribob.maelstrom.static_utilities.MathUtils
 import net.barribob.maelstrom.static_utilities.eyePos
+import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.damage.DamageSource
@@ -92,11 +93,15 @@ class GauntletHitboxes(val entity: GauntletEntity) : IDamageHandler {
     fun setNextDamagedPart(part: String?) {
         nextDamagedPart = part
     }
+    
+    private val disableHitboxesForCompatibility: Boolean = FabricLoader.getInstance().isModLoaded("bettercombat")
 
     override fun shouldDamage(actor: LivingEntity, damageSource: DamageSource, amount: Float): Boolean {
         val part = nextDamagedPart
         nextDamagedPart = null
 
+        if (disableHitboxesForCompatibility) return true
+        
         if (part == eyeBox || damageSource.isOutOfWorld) return true
 
         if (damageSource.isExplosive) {
