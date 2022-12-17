@@ -18,15 +18,15 @@ import net.minecraft.text.Text
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import org.jetbrains.annotations.Nullable
-import software.bernie.geckolib3.core.IAnimatable
-import software.bernie.geckolib3.core.IAnimationTickable
-import software.bernie.geckolib3.core.manager.AnimationFactory
+import software.bernie.geckolib.animatable.GeoEntity
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
+import software.bernie.geckolib.util.GeckoLibUtil
 
 abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: World) :
-    PathAwareEntity(entityType, world), IAnimatable, IAnimationTickable {
-    private val animationFactory: AnimationFactory by lazy { AnimationFactory(this) }
-    override fun getFactory(): AnimationFactory = animationFactory
-    var idlePosition: Vec3d = Vec3d.ZERO // TODO: I don't actually know if this implementation works
+    PathAwareEntity(entityType, world), GeoEntity {
+    private val animationFactory: AnimatableInstanceCache by lazy { GeckoLibUtil.createInstanceCache(this) }
+    override fun getAnimatableInstanceCache(): AnimatableInstanceCache = animationFactory
+    var idlePosition: Vec3d = Vec3d.ZERO
     protected open val bossBar: ServerBossBar? = null
     protected open val damageHandler: IDamageHandler? = null
     protected open val statusHandler: IStatusHandler? = null
@@ -154,10 +154,6 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
     override fun writeNbt(nbt: NbtCompound?): NbtCompound {
         val superTag = super.writeNbt(nbt)
         return nbtHandler?.toTag(superTag) ?: superTag
-    }
-
-    override fun tickTimer(): Int {
-        return age
     }
 
     fun safeGetTargetPos(): Vec3d {

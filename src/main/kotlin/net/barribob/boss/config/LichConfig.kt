@@ -19,9 +19,6 @@ class LichConfig {
     @ConfigEntry.Gui.CollapsibleObject
     val summonMechanic = SummonMechanic()
 
-    @ConfigEntry.Gui.CollapsibleObject
-    val towerGeneration = Generation()
-
     data class Missile(
         val statusEffectId: String = "minecraft:slowness",
 
@@ -35,7 +32,6 @@ class LichConfig {
 
     data class Comet(
         val explosionStrength: Float = 4.0f,
-        val destroysBlocks: Boolean = true
     )
 
     data class SummonMechanic(
@@ -45,11 +41,5 @@ class LichConfig {
 
         @ConfigEntry.BoundedDiscrete(min = 1, max = 1000)
         val numEntitiesKilledToDropSoulStar: Int = 50
-    )
-
-    data class Generation(
-        val generateLichTower: Boolean = true,
-        val lichTowerGenerationSpacing: Int = 100,
-        val lichTowerGenerationSeparation: Int = 50
     )
 }

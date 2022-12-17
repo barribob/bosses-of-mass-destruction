@@ -9,27 +9,25 @@ import net.minecraft.client.render.OverlayTexture
 import net.minecraft.client.render.RenderLayer
 import net.minecraft.client.render.VertexConsumer
 import net.minecraft.client.render.VertexConsumerProvider
+import net.minecraft.client.render.entity.EntityRendererFactory
 import net.minecraft.client.util.math.MatrixStack
-import net.minecraft.util.Identifier
-import software.bernie.geckolib3.geo.render.built.GeoCube
-import software.bernie.geckolib3.geo.render.built.GeoModel
-import software.bernie.geckolib3.model.AnimatedGeoModel
-import software.bernie.geckolib3.model.provider.GeoModelProvider
-import software.bernie.geckolib3.renderers.geo.IGeoRenderer
+import software.bernie.geckolib.cache.`object`.BakedGeoModel
+import software.bernie.geckolib.cache.`object`.GeoCube
+import software.bernie.geckolib.model.GeoModel
+import software.bernie.geckolib.renderer.GeoEntityRenderer
 import kotlin.random.Random
 
-class ObsidilithArmorRenderer(geoModel: AnimatedGeoModel<ObsidilithEntity>) : IRendererWithModel, IRenderer<ObsidilithEntity> {
+class ObsidilithArmorRenderer(val geoModel: GeoModel<ObsidilithEntity>, val context: EntityRendererFactory.Context) : IRendererWithModel, IRenderer<ObsidilithEntity> {
     private val armorTexture = Mod.identifier("textures/entity/obsidilith_armor.png")
-    private val geoModelProvider = RenderHelper(geoModel)
+    private var geoModelProvider: RenderHelper? = null 
 
     private var energyBuffer: VertexConsumer? = null
     private var entity: ObsidilithEntity? = null
     private var layer: RenderLayer? = null
 
     override fun render(
-        model: GeoModel,
+        model: BakedGeoModel,
         partialTicks: Float,
-        type: RenderLayer,
         matrixStackIn: MatrixStack,
         renderTypeBuffer: VertexConsumerProvider?,
         packedLightIn: Int,
@@ -39,6 +37,7 @@ class ObsidilithArmorRenderer(geoModel: AnimatedGeoModel<ObsidilithEntity>) : IR
         blue: Float,
         alpha: Float
     ) {
+        energyBuffer = renderTypeBuffer?.getBuffer(layer)
         val buffer = energyBuffer ?: return
         val entity = entity ?: return
         val renderType = layer ?: return
@@ -53,14 +52,15 @@ class ObsidilithArmorRenderer(geoModel: AnimatedGeoModel<ObsidilithEntity>) : IR
                 else -> ModColors.WHITE
             }.add(VecUtils.unit).normalize().multiply(0.6)
 
-            geoModelProvider.render(
-                model,
-                entity,
-                partialTicks,
-                renderType,
+            geoModelProvider?.actuallyRender(
                 matrixStackIn,
+                entity,
+                model,
+                renderType,
                 renderTypeBuffer,
                 buffer,
+                false,
+                partialTicks,
                 packedLightIn,
                 OverlayTexture.DEFAULT_UV,
                 color.x.toFloat(), color.y.toFloat(), color.z.toFloat(), 1.0f
@@ -78,23 +78,19 @@ class ObsidilithArmorRenderer(geoModel: AnimatedGeoModel<ObsidilithEntity>) : IR
     ) {
         val renderAge: Float = entity.age + partialTicks
         val textureOffset = renderAge * Random.nextFloat()
+        if (geoModelProvider == null) 
+            geoModelProvider = RenderHelper(entity, geoModel, context)
         this.entity = entity
         layer = RenderLayer.getEnergySwirl(armorTexture, textureOffset, textureOffset)
-        energyBuffer = vertexConsumers.getBuffer(layer)
     }
 
-    private class RenderHelper(val geoModel: AnimatedGeoModel<ObsidilithEntity>) : IGeoRenderer<ObsidilithEntity> {
-        override fun getGeoModelProvider(): GeoModelProvider<*> = geoModel
-        override fun getTextureResource(p0: ObsidilithEntity?): Identifier = Identifier("unused")
-
-        private var provider: VertexConsumerProvider? = null
-
+    private class RenderHelper(val entity: ObsidilithEntity, parentModel: GeoModel<ObsidilithEntity>, context: EntityRendererFactory.Context) : GeoEntityRenderer<ObsidilithEntity>(context, parentModel) {
         override fun renderCube(
-            cube: GeoCube,
             matrixStack: MatrixStack,
-            bufferIn: VertexConsumer,
-            packedLightIn: Int,
-            packedOverlayIn: Int,
+            cube: GeoCube?,
+            buffer: VertexConsumer?,
+            packedLight: Int,
+            packedOverlay: Int,
             red: Float,
             green: Float,
             blue: Float,
@@ -102,18 +98,10 @@ class ObsidilithArmorRenderer(geoModel: AnimatedGeoModel<ObsidilithEntity>) : IR
         ) {
             matrixStack.push()
             matrixStack.scale(1.08f, 1.05f, 1.08f)
-            super.renderCube(cube, matrixStack, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha)
+            super.renderCube(matrixStack, cube, buffer, packedLight, packedOverlay, red, green, blue, alpha)
             matrixStack.pop()
         }
-
-        override fun setCurrentRTB(rtb: VertexConsumerProvider?) {
-            provider = rtb
-        }
-
-        override fun getCurrentRTB(): VertexConsumerProvider? {
-            return provider
-        }
-
-        override fun getTextureLocation(instance: ObsidilithEntity): Identifier = getTextureResource(instance)
+        
+        override fun getAnimatable(): ObsidilithEntity = entity
     }
 }

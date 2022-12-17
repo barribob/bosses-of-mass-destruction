@@ -34,7 +34,7 @@ import net.minecraft.sound.SoundEvent
 import net.minecraft.util.math.Box
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
-import software.bernie.geckolib3.core.manager.AnimationData
+import software.bernie.geckolib.core.animation.AnimatableManager
 
 class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: World, config: VoidBlossomConfig) : BaseEntity(entityType, world),
     MultipartAwareEntity {
@@ -49,7 +49,7 @@ class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: Worl
             Pair(3, AnimationHolder.Animation("death", "idle")),
         ),
         VoidBlossomAttacks.stopAttackAnimation,
-        0f
+        0
     )
     private val hitboxes = VoidBlossomHitboxes(this)
     private val hitboxHelper = NetworkedHitboxManager(this, hitboxes.getMap())
@@ -101,7 +101,7 @@ class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: Worl
         }
     }
 
-    override fun registerControllers(data: AnimationData) {
+    override fun registerControllers(data: AnimatableManager.ControllerRegistrar) {
         animationHolder.registerControllers(data)
     }
 

@@ -1,9 +1,10 @@
 package net.barribob.boss.sound
 
 import net.barribob.boss.Mod
+import net.minecraft.registry.Registries
+import net.minecraft.registry.Registry
 import net.minecraft.sound.SoundEvent
 import net.minecraft.util.Identifier
-import net.minecraft.util.registry.Registry
 
 class ModSounds {
     private val soundIdMap = mutableMapOf<SoundEvent, Identifier>()
@@ -99,12 +100,12 @@ class ModSounds {
     }
 
     private fun registerSound(event: SoundEvent) {
-        Registry.register(Registry.SOUND_EVENT, soundIdMap[event], event)
+        Registry.register(Registries.SOUND_EVENT, soundIdMap[event], event)
     }
 
     private fun newSound(id: String): SoundEvent {
         val identifier = Mod.identifier(id)
-        val soundEvent = SoundEvent(identifier)
+        val soundEvent = SoundEvent.of(identifier)
         soundIdMap[soundEvent] = identifier
         return soundEvent
     }

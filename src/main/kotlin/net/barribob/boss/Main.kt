@@ -20,13 +20,14 @@ import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.minecraft.util.Identifier
 import org.apache.logging.log4j.LogManager
-import software.bernie.geckolib3.GeckoLib
+import software.bernie.geckolib.GeckoLib
 
 object Mod {
     const val MODID = "bosses_of_mass_destruction"
 
     val LOGGER = ConsoleLogger(LogManager.getLogger())
 
+    val structures: ModStructures = ModStructures()
     val sounds: ModSounds = ModSounds()
     val items: ModItems = ModItems()
 
@@ -46,7 +47,6 @@ fun init() {
 
     ModBlocks.init()
     Entities.init()
-    ModStructures.init()
 
     Mod.items.init()
     Mod.sounds.init()

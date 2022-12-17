@@ -19,17 +19,19 @@ import net.minecraft.entity.ExperienceOrbEntity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.MovementType
 import net.minecraft.entity.boss.dragon.EnderDragonEntity
-import net.minecraft.entity.mob.CreeperEntity
 import net.minecraft.entity.mob.FlyingEntity
 import net.minecraft.entity.mob.MobEntity
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket
-import net.minecraft.tag.BlockTags
+import net.minecraft.registry.tag.BlockTags
 import net.minecraft.util.hit.HitResult
 import net.minecraft.util.math.*
 import net.minecraft.world.*
 import net.minecraft.world.RaycastContext.FluidHandling
-import net.minecraft.world.explosion.Explosion.DestructionType
+import org.joml.Matrix3f
+import org.joml.Matrix4f
+import org.joml.Quaternionf
+import org.joml.Vector3f
 import kotlin.math.acos
 import kotlin.math.atan2
 import kotlin.math.sqrt
@@ -103,7 +105,7 @@ object VanillaCopies {
         val d: Double = packet.x
         val e: Double = packet.y
         val f: Double = packet.z
-        val entityType = packet.entityTypeId
+        val entityType = packet.entityType
         val world = client.world ?: return
 
         val entity15 = entityType.create(world)
@@ -129,11 +131,11 @@ object VanillaCopies {
         i: Int,
         dispatcher: EntityRenderDispatcher,
         layer: RenderLayer,
-        rotation: Quaternion = Quaternion.IDENTITY
+        rotation: Quaternionf = Quaternionf()
     ) {
         matrixStack.push()
         matrixStack.multiply(dispatcher.rotation)
-        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0f))
+        matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0f))
         matrixStack.multiply(rotation)
         val entry = matrixStack.peek()
         val matrix4f = entry.model
@@ -190,13 +192,6 @@ object VanillaCopies {
     }
 
     /**
-     * [CreeperEntity.explode]
-     */
-    fun getEntityDestructionType(world: World): DestructionType {
-        return if (world.gameRules.getBoolean(GameRules.DO_MOB_GRIEFING)) DestructionType.DESTROY else DestructionType.NONE
-    }
-
-    /**
      * Adapted from [EnderDragonEntity.awardExperience]
      *
      * No longer is present perhaps changed to [EnderDragonEntity.updatePostDeath]?
@@ -223,23 +218,23 @@ object VanillaCopies {
         z: Double,
         scale: Float,
         rotation: Float
-    ): Array<Vec3f> {
+    ): Array<Vector3f> {
         val vec3d = camera.pos
         val f = (MathHelper.lerp(tickDelta.toDouble(), prevPosX, x) - vec3d.getX()).toFloat()
         val g = (MathHelper.lerp(tickDelta.toDouble(), prevPosY, y) - vec3d.getY()).toFloat()
         val h = (MathHelper.lerp(tickDelta.toDouble(), prevPosZ, z) - vec3d.getZ()).toFloat()
 
         val vector3fs = arrayOf(
-            Vec3f(-1.0f, 0.0f, -1.0f),
-            Vec3f(-1.0f, 0.0f, 1.0f),
-            Vec3f(1.0f, 0.0f, 1.0f),
-            Vec3f(1.0f, 0.0f, -1.0f)
+            Vector3f(-1.0f, 0.0f, -1.0f),
+            Vector3f(-1.0f, 0.0f, 1.0f),
+            Vector3f(1.0f, 0.0f, 1.0f),
+            Vector3f(1.0f, 0.0f, -1.0f)
         )
 
         for (k in 0..3) {
             val vector3f2 = vector3fs[k]
-            vector3f2.rotate(Vec3f.POSITIVE_Y.getDegreesQuaternion(rotation))
-            vector3f2.scale(scale)
+            vector3f2.rotate(RotationAxis.POSITIVE_Y.rotationDegrees(rotation))
+            vector3f2.mul(scale)
             vector3f2.add(f, g, h)
         }
 
@@ -259,25 +254,25 @@ object VanillaCopies {
         z: Double,
         scale: Float,
         rotation: Float
-    ): Array<Vec3f> {
+    ): Array<Vector3f> {
         val vec3d = camera.pos
         val f = (MathHelper.lerp(tickDelta.toDouble(), prevPosX, x) - vec3d.getX()).toFloat()
         val g = (MathHelper.lerp(tickDelta.toDouble(), prevPosY, y) - vec3d.getY()).toFloat()
         val h = (MathHelper.lerp(tickDelta.toDouble(), prevPosZ, z) - vec3d.getZ()).toFloat()
-        val quaternion2: Quaternion = camera.rotation
+        val quaternion2: Quaternionf = camera.rotation
 
         val vector3fs = arrayOf(
-            Vec3f(-1.0f, -1.0f, 0.0f),
-            Vec3f(-1.0f, 1.0f, 0.0f),
-            Vec3f(1.0f, 1.0f, 0.0f),
-            Vec3f(1.0f, -1.0f, 0.0f)
+            Vector3f(-1.0f, -1.0f, 0.0f),
+            Vector3f(-1.0f, 1.0f, 0.0f),
+            Vector3f(1.0f, 1.0f, 0.0f),
+            Vector3f(1.0f, -1.0f, 0.0f)
         )
 
         for (k in 0..3) {
             val vector3f2 = vector3fs[k]
-            vector3f2.rotate(Vec3f.POSITIVE_Z.getDegreesQuaternion(rotation))
+            vector3f2.rotate(RotationAxis.POSITIVE_Z.rotationDegrees(rotation))
             vector3f2.rotate(quaternion2)
-            vector3f2.scale(scale)
+            vector3f2.mul(scale)
             vector3f2.add(f, g, h)
         }
 
@@ -332,8 +327,8 @@ object VanillaCopies {
             vec3d3 = vec3d3.normalize()
             val n = acos(vec3d3.y).toFloat()
             val o = atan2(vec3d3.z, vec3d3.x).toFloat()
-            matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion((1.5707964f - o) * 57.295776f))
-            matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(n * 57.295776f))
+            matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((1.5707964f - o) * 57.295776f))
+            matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(n * 57.295776f))
             val q = j * 0.05f * -1.5f
             val red = (color.x * 255).toInt()
             val green = (color.y * 255).toInt()

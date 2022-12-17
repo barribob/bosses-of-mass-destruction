@@ -12,7 +12,6 @@ import net.barribob.boss.mob.damage.DamageMemory
 import net.barribob.boss.mob.mobs.void_blossom.CappedHeal
 import net.barribob.boss.mob.utils.BaseEntity
 import net.barribob.boss.mob.utils.StatusImmunity
-import net.barribob.boss.mob.utils.animation.AnimationPredicate
 import net.barribob.boss.particle.Particles
 import net.barribob.boss.utils.ModUtils
 import net.barribob.boss.utils.ModUtils.playSound
@@ -36,10 +35,10 @@ import net.minecraft.sound.SoundEvent
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
-import software.bernie.geckolib3.core.PlayState
-import software.bernie.geckolib3.core.builder.AnimationBuilder
-import software.bernie.geckolib3.core.controller.AnimationController
-import software.bernie.geckolib3.core.manager.AnimationData
+import software.bernie.geckolib.core.`object`.PlayState
+import software.bernie.geckolib.core.animation.AnimatableManager
+import software.bernie.geckolib.core.animation.AnimationController
+import software.bernie.geckolib.core.animation.RawAnimation
 
 class ObsidilithEntity(
     entityType: EntityType<out ObsidilithEntity>,
@@ -139,13 +138,13 @@ class ObsidilithEntity(
     override fun getHurtSound(source: DamageSource?) = Mod.sounds.obsidilithHurt
     override fun getDeathSound(): SoundEvent = Mod.sounds.obsidilithDeath
 
-    override fun registerControllers(data: AnimationData) {
-        data.addAnimationController(AnimationController(this, "summon", 0f, AnimationPredicate<ObsidilithEntity> {
+    override fun registerControllers(data: AnimatableManager.ControllerRegistrar) {
+        data.add(AnimationController(this, "summon", 0) {
             it.controller.setAnimation(
-                AnimationBuilder().addAnimation("summon", false)
+                RawAnimation.begin().thenPlay("summon")
             )
             PlayState.CONTINUE
-        }))
+        })
     }
 
     override fun move(type: MovementType, movement: Vec3d) {

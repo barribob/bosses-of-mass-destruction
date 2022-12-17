@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:jigsaw",
+
+  "start_pool": "bosses_of_mass_destruction:gauntlet_arena/start_pool",
+  "size": 1,
+
+  "max_distance_from_center": 80,
+  "step": "underground_decoration",
+  "biomes": "#bosses_of_mass_destruction:has_structure/gauntlet_arena",
+  "use_expansion_hack": false,
+  "start_height": {
+    "absolute": 15
+  },
+
+  "spawn_overrides": {
+    "monster" : {
+      "bounding_box": "full",
+      "spawns": []
+    }
+  }
+}

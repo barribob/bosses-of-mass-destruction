@@ -6,7 +6,7 @@ import net.minecraft.client.render.RenderLayer
 import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.client.render.entity.EntityRenderDispatcher
 import net.minecraft.client.util.math.MatrixStack
-import net.minecraft.util.math.Vec3f
+import net.minecraft.util.math.RotationAxis
 
 
 class PetalBladeRenderer(
@@ -24,7 +24,7 @@ class PetalBladeRenderer(
         val scale = 0.5f
         matrices.push()
         matrices.scale(scale, scale, scale)
-        VanillaCopies.renderBillboard(matrices, vertexConsumers, light, dispatcher, renderLayer, Vec3f.POSITIVE_Z.getDegreesQuaternion(-entity.dataTracker.get(PetalBladeProjectile.renderRotation)))
+        VanillaCopies.renderBillboard(matrices, vertexConsumers, light, dispatcher, renderLayer, RotationAxis.POSITIVE_Z.rotationDegrees(-entity.dataTracker.get(PetalBladeProjectile.renderRotation)))
         matrices.pop()
     }
 }

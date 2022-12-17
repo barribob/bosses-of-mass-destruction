@@ -8,14 +8,14 @@ import net.barribob.maelstrom.static_utilities.VecUtils
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityCombatEvents
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
+import net.minecraft.registry.Registries
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.stat.Stats
 import net.minecraft.util.Identifier
-import net.minecraft.util.registry.Registry
 
 class LichKillCounter(private val config: LichConfig.SummonMechanic) : ServerEntityCombatEvents.AfterKilledOtherEntity {
-    private val countedEntities = config.entitiesThatCountToSummonCounter?.map { Registry.ENTITY_TYPE[Identifier(it)] } ?: listOf()
+    private val countedEntities = config.entitiesThatCountToSummonCounter?.map { Registries.ENTITY_TYPE[Identifier(it)] } ?: listOf()
 
     override fun afterKilledOtherEntity(sWorld: ServerWorld, entity: Entity, killedEntity: LivingEntity) {
         if (entity is ServerPlayerEntity && killedEntity.type in countedEntities) {

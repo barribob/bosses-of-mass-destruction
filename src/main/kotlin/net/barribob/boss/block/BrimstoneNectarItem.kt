@@ -11,6 +11,7 @@ import net.minecraft.client.item.TooltipContext
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
+import net.minecraft.registry.RegistryKeys
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
 import net.minecraft.stat.Stats
@@ -19,7 +20,6 @@ import net.minecraft.util.Formatting
 import net.minecraft.util.Hand
 import net.minecraft.util.TypedActionResult
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.registry.Registry
 import net.minecraft.world.World
 
 class BrimstoneNectarItem(settings: Settings, private val structureRepairs: List<StructureRepair>) : Item(settings) {
@@ -79,7 +79,7 @@ class BrimstoneNectarItem(settings: Settings, private val structureRepairs: List
         world: ServerWorld,
         blockPos: BlockPos,
         it: StructureRepair
-    ) = world.structureAccessor.getStructureAt(blockPos, world.structureAccessor.registryManager.get(Registry.STRUCTURE_KEY).get(it.associatedStructure()))
+    ) = world.structureAccessor.getStructureAt(blockPos, world.structureAccessor.registryManager.get(RegistryKeys.STRUCTURE).get(it.associatedStructure()))
 
     private fun playSound(world: World, user: PlayerEntity) {
         world.playSound(

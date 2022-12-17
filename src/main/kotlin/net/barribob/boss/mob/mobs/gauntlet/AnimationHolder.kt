@@ -2,18 +2,17 @@ package net.barribob.boss.mob.mobs.gauntlet
 
 import net.barribob.boss.mob.utils.BaseEntity
 import net.barribob.boss.mob.utils.IStatusHandler
-import net.barribob.boss.mob.utils.animation.AnimationPredicate
-import software.bernie.geckolib3.core.PlayState
-import software.bernie.geckolib3.core.builder.AnimationBuilder
-import software.bernie.geckolib3.core.controller.AnimationController
-import software.bernie.geckolib3.core.manager.AnimationData
+import software.bernie.geckolib.core.`object`.PlayState
+import software.bernie.geckolib.core.animation.AnimatableManager
+import software.bernie.geckolib.core.animation.AnimationController
+import software.bernie.geckolib.core.animation.RawAnimation
 
-class AnimationHolder(val entity: BaseEntity, private val animationStatusFlags: Map<Byte, Animation>, private val stopAttackByte: Byte, private val transition: Float = 5f) : IStatusHandler {
+class AnimationHolder(val entity: BaseEntity, private val animationStatusFlags: Map<Byte, Animation>, private val stopAttackByte: Byte, private val transition: Int = 5) : IStatusHandler {
     private var nextAnimation: Animation? = null
     private var doIdleAnimation = true
 
-    fun registerControllers(data: AnimationData) {
-        data.addAnimationController(AnimationController(entity, "attack", transition, attack))
+    fun registerControllers(data: AnimatableManager.ControllerRegistrar) {
+        data.add(AnimationController(entity, transition, attack))
     }
 
     override fun handleClientStatus(status: Byte) {
@@ -23,22 +22,20 @@ class AnimationHolder(val entity: BaseEntity, private val animationStatusFlags: 
         }
         if (status == stopAttackByte) doIdleAnimation = true
     }
-
-    private val attack = AnimationPredicate<BaseEntity> {
+    
+    private val attack = AnimationController.AnimationStateHandler<BaseEntity> {
         val animationData = nextAnimation
         nextAnimation = null
         if (animationData != null) {
-            it.controller.markNeedsReload()
+            it.controller.forceAnimationReset()
             it.controller.setAnimation(
-                AnimationBuilder()
-                    .addAnimation(animationData.animationName, false)
-                    .addAnimation(animationData.idleAnimationName, true)
+                RawAnimation.begin().thenPlay(animationData.animationName).thenLoop(animationData.idleAnimationName)
             )
         }
 
         if (doIdleAnimation) {
             it.controller.setAnimation(
-                AnimationBuilder().addAnimation("idle", true)
+                RawAnimation.begin().thenLoop("idle")
             )
         }
 

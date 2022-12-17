@@ -32,12 +32,13 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Direction
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
-import software.bernie.geckolib3.core.IAnimatable
-import software.bernie.geckolib3.core.manager.AnimationData
-import software.bernie.geckolib3.core.manager.AnimationFactory
+import software.bernie.geckolib.animatable.GeoEntity
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
+import software.bernie.geckolib.core.animation.AnimatableManager
+import software.bernie.geckolib.util.GeckoLibUtil
 import java.util.function.Predicate
 
-class SporeBallProjectile : BaseThrownItemEntity, IAnimatable {
+class SporeBallProjectile : BaseThrownItemEntity, GeoEntity {
     private val circlePoints = MathUtils.buildBlockCircle(7.0)
     private val projectileParticles = ClientParticleBuilder(Particles.DISAPPEARING_SWIRL)
         .color(ModColors.GREEN)
@@ -173,13 +174,11 @@ class SporeBallProjectile : BaseThrownItemEntity, IAnimatable {
         }
     }
 
-    override fun registerControllers(data: AnimationData) {
+    override fun registerControllers(data: AnimatableManager.ControllerRegistrar) {
     }
 
-    private val animationFactory = AnimationFactory(this)
-    override fun getFactory(): AnimationFactory {
-        return animationFactory
-    }
+    private val animationFactory = GeckoLibUtil.createInstanceCache(this)
+    override fun getAnimatableInstanceCache(): AnimatableInstanceCache = animationFactory
 
     companion object {
         const val explosionDelay = 30

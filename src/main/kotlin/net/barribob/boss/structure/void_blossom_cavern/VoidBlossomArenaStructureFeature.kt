@@ -1,7 +1,8 @@
 package net.barribob.boss.structure.void_blossom_cavern
 
+import com.mojang.serialization.Codec
+import net.barribob.boss.Mod
 import net.barribob.boss.structure.util.CodeStructurePiece
-import net.barribob.boss.utils.ModStructures
 import net.minecraft.structure.StructurePiecesCollector
 import net.minecraft.util.math.BlockBox
 import net.minecraft.util.math.BlockPos
@@ -19,12 +20,14 @@ class VoidBlossomArenaStructureFeature(codec: Config) : Structure(codec) {
             val y = 35 + context.chunkGenerator.minimumY
             collector.addPiece(
                 CodeStructurePiece(
-                    ModStructures.voidBlossomCavernPiece,
+                    Mod.structures.voidBlossomCavernPiece,
                     BlockBox(BlockPos(x, y, z)).expand(32),
                     VoidBlossomCavernPieceGenerator()
                 )
             )
         }
+        
+        val CODEC: Codec<VoidBlossomArenaStructureFeature> = createCodec(::VoidBlossomArenaStructureFeature)
     }
 
     override fun getStructurePosition(context: Context): Optional<StructurePosition> {
@@ -34,6 +37,6 @@ class VoidBlossomArenaStructureFeature(codec: Config) : Structure(codec) {
     }
 
     override fun getType(): StructureType<*> {
-        return ModStructures.voidBlossomStructureRegistry.structureTypeKey
+        return Mod.structures.voidBlossomStructureType
     }
 }

@@ -7,7 +7,6 @@ import net.barribob.boss.particle.Particles
 import net.barribob.boss.utils.ModUtils.findGroundBelow
 import net.barribob.boss.utils.ModUtils.playSound
 import net.barribob.boss.utils.ModUtils.spawnParticle
-import net.barribob.boss.utils.VanillaCopies
 import net.barribob.maelstrom.general.event.Event
 import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.static_utilities.MathUtils
@@ -19,6 +18,7 @@ import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
+import net.minecraft.world.World
 
 class AnvilAction(private val actor: MobEntity, val explosionPower: Float) : IActionWithCooldown {
     private val eventScheduler = ModComponents.getWorldEventScheduler(actor.world)
@@ -58,7 +58,7 @@ class AnvilAction(private val actor: MobEntity, val explosionPower: Float) : IAc
                     actor.y,
                     actor.z,
                     explosionPower,
-                    VanillaCopies.getEntityDestructionType(actor.world)
+                    World.ExplosionSourceType.MOB
                 )
                 eventScheduler.addEvent(TimedEvent({
                     actor.refreshPositionAndAngles(originalPos.x, originalPos.y, originalPos.z, actor.yaw, actor.pitch)

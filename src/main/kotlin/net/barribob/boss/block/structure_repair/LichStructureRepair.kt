@@ -1,22 +1,22 @@
 package net.barribob.boss.block.structure_repair
 
+import net.barribob.boss.Mod
 import net.barribob.boss.block.ModBlocks
 import net.barribob.boss.mob.Entities
 import net.barribob.boss.particle.Particles
-import net.barribob.boss.utils.ModStructures
 import net.barribob.boss.utils.ModUtils.spawnParticle
 import net.barribob.maelstrom.static_utilities.VecUtils
 import net.barribob.maelstrom.static_utilities.asVec3d
 import net.minecraft.block.Blocks
+import net.minecraft.registry.RegistryKey
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.structure.StructureStart
 import net.minecraft.util.math.BlockBox
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.registry.RegistryKey
 import net.minecraft.world.gen.structure.Structure
 
 class LichStructureRepair : StructureRepair {
-    override fun associatedStructure(): RegistryKey<Structure> = ModStructures.lichStructureRegistry.configuredStructureKey
+    override fun associatedStructure(): RegistryKey<Structure> = Mod.structures.lichStructureRegistry.configuredStructureKey
 
     override fun repairStructure(world: ServerWorld, structureStart: StructureStart) {
         val pos = altarCenter(world, structureStart)

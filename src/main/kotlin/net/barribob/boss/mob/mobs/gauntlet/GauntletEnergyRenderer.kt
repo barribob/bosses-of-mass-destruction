@@ -7,19 +7,18 @@ import net.minecraft.client.render.OverlayTexture
 import net.minecraft.client.render.RenderLayer
 import net.minecraft.client.render.VertexConsumer
 import net.minecraft.client.render.VertexConsumerProvider
+import net.minecraft.client.render.entity.EntityRendererFactory
 import net.minecraft.client.util.math.MatrixStack
-import net.minecraft.util.Identifier
 import net.minecraft.util.math.MathHelper
-import software.bernie.geckolib3.geo.render.built.GeoCube
-import software.bernie.geckolib3.geo.render.built.GeoModel
-import software.bernie.geckolib3.model.AnimatedGeoModel
-import software.bernie.geckolib3.model.provider.GeoModelProvider
-import software.bernie.geckolib3.renderers.geo.IGeoRenderer
+import software.bernie.geckolib.cache.`object`.BakedGeoModel
+import software.bernie.geckolib.cache.`object`.GeoCube
+import software.bernie.geckolib.model.GeoModel
+import software.bernie.geckolib.renderer.GeoEntityRenderer
 
-class GauntletEnergyRenderer(val geoModel: AnimatedGeoModel<GauntletEntity>) : IRendererWithModel,
+class GauntletEnergyRenderer(val geoModel: GeoModel<GauntletEntity>,  val context: EntityRendererFactory.Context) : IRendererWithModel,
     IRenderer<GauntletEntity> {
     private val armorTexture = Mod.identifier("textures/entity/obsidilith_armor.png")
-    private val geoModelProvider = RenderHelper(geoModel)
+    private var geoModelProvider: RenderHelper? = null 
 
     private var energyBuffer: VertexConsumer? = null
     private var gauntletEntity: GauntletEntity? = null
@@ -35,15 +34,15 @@ class GauntletEnergyRenderer(val geoModel: AnimatedGeoModel<GauntletEntity>) : I
     ) {
         val renderAge: Float = entity.age + partialTicks
         val textureOffset = renderAge * 0.01f
+        if (geoModelProvider == null)
+            geoModelProvider = RenderHelper(entity, geoModel, context)
         gauntletEntity = entity
         layer = RenderLayer.getEnergySwirl(armorTexture, textureOffset, textureOffset)
-        energyBuffer = vertexConsumers.getBuffer(layer)
     }
 
     override fun render(
-        model: GeoModel,
+        model: BakedGeoModel,
         partialTicks: Float,
-        type: RenderLayer,
         matrixStackIn: MatrixStack,
         renderTypeBuffer: VertexConsumerProvider?,
         packedLightIn: Int,
@@ -53,20 +52,22 @@ class GauntletEnergyRenderer(val geoModel: AnimatedGeoModel<GauntletEntity>) : I
         blue: Float,
         alpha: Float
     ) {
+        energyBuffer = renderTypeBuffer?.getBuffer(layer)
         val buffer = energyBuffer ?: return
         val entity = gauntletEntity ?: return
         val renderType = layer ?: return
         val renderAlpha = entity.energyShieldHandler.getRenderAlpha()
         if(renderAlpha == 0f) return
         val lerpedAlpha = MathHelper.lerp(partialTicks, renderAlpha - 0.1f, renderAlpha)
-        geoModelProvider.render(
-            model,
-            entity,
-            partialTicks,
-            renderType,
+        geoModelProvider?.actuallyRender(
             matrixStackIn,
+            entity,
+            model,
+            renderType,
             renderTypeBuffer,
             buffer,
+            false,
+            partialTicks,
             packedLightIn,
             OverlayTexture.DEFAULT_UV,
             0.8f * lerpedAlpha,
@@ -76,16 +77,13 @@ class GauntletEnergyRenderer(val geoModel: AnimatedGeoModel<GauntletEntity>) : I
         )
     }
 
-    private class RenderHelper(val geoModel: AnimatedGeoModel<GauntletEntity>) : IGeoRenderer<GauntletEntity> {
-        override fun getGeoModelProvider(): GeoModelProvider<*> = geoModel
-        override fun getTextureResource(p0: GauntletEntity?): Identifier = Identifier("unused")
-
+    private class RenderHelper(val gauntletEntity: GauntletEntity, parentModel: GeoModel<GauntletEntity>, context: EntityRendererFactory.Context) : GeoEntityRenderer<GauntletEntity>(context, parentModel) {
         override fun renderCube(
-            cube: GeoCube,
             matrixStack: MatrixStack,
-            bufferIn: VertexConsumer,
-            packedLightIn: Int,
-            packedOverlayIn: Int,
+            cube: GeoCube?,
+            buffer: VertexConsumer?,
+            packedLight: Int,
+            packedOverlay: Int,
             red: Float,
             green: Float,
             blue: Float,
@@ -93,20 +91,10 @@ class GauntletEnergyRenderer(val geoModel: AnimatedGeoModel<GauntletEntity>) : I
         ) {
             matrixStack.push()
             matrixStack.scale(1.1f, 1.05f, 1.1f)
-            super.renderCube(cube, matrixStack, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha)
+            super.renderCube(matrixStack, cube, buffer, packedLight, packedOverlay, red, green, blue, alpha)
             matrixStack.pop()
         }
 
-        private var provider: VertexConsumerProvider? = null
-
-        override fun setCurrentRTB(rtb: VertexConsumerProvider?) {
-            provider = rtb
-        }
-
-        override fun getCurrentRTB(): VertexConsumerProvider? {
-            return provider
-        }
-
-       override fun getTextureLocation(instance: GauntletEntity?): Identifier = getTextureResource(instance)
+    override fun getAnimatable(): GauntletEntity = gauntletEntity
     }
 }

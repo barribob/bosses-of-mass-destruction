@@ -1,7 +1,7 @@
 package net.barribob.boss.render
 
-import net.minecraft.util.math.Vector4f
-import software.bernie.geckolib3.geo.render.built.GeoBone
+import org.joml.Vector4f
+import software.bernie.geckolib.cache.`object`.GeoBone
 
 fun interface IBoneLight {
     fun getLightForBone(bone: GeoBone, packedLight: Int): Int

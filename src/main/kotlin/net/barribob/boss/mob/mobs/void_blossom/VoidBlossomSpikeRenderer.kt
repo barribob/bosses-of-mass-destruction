@@ -12,8 +12,8 @@ import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.entity.LivingEntity
 import net.minecraft.util.math.MathHelper
+import net.minecraft.util.math.RotationAxis
 import net.minecraft.util.math.Vec3d
-import net.minecraft.util.math.Vec3f
 import kotlin.math.*
 
 class VoidBlossomSpikeRenderer : IRenderer<VoidBlossomEntity> {
@@ -58,8 +58,8 @@ class VoidBlossomSpikeRenderer : IRenderer<VoidBlossomEntity> {
         val bottomPos = spike.offset
         val n = acos(bottomPos.y).toFloat()
         val o = atan2(bottomPos.z, bottomPos.x).toFloat()
-        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion((1.5707964f - o) * 57.295776f))
-        matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(n * 57.295776f))
+        matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((1.5707964f - o) * 57.295776f))
+        matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(n * 57.295776f))
         val q = 0.0F
         val red = (color.x * 255).toInt()
         val green = (color.y * 255).toInt()

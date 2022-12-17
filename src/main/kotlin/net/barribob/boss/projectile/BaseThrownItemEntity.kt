@@ -7,13 +7,13 @@ import net.minecraft.entity.projectile.thrown.ThrownItemEntity
 import net.minecraft.item.Item
 import net.minecraft.item.Items
 import net.minecraft.network.Packet
+import net.minecraft.network.listener.ClientPlayPacketListener
 import net.minecraft.util.hit.EntityHitResult
 import net.minecraft.util.hit.HitResult
 import net.minecraft.world.World
-import software.bernie.geckolib3.core.IAnimationTickable
 import java.util.function.Predicate
 
-abstract class BaseThrownItemEntity : ThrownItemEntity, IAnimationTickable {
+abstract class BaseThrownItemEntity : ThrownItemEntity {
     protected val entityCollisionPredicate: Predicate<EntityHitResult>
     protected open val collisionPredicate: Predicate<HitResult> = Predicate<HitResult> { !world.isClient }
 
@@ -43,7 +43,7 @@ abstract class BaseThrownItemEntity : ThrownItemEntity, IAnimationTickable {
         }
     }
 
-    override fun createSpawnPacket(): Packet<*> {
+    override fun createSpawnPacket(): Packet<ClientPlayPacketListener>? {
         return Mod.networkUtils.createClientEntityPacket(this)
     }
 
@@ -65,8 +65,4 @@ abstract class BaseThrownItemEntity : ThrownItemEntity, IAnimationTickable {
     }
 
     override fun getDefaultItem(): Item = Items.SNOWBALL
-
-    override fun tickTimer(): Int {
-        return age
-    }
 }

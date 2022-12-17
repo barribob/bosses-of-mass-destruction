@@ -1,9 +1,9 @@
 package net.barribob.boss.block
 
+import net.barribob.boss.Mod
 import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.particle.ClientParticleBuilder
 import net.barribob.boss.particle.Particles
-import net.barribob.boss.utils.ModStructures
 import net.barribob.boss.utils.NetworkUtils.Companion.sendParticlePacket
 import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.static_utilities.RandomUtils
@@ -61,7 +61,7 @@ class VoidLilyBlockEntity(type: BlockEntityType<*>?, pos: BlockPos?, state: Bloc
             pos: BlockPos,
             entity: VoidLilyBlockEntity
         ) {
-            val blockPos = world.locateStructure(ModStructures.voidLilyStructureKey, pos, 50, false)
+            val blockPos = world.locateStructure(Mod.structures.voidLilyStructureKey, pos, 50, false)
             if (blockPos != null) {
                 entity.structureDirection = BlockPos(blockPos.x, world.bottomY, blockPos.z).subtract(pos).asVec3d().normalize()
             } else {

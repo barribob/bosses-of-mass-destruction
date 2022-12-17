@@ -28,7 +28,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Box
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
-import software.bernie.geckolib3.core.manager.AnimationData
+import software.bernie.geckolib.core.animation.AnimatableManager
 
 class GauntletEntity(entityType: EntityType<out PathAwareEntity>, world: World, mobConfig: GauntletConfig) :
     BaseEntity(entityType, world),
@@ -70,8 +70,8 @@ class GauntletEntity(entityType: EntityType<out PathAwareEntity>, world: World, 
         energyShieldHandler.initDataTracker()
     }
 
-    override fun registerControllers(data: AnimationData) {
-        animationHandler.registerControllers(data)
+    override fun registerControllers(p0: AnimatableManager.ControllerRegistrar) {
+        animationHandler.registerControllers(p0)
     }
 
     override fun fall(

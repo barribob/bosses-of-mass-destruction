@@ -12,11 +12,11 @@ import net.barribob.maelstrom.general.event.EventScheduler
 import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.static_utilities.*
 import net.minecraft.entity.effect.StatusEffectInstance
+import net.minecraft.registry.Registries
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.sound.SoundCategory
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.Vec3d
-import net.minecraft.util.registry.Registry
 
 class VolleyRageAction(
     private val entity: LichEntity,
@@ -24,7 +24,7 @@ class VolleyRageAction(
     private val eventScheduler: EventScheduler,
     private val shouldCancel: () -> Boolean
 ) : IActionWithCooldown {
-    private val missileStatusEffect = Registry.STATUS_EFFECT.getOrEmpty(Identifier(mobConfig.missile.statusEffectId))
+    private val missileStatusEffect = Registries.STATUS_EFFECT.getOrEmpty(Identifier(mobConfig.missile.statusEffectId))
     private val missileStatusDuration = mobConfig.missile.statusEffectDuration
     private val missileStatusPotency = mobConfig.missile.statusEffectPotency
     private val missileThrower = { offset: Vec3d ->

@@ -14,181 +14,182 @@ import net.barribob.maelstrom.static_utilities.RandomUtils
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry
 import net.minecraft.client.particle.SpriteProvider
 import net.minecraft.particle.DefaultParticleType
+import net.minecraft.registry.Registries
+import net.minecraft.registry.Registry
 import net.minecraft.util.math.Vec3d
-import net.minecraft.util.registry.Registry
 import kotlin.math.sin
 
 object Particles {
     val DISAPPEARING_SWIRL: DefaultParticleType = Registry.register(
-        Registry.PARTICLE_TYPE,
+        Registries.PARTICLE_TYPE,
         Mod.identifier("disappearing_swirl"),
         ModParticleType(true)
     )
 
     val SOUL_FLAME: DefaultParticleType = Registry.register(
-        Registry.PARTICLE_TYPE,
+        Registries.PARTICLE_TYPE,
         Mod.identifier("soul_flame"),
         ModParticleType(true)
     )
 
     val LICH_MAGIC_CIRCLE: DefaultParticleType = Registry.register(
-        Registry.PARTICLE_TYPE,
+        Registries.PARTICLE_TYPE,
         Mod.identifier("magic_circle"),
         ModParticleType(true)
     )
 
     val OBSIDILITH_BURST: DefaultParticleType = Registry.register(
-        Registry.PARTICLE_TYPE,
+        Registries.PARTICLE_TYPE,
         Mod.identifier("obsidilith_burst"),
         ModParticleType(true)
     )
 
     val ENCHANT: DefaultParticleType = Registry.register(
-        Registry.PARTICLE_TYPE,
+        Registries.PARTICLE_TYPE,
         Mod.identifier("enchant"),
         ModParticleType(true)
     )
 
     val OBSIDILITH_BURST_INDICATOR: DefaultParticleType = Registry.register(
-        Registry.PARTICLE_TYPE,
+        Registries.PARTICLE_TYPE,
         Mod.identifier("obsidilith_burst_indicator"),
         ModParticleType(true)
     )
 
     val OBSIDILITH_WAVE: DefaultParticleType = Registry.register(
-        Registry.PARTICLE_TYPE,
+        Registries.PARTICLE_TYPE,
         Mod.identifier("obsidilith_wave"),
         ModParticleType(true)
     )
 
     val OBSIDILITH_WAVE_INDICATOR: DefaultParticleType = Registry.register(
-        Registry.PARTICLE_TYPE,
+        Registries.PARTICLE_TYPE,
         Mod.identifier("obsidilith_wave_indicator"),
         ModParticleType(true)
     )
 
     val DOWNSPARKLE: DefaultParticleType = Registry.register(
-        Registry.PARTICLE_TYPE,
+        Registries.PARTICLE_TYPE,
         Mod.identifier("downsparkle"),
         ModParticleType(true)
     )
 
     val OBSIDILITH_SPIKE_INDICATOR: DefaultParticleType = Registry.register(
-        Registry.PARTICLE_TYPE,
+        Registries.PARTICLE_TYPE,
         Mod.identifier("obsidilith_spike_indicator"),
         ModParticleType(true)
     )
 
     val OBSIDILITH_SPIKE: DefaultParticleType = Registry.register(
-        Registry.PARTICLE_TYPE,
+        Registries.PARTICLE_TYPE,
         Mod.identifier("obsidilith_spike"),
         ModParticleType(true)
     )
 
     val PILLAR_RUNE: DefaultParticleType = Registry.register(
-        Registry.PARTICLE_TYPE,
+        Registries.PARTICLE_TYPE,
         Mod.identifier("pillar_rune"),
         ModParticleType(true)
     )
 
     val PILLAR_SPAWN_INDICATOR: DefaultParticleType = Registry.register(
-        Registry.PARTICLE_TYPE,
+        Registries.PARTICLE_TYPE,
         Mod.identifier("pillar_spawn_indicator"),
         ModParticleType(true)
     )
 
     val PILLAR_SPAWN_INDICATOR_2: DefaultParticleType = Registry.register(
-        Registry.PARTICLE_TYPE,
+        Registries.PARTICLE_TYPE,
         Mod.identifier("pillar_spawn_indicator_2"),
         ModParticleType(true)
     )
 
     val OBSIDILITH_ANVIL_INDICATOR: DefaultParticleType = Registry.register(
-        Registry.PARTICLE_TYPE,
+        Registries.PARTICLE_TYPE,
         Mod.identifier("obsidilith_anvil_indicator"),
         ModParticleType(true)
     )
 
     val SPARKLES: DefaultParticleType = Registry.register(
-        Registry.PARTICLE_TYPE,
+        Registries.PARTICLE_TYPE,
         Mod.identifier("sparkles"),
         ModParticleType(true)
     )
 
     val GAUNTLET_REVIVE_SPARKLES: DefaultParticleType = Registry.register(
-        Registry.PARTICLE_TYPE,
+        Registries.PARTICLE_TYPE,
         Mod.identifier("gauntlet_revive_sparkles"),
         ModParticleType(true)
     )
 
     val EYE: DefaultParticleType = Registry.register(
-        Registry.PARTICLE_TYPE,
+        Registries.PARTICLE_TYPE,
         Mod.identifier("eye_open"),
         ModParticleType(true)
     )
 
     val LINE: DefaultParticleType = Registry.register(
-        Registry.PARTICLE_TYPE,
+        Registries.PARTICLE_TYPE,
         Mod.identifier("line"),
         ModParticleType(true)
     )
 
     val VOID_BLOSSOM_SPIKE_INDICATOR: DefaultParticleType = Registry.register(
-        Registry.PARTICLE_TYPE,
+        Registries.PARTICLE_TYPE,
         Mod.identifier("void_blossom_spike_indicator"),
         ModParticleType(true)
     )
 
     val VOID_BLOSSOM_SPIKE_WAVE_INDICATOR: DefaultParticleType = Registry.register(
-        Registry.PARTICLE_TYPE,
+        Registries.PARTICLE_TYPE,
         Mod.identifier("void_blossom_spike_wave_indicator"),
         ModParticleType(true)
     )
 
     val PETAL: DefaultParticleType = Registry.register(
-        Registry.PARTICLE_TYPE,
+        Registries.PARTICLE_TYPE,
         Mod.identifier("petal"),
         ModParticleType(true)
     )
 
     val SPORE: DefaultParticleType = Registry.register(
-        Registry.PARTICLE_TYPE,
+        Registries.PARTICLE_TYPE,
         Mod.identifier("spore"),
         ModParticleType(true)
     )
 
     val SPORE_INDICATOR: DefaultParticleType = Registry.register(
-        Registry.PARTICLE_TYPE,
+        Registries.PARTICLE_TYPE,
         Mod.identifier("spore_indicator"),
         ModParticleType(true)
     )
 
     val FLUFF: DefaultParticleType = Registry.register(
-        Registry.PARTICLE_TYPE,
+        Registries.PARTICLE_TYPE,
         Mod.identifier("fluff"),
         ModParticleType(false)
     )
 
     val POLLEN: DefaultParticleType = Registry.register(
-        Registry.PARTICLE_TYPE,
+        Registries.PARTICLE_TYPE,
         Mod.identifier("pollen"),
         ModParticleType(true)
     )
 
     val EARTHDIVE_INDICATOR: DefaultParticleType = Registry.register(
-        Registry.PARTICLE_TYPE,
+        Registries.PARTICLE_TYPE,
         Mod.identifier("earthdive_indicator"),
         ModParticleType(false)
     )
 
     val ROD: DefaultParticleType = Registry.register(
-        Registry.PARTICLE_TYPE,
+        Registries.PARTICLE_TYPE,
         Mod.identifier("rod"),
         ModParticleType(false)
     )
 
     val HORIZONTAL_ROD: DefaultParticleType = Registry.register(
-        Registry.PARTICLE_TYPE,
+        Registries.PARTICLE_TYPE,
         Mod.identifier("ground_rod"),
         ModParticleType(false)
     )

@@ -39,8 +39,8 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Box
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
-import software.bernie.geckolib3.core.controller.AnimationController
-import software.bernie.geckolib3.core.manager.AnimationData
+import software.bernie.geckolib.core.animation.AnimatableManager
+import software.bernie.geckolib.core.animation.AnimationController
 
 class LichEntity(entityType: EntityType<out LichEntity>, world: World, private val mobConfig: LichConfig) : BaseEntity(
     entityType,
@@ -58,7 +58,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, private v
             Pair(LichActions.volleyAttack, AnimationHolder.Animation("summon_missiles", "idle")),
             Pair(3, AnimationHolder.Animation("idle", "idle"))
         ),
-        LichActions.stopAttackAnimation, 0f
+        LichActions.stopAttackAnimation, 0
     )
     private val minionAction = MinionAction(this, preTickEvents, ::cancelAttackAction)
     private val teleportAction = TeleportAction(this, preTickEvents, ::cancelAttackAction)
@@ -105,11 +105,11 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, private v
         }
     }
 
-    override fun registerControllers(data: AnimationData) {
+    override fun registerControllers(data: AnimatableManager.ControllerRegistrar) {
         animationHolder.registerControllers(data)
-        data.addAnimationController(AnimationController(this, "skull_float", 0f, AnimationUtils.createIdlePredicate("skull_float")))
-        data.addAnimationController(AnimationController(this, "float", 0f, AnimationUtils.createIdlePredicate("float")))
-        data.addAnimationController(AnimationController(this, "book_idle", 0f, AnimationUtils.createIdlePredicate("book_idle")))
+        data.add(AnimationController(this, "skull_float", 0, AnimationUtils.createIdlePredicate("skull_float")))
+        data.add(AnimationController(this, "float", 0, AnimationUtils.createIdlePredicate("float")))
+        data.add(AnimationController(this, "book_idle", 0, AnimationUtils.createIdlePredicate("book_idle")))
     }
 
     fun inLineOfSight(target: Entity) : Boolean {
@@ -129,7 +129,7 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, private v
         }
     }
 
-    override fun collides(): Boolean = collides
+    override fun collidesWith(other: Entity?): Boolean = collides
     override fun handleFallDamage(fallDistance: Float, damageMultiplier: Float, damageSource: DamageSource?) = false
     override fun getGroup(): EntityGroup = EntityGroup.UNDEAD
     override fun checkDespawn() = ModUtils.preventDespawnExceptPeaceful(this, world)

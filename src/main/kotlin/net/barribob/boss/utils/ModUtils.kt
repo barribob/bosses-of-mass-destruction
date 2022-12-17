@@ -1,24 +1,37 @@
 package net.barribob.boss.utils
 
+import net.barribob.boss.Mod
 import net.barribob.boss.particle.ClientParticleBuilder
 import net.barribob.maelstrom.static_utilities.RandomUtils
 import net.barribob.maelstrom.static_utilities.VecUtils
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents
 import net.minecraft.block.SideShapeType
 import net.minecraft.client.network.ClientPlayNetworkHandler
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.entity.Entity
 import net.minecraft.entity.mob.MobEntity
 import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.item.Item
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket
 import net.minecraft.particle.ParticleEffect
+import net.minecraft.registry.RegistryKey
+import net.minecraft.registry.RegistryKeys
+import net.minecraft.registry.entry.RegistryEntry
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvent
-import net.minecraft.util.math.*
+import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.Box
+import net.minecraft.util.math.Direction
+import net.minecraft.util.math.Vec3d
 import net.minecraft.util.math.random.Random
 import net.minecraft.world.Difficulty
 import net.minecraft.world.World
+import net.minecraft.world.WorldView
+import net.minecraft.world.gen.feature.ConfiguredFeature
+import org.joml.Matrix3f
+import org.joml.Matrix4f
 
 object ModUtils {
     /**
@@ -45,16 +58,18 @@ object ModUtils {
         pitch: Float = this.random.randomPitch(),
         range: Double = if (volume > 1.0f) (16.0f * volume).toDouble() else 16.0,
         playerEntity: PlayerEntity? = null,
-    ) =
-        this.server.playerManager.sendToAround(
+    ) {
+        val registryEntry : RegistryEntry<SoundEvent> = RegistryEntry.of(SoundEvent.of(soundEvent.id))
+        return this.server.playerManager.sendToAround(
             playerEntity,
             pos.x,
             pos.y,
             pos.z,
             range,
             registryKey,
-            PlaySoundS2CPacket(soundEvent, soundCategory, pos.x, pos.y, pos.z, volume, pitch, random.nextLong())
+            PlaySoundS2CPacket(registryEntry, soundCategory, pos.x, pos.y, pos.z, volume, pitch, random.nextLong())
         )
+    }
 
     fun Random.randomPitch() = (this.nextFloat() - this.nextFloat()) * 0.2f + 1.0f
 
@@ -111,5 +126,13 @@ object ModUtils {
     ): Vec3d {
         val xzOffset = VecUtils.xAxis.rotateY(Math.toRadians(age * rotationSpeed + startingRotation).toFloat())
         return pos.add(xzOffset.multiply(radius))
+    }
+    
+    fun addItemToGroup(item: Item) {
+        ItemGroupEvents.modifyEntriesEvent(Mod.items.itemGroup).register { it.add(item) }
+    }
+ 
+    fun WorldView.getConfiguredFeature(key: RegistryKey<ConfiguredFeature<*, *>>) : ConfiguredFeature<*, *> {
+        return this.registryManager.get(RegistryKeys.CONFIGURED_FEATURE).getEntry(key).get().value()
     }
 }

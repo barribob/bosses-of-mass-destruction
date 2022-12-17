@@ -9,7 +9,6 @@ import net.barribob.boss.mob.utils.ProjectileThrower
 import net.barribob.boss.projectile.comet.CometProjectile
 import net.barribob.boss.utils.ModUtils.playSound
 import net.barribob.boss.utils.ModUtils.serverWorld
-import net.barribob.boss.utils.VanillaCopies
 import net.barribob.maelstrom.general.event.EventScheduler
 import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.static_utilities.VecUtils
@@ -19,7 +18,7 @@ import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
 import net.minecraft.util.math.Vec3d
-import net.minecraft.world.explosion.Explosion
+import net.minecraft.world.World
 
 class CometAction(
     private val entity: LichEntity,
@@ -30,16 +29,13 @@ class CometAction(
     private val cometThrower = { offset: Vec3d ->
         ProjectileThrower {
             val projectile = CometProjectile(entity, entity.world, {
-                val destructionType =
-                    if (lichConfig.comet.destroysBlocks) VanillaCopies.getEntityDestructionType(entity.world) else Explosion.DestructionType.NONE
-
                 entity.world.createExplosion(
                     entity,
                     it.x,
                     it.y,
                     it.z,
                     lichConfig.comet.explosionStrength,
-                    destructionType
+                    World.ExplosionSourceType.MOB
                 )
             }, listOf(MinionAction.summonEntityType))
             projectile.setPos(entity.eyePos().add(offset))

@@ -2,6 +2,7 @@ package net.barribob.boss.structure.void_blossom_cavern
 
 import com.mojang.datafixers.util.Pair
 import net.barribob.boss.structure.util.IStructurePiece
+import net.barribob.boss.utils.ModUtils.getConfiguredFeature
 import net.minecraft.block.Block
 import net.minecraft.block.Blocks
 import net.minecraft.util.math.BlockBox
@@ -25,7 +26,7 @@ class MossCeilingCaveDecorator(private val bottomOfWorld: Int, private val rando
             mossCeilingPositions.groupBy { Pair(it.x shr 3, it.z shr 3) }.map { it.value.first() }
         for (mossPos in spacedMossCeilingPositions) {
             if (boundingBox.contains(mossPos)) {
-                UndergroundConfiguredFeatures.MOSS_PATCH_CEILING.value().generate(world, chunkGenerator, random, mossPos)
+                world.getConfiguredFeature(UndergroundConfiguredFeatures.MOSS_PATCH_CEILING).generate(world, chunkGenerator, random, mossPos)
             }
         }
     }

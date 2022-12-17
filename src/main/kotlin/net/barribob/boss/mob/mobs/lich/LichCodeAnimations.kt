@@ -4,10 +4,10 @@ import net.barribob.boss.mob.GeoModel
 import net.barribob.boss.mob.utils.animation.ICodeAnimations
 import net.barribob.maelstrom.static_utilities.MathUtils
 import net.minecraft.util.math.MathHelper
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent
+import software.bernie.geckolib.core.animation.AnimationState
 
 class LichCodeAnimations : ICodeAnimations<LichEntity> {
-    override fun animate(animatable: LichEntity, data: AnimationEvent<*>, geoModel: GeoModel<LichEntity>) {
+    override fun animate(animatable: LichEntity, data: AnimationState<*>, geoModel: GeoModel<LichEntity>) {
         val bodyYaw = MathHelper.lerpAngleDegrees(data.partialTick, animatable.prevBodyYaw, animatable.bodyYaw)
         val headYaw = MathHelper.lerpAngleDegrees(data.partialTick, animatable.prevHeadYaw, animatable.headYaw)
 
@@ -22,9 +22,9 @@ class LichCodeAnimations : ICodeAnimations<LichEntity> {
         val yaw = headYaw - bodyYaw
         val adjustedHeadPitch = headPitch - bodyPitch
 
-        val model = geoModel.getModel(geoModel.getModelResource(animatable))
-        model.getBone("code_root").ifPresent { it.rotationX = -Math.toRadians(bodyPitch).toFloat() }
-        model.getBone("headBase").ifPresent { it.rotationX = -Math.toRadians(adjustedHeadPitch).toFloat() }
-        model.getBone("headBase").ifPresent { it.rotationY = Math.toRadians(yaw.toDouble()).toFloat() }
+        val model = geoModel.getBakedModel(geoModel.getModelResource(animatable))
+        model.getBone("code_root").ifPresent { it.rotX = -Math.toRadians(bodyPitch).toFloat() }
+        model.getBone("headBase").ifPresent { it.rotX = -Math.toRadians(adjustedHeadPitch).toFloat() }
+        model.getBone("headBase").ifPresent { it.rotY = Math.toRadians(yaw.toDouble()).toFloat() }
     }
 }

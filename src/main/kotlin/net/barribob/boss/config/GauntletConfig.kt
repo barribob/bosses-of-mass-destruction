@@ -13,16 +13,4 @@ class GauntletConfig {
     val spawnAncientDebrisOnDeath = true
     val energizedPunchExplosionSize = 4.5
     val normalPunchExplosionMultiplier = 1.5
-
-    @ConfigEntry.Gui.CollapsibleObject
-    val arenaGeneration = ArenaGeneration()
-
-    data class ArenaGeneration(
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 256)
-        val generationSpacing: Int = 32,
-
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 256)
-        val generationSeparation: Int = 16,
-        val generationEnabled: Boolean = true
-    )
 }

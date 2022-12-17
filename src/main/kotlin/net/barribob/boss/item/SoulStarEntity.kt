@@ -21,6 +21,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
 import net.minecraft.nbt.NbtCompound
 import net.minecraft.network.Packet
+import net.minecraft.network.listener.ClientPlayPacketListener
 import net.minecraft.particle.ParticleTypes
 import net.minecraft.util.Util
 import net.minecraft.util.math.BlockPos
@@ -198,7 +199,7 @@ class SoulStarEntity(entityType: EntityType<out SoulStarEntity?>?, world: World?
 
     override fun getBrightnessAtEyes(): Float = 1.0f
     override fun isAttackable(): Boolean = false
-    override fun createSpawnPacket(): Packet<*> =  Mod.networkUtils.createClientEntityPacket(this)
+    override fun createSpawnPacket(): Packet<ClientPlayPacketListener>? =  Mod.networkUtils.createClientEntityPacket(this)
 
     /**
      * [ProjectileEntity.updateRotation]

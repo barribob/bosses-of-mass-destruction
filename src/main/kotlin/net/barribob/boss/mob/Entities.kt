@@ -38,7 +38,8 @@ import net.minecraft.entity.EntityType
 import net.minecraft.entity.SpawnGroup
 import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.entity.mob.HostileEntity
-import net.minecraft.util.registry.Registry
+import net.minecraft.registry.Registries
+import net.minecraft.registry.Registry
 import net.minecraft.world.World
 
 object Entities {
@@ -46,31 +47,31 @@ object Entities {
 
     val LICH: EntityType<LichEntity> = registerConfiguredMob("lich",
         { type, world -> LichEntity(type, world, mobConfig.lichConfig) })
-    { it.dimensions(EntityDimensions.fixed(1.8f, 3.0f)) }
+    { it.dimensions(EntityDimensions.fixed(1.8f, 3.0f)).trackedUpdateRate(1) }
 
     val MAGIC_MISSILE: EntityType<MagicMissileProjectile> = Registry.register(
-        Registry.ENTITY_TYPE,
+        Registries.ENTITY_TYPE,
         Mod.identifier("blue_fireball"),
         FabricEntityTypeBuilder.create(SpawnGroup.MISC, ::MagicMissileProjectile)
             .dimensions(EntityDimensions.fixed(0.25f, 0.25f)).build()
     )
 
     val COMET: EntityType<CometProjectile> = Registry.register(
-        Registry.ENTITY_TYPE,
+        Registries.ENTITY_TYPE,
         Mod.identifier("comet"),
         FabricEntityTypeBuilder.create(SpawnGroup.MISC, ::CometProjectile)
             .dimensions(EntityDimensions.fixed(0.25f, 0.25f)).build()
     )
 
     val SOUL_STAR: EntityType<SoulStarEntity> = Registry.register(
-        Registry.ENTITY_TYPE,
+        Registries.ENTITY_TYPE,
         Mod.identifier("soul_star"),
         FabricEntityTypeBuilder.create(SpawnGroup.MISC, ::SoulStarEntity)
             .dimensions(EntityDimensions.fixed(0.25f, 0.25f)).build()
     )
 
     val CHARGED_ENDER_PEARL: EntityType<ChargedEnderPearlEntity> = Registry.register(
-        Registry.ENTITY_TYPE,
+        Registries.ENTITY_TYPE,
         Mod.identifier("charged_ender_pearl"),
         FabricEntityTypeBuilder.create(SpawnGroup.MISC, ::ChargedEnderPearlEntity)
             .dimensions(EntityDimensions.fixed(0.25f, 0.25f)).build()
@@ -89,14 +90,14 @@ object Entities {
         { it.fireImmune().dimensions(EntityDimensions.fixed(8.0f, 10.0f)).trackRangeChunks(3) })
 
     val SPORE_BALL: EntityType<SporeBallProjectile> = Registry.register(
-        Registry.ENTITY_TYPE,
+        Registries.ENTITY_TYPE,
         Mod.identifier("spore_ball"),
         FabricEntityTypeBuilder.create(SpawnGroup.MISC, ::SporeBallProjectile)
             .dimensions(EntityDimensions.fixed(0.25f, 0.25f)).build()
     )
 
     val PETAL_BLADE: EntityType<PetalBladeProjectile> = Registry.register(
-        Registry.ENTITY_TYPE,
+        Registries.ENTITY_TYPE,
         Mod.identifier("petal_blade"),
         FabricEntityTypeBuilder.create(SpawnGroup.MISC, ::PetalBladeProjectile)
             .dimensions(EntityDimensions.fixed(0.25f, 0.25f)).build()
@@ -112,7 +113,7 @@ object Entities {
     ): EntityType<T> {
         val builder = FabricEntityTypeBuilder.create(SpawnGroup.MONSTER)
         { type: EntityType<T>, world -> factory(type, world) }
-        return Registry.register(Registry.ENTITY_TYPE,  Mod.identifier(name), augment(builder).build())
+        return Registry.register(Registries.ENTITY_TYPE,  Mod.identifier(name), augment(builder).build())
     }
 
     fun init() {
@@ -165,12 +166,12 @@ object Entities {
                     { Mod.identifier("geo/lich.geo.json") },
                     { texture },
                     Mod.identifier("animations/lich.animation.json"),
-                    LichCodeAnimations()
+                    LichCodeAnimations(),
+                    { RenderLayer.getEntityCutoutNoCull(it) }
                 ),
                 BoundedLighting(5),
                 LichBoneLight(),
                 EternalNightRenderer(),
-                renderLayer = RenderLayer.getEntityCutoutNoCull(texture)
             )
         }
 
@@ -181,7 +182,7 @@ object Entities {
                 { Mod.identifier("textures/entity/obsidilith.png") },
                 Mod.identifier("animations/obsidilith.animation.json"),
             )
-            val armorRenderer = ObsidilithArmorRenderer(modelProvider)
+            val armorRenderer = ObsidilithArmorRenderer(modelProvider, context)
             val obsidilithRenderer = SimpleLivingGeoRenderer(
                 context,
                 modelProvider,
@@ -242,7 +243,7 @@ object Entities {
                 Mod.identifier("animations/gauntlet.animation.json"),
                 GauntletCodeAnimations()
             )
-            val energyRenderer = GauntletEnergyRenderer(modelProvider)
+            val energyRenderer = GauntletEnergyRenderer(modelProvider, context)
             val overlayOverride = GauntletOverlay()
             SimpleLivingGeoRenderer(
                 context, modelProvider,

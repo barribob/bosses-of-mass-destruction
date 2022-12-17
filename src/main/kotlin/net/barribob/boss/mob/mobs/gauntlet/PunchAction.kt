@@ -5,12 +5,10 @@ import net.barribob.boss.config.GauntletConfig
 import net.barribob.boss.mob.ai.action.IActionWithCooldown
 import net.barribob.boss.utils.ModUtils.playSound
 import net.barribob.boss.utils.ModUtils.randomPitch
-import net.barribob.boss.utils.VanillaCopies
 import net.barribob.boss.utils.VanillaCopies.destroyBlocks
 import net.barribob.maelstrom.general.event.EventScheduler
 import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.static_utilities.MathUtils
-import net.barribob.maelstrom.static_utilities.addVelocity
 import net.barribob.maelstrom.static_utilities.eyePos
 import net.barribob.maelstrom.static_utilities.planeProject
 import net.minecraft.entity.Entity
@@ -20,6 +18,7 @@ import net.minecraft.sound.SoundCategory
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Box
 import net.minecraft.util.math.Vec3d
+import net.minecraft.world.World
 
 class PunchAction(
     val entity: GauntletEntity,
@@ -87,14 +86,13 @@ class PunchAction(
     private fun testBlockPhysicalImpact() {
         if ((entity.horizontalCollision || entity.verticalCollision) && previousSpeed > 0.55f) {
             val pos: Vec3d = entity.pos
-            val flag = VanillaCopies.getEntityDestructionType(entity.world)
             entity.world.createExplosion(
                 entity,
                 pos.x,
                 pos.y,
                 pos.z,
                 (previousSpeed * mobConfig.normalPunchExplosionMultiplier).toFloat(),
-                flag
+                World.ExplosionSourceType.MOB
             )
         }
     }

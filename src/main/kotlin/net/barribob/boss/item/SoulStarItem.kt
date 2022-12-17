@@ -6,7 +6,6 @@ import net.barribob.boss.block.ModBlocks
 import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.mob.Entities
 import net.barribob.boss.mob.spawn.*
-import net.barribob.boss.utils.ModStructures
 import net.barribob.boss.utils.ModUtils.randomPitch
 import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.general.random.ModRandom
@@ -127,7 +126,7 @@ class SoulStarItem(settings: Settings?) : Item(settings) {
         } else {
             user.setCurrentHand(hand)
             if (world is ServerWorld) {
-                val blockPos = world.locateStructure(ModStructures.soulStarStructureKey, user.blockPos,  100, false)
+                val blockPos = world.locateStructure(Mod.structures.soulStarStructureKey, user.blockPos,  100, false)
                 if (blockPos != null) {
                     val entity = SoulStarEntity(world, user.x, user.eyeY, user.z)
                     entity.setItem(itemStack)

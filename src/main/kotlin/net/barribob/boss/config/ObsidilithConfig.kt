@@ -12,18 +12,4 @@ class ObsidilithConfig {
     val experienceDrop = 1000
     val spawnPillarOnDeath = true
     val anvilAttackExplosionStrength = 4.0f
-
-    @ConfigEntry.Gui.CollapsibleObject
-    val arenaGeneration = ArenaGeneration()
-
-    data class ArenaGeneration(
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 150)
-        val generationHeight: Int = 90,
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 256)
-        val generationSpacing: Int = 64,
-
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 256)
-        val generationSeparation: Int = 32,
-        val generationEnabled: Boolean = true
-    )
 }

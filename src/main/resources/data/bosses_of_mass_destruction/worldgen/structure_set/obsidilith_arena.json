@@ -1,0 +1,14 @@
+{
+  "structures": [
+    {
+      "structure": "bosses_of_mass_destruction:obsidilith_arena",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "salt": 499672,
+    "spacing": 64,
+    "separation": 32,
+    "type": "minecraft:random_spread"
+  }
+}

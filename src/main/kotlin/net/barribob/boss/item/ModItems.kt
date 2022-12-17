@@ -6,48 +6,59 @@ import net.barribob.boss.block.structure_repair.GauntletStructureRepair
 import net.barribob.boss.block.structure_repair.LichStructureRepair
 import net.barribob.boss.block.structure_repair.ObsidilithStructureRepair
 import net.barribob.boss.block.structure_repair.VoidBlossomStructureRepair
+import net.barribob.boss.utils.ModUtils
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.fabricmc.fabric.api.`object`.builder.v1.client.model.FabricModelPredicateProviderRegistry
-import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings
+import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup
 import net.minecraft.entity.effect.StatusEffectInstance
 import net.minecraft.entity.effect.StatusEffects
-import net.minecraft.item.*
+import net.minecraft.item.FoodComponent
+import net.minecraft.item.Item
+import net.minecraft.item.ItemGroup
+import net.minecraft.item.ItemStack
+import net.minecraft.registry.Registries
+import net.minecraft.registry.Registry
 import net.minecraft.util.Identifier
 import net.minecraft.util.Rarity
-import net.minecraft.util.registry.Registry
 
 class ModItems {
-    val itemGroup: ItemGroup = FabricItemGroupBuilder.build(Mod.identifier("items")) { ItemStack(soulStar) }
-    val soulStar = SoulStarItem(FabricItemSettings().group(itemGroup))
-    private val ancientAnima = MaterialItem(FabricItemSettings().rarity(Rarity.RARE).group(itemGroup))
-    private val blazingEye = MaterialItem(FabricItemSettings().rarity(Rarity.RARE).group(itemGroup).fireproof())
-    private val obsidianHeart = MaterialItem(FabricItemSettings().rarity(Rarity.RARE).group(itemGroup).fireproof())
-    private val earthdiveSpear = EarthdiveSpear(FabricItemSettings().group(itemGroup).fireproof().maxDamage(250))
-    private val voidThorn = MaterialItem(FabricItemSettings().group(itemGroup).rarity(Rarity.RARE).fireproof())
+    val itemGroup: ItemGroup = FabricItemGroup.builder(Mod.identifier("items")).icon({ItemStack(soulStar)}).build()
+    val soulStar = SoulStarItem(FabricItemSettings())
+    private val ancientAnima = MaterialItem(FabricItemSettings().rarity(Rarity.RARE))
+    private val blazingEye = MaterialItem(FabricItemSettings().rarity(Rarity.RARE).fireproof())
+    private val obsidianHeart = MaterialItem(FabricItemSettings().rarity(Rarity.RARE).fireproof())
+    private val earthdiveSpear = EarthdiveSpear(FabricItemSettings().fireproof().maxDamage(250))
+    private val voidThorn = MaterialItem(FabricItemSettings().rarity(Rarity.RARE).fireproof())
     private val crystalFruitFoodComponent = FoodComponent.Builder().hunger(4).saturationModifier(1.2f)
         .statusEffect(StatusEffectInstance(StatusEffects.REGENERATION, 300, 1), 1.0f)
         .statusEffect(StatusEffectInstance(StatusEffects.INSTANT_HEALTH, 1), 1.0f)
         .statusEffect(StatusEffectInstance(StatusEffects.RESISTANCE, 600, 0), 1.0f)
         .alwaysEdible().build()
-    private val crystalFruit = CrystalFruitItem(FabricItemSettings().group(itemGroup).rarity(Rarity.RARE).fireproof().food(crystalFruitFoodComponent))
-    val chargedEnderPearl = ChargedEnderPearlItem(FabricItemSettings().group(itemGroup).fireproof().maxCount(1))
+    private val crystalFruit = CrystalFruitItem(FabricItemSettings().rarity(Rarity.RARE).fireproof().food(crystalFruitFoodComponent))
+    val chargedEnderPearl = ChargedEnderPearlItem(FabricItemSettings().fireproof().maxCount(1))
     private val brimstoneNectar = BrimstoneNectarItem(
-        FabricItemSettings().group(itemGroup).rarity(Rarity.RARE).fireproof(), listOf(
+        FabricItemSettings().rarity(Rarity.RARE).fireproof(), listOf(
         VoidBlossomStructureRepair(), GauntletStructureRepair(), ObsidilithStructureRepair(), LichStructureRepair()
     ))
 
     fun init() {
-        Registry.register(Registry.ITEM, Mod.identifier("soul_star"), soulStar)
-        Registry.register(Registry.ITEM, Mod.identifier("ancient_anima"), ancientAnima)
-        Registry.register(Registry.ITEM, Mod.identifier("blazing_eye"), blazingEye)
-        Registry.register(Registry.ITEM, Mod.identifier("obsidian_heart"), obsidianHeart)
-        Registry.register(Registry.ITEM, Mod.identifier("earthdive_spear"), earthdiveSpear)
-        Registry.register(Registry.ITEM, Mod.identifier("void_thorn"), voidThorn)
-        Registry.register(Registry.ITEM, Mod.identifier("crystal_fruit"), crystalFruit)
-        Registry.register(Registry.ITEM, Mod.identifier("charged_ender_pearl"), chargedEnderPearl)
-        Registry.register(Registry.ITEM, Mod.identifier("brimstone_nectar"), brimstoneNectar)
+        registerItem(Mod.identifier("soul_star"), soulStar)
+        registerItem(Mod.identifier("ancient_anima"), ancientAnima)
+        registerItem(Mod.identifier("blazing_eye"), blazingEye)
+        registerItem(Mod.identifier("obsidian_heart"), obsidianHeart)
+        registerItem(Mod.identifier("earthdive_spear"), earthdiveSpear)
+        registerItem(Mod.identifier("void_thorn"), voidThorn)
+        registerItem(Mod.identifier("crystal_fruit"), crystalFruit)
+        registerItem(Mod.identifier("charged_ender_pearl"), chargedEnderPearl)
+        registerItem(Mod.identifier("brimstone_nectar"), brimstoneNectar)
+    }
+    
+    private fun registerItem(identifier: Identifier, item: Item, addToItemGroup: Boolean = true){
+        Registry.register(Registries.ITEM, identifier, item)
+        if (addToItemGroup)
+            ModUtils.addItemToGroup(item)
     }
 
     @Environment(EnvType.CLIENT)

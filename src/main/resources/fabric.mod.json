@@ -42,13 +42,13 @@
     "fabricloader": ">=0.14.6",
     "fabric": "*",
     "fabric-language-kotlin": "*",
-    "minecraft": "1.19.x",
+    "minecraft": "1.19.3",
     "java": ">=17",
-    "cardinal-components-base": ">=4.0.0",
-    "cardinal-components-world": ">=4.0.0",
-    "cardinal-components-entity": ">=4.0.0",
-    "geckolib3": ">=3.0.0",
-    "cloth-config": ">=7.0.42"
+    "cardinal-components-base": ">=5.0.0",
+    "cardinal-components-world": ">=5.0.0",
+    "cardinal-components-entity": ">=5.0.0",
+    "geckolib": ">=4.0.1",
+    "cloth-config": ">=9.0.93"
   },
   "custom":  {
     "cardinal-components": [

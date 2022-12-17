@@ -16,6 +16,7 @@ import net.minecraft.entity.Entity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
+import net.minecraft.world.World
 
 class ServerGauntletDeathHandler(
     val entity: GauntletEntity,
@@ -25,8 +26,7 @@ class ServerGauntletDeathHandler(
     override fun tick(world: ServerWorld) {
         ++entity.deathTime
         if (entity.deathTime == deathAnimationTime) {
-            val destructionType = VanillaCopies.getEntityDestructionType(entity.world)
-            world.createExplosion(null, entity.pos.x, entity.pos.y, entity.pos.z, 4.0f, destructionType)
+            world.createExplosion(null, entity.pos.x, entity.pos.y, entity.pos.z, 4.0f, World.ExplosionSourceType.MOB)
             if (mobConfig.spawnAncientDebrisOnDeath) createLoot(world)
             dropExp()
             entity.remove(Entity.RemovalReason.KILLED)

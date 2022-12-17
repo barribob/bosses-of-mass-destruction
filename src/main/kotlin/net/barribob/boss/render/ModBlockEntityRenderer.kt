@@ -6,44 +6,53 @@ import net.minecraft.client.render.VertexConsumer
 import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.util.Identifier
-import net.minecraft.util.math.Vector4f
-import software.bernie.geckolib3.core.IAnimatable
-import software.bernie.geckolib3.geo.render.built.GeoBone
-import software.bernie.geckolib3.model.AnimatedGeoModel
-import software.bernie.geckolib3.renderers.geo.GeoBlockRenderer
+import org.joml.Vector4f
+import software.bernie.geckolib.cache.`object`.GeoBone
+import software.bernie.geckolib.core.animatable.GeoAnimatable
+import software.bernie.geckolib.model.GeoModel
+import software.bernie.geckolib.renderer.GeoBlockRenderer
 
 class ModBlockEntityRenderer<T>(
-    modelProvider: AnimatedGeoModel<T>?,
+    modelProvider: GeoModel<T>?,
     private val iBoneLight: IBoneLight? = null,
 ) : GeoBlockRenderer<T>(
     modelProvider
-) where T : BlockEntity, T : IAnimatable {
-    override fun getRenderType(
-        animatable: T,
-        partialTicks: Float,
-        stack: MatrixStack?,
-        renderTypeBuffer: VertexConsumerProvider?,
-        vertexBuilder: VertexConsumer?,
-        packedLightIn: Int,
-        textureLocation: Identifier?
-    ): RenderLayer {
-        return RenderLayer.getEntityCutoutNoCull(geoModelProvider.getTextureResource(animatable))
+) where T : BlockEntity, T : GeoAnimatable {
+    override fun getRenderType(animatable: T, texture: Identifier?, bufferSource: VertexConsumerProvider?, partialTick: Float): RenderLayer {
+        return RenderLayer.getEntityCutoutNoCull(model.getTextureResource(animatable))
     }
 
     override fun renderRecursively(
+        poseStack: MatrixStack?,
+        animatable: T,
         bone: GeoBone,
-        stack: MatrixStack?,
-        bufferIn: VertexConsumer?,
-        packedLightIn: Int,
-        packedOverlayIn: Int,
+        renderType: RenderLayer?,
+        bufferSource: VertexConsumerProvider?,
+        buffer: VertexConsumer?,
+        skipGeoLayers: Boolean,
+        partialTick: Float,
+        packedLight: Int,
+        packedOverlay: Int,
         red: Float,
         green: Float,
         blue: Float,
         alpha: Float
     ) {
-        val packedLight = iBoneLight?.getLightForBone(bone, packedLightIn) ?: packedLightIn
+        val packedLight = iBoneLight?.getLightForBone(bone, packedLight) ?: packedLight
         val color = Vector4f(red, green, blue, alpha)
         val newColor = iBoneLight?.getColorForBone(bone, color) ?: color
-        super.renderRecursively(bone, stack, bufferIn, packedLight, packedOverlayIn, newColor.x, newColor.y, newColor.z, newColor.w)
+        super.renderRecursively(
+            poseStack,
+            animatable,
+            bone,
+            renderType,
+            bufferSource,
+            buffer,
+            skipGeoLayers,
+            partialTick,
+            packedLight,
+            packedOverlay,
+            newColor.x, newColor.y, newColor.z, newColor.w
+        )
     }
 }

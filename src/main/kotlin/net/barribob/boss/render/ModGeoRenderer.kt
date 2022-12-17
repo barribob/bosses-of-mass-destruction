@@ -5,7 +5,6 @@ import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.render.OverlayTexture
-import net.minecraft.client.render.VertexConsumer
 import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.client.render.entity.EntityRenderer
 import net.minecraft.client.render.entity.EntityRendererFactory
@@ -16,28 +15,26 @@ import net.minecraft.entity.LivingEntity
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.MathHelper
-import net.minecraft.util.math.Vec3f
-import software.bernie.geckolib3.core.IAnimatable
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent
-import software.bernie.geckolib3.core.util.Color
-import software.bernie.geckolib3.model.AnimatedGeoModel
-import software.bernie.geckolib3.model.provider.GeoModelProvider
-import software.bernie.geckolib3.model.provider.data.EntityModelData
-import software.bernie.geckolib3.renderers.geo.GeoLayerRenderer
-import software.bernie.geckolib3.renderers.geo.IGeoRenderer
+import net.minecraft.util.math.RotationAxis
+import software.bernie.geckolib.core.animatable.GeoAnimatable
+import software.bernie.geckolib.core.animation.AnimationState
+import software.bernie.geckolib.model.GeoModel
+import software.bernie.geckolib.renderer.GeoRenderer
+import software.bernie.geckolib.renderer.layer.GeoRenderLayer
 
 @Environment(EnvType.CLIENT)
 open class ModGeoRenderer<T>(
     renderManager: EntityRendererFactory.Context?,
-    private val modelProvider: AnimatedGeoModel<T>,
+    private val modelProvider: GeoModel<T>,
     private val postRenderers: IRenderer<T>? = null,
     private val preRenderers: IRenderer<T>? = null,
     private val brightness: IRenderLight<T>? = null,
     private val overlayOverride: IOverlayOverride? = null,
     ) :
     EntityRenderer<T>(renderManager),
-    IGeoRenderer<T> where T : Entity, T : IAnimatable {
-    private val layerRenderers: MutableList<GeoLayerRenderer<T>> = Lists.newArrayList()
+    GeoRenderer<T> where T : Entity, T : GeoAnimatable {
+    private val layerRenderers: MutableList<GeoRenderLayer<T>> = Lists.newArrayList()
+    private var animatableEntity: T? = null
 
     override fun getBlockLight(entity: T, blockPos: BlockPos): Int {
         return brightness?.getBlockLight(entity, blockPos) ?: super.getBlockLight(entity, blockPos)
@@ -52,9 +49,8 @@ open class ModGeoRenderer<T>(
         bufferIn: VertexConsumerProvider,
         packedLightIn: Int,
     ) {
+        animatableEntity = entity
         val shouldSit = entity.hasVehicle() && entity.vehicle != null
-        val entityModelData = EntityModelData()
-        entityModelData.isSitting = shouldSit
         var f = MathHelper.lerpAngleDegrees(partialTicks, entity.prevYaw, entity.yaw)
         val f1 = 0.0f
         var f2 = f1 - f
@@ -81,64 +77,54 @@ open class ModGeoRenderer<T>(
         applyRotations(entity, stack, f)
         val limbSwingAmount = 0.0f
         val limbSwing = 0.0f
-        val predicate: AnimationEvent<*> = AnimationEvent(entity,
+        val predicate: AnimationState<T> = AnimationState(entity,
             limbSwing,
             limbSwingAmount,
             partialTicks,
-            limbSwingAmount <= -0.15f || limbSwingAmount >= 0.15f,
-            listOf(entityModelData))
-        modelProvider.setLivingAnimations(entity, getUniqueID(entity), predicate)
+            limbSwingAmount <= -0.15f || limbSwingAmount >= 0.15f)
+        modelProvider.setCustomAnimations(entity, getInstanceId(entity), predicate)
         stack.push()
         preRenderers?.render(entity, entityYaw, partialTicks, stack, bufferIn, packedLightIn)
         stack.translate(0.0, 0.009999999776482582, 0.0)
         MinecraftClient.getInstance().textureManager.bindTexture(getTexture(entity))
-        val model = modelProvider.getModel(modelProvider.getModelResource(entity))
-        val renderColor = Color.ofRGBA(255, 255, 255, 255)
-        val renderType = getRenderType(entity, partialTicks, stack, bufferIn, null as VertexConsumer?, packedLightIn,
-            getTexture(entity))
-        this.render(model,
-            entity,
-            partialTicks,
-            renderType,
+        val model = modelProvider.getBakedModel(modelProvider.getModelResource(entity))
+        val renderType = getRenderType(entity,getTexture(entity), bufferIn, partialTicks)
+        this.defaultRender(
             stack,
+            entity,
             bufferIn,
-            null as VertexConsumer?,
-            packedLightIn,
-            overlayOverride?.getOverlay() ?: getPackedOverlay(0.0f),
-            renderColor.red
-                .toFloat() / 255.0f,
-            renderColor.blue.toFloat() / 255.0f,
-            renderColor.green.toFloat() / 255.0f,
-            renderColor.alpha
-                .toFloat() / 255.0f)
+            renderType,
+            null,
+            entityYaw,
+            partialTicks,
+            packedLightIn)
         if (!entity.isSpectator) {
-            val var20: MutableIterator<GeoLayerRenderer<T>> = layerRenderers.iterator()
+            val var20: MutableIterator<GeoRenderLayer<T>> = layerRenderers.iterator()
             while (var20.hasNext()) {
                 val next = var20.next()
-                val layerRenderer: GeoLayerRenderer<T> = next
+                val layerRenderer: GeoRenderLayer<T> = next
                 layerRenderer.render(stack,
-                    bufferIn,
-                    packedLightIn,
                     entity,
-                    limbSwing,
-                    limbSwingAmount,
+                    model,
+                    renderType,
+                    bufferIn,
+                    null,
                     partialTicks,
-                    f7,
-                    f2,
-                    f6)
+                    packedLightIn,
+                    overlayOverride?.getOverlay() ?: getPackedOverlay(0.0f))
             }
         }
         stack.pop()
-        super<EntityRenderer>.render(entity, entityYaw, partialTicks, stack, bufferIn, packedLightIn)
+        super.render(entity, entityYaw, partialTicks, stack, bufferIn, packedLightIn)
         postRenderers?.render(entity, entityYaw, partialTicks, stack, bufferIn, packedLightIn)
+    }
+
+    override fun getPackedOverlay(animatable: T, u: Float): Int {
+        return overlayOverride?.getOverlay() ?: getPackedOverlay(0.0f);
     }
 
     override fun getTexture(entity: T): Identifier {
         return modelProvider.getTextureResource(entity)
-    }
-
-    override fun getGeoModelProvider(): GeoModelProvider<*> {
-        return modelProvider
     }
 
     private fun applyRotations(
@@ -148,7 +134,7 @@ open class ModGeoRenderer<T>(
     ) {
         val pose = entityLiving.pose
         if (pose != EntityPose.SLEEPING) {
-            matrixStackIn.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(rotationYaw))
+            matrixStackIn.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotationYaw))
         }
     }
 
@@ -156,25 +142,19 @@ open class ModGeoRenderer<T>(
         return livingBase.age.toFloat() + partialTicks
     }
 
-    override fun getTextureResource(instance: T): Identifier {
-        return modelProvider.getTextureResource(instance)
-    }
-
-    private var provider: VertexConsumerProvider? = null
-
-    override fun setCurrentRTB(rtb: VertexConsumerProvider?) {
-        provider = rtb
-    }
-
-    override fun getCurrentRTB(): VertexConsumerProvider? {
-        return provider
-    }
-
-    override fun getTextureLocation(instance: T): Identifier = getTextureResource(instance)
+    override fun getTextureLocation(instance: T): Identifier = modelProvider.getTextureResource(instance)
 
     companion object Init {
         fun getPackedOverlay(uIn: Float): Int {
             return OverlayTexture.getUv(OverlayTexture.getU(uIn).toFloat(), false)
         }
+    }
+
+    override fun getGeoModel(): GeoModel<T> {
+        return modelProvider
+    }
+
+    override fun getAnimatable(): T? {
+        return animatableEntity
     }
 }

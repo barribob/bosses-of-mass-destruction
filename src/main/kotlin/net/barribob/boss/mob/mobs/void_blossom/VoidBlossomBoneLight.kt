@@ -5,8 +5,8 @@ import net.barribob.boss.render.IRenderer
 import net.barribob.maelstrom.static_utilities.MathUtils
 import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.client.util.math.MatrixStack
-import net.minecraft.util.math.Vector4f
-import software.bernie.geckolib3.geo.render.built.GeoBone
+import org.joml.Vector4f
+import software.bernie.geckolib.cache.`object`.GeoBone
 
 class VoidBlossomBoneLight : IBoneLight, IRenderer<VoidBlossomEntity> {
     private var entity: VoidBlossomEntity? = null
@@ -27,7 +27,7 @@ class VoidBlossomBoneLight : IBoneLight, IRenderer<VoidBlossomEntity> {
 
         if(entity.isDead) {
             val interceptedTime = MathUtils.ratioLerp(entity.deathTime.toFloat(), 0.5f, LightBlockRemover.deathMaxAge, partialTicks)
-            newColor.multiply(1f - interceptedTime * 0.5f)
+            newColor.mul(1f - interceptedTime * 0.5f)
         }
 
         return newColor

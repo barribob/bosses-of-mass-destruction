@@ -18,30 +18,30 @@ import net.minecraft.util.math.Box
 import net.minecraft.util.math.ChunkPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
-import software.bernie.geckolib3.core.IAnimatable
-import software.bernie.geckolib3.core.IAnimationTickable
-import software.bernie.geckolib3.core.controller.AnimationController
-import software.bernie.geckolib3.core.manager.AnimationData
-import software.bernie.geckolib3.core.manager.AnimationFactory
+import software.bernie.geckolib.animatable.GeoBlockEntity
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
+import software.bernie.geckolib.core.animation.AnimatableManager
+import software.bernie.geckolib.core.animation.AnimationController
+import software.bernie.geckolib.util.GeckoLibUtil
+
 
 class LevitationBlockEntity(
     block: Block, type: BlockEntityType<*>?,
     pos: BlockPos?, state: BlockState?
-) : ChunkCacheBlockEntity(block, type, pos, state), IAnimatable, IAnimationTickable {
-    override fun registerControllers(data: AnimationData) {
-        data.addAnimationController(
+) : ChunkCacheBlockEntity(block, type, pos, state), GeoBlockEntity {
+    override fun registerControllers(data: AnimatableManager.ControllerRegistrar) {
+        data.add(
             AnimationController(
                 this,
-                "idle",
-                0f,
+                0,
                 AnimationUtils.createIdlePredicate("rotate")
             )
         )
     }
 
     var animationAge = 0
-    private val animationFactory = AnimationFactory(this)
-    override fun getFactory(): AnimationFactory = animationFactory
+    private val animationFactory = GeckoLibUtil.createInstanceCache(this)
+    override fun getAnimatableInstanceCache(): AnimatableInstanceCache = animationFactory
 
     companion object {
         private val flight = HashSet<ServerPlayerEntity>()
@@ -121,12 +121,5 @@ class LevitationBlockEntity(
 
         private fun getAffectingBox(world: World, pos: Vec3d) =
             Box(pos.x, world.bottomY.toDouble(), pos.z, (pos.x + 1), world.height.toDouble(), (pos.z + 1)).expand(3.0, 0.0, 3.0)
-    }
-
-    override fun tick() {
-    }
-
-    override fun tickTimer(): Int {
-        return animationAge
     }
 }

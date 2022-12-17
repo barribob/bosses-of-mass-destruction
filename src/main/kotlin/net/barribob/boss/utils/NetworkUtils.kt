@@ -24,6 +24,7 @@ import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.network.Packet
 import net.minecraft.network.PacketByteBuf
+import net.minecraft.network.listener.ClientPlayPacketListener
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.server.world.ServerWorld
@@ -188,7 +189,7 @@ class NetworkUtils {
         return packetData
     }
 
-    fun createClientEntityPacket(entity: Entity): Packet<*> {
+    fun createClientEntityPacket(entity: Entity): Packet<ClientPlayPacketListener> {
         return ServerPlayNetworking.createS2CPacket(
             spawnEntityPacketId, packSpawnClientEntity(
                 EntitySpawnS2CPacket(entity)

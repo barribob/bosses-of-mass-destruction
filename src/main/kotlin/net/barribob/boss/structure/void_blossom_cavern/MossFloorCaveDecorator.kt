@@ -2,6 +2,7 @@ package net.barribob.boss.structure.void_blossom_cavern
 
 import com.mojang.datafixers.util.Pair
 import net.barribob.boss.structure.util.IStructurePiece
+import net.barribob.boss.utils.ModUtils.getConfiguredFeature
 import net.minecraft.block.Block
 import net.minecraft.util.math.BlockBox
 import net.minecraft.util.math.BlockPos
@@ -10,6 +11,7 @@ import net.minecraft.world.StructureWorldAccess
 import net.minecraft.world.gen.chunk.ChunkGenerator
 import net.minecraft.world.gen.feature.Feature
 import net.minecraft.world.gen.feature.UndergroundConfiguredFeatures
+import net.minecraft.world.gen.feature.VegetationPatchFeatureConfig
 import net.minecraft.world.gen.feature.util.FeatureContext
 import java.util.*
 
@@ -33,14 +35,15 @@ class MossFloorCaveDecorator(private val bottomOfWorld: Int, private val random:
         val spacedMossPositions = mossFloorPositions.groupBy { Pair(it.x shr 3, it.z shr 3) }.map { it.value.first() }
         for (mossPos in spacedMossPositions) {
             if (boundingBox.contains(mossPos)) {
+                val configuredFeature = world.getConfiguredFeature(UndergroundConfiguredFeatures.MOSS_PATCH)
                 Feature.VEGETATION_PATCH.generate(
                     FeatureContext(
-                        Optional.of(UndergroundConfiguredFeatures.MOSS_PATCH.value()),
+                        Optional.of(configuredFeature),
                         world,
                         chunkGenerator,
                         random,
                         mossPos,
-                        UndergroundConfiguredFeatures.MOSS_PATCH.value().config()
+                        configuredFeature.config() as VegetationPatchFeatureConfig
                     )
                 )
             }

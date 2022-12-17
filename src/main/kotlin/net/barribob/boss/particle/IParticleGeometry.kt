@@ -1,7 +1,7 @@
 package net.barribob.boss.particle
 
 import net.minecraft.client.render.Camera
-import net.minecraft.util.math.Vec3f
+import org.joml.Vector3f
 
 fun interface IParticleGeometry {
     fun getGeometry(
@@ -15,5 +15,5 @@ fun interface IParticleGeometry {
         z: Double,
         scale: Float,
         rotation: Float
-    ): Array<Vec3f>
+    ): Array<Vector3f>
 }

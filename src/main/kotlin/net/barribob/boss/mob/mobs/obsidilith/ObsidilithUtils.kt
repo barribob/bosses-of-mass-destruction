@@ -20,7 +20,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry
 import net.minecraft.sound.SoundEvents
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
-import net.minecraft.world.explosion.Explosion
+import net.minecraft.world.World
 import kotlin.math.pow
 
 object ObsidilithUtils {
@@ -54,7 +54,7 @@ object ObsidilithUtils {
             val blockPos = actor.blockPos
             val vecPos = actor.pos
             val eventScheduler = ModComponents.getWorldEventScheduler(world)
-            world.createExplosion(actor, actor.x, actor.y, actor.z, 2.0f, Explosion.DestructionType.NONE)
+            world.createExplosion(actor, actor.x, actor.y, actor.z, 2.0f, World.ExplosionSourceType.MOB)
 
             for (y in 0..deathPillarHeight) {
                 eventScheduler.addEvent(TimedEvent({

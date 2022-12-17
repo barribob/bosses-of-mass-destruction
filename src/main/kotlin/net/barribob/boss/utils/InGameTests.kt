@@ -35,11 +35,11 @@ import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
 import net.minecraft.nbt.NbtCompound
 import net.minecraft.network.PacketByteBuf
+import net.minecraft.registry.Registries
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
-import net.minecraft.util.registry.Registry
 import kotlin.random.Random
 
 class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
@@ -97,7 +97,7 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
         val entity = source.entityOrThrow
         val serverWorld = entity.world as ServerWorld
         val compoundTag = NbtCompound()
-        compoundTag.putString("id", Registry.ENTITY_TYPE.getId(EntityType.PHANTOM).toString())
+        compoundTag.putString("id", Registries.ENTITY_TYPE.getId(EntityType.PHANTOM).toString())
 
         val spawner = MobPlacementLogic(
             RangedSpawnPosition(entity.pos, 3.0, 6.0, ModRandom()),

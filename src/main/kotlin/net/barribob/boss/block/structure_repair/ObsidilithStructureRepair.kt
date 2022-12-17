@@ -1,27 +1,27 @@
 package net.barribob.boss.block.structure_repair
 
+import net.barribob.boss.Mod
 import net.barribob.boss.block.ModBlocks
 import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.mob.Entities
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithEffectHandler
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithUtils
-import net.barribob.boss.utils.ModStructures
 import net.barribob.boss.utils.ModUtils.randomPitch
 import net.barribob.boss.utils.NetworkUtils
 import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.static_utilities.asVec3d
 import net.minecraft.client.world.ClientWorld
+import net.minecraft.registry.RegistryKey
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvents
 import net.minecraft.structure.StructureStart
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
-import net.minecraft.util.registry.RegistryKey
 import net.minecraft.world.gen.structure.Structure
 
 class ObsidilithStructureRepair : StructureRepair {
-    override fun associatedStructure(): RegistryKey<Structure> = ModStructures.obsidilithStructureRegistry.configuredStructureKey
+    override fun associatedStructure(): RegistryKey<Structure> = Mod.structures.obsidilithStructureRegistry.configuredStructureKey
 
     override fun repairStructure(world: ServerWorld, structureStart: StructureStart) {
         val topCenter = getTopCenter(structureStart)
