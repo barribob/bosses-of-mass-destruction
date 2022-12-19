@@ -1,6 +1,7 @@
 package net.barribob.boss.mob.mobs.gauntlet
 
 import net.barribob.boss.Mod
+import net.barribob.boss.render.IBoneLight
 import net.barribob.boss.render.IRenderer
 import net.barribob.boss.render.IRendererWithModel
 import net.minecraft.client.render.OverlayTexture
@@ -91,7 +92,7 @@ class GauntletEnergyRenderer(val geoModel: GeoModel<GauntletEntity>,  val contex
         ) {
             matrixStack.push()
             matrixStack.scale(1.1f, 1.05f, 1.1f)
-            super.renderCube(matrixStack, cube, buffer, packedLight, packedOverlay, red, green, blue, alpha)
+            super.renderCube(matrixStack, cube, buffer, IBoneLight.fullbright, packedOverlay, red, green, blue, alpha)
             matrixStack.pop()
         }
 
