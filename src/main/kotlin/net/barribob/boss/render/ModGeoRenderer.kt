@@ -16,6 +16,7 @@ import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.RotationAxis
+import software.bernie.geckolib.cache.`object`.BakedGeoModel
 import software.bernie.geckolib.core.animatable.GeoAnimatable
 import software.bernie.geckolib.core.animation.AnimationState
 import software.bernie.geckolib.model.GeoModel
@@ -156,5 +157,27 @@ open class ModGeoRenderer<T>(
 
     override fun getAnimatable(): T? {
         return animatableEntity
+    }
+
+    override fun fireCompileRenderLayersEvent() {
+    }
+
+    override fun firePreRenderEvent(
+        poseStack: MatrixStack?,
+        model: BakedGeoModel?,
+        bufferSource: VertexConsumerProvider?,
+        partialTick: Float,
+        packedLight: Int
+    ): Boolean {
+        return true
+    }
+
+    override fun firePostRenderEvent(
+        poseStack: MatrixStack?,
+        model: BakedGeoModel?,
+        bufferSource: VertexConsumerProvider?,
+        partialTick: Float,
+        packedLight: Int
+    ) {
     }
 }
