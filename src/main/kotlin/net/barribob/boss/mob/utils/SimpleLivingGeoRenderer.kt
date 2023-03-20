@@ -6,7 +6,7 @@ import net.minecraft.client.render.VertexConsumer
 import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.client.render.entity.EntityRendererFactory
 import net.minecraft.client.util.math.MatrixStack
-import net.minecraft.entity.LivingEntity
+import net.minecraft.entity.Entity
 import net.minecraft.util.math.BlockPos
 import org.joml.Vector4f
 import software.bernie.geckolib.cache.`object`.BakedGeoModel
@@ -24,7 +24,7 @@ class SimpleLivingGeoRenderer<T>(
     private val renderWithModel: IRendererWithModel? = null,
     private val overlayOverride: IOverlayOverride? = null,
     private val deathRotation: Boolean = true
-    ) : GeoEntityRenderer<T>(renderManager, modelProvider) where T : GeoAnimatable, T : LivingEntity {
+    ) : GeoEntityRenderer<T>(renderManager, modelProvider) where T : GeoAnimatable, T : Entity {
 
     override fun getBlockLight(entity: T, blockPos: BlockPos): Int {
         return brightness?.getBlockLight(entity, blockPos) ?: super.getBlockLight(entity, blockPos)
@@ -115,6 +115,10 @@ class SimpleLivingGeoRenderer<T>(
         )
         val packetOverlay = overlayOverride?.getOverlay() ?: packedOverlay
         renderWithModel?.render(model, partialTick, poseStack, bufferSource, packedLight, packetOverlay, red, green, blue, alpha)
+    }
+
+    override fun getPackedOverlay(animatable: T, u: Float): Int {
+        return overlayOverride?.getOverlay() ?: super.getPackedOverlay(animatable, u)
     }
 
     override fun getDeathMaxRotation(entityLivingBaseIn: T): Float = if(deathRotation) 90f else 0f

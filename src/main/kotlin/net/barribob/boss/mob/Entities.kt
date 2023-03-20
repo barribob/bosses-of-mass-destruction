@@ -221,13 +221,13 @@ object Entities {
         }
 
         EntityRendererRegistry.register(COMET) { context ->
-            ModGeoRenderer(context, GeoModel(
+            SimpleLivingGeoRenderer(context, GeoModel(
                 { Mod.identifier("geo/comet.geo.json") },
                 { Mod.identifier("textures/entity/comet.png") },
                 Mod.identifier("animations/comet.animation.json"),
                 CometCodeAnimations()
             ),
-                ConditionalRenderer(
+                renderer = ConditionalRenderer(
                     WeakHashPredicate { FrameLimiter(60f, pauseSecondTimer)::canDoFrame },
                     LerpedPosRenderer {
                         ParticleFactories.cometTrail().build(it.add(RandomUtils.randVec().multiply(0.5)))
@@ -281,13 +281,13 @@ object Entities {
 
         EntityRendererRegistry.register(SPORE_BALL) { context ->
             val explosionFlasher = SporeBallOverlay()
-            ModGeoRenderer(context, GeoModel(
+            SimpleLivingGeoRenderer(context, GeoModel(
                 { Mod.identifier("geo/comet.geo.json") },
                 { Mod.identifier("textures/entity/spore.png") },
                 Mod.identifier("animations/comet.animation.json"),
                 SporeCodeAnimations()
             ),
-                CompositeRenderer(ConditionalRenderer(
+                renderer = CompositeRenderer(ConditionalRenderer(
                     WeakHashPredicate { FrameLimiter(60f, pauseSecondTimer)::canDoFrame },
                     LerpedPosRenderer {
                         val projectileParticles = ClientParticleBuilder(Particles.OBSIDILITH_BURST)
@@ -296,10 +296,10 @@ object Entities {
                             .scale(0.5f)
                             .brightness(Particles.FULL_BRIGHT)
                         projectileParticles.build(it.add(RandomUtils.randVec().multiply(0.25)), VecUtils.yAxis.multiply(0.1))
-                    }), explosionFlasher),
-                SporeBallSizeRenderer(),
-                FullRenderLight(),
-                explosionFlasher
+                    }), explosionFlasher,
+                SporeBallSizeRenderer()),
+                brightness = FullRenderLight(),
+                overlayOverride = explosionFlasher
             )
         }
 
