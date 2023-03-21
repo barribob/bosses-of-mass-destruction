@@ -19,10 +19,14 @@ import net.minecraft.entity.ExperienceOrbEntity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.MovementType
 import net.minecraft.entity.boss.dragon.EnderDragonEntity
+import net.minecraft.entity.damage.DamageSource
+import net.minecraft.entity.damage.DamageType
 import net.minecraft.entity.mob.FlyingEntity
 import net.minecraft.entity.mob.MobEntity
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket
+import net.minecraft.registry.RegistryKey
+import net.minecraft.registry.RegistryKeys
 import net.minecraft.registry.tag.BlockTags
 import net.minecraft.util.hit.HitResult
 import net.minecraft.util.math.*
@@ -37,6 +41,11 @@ import kotlin.math.atan2
 import kotlin.math.sqrt
 
 object VanillaCopies {
+
+    fun create(world: World, key: RegistryKey<DamageType>, attacker: Entity?): DamageSource {
+        return DamageSource(world.registryManager.get(RegistryKeys.DAMAGE_TYPE).getEntry(key).get(), attacker)
+    }
+
     /**
      * [FlyingEntity.travel]
      */
@@ -54,7 +63,7 @@ object VanillaCopies {
             }
             else -> {
                 val friction = if (entity.isOnGround) {
-                    entity.world.getBlockState(BlockPos(entity.x, entity.y - 1.0, entity.z)).block
+                    entity.world.getBlockState(BlockPos.ofFloored(entity.x, entity.y - 1.0, entity.z)).block
                         .slipperiness * baseFrictionCoefficient
                 } else {
                     baseFrictionCoefficient
@@ -66,7 +75,7 @@ object VanillaCopies {
                 entity.velocity = entity.velocity.multiply(friction.toDouble())
             }
         }
-        entity.updateLimbs(entity, false)
+        entity.updateLimbs(false)
     }
 
     /**

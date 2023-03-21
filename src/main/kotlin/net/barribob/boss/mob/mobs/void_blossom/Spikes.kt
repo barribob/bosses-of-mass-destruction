@@ -1,7 +1,7 @@
 package net.barribob.boss.mob.mobs.void_blossom
 
-import net.barribob.boss.damageSource.UnshieldableDamageSource
 import net.barribob.boss.utils.ModUtils.findGroundBelow
+import net.barribob.boss.utils.ModUtils.shieldPiercing
 import net.barribob.boss.utils.ModUtils.spawnParticle
 import net.barribob.maelstrom.general.event.EventScheduler
 import net.barribob.maelstrom.general.event.TimedEvent
@@ -29,7 +29,7 @@ class Spikes(
 ) {
     fun tryPlaceRift(pos: Vec3d): List<BlockPos> {
         return (0..12 step 6).mapNotNull {
-            val above = BlockPos(pos.add(VecUtils.yAxis.multiply(it.toDouble())))
+            val above = BlockPos.ofFloored(pos.add(VecUtils.yAxis.multiply(it.toDouble())))
             val groundPos = world.findGroundBelow(above, ::isOpenBlock)
             val up = groundPos.up()
             if (up.y + 5 >= above.y) {
@@ -63,7 +63,7 @@ class Spikes(
 
     private fun damageEntity(it: LivingEntity) {
         val damage = entity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE).toFloat()
-        it.damage(UnshieldableDamageSource(entity), damage)
+        it.damage(entity.world.damageSources.shieldPiercing(entity.world, entity), damage)
     }
 
     private fun isOpenBlock(up: BlockPos?) = world.getBlockState(up).canReplace(

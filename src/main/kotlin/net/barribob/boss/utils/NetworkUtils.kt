@@ -22,9 +22,9 @@ import net.minecraft.client.MinecraftClient
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.network.Packet
 import net.minecraft.network.PacketByteBuf
 import net.minecraft.network.listener.ClientPlayPacketListener
+import net.minecraft.network.packet.Packet
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.server.world.ServerWorld
@@ -106,7 +106,7 @@ class NetworkUtils {
         fun sendVoidBlossomRevivePacket(world: ServerWorld, pos: Vec3d) {
             val buf: PacketByteBuf = PacketByteBufs.create()
             buf.writeVec3d(pos)
-            for (player in PlayerLookup.tracking(world, BlockPos(pos))) {
+            for (player in PlayerLookup.tracking(world, BlockPos.ofFloored(pos))) {
                 ServerPlayNetworking.send(player, voidBlossomReviveId, buf)
             }
         }
@@ -114,7 +114,7 @@ class NetworkUtils {
         fun sendObsidilithRevivePacket(world: ServerWorld, pos: Vec3d) {
             val buf: PacketByteBuf = PacketByteBufs.create()
             buf.writeVec3d(pos)
-            for (player in PlayerLookup.tracking(world, BlockPos(pos))) {
+            for (player in PlayerLookup.tracking(world, BlockPos.ofFloored(pos))) {
                 ServerPlayNetworking.send(player, obsidilithReviveId, buf)
             }
         }
@@ -132,7 +132,7 @@ class NetworkUtils {
         fun sendImpactPacket(world: ServerWorld, pos: Vec3d) {
             val buf: PacketByteBuf = PacketByteBufs.create()
             buf.writeVec3d(pos)
-            for (player in PlayerLookup.tracking(world, BlockPos(pos))) {
+            for (player in PlayerLookup.tracking(world, BlockPos.ofFloored(pos))) {
                 ServerPlayNetworking.send(player, chargedEnderPearlImpactId, buf)
             }
         }

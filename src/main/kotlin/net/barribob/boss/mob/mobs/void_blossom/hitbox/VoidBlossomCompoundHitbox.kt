@@ -7,6 +7,7 @@ import net.barribob.boss.mob.utils.IEntityStats
 import net.barribob.boss.mob.utils.IEntityTick
 import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.entity.damage.DamageSource
+import net.minecraft.registry.tag.DamageTypeTags
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.Box
 
@@ -42,9 +43,9 @@ class VoidBlossomCompoundHitbox(
         nextDamagedPart = null
 
         if (result) {
-            if (spikedBoxes.contains(part) && !damageSource.isProjectile) {
+            if (spikedBoxes.contains(part) && !damageSource.isIn(DamageTypeTags.IS_PROJECTILE)) {
                 val damage = entity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE).toFloat()
-                damageSource.attacker?.damage(DamageSource.thorns(entity), damage)
+                damageSource.attacker?.damage(entity.world.damageSources.thorns(entity), damage)
             }
         }
     }

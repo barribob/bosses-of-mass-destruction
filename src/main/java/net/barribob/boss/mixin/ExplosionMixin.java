@@ -18,7 +18,7 @@ public abstract class ExplosionMixin {
     private float Explosion(float g, @Nullable Entity entity, @Nullable DamageSource damageSource, @Nullable ExplosionBehavior explosionBehavior, double d, double e, double f) {
         World world = (World) (Object) this;
         if (!world.isClient) {
-            return MonolithBlock.Companion.getExplosionPower(world, new BlockPos(d, e, f), g);
+            return MonolithBlock.Companion.getExplosionPower(world, BlockPos.ofFloored(d, e, f), g);
         }
 
         return g;

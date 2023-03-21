@@ -39,7 +39,7 @@ class Vec3dNetworkHandler {
         val buf: PacketByteBuf = PacketByteBufs.create()
         buf.writeInt(id.ordinal)
         buf.writeVec3d(pos)
-        for (player in PlayerLookup.tracking(world, BlockPos(pos))) {
+        for (player in PlayerLookup.tracking(world, BlockPos.ofFloored(pos))) {
             ServerPlayNetworking.send(player, clientVec3dId, buf)
         }
     }

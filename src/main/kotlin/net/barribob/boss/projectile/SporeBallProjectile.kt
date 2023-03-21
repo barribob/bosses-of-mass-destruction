@@ -2,7 +2,6 @@ package net.barribob.boss.projectile
 
 import net.barribob.boss.Mod
 import net.barribob.boss.cardinalComponents.ModComponents
-import net.barribob.boss.damageSource.UnshieldableDamageSource
 import net.barribob.boss.mob.Entities
 import net.barribob.boss.mob.mobs.obsidilith.RiftBurst
 import net.barribob.boss.particle.ClientParticleBuilder
@@ -10,6 +9,7 @@ import net.barribob.boss.particle.Particles
 import net.barribob.boss.utils.ModColors
 import net.barribob.boss.utils.ModUtils.findGroundBelow
 import net.barribob.boss.utils.ModUtils.randomPitch
+import net.barribob.boss.utils.ModUtils.shieldPiercing
 import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.static_utilities.MathUtils
 import net.barribob.maelstrom.static_utilities.VecUtils
@@ -18,7 +18,6 @@ import net.minecraft.block.Blocks
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.attribute.EntityAttributes
-import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.effect.StatusEffectInstance
 import net.minecraft.entity.effect.StatusEffects
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity
@@ -108,8 +107,10 @@ class SporeBallProjectile : BaseThrownItemEntity, GeoEntity {
         val eventScheduler = ModComponents.getWorldEventScheduler(world)
         val onImpact: (LivingEntity) -> Unit = {
             val damage = owner.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE).toFloat()
-            it.damage(UnshieldableDamageSource(this.owner), damage)
-            it.addStatusEffect(StatusEffectInstance(StatusEffects.POISON, 140), this.owner)
+            this.owner?.let { it1 ->
+                it.damage(world.damageSources.shieldPiercing(world, it1), damage)
+                it.addStatusEffect(StatusEffectInstance(StatusEffects.POISON, 140), this.owner)
+            }
         }
 
         val riftBurst = RiftBurst(
@@ -146,7 +147,7 @@ class SporeBallProjectile : BaseThrownItemEntity, GeoEntity {
     ) || world.getBlockState(up).block == Blocks.MOSS_CARPET
 
     private fun posFinder(pos: Vec3d): BlockPos? {
-        val above = BlockPos(pos.add(VecUtils.yAxis.multiply(2.0)))
+        val above = BlockPos.ofFloored(pos.add(VecUtils.yAxis.multiply(2.0)))
         val groundPos = world.findGroundBelow(above)
         val up = groundPos.up()
         return if (up.y + 8 >= above.y && isOpenBlock(up)) up else null
@@ -169,7 +170,7 @@ class SporeBallProjectile : BaseThrownItemEntity, GeoEntity {
         if (owner is LivingEntity) {
             if (entity != owner) {
                 val damage = owner.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE).toFloat()
-                entity.damage(DamageSource.thrownProjectile(this, owner), damage)
+                entity.damage(world.damageSources.thrown(this, owner), damage)
             }
         }
     }

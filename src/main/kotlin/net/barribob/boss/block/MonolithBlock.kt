@@ -106,7 +106,7 @@ class MonolithBlock(private val factory: (FabricBlockEntityTypeBuilder.Factory<C
     override fun getPlacementState(ctx: ItemPlacementContext): BlockState? {
         val blockPos = ctx.blockPos
         return if (blockPos.y < 255 && ctx.world.getBlockState(blockPos.up()).canReplace(ctx)) {
-            defaultState.with(HorizontalFacingBlock.FACING, ctx.playerFacing)
+            defaultState.with(HorizontalFacingBlock.FACING, ctx.horizontalPlayerFacing)
                 .with(Properties.DOUBLE_BLOCK_HALF, DoubleBlockHalf.LOWER)
         } else {
             null

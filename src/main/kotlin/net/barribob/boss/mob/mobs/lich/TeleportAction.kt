@@ -49,7 +49,7 @@ class TeleportAction(
         val mobPlacementLogic = buildTeleportLogic(target, target.pos, spawnPredicate)
         val success = mobPlacementLogic.tryPlacement(100)
         if(!success) {
-            val safePos = entity.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, BlockPos(target.pos)).asVec3d()
+            val safePos = entity.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, BlockPos.ofFloored(target.pos)).asVec3d()
             buildTeleportLogic(target, safePos, backupPredicate).tryPlacement(100)
         }
     }

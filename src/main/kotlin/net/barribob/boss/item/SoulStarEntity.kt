@@ -20,8 +20,8 @@ import net.minecraft.entity.projectile.ProjectileEntity
 import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
 import net.minecraft.nbt.NbtCompound
-import net.minecraft.network.Packet
 import net.minecraft.network.listener.ClientPlayPacketListener
+import net.minecraft.network.packet.Packet
 import net.minecraft.particle.ParticleTypes
 import net.minecraft.util.Util
 import net.minecraft.util.math.BlockPos
@@ -57,7 +57,7 @@ class SoulStarEntity(entityType: EntityType<out SoulStarEntity?>?, world: World?
 
     override fun getStack(): ItemStack {
         val itemStack = getTrackedItem()
-        return if (itemStack.isEmpty) ItemStack(Items.ENDER_EYE) else itemStack
+        return if (itemStack.isEmpty) ItemStack(Mod.items.soulStar) else itemStack
     }
 
     override fun initDataTracker() {

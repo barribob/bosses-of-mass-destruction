@@ -6,7 +6,6 @@ import net.barribob.boss.projectile.util.ExemptEntities
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.attribute.EntityAttributes
-import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity
 import net.minecraft.util.hit.BlockHitResult
 import net.minecraft.util.hit.EntityHitResult
@@ -31,7 +30,7 @@ class MagicMissileProjectile : BaseThrownItemEntity {
         val owner = owner
         if (owner != null && owner is LivingEntity) {
             entity.damage(
-                DamageSource.thrownProjectile(this, owner),
+                entity.world.damageSources.thrown(this, owner),
                 owner.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE).toFloat()
             )
             if (entity is LivingEntity) {

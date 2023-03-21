@@ -14,15 +14,14 @@ import net.barribob.maelstrom.static_utilities.planeProject
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.LivingEntity
-import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.effect.StatusEffectInstance
 import net.minecraft.entity.effect.StatusEffects
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.entity.projectile.thrown.EnderPearlEntity
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity
 import net.minecraft.item.Item
-import net.minecraft.network.Packet
 import net.minecraft.network.listener.ClientPlayPacketListener
+import net.minecraft.network.packet.Packet
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.hit.EntityHitResult
@@ -43,7 +42,7 @@ class ChargedEnderPearlEntity : ThrownItemEntity {
 
     override fun onEntityHit(entityHitResult: EntityHitResult) {
         super.onEntityHit(entityHitResult)
-        entityHitResult.entity.damage(DamageSource.thrownProjectile(this, owner), 0.0f)
+        entityHitResult.entity.damage(entityHitResult.entity.world.damageSources.thrown(this, owner), 0.0f)
     }
 
     override fun onCollision(hitResult: HitResult) {
@@ -63,7 +62,7 @@ class ChargedEnderPearlEntity : ThrownItemEntity {
 
     private fun teleportEntity(entity: Entity?) {
         if (entity is ServerPlayerEntity) {
-            if (entity.networkHandler.getConnection().isOpen && entity.world === world && !entity.isSleeping) {
+            if (entity.networkHandler.isConnectionOpen && entity.world === world && !entity.isSleeping) {
                 if (entity.hasVehicle()) {
                     entity.requestTeleportAndDismount(this.x, this.y, this.z)
                 } else {

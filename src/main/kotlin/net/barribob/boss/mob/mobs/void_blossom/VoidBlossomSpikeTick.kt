@@ -3,7 +3,6 @@ package net.barribob.boss.mob.mobs.void_blossom
 import net.barribob.boss.mob.utils.IEntityTick
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.attribute.EntityAttributes
-import net.minecraft.entity.damage.DamageSource
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.Box
 import kotlin.math.pow
@@ -15,7 +14,7 @@ class VoidBlossomSpikeTick(private val entity: VoidBlossomEntity) : IEntityTick<
         for(target in targets) {
             val damage = entity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE).toFloat()
             if(target.pos.squaredDistanceTo(entity.pos) < 3.0.pow(2)) {
-                target.damage(DamageSource.thorns(entity), damage)
+                target.damage(entity.world.damageSources.thorns(entity), damage)
             }
         }
     }

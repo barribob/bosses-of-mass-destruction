@@ -2,10 +2,10 @@ package net.barribob.boss.mob.mobs.obsidilith
 
 import net.barribob.boss.Mod
 import net.barribob.boss.cardinalComponents.ModComponents
-import net.barribob.boss.damageSource.UnshieldableDamageSource
 import net.barribob.boss.mob.ai.action.IActionWithCooldown
 import net.barribob.boss.particle.Particles
 import net.barribob.boss.utils.ModUtils.playSound
+import net.barribob.boss.utils.ModUtils.shieldPiercing
 import net.barribob.boss.utils.NetworkUtils.Companion.sendVelocity
 import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.static_utilities.MathUtils
@@ -50,7 +50,7 @@ class BurstAction(val entity: LivingEntity) :
         val damage = entity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE).toFloat()
         livingEntity.sendVelocity(Vec3d(livingEntity.velocity.x, 1.3, livingEntity.velocity.z))
         livingEntity.damage(
-            UnshieldableDamageSource(entity),
+            world.damageSources.shieldPiercing(world, entity),
             damage
         )
     }

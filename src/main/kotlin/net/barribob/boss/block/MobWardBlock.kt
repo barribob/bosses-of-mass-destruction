@@ -145,7 +145,7 @@ class MobWardBlock(private val factory: (FabricBlockEntityTypeBuilder.Factory<Ch
             ctx.world.getBlockState(blockPos.up(2)).canReplace(ctx)
         ) {
             ctx.world
-            defaultState.with(DoorBlock.FACING, ctx.playerFacing).with(tripleBlockPart, TripleBlockPart.BOTTOM)
+            defaultState.with(DoorBlock.FACING, ctx.horizontalPlayerFacing).with(tripleBlockPart, TripleBlockPart.BOTTOM)
         } else {
             null
         }

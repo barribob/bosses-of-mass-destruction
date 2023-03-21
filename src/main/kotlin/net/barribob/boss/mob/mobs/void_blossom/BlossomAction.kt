@@ -54,7 +54,7 @@ class BlossomAction(
     }
 
     private fun placeBlossoms(world: ServerWorld) {
-        val positions = blossomPositions.map { BlockPos(it.add(entity.pos)) }.shuffled()
+        val positions = blossomPositions.map { BlockPos.ofFloored(it.add(entity.pos)) }.shuffled()
         val hpRatio = entity.health / entity.maxHealth
         val protectedPositions = if(hpRatio < VoidBlossomEntity.hpMilestones[1]) 6 else if (hpRatio < VoidBlossomEntity.hpMilestones[2]) 3 else 0
 

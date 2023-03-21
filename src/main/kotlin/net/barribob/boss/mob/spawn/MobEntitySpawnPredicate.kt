@@ -14,7 +14,7 @@ import net.minecraft.world.WorldView
  */
 class MobEntitySpawnPredicate(private val worldView: WorldView) : ISpawnPredicate {
     override fun canSpawn(pos: Vec3d, entity: Entity): Boolean {
-        val blockPos = BlockPos(pos)
+        val blockPos = BlockPos.ofFloored(pos)
         if(!worldView.isChunkLoaded(blockPos)) return false
 
         val blockState = worldView.getBlockState(blockPos)

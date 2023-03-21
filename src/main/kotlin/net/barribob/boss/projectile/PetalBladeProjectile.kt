@@ -6,7 +6,6 @@ import net.barribob.boss.projectile.util.ExemptEntities
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.attribute.EntityAttributes
-import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.data.DataTracker
 import net.minecraft.entity.data.TrackedData
 import net.minecraft.entity.data.TrackedDataHandlerRegistry
@@ -38,7 +37,7 @@ class PetalBladeProjectile : BaseThrownItemEntity {
         val owner = owner
         if (owner != null && owner is LivingEntity) {
             entity.damage(
-                DamageSource.thrownProjectile(this, owner),
+                entity.world.damageSources.thrown(this, owner),
                 owner.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE).toFloat()
             )
             if (entity is LivingEntity) {

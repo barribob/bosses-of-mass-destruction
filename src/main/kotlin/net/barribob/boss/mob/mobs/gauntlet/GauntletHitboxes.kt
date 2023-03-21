@@ -11,6 +11,7 @@ import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.damage.DamageSource
+import net.minecraft.registry.tag.DamageTypeTags
 import net.minecraft.util.math.Box
 import net.minecraft.util.math.Vec3d
 
@@ -102,9 +103,9 @@ class GauntletHitboxes(val entity: GauntletEntity) : IDamageHandler {
 
         if (disableHitboxesForCompatibility) return true
         
-        if (part == eyeBox || damageSource.isOutOfWorld) return true
+        if (part == eyeBox || damageSource.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)) return true
 
-        if (damageSource.isExplosive) {
+        if (damageSource.isIn(DamageTypeTags.IS_EXPLOSION)) {
             val pos = damageSource.position
             if (pos != null) {
                 val explosionDirection = MathUtils.unNormedDirection(pos, entity.eyePos())
@@ -114,14 +115,14 @@ class GauntletHitboxes(val entity: GauntletEntity) : IDamageHandler {
             }
         }
 
-        if (!damageSource.isProjectile) {
+        if (!damageSource.isIn(DamageTypeTags.IS_PROJECTILE)) {
             val entity: Entity? = damageSource.source
             if (entity is LivingEntity) {
                 entity.takeKnockback(0.5, actor.x - entity.getX(), actor.z - entity.getZ())
             }
         }
 
-        if (damageSource != DamageSource.IN_FIRE) {
+        if (!damageSource.isIn(DamageTypeTags.IS_FIRE)) {
             entity.playSound(Mod.sounds.gauntletClink, 1.0f, actor.random.randomPitch())
         }
 

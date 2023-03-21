@@ -26,8 +26,8 @@ class WallTeleport(private val world: ServerWorld, private val entity: Entity) {
     }
 
     private fun getTeleportStart(context: Context): BlockPos? {
-        val startPos = BlockPos(context.position)
-        val endPos = BlockPos(context.position.add(context.direction.multiply(startRange)))
+        val startPos = BlockPos.ofFloored(context.position)
+        val endPos = BlockPos.ofFloored(context.position.add(context.direction.multiply(startRange)))
         val blocksToCheck = MathUtils.getBlocksInLine(startPos, endPos)
         for (pos in blocksToCheck) {
             if (world.getBlockState(pos).isSolidBlock(world, pos)) {
@@ -39,7 +39,7 @@ class WallTeleport(private val world: ServerWorld, private val entity: Entity) {
     }
 
     private fun getTeleportEnd(context: Context, startPos: BlockPos): BlockPos? {
-        val endPos = startPos.add(BlockPos(context.direction.multiply(endRange)))
+        val endPos = startPos.add(BlockPos.ofFloored(context.direction.multiply(endRange)))
         val blocksToCheck = MathUtils.getBlocksInLine(startPos, endPos)
         for (pos in blocksToCheck) {
             val blockState = world.getBlockState(pos)

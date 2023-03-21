@@ -46,7 +46,7 @@ class PillarAction(val entity: LivingEntity) : IActionWithCooldown {
 
         for (i in 0 until numPillars) {
             val position = RandomUtils.randVec().planeProject(VecUtils.yAxis).normalize().multiply(pillarXzDistance).add(entity.pos)
-            val up = entity.world.findGroundBelow(BlockPos(position).up(14))
+            val up = entity.world.findGroundBelow(BlockPos.ofFloored(position).up(14))
             val ground = entity.world.findGroundBelow(up)
 
             if (up.y - ground.y > maxYDistance) continue

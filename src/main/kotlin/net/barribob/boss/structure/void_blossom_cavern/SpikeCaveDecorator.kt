@@ -41,7 +41,7 @@ class SpikeCaveDecorator(private val bottomOfWorld: Int, private val random: Ran
             val tip = centerDirection
                 .multiply((5 + random.nextInt(3)).toDouble())
                 .add(VecUtils.yAxis.multiply((7 + random.nextInt(5)).toDouble()))
-            generateSpike(outerPos, outerPos.add(BlockPos(tip)), structurePiece, world, boundingBox, centerDirection)
+            generateSpike(outerPos, outerPos.add(BlockPos.ofFloored(tip)), structurePiece, world, boundingBox, centerDirection)
         }
     }
 
@@ -54,7 +54,7 @@ class SpikeCaveDecorator(private val bottomOfWorld: Int, private val random: Ran
         centerDirection: Vec3d
     ) {
         val centerDirectionPos = centerDirection.multiply(3.0)
-        val blockSet = baseBlocks.map{BlockPos(it)}.toSet()
+        val blockSet = baseBlocks.map{BlockPos.ofFloored(it)}.toSet()
         val innerBlockSet = blockSet.filter { it.getSquaredDistance(centerDirectionPos) < 2.0.pow(2) }.toSet()
         val middleBlockSet = blockSet.subtract(innerBlockSet).filter { it.getSquaredDistance(centerDirectionPos) < 3.7.pow(2) }.toSet()
         val outerBlockSet = blockSet.subtract(middleBlockSet).subtract(innerBlockSet)

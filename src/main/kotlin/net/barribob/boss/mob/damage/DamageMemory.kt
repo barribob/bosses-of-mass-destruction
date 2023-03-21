@@ -6,7 +6,7 @@ import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.damage.DamageSource
 
 class DamageMemory(hitsToRemember: Int, private val entity: LivingEntity) : IDamageHandler {
-    private val defaultDamageHistory = DamageHistory(0f, DamageSource.OUT_OF_WORLD, 0)
+    private val defaultDamageHistory = DamageHistory(0f, entity.world.damageSources.outOfWorld(), 0)
     private val historicalData = HistoricalData(defaultDamageHistory, hitsToRemember)
 
     override fun afterDamage(stats: IEntityStats, damageSource: DamageSource, amount: Float, result: Boolean) {

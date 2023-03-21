@@ -73,7 +73,7 @@ private fun defaultPosFinder(
     world: ServerWorld,
     isOpenBlock: (BlockPos) -> Boolean
 ): (Vec3d) -> BlockPos? = {
-    val above = BlockPos(it.add(VecUtils.yAxis.multiply(14.0)))
+    val above = BlockPos.ofFloored(it.add(VecUtils.yAxis.multiply(14.0)))
     val groundPos = world.findGroundBelow(above)
     val up = groundPos.up()
     if (up.y + 28 >= above.y && isOpenBlock(up)) up else null

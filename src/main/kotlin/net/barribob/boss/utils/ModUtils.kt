@@ -9,6 +9,8 @@ import net.minecraft.block.SideShapeType
 import net.minecraft.client.network.ClientPlayNetworkHandler
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.entity.Entity
+import net.minecraft.entity.damage.DamageSource
+import net.minecraft.entity.damage.DamageSources
 import net.minecraft.entity.mob.MobEntity
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.Item
@@ -49,6 +51,9 @@ object ModUtils {
             velOrOffset.z,
             speed
         )
+    
+    fun DamageSources.shieldPiercing(world: World, attacker: Entity) : DamageSource =
+        VanillaCopies.create(world, RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Mod.identifier("shield_piercing")), attacker)
 
     fun ServerWorld.playSound(
         pos: Vec3d,

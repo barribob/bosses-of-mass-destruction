@@ -30,7 +30,6 @@ import net.minecraft.client.MinecraftClient
 import net.minecraft.enchantment.Enchantments
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.LivingEntity
-import net.minecraft.entity.damage.DamageSource
 import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
 import net.minecraft.nbt.NbtCompound
@@ -165,12 +164,12 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
         zombie.setPos(pos)
         source.world.spawnEntity(zombie)
         ModComponents.getWorldEventScheduler(source.world).addEvent(TimedEvent({
-            zombie.damage(DamageSource.player(source.playerOrThrow), 30f)
+            zombie.damage(source.world.damageSources.playerAttack(source.playerOrThrow), 30f)
         }, 2))
     }
 
     fun lichSpawn(source: ServerCommandSource){
-        SoulStarItem.spawnLich(BlockPos(source.position), source.world)
+        SoulStarItem.spawnLich(BlockPos.ofFloored(source.position), source.world)
     }
 
     fun verifySpawnPosition(source: ServerCommandSource) {
@@ -180,7 +179,7 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
 
     fun levitationPerformance(source: ServerCommandSource){
 //        LevitationBlockEntity.tickFlight(source.playerOrThrow)
-        MonolithBlock.getExplosionPower(source.world, BlockPos(source.position), 2.0f)
+        MonolithBlock.getExplosionPower(source.world, BlockPos.ofFloored(source.position), 2.0f)
     }
 
     fun wallTeleport(source: ServerCommandSource) {
@@ -191,7 +190,7 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
         val target = source.world.getEntitiesByType(Entities.GAUNTLET) { true }.firstOrNull()
         for(i in 0..240 step 80) {
             ModComponents.getWorldEventScheduler(source.world).addEvent(TimedEvent({
-               target?.damage(DamageSource.player(source.playerOrThrow), 9.0f)
+               target?.damage(source.world.damageSources.playerAttack(source.playerOrThrow), 9.0f)
             }, i))
         }
     }

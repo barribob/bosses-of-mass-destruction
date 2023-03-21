@@ -41,7 +41,7 @@ class ServerGauntletDeathHandler(
             val end = entity.pos.add(randomDir.multiply(length.toDouble()))
             val points = length * 2
             MathUtils.lineCallback(start, end, points) { vec3d: Vec3d, point: Int ->
-                val blockPos = BlockPos(vec3d)
+                val blockPos = BlockPos.ofFloored(vec3d)
                 if (point == points - 1) world.setBlockState(blockPos, Blocks.ANCIENT_DEBRIS.defaultState)
                 else world.setBlockState(blockPos, Blocks.NETHERRACK.defaultState)
             }
