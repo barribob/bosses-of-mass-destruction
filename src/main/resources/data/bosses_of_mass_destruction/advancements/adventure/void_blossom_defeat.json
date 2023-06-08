@@ -18,7 +18,7 @@
     "background": "minecraft:textures/gui/advancements/backgrounds/adventure.png"
   },
   "criteria": {
-    "bosses_of_mass_destruction:lich": {
+    "bosses_of_mass_destruction:void_blossom": {
       "trigger": "minecraft:player_killed_entity",
       "conditions": {
         "entity": {
