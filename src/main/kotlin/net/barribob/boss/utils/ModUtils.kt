@@ -103,7 +103,7 @@ object ModUtils {
         this.getOtherEntities(toExclude, Box(start, end)) { it.boundingBox.raycast(start, end).isPresent }
 
     val ServerPlayerEntity.serverWorld: ServerWorld
-        get() = this.getWorld()
+        get() = this.serverWorld
 
     val MatrixStack.Entry.normal: Matrix3f
         get() = this.normalMatrix

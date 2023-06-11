@@ -13,7 +13,6 @@ import net.fabricmc.fabric.api.item.v1.FabricItemSettings
 import net.minecraft.block.Block
 import net.minecraft.block.Blocks
 import net.minecraft.block.MapColor
-import net.minecraft.block.Material
 import net.minecraft.block.entity.BlockEntity
 import net.minecraft.block.entity.BlockEntityType
 import net.minecraft.client.render.RenderLayer
@@ -25,11 +24,11 @@ import net.minecraft.state.property.Properties
 import net.minecraft.util.Identifier
 
 object ModBlocks {
-    val obsidilithRune = ObsidilithRuneBlock(FabricBlockSettings.of(Material.STONE, MapColor.BLACK).requiresTool().strength(50.0F, 1200.0F))
-    val voidBlossom = VoidBlossomBlock(FabricBlockSettings.of(Material.PLANT, MapColor.PURPLE).breakInstantly().noCollision().luminance { 11 }.sounds(BlockSoundGroup.SPORE_BLOSSOM))
-    val vineWall = VineWallBlock(FabricBlockSettings.of(Material.PLANT, MapColor.DARK_GREEN).sounds(BlockSoundGroup.WOOD).strength(2.0f, 6.0f))
+    val obsidilithRune = ObsidilithRuneBlock(FabricBlockSettings.create().mapColor(MapColor.BLACK).requiresTool().strength(50.0F, 1200.0F))
+    val voidBlossom = VoidBlossomBlock(FabricBlockSettings.create().mapColor(MapColor.BLACK).breakInstantly().noCollision().luminance { 11 }.sounds(BlockSoundGroup.SPORE_BLOSSOM))
+    val vineWall = VineWallBlock(FabricBlockSettings.create().mapColor(MapColor.GREEN).sounds(BlockSoundGroup.WOOD).strength(2.0f, 6.0f))
     val obsidilithSummonBlock = ObsidilithSummonBlock(FabricBlockSettings.copy(Blocks.END_PORTAL_FRAME))
-    val gauntletBlackstone = GauntletBlackstoneBlock(FabricBlockSettings.of(Material.STONE, MapColor.BLACK).requiresTool().strength(50.0F, 1200.0F))
+    val gauntletBlackstone = GauntletBlackstoneBlock(FabricBlockSettings.create().mapColor(MapColor.BLACK).requiresTool().strength(50.0F, 1200.0F))
     val sealedBlackstone = Block(FabricBlockSettings.copy(Blocks.BEDROCK))
     val chiseledStoneAltar = ChiseledStoneAltarBlock(
         FabricBlockSettings.copy(Blocks.BEDROCK)
@@ -39,7 +38,7 @@ object ModBlocks {
     private val mobWardBlockEntityFactory = FabricBlockEntityTypeBuilder.Factory { pos, state ->
         ChunkCacheBlockEntity(mobWard, mobWardEntityType, pos, state)
     }
-    val mobWard: MobWardBlock = MobWardBlock(mobWardBlockEntityFactory, FabricBlockSettings.of(Material.STONE, MapColor.BLACK).requiresTool()
+    val mobWard: MobWardBlock = MobWardBlock(mobWardBlockEntityFactory, FabricBlockSettings.create().mapColor(MapColor.BLACK).requiresTool()
         .nonOpaque()
         .luminance { 15 }
         .strength(10.0F, 1200.0F))
@@ -48,7 +47,7 @@ object ModBlocks {
     private val monolithBlockEntityFactory = FabricBlockEntityTypeBuilder.Factory { pos, state ->
         ChunkCacheBlockEntity(monolithBlock, monolithEntityType, pos, state)
     }
-    val monolithBlock: MonolithBlock = MonolithBlock(monolithBlockEntityFactory, FabricBlockSettings.of(Material.METAL, MapColor.BLACK).requiresTool()
+    val monolithBlock: MonolithBlock = MonolithBlock(monolithBlockEntityFactory, FabricBlockSettings.create().mapColor(MapColor.BLACK).requiresTool()
         .nonOpaque()
         .luminance { 4 }
         .strength(10.0F, 1200.0F))
@@ -57,7 +56,7 @@ object ModBlocks {
     private val levitationBlockEntityFactory = FabricBlockEntityTypeBuilder.Factory { pos, state ->
         LevitationBlockEntity(levitationBlock, levitationBlockEntityType, pos, state)
     }
-    val levitationBlock: LevitationBlock = LevitationBlock(levitationBlockEntityFactory, FabricBlockSettings.of(Material.STONE, MapColor.BLUE).requiresTool()
+    val levitationBlock: LevitationBlock = LevitationBlock(levitationBlockEntityFactory, FabricBlockSettings.create().mapColor(MapColor.BLUE).requiresTool()
         .nonOpaque()
         .luminance { 4 }
         .strength(10.0F, 1200.0F))
@@ -73,7 +72,7 @@ object ModBlocks {
         VoidLilyBlockEntity(voidLilyBlockEntityType, pos, state)
     }
     private val voidLilyBlock = VoidLilyBlock(voidLilyBlockEntityFactory,
-        FabricBlockSettings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly()
+        FabricBlockSettings.create().noCollision().ticksRandomly().breakInstantly()
             .sounds(BlockSoundGroup.GRASS).luminance { 8 })
 
     fun init() {

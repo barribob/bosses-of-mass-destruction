@@ -20,11 +20,14 @@ import net.minecraft.item.ItemGroup
 import net.minecraft.item.ItemStack
 import net.minecraft.registry.Registries
 import net.minecraft.registry.Registry
+import net.minecraft.registry.RegistryKey
+import net.minecraft.registry.RegistryKeys
+import net.minecraft.text.Text
 import net.minecraft.util.Identifier
 import net.minecraft.util.Rarity
 
 class ModItems {
-    val itemGroup: ItemGroup = FabricItemGroup.builder(Mod.identifier("items")).icon({ItemStack(soulStar)}).build()
+    var itemGroup: RegistryKey<ItemGroup> = RegistryKey.of(RegistryKeys.ITEM_GROUP, Mod.identifier("items"))
     val soulStar = SoulStarItem(FabricItemSettings())
     private val ancientAnima = MaterialItem(FabricItemSettings().rarity(Rarity.RARE))
     private val blazingEye = MaterialItem(FabricItemSettings().rarity(Rarity.RARE).fireproof())
@@ -44,6 +47,11 @@ class ModItems {
     ))
 
     fun init() {
+        Registry.register(Registries.ITEM_GROUP, itemGroup, FabricItemGroup.builder()
+            .icon { ItemStack(soulStar) }
+            .displayName(Text.translatable("itemGroup.bosses_of_mass_destruction.items"))
+            .build())
+        
         registerItem(Mod.identifier("soul_star"), soulStar)
         registerItem(Mod.identifier("ancient_anima"), ancientAnima)
         registerItem(Mod.identifier("blazing_eye"), blazingEye)
