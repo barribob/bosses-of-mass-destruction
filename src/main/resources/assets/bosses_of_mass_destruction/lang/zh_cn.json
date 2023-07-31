@@ -118,5 +118,5 @@
   "text.autoconfig.bosses_of_mass_destruction.option.gauntletConfig.arenaGeneration" : "斗技场生成",
   "text.autoconfig.bosses_of_mass_destruction.option.gauntletConfig.arenaGeneration.generationSpacing" : "异种结构间隔",
   "text.autoconfig.bosses_of_mass_destruction.option.gauntletConfig.arenaGeneration.generationSeparation" : "同种结构间隔",
-  "text.autoconfig.bosses_of_mass_destruction.option.gauntletConfig.arenaGeneration.generationEnabled" : "允许生成",
+  "text.autoconfig.bosses_of_mass_destruction.option.gauntletConfig.arenaGeneration.generationEnabled" : "允许生成"
 }
