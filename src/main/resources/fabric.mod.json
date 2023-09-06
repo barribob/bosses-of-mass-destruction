@@ -39,17 +39,25 @@
     "bosses.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.7.1",
+    "fabricloader": ">=0.14.17",
     "fabric": "*",
     "fabric-language-kotlin": "*",
-    "minecraft": "1.16.x"
+    "minecraft": "1.20.x",
+    "java": ">=17",
+    "cardinal-components-base": ">=5.2.0",
+    "cardinal-components-world": ">=5.2.0",
+    "cardinal-components-entity": ">=5.2.0",
+    "geckolib": ">=4.2",
+    "cloth-config": ">=11.0.98"
   },
   "custom":  {
     "cardinal-components": [
       "bosses_of_mass_destruction:event_scheduler",
       "bosses_of_mass_destruction:lich_summon_counter",
       "bosses_of_mass_destruction:player_move_history",
-      "bosses_of_mass_destruction:chunk_block_cache_component"
+      "bosses_of_mass_destruction:chunk_block_cache_component",
+      "bosses_of_mass_destruction:charged_ender_pearl_cooldown_component"
     ]
-  }
+  },
+  "accessWidener": "bomd.accesswidener"
 }

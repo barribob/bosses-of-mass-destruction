@@ -1,0 +1,47 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "bosses_of_mass_destruction:earthdive_spear"
+    ]
+  },
+  "criteria": {
+    "has_void_thorn": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "bosses_of_mass_destruction:void_thorn"
+            ]
+          }
+        ]
+      }
+    },
+    "has_obsidian_heart": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "bosses_of_mass_destruction:obsidian_heart"
+            ]
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "bosses_of_mass_destruction:earthdive_spear"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_void_thorn",
+      "has_obsidian_heart",
+      "has_the_recipe"
+    ]
+  ]
+}

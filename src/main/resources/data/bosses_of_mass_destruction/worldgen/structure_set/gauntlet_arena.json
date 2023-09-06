@@ -1,0 +1,14 @@
+{
+  "structures": [
+    {
+      "structure": "bosses_of_mass_destruction:gauntlet_arena",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "salt": 499672,
+    "spacing": 32,
+    "separation": 16,
+    "type": "minecraft:random_spread"
+  }
+}

@@ -11,7 +11,7 @@ class TestCompositeGoal {
     fun controls_WhenGoalsHaveMultipleControls_ReturnsUnion() {
         val goal1 = StubGoal(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK))
         val goal2 = StubGoal(EnumSet.of(Goal.Control.TARGET, Goal.Control.LOOK))
-        val compositeGoal = CompositeGoal(listOf(goal1, goal2))
+        val compositeGoal = CompositeGoal(goal1, goal2)
 
         Assertions.assertEquals(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK, Goal.Control.TARGET), compositeGoal.controls)
     }

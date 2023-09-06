@@ -1,0 +1,14 @@
+{
+  "parent": "bosses_of_mass_destruction:item/spear",
+  "textures": {
+    "layer0": "bosses_of_mass_destruction:item/earthdive_spear"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "throwing": 1
+      },
+      "model": "bosses_of_mass_destruction:item/earthdive_spear_throwing"
+    }
+  ]
+}

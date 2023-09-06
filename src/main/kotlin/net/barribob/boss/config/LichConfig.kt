@@ -8,8 +8,7 @@ class LichConfig {
     @ConfigEntry.BoundedDiscrete(min = 0, max = 10000)
     val experienceDrop = 1500
     val idleHealingPerTick = 0.2f
-    val health = 200.0
-    val generateLichTower = true
+    val health = 300.0
 
     @ConfigEntry.Gui.CollapsibleObject
     val missile = Missile()
@@ -33,7 +32,6 @@ class LichConfig {
 
     data class Comet(
         val explosionStrength: Float = 4.0f,
-        val destroysBlocks: Boolean = true
     )
 
     data class SummonMechanic(

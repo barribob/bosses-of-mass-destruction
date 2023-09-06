@@ -4,31 +4,31 @@ plugins {
     id "org.jetbrains.kotlin.jvm"
 }
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
 
 archivesBaseName = project.archives_base_name
 version = project.mod_version + "-" + project.minecraft_version
 group = project.maven_group
 
-minecraft {
-}
-
 test {
     useJUnitPlatform()
 }
 
+loom {
+    accessWidenerPath = file("src/main/resources/bomd.accesswidener")
+}
+
 repositories {
     maven { url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
-    maven { url = "http://maven.fabricmc.net/" }
     maven {
         name = 'Ladysnake Mods'
         url = 'https://ladysnake.jfrog.io/artifactory/mods'
     }
     mavenCentral()
-    mavenLocal()
     maven { url "https://maven.shedaniel.me/" }
     maven { url "https://maven.terraformersmc.com/" }
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -41,22 +41,18 @@ dependencies {
     modImplementation "net.fabricmc:fabric-language-kotlin:${project.fabric_kotlin_version}"
 
     testImplementation(
-            'org.assertj:assertj-core:3.12.2',
-            'org.junit.jupiter:junit-jupiter-api:5.4.2',
+            "org.assertj:assertj-core:${project.junit_core_version}",
+            "org.junit.jupiter:junit-jupiter-api:${project.junit_version}",
+            "org.junit.jupiter:junit-jupiter-params:${project.junit_version}",
             'org.hamcrest:hamcrest-library:2.2'
     )
-    testRuntime('org.junit.jupiter:junit-jupiter-engine:5.4.2')
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${project.junit_version}")
 
-    if(project.doBuild.toBoolean()) {
-        modImplementation "net.barribob:maelstrom-library:${project.maelstrom_version}-${project.minecraft_version}"
-        modImplementation "io.github.stuff_stuffs.multipart_entities:MultipartEntities:${project.multipart_version}"
-    } else {
-        implementation "net.barribob:maelstrom-library:${project.maelstrom_version}-${project.minecraft_version}"
-        implementation "io.github.stuff_stuffs.multipart_entities:MultipartEntities:${project.multipart_version}"
-    }
+    modImplementation "com.github.miyo6032:maelstrom-lib:${project.maelstrom_commit_hash}"
+    modImplementation "com.github.miyo6032:MultipartEntities:${project.multipart_commit_hash}"
 
-    include "net.barribob:maelstrom-library:${project.maelstrom_version}-${project.minecraft_version}"
-    include "io.github.stuff_stuffs.multipart_entities:MultipartEntities:${project.multipart_version}"
+    include "com.github.miyo6032:maelstrom-lib:${project.maelstrom_commit_hash}"
+    include "com.github.miyo6032:MultipartEntities:${project.multipart_commit_hash}"
 
     modImplementation "software.bernie.geckolib:geckolib-${project.geckolib_minecraft_version}:${project.geckolib_version}"
 
@@ -64,14 +60,14 @@ dependencies {
         exclude(group: "net.fabricmc.fabric-api")
     }
 
-    modApi "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${project.cardinal_components_version}"
-    modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:${project.cardinal_components_version}"
-    modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${project.cardinal_components_version}"
+    modApi "dev.onyxstudios.cardinal-components-api:cardinal-components-base:${project.cardinal_components_version}"
+    modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-world:${project.cardinal_components_version}"
+    modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${project.cardinal_components_version}"
 
-    modCompileOnly("com.terraformersmc:modmenu:1.16.15") {
+    modCompileOnly("com.terraformersmc:modmenu:${project.modmenu_version}") {
         exclude module: "fabric-api"
     }
-    modRuntime("com.terraformersmc:modmenu:1.16.15") {
+    modRuntimeOnly("com.terraformersmc:modmenu:${project.modmenu_version}") {
         exclude module: "fabric-api"
     }
 }
@@ -79,28 +75,33 @@ dependencies {
 processResources {
     inputs.property "version", project.version
 
-    from(sourceSets.main.resources.srcDirs) {
-        include "fabric.mod.json"
+    filesMatching("fabric.mod.json") {
         expand "version": project.version
-    }
-
-    from(sourceSets.main.resources.srcDirs) {
-        exclude "fabric.mod.json"
     }
 }
 
-// ensure that the encoding is set to UTF-8, no matter what the system default is
-// this fixes some edge cases with special characters not displaying correctly
-// see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
-tasks.withType(JavaCompile) {
-    options.encoding = "UTF-8"
+tasks.withType(JavaCompile).configureEach {
+    // ensure that the encoding is set to UTF-8, no matter what the system default is
+    // this fixes some edge cases with special characters not displaying correctly
+    // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
+    // If Javadoc is generated, this must be specified in that task too.
+    it.options.encoding = "UTF-8"
+
+    // The Minecraft launcher currently installs Java 8 for users, so your mod probably wants to target Java 8 too
+    // JDK 9 introduced a new way of specifying this that will make sure no newer classes or methods are used.
+    // We'll use that if it's available, but otherwise we'll use the older option.
+    def targetVersion = 8
+    if (JavaVersion.current().isJava9Compatible()) {
+        it.options.release = targetVersion
+    }
+    it.options.release = 17
 }
 
 // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
 // if it is present.
 // If you remove this task, sources will not be generated.
 task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = "sources"
+    archiveClassifier = "sources"
     from sourceSets.main.allSource
 }
 
@@ -112,5 +113,5 @@ publishing.repositories {
     // mavenLocal()
 }
 
-compileKotlin.kotlinOptions.jvmTarget = "1.8"
-compileTestKotlin.kotlinOptions.jvmTarget = "1.8"
+compileKotlin.kotlinOptions.jvmTarget = "17"
+compileTestKotlin.kotlinOptions.jvmTarget = "17"

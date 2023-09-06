@@ -9,7 +9,6 @@ import net.barribob.boss.mob.ai.valid_direction.ValidDirectionAnd
 import net.barribob.boss.mob.utils.EntityAdapter
 import net.barribob.maelstrom.general.random.ModRandom
 import net.barribob.maelstrom.static_utilities.MathUtils
-import net.barribob.maelstrom.static_utilities.addVelocity
 import net.barribob.maelstrom.static_utilities.eyePos
 import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.util.math.Vec3d
@@ -21,10 +20,10 @@ class GauntletMovement(val entity: GauntletEntity) {
     private val tooCloseToTargetDistance = 5.0
 
     fun buildAttackMovement(): VelocityGoal {
-        val targetPos = { entity.target!!.pos }
+        val targetPos = { entity.safeGetTargetPos()}
         val tooCloseToTarget: (Vec3d) -> Boolean = getWithinDistancePredicate(tooCloseToTargetDistance, targetPos)
         val tooFarFromTarget: (Vec3d) -> Boolean = { !getWithinDistancePredicate(tooFarFromTargetDistance, targetPos)(it) }
-        val movingToTarget: (Vec3d) -> Boolean = { MathUtils.movingTowards(entity.target!!.pos, entity.pos, it) }
+        val movingToTarget: (Vec3d) -> Boolean = { MathUtils.movingTowards(entity.safeGetTargetPos(), entity.pos, it) }
 
         val canMoveTowardsPositionValidator = ValidDirectionAnd(
             listOf(
@@ -50,7 +49,7 @@ class GauntletMovement(val entity: GauntletEntity) {
         val target = entity.target
         if (target != null) {
             entity.lookControl.lookAt(target.eyePos())
-            entity.lookAtEntity(target, entity.bodyYawSpeed.toFloat(), entity.lookPitchSpeed.toFloat())
+            entity.lookAtEntity(target, entity.maxLookYawChange.toFloat(), entity.maxLookPitchChange.toFloat())
         }
     }
 

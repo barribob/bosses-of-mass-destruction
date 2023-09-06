@@ -3,7 +3,7 @@ package net.barribob.boss.projectile.comet
 import net.barribob.boss.mob.Entities
 import net.barribob.boss.projectile.BaseThrownItemEntity
 import net.barribob.boss.projectile.util.ExemptEntities
-import net.barribob.boss.utils.AnimationUtils
+import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.damage.DamageSource
@@ -12,21 +12,14 @@ import net.minecraft.util.hit.BlockHitResult
 import net.minecraft.util.hit.EntityHitResult
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
-import software.bernie.geckolib3.core.IAnimatable
-import software.bernie.geckolib3.core.controller.AnimationController
-import software.bernie.geckolib3.core.manager.AnimationData
-import software.bernie.geckolib3.core.manager.AnimationFactory
+import software.bernie.geckolib.animatable.GeoEntity
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
+import software.bernie.geckolib.core.animation.AnimatableManager
+import software.bernie.geckolib.util.GeckoLibUtil
 
-class CometProjectile : BaseThrownItemEntity, IAnimatable {
-    var impacted: Boolean = false
+class CometProjectile : BaseThrownItemEntity, GeoEntity {
+    private var impacted: Boolean = false
     private var impactAction: ((Vec3d) -> Unit)? = null
-
-    constructor(
-        d: Double,
-        e: Double,
-        f: Double,
-        world: World,
-    ) : super(Entities.COMET, d, e, f, world)
 
     constructor(entityType: EntityType<out ThrownItemEntity>, world: World?) : super(entityType, world)
 
@@ -46,7 +39,7 @@ class CometProjectile : BaseThrownItemEntity, IAnimatable {
         val owner = owner
         if (owner != null && owner is LivingEntity) {
             impactAction?.let { it(pos) }
-            remove()
+            discard()
         }
     }
 
@@ -64,16 +57,15 @@ class CometProjectile : BaseThrownItemEntity, IAnimatable {
         return super.damage(source, amount)
     }
 
-    override fun collides(): Boolean {
+    override fun collidesWith(other: Entity?): Boolean {
         return true
     }
 
-    override fun registerControllers(data: AnimationData) {
-        data.addAnimationController(AnimationController(this, "spin", 0f, AnimationUtils.createIdlePredicate("spin")))
+    override fun registerControllers(data: AnimatableManager.ControllerRegistrar) {
     }
 
-    private val animationFactory = AnimationFactory(this)
-    override fun getFactory(): AnimationFactory {
-        return animationFactory
-    }
+    private val animationFactory = GeckoLibUtil.createInstanceCache(this)
+    override fun getAnimatableInstanceCache(): AnimatableInstanceCache = animationFactory
+
+    override fun getPitch() = age * 5f
 }

@@ -1,27 +1,26 @@
 package net.barribob.boss.mob
 
-import net.barribob.boss.animation.IAnimationTimer
 import net.barribob.boss.mob.utils.animation.ICodeAnimations
 import net.barribob.boss.render.ITextureProvider
+import net.minecraft.client.render.RenderLayer
 import net.minecraft.util.Identifier
-import software.bernie.geckolib3.core.IAnimatable
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent
-import software.bernie.geckolib3.model.AnimatedGeoModel
+import software.bernie.geckolib.core.animatable.GeoAnimatable
+import software.bernie.geckolib.core.animation.AnimationState
+import software.bernie.geckolib.model.GeoModel
 
-class GeoModel<T : IAnimatable>(
+class GeoModel<T>(
     private val modelLocation: (T) -> Identifier,
     private val textureProvider: ITextureProvider<T>,
     private val animationLocation: Identifier,
-    private val animationTimer: IAnimationTimer,
-    private val codeAnimations: ICodeAnimations<T> = ICodeAnimations { _, _, _ -> }
-) : AnimatedGeoModel<T>() {
-    override fun getModelLocation(animatable: T): Identifier = modelLocation(animatable)
-    override fun getTextureLocation(animatable: T): Identifier = textureProvider.getTexture(animatable)
-    override fun getAnimationFileLocation(animatable: T): Identifier = animationLocation
-    override fun getCurrentTick(): Double = animationTimer.getCurrentTick()
+    private val codeAnimations: ICodeAnimations<T> = ICodeAnimations { _, _, _ -> },
+    private val renderLayer: (Identifier) -> RenderLayer = { RenderLayer.getEntityCutout(it) } 
+) : GeoModel<T>() where T : GeoAnimatable {
+    override fun getModelResource(animatable: T): Identifier = modelLocation(animatable)
+    override fun getTextureResource(animatable: T): Identifier = textureProvider.getTexture(animatable)
+    override fun getAnimationResource(animatable: T): Identifier = animationLocation
+    override fun getRenderType(animatable: T, texture: Identifier): RenderLayer = renderLayer(texture)
 
-    override fun setLivingAnimations(entity: T?, uniqueID: Int?, customPredicate: AnimationEvent<*>?) {
-        super.setLivingAnimations(entity, uniqueID, customPredicate)
-        if (entity != null && customPredicate != null) codeAnimations.animate(entity, customPredicate, this)
+    override fun setCustomAnimations(entity: T, instanceId: Long, customPredicate: AnimationState<T>?) {
+        if (customPredicate != null) codeAnimations.animate(entity, customPredicate, this)
     }
 }

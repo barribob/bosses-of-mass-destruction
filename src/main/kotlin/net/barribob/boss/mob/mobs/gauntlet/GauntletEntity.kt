@@ -7,6 +7,7 @@ import net.barribob.boss.Mod
 import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.config.GauntletConfig
 import net.barribob.boss.mob.damage.CompositeDamageHandler
+import net.barribob.boss.mob.damage.DamageMemory
 import net.barribob.boss.mob.utils.*
 import net.barribob.boss.utils.ModUtils
 import net.barribob.boss.utils.VanillaCopies
@@ -17,13 +18,17 @@ import net.minecraft.entity.EntityType
 import net.minecraft.entity.boss.BossBar
 import net.minecraft.entity.boss.ServerBossBar
 import net.minecraft.entity.damage.DamageSource
+import net.minecraft.entity.data.DataTracker
+import net.minecraft.entity.data.TrackedData
+import net.minecraft.entity.data.TrackedDataHandlerRegistry
 import net.minecraft.entity.effect.StatusEffects
 import net.minecraft.entity.mob.PathAwareEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.Box
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
-import software.bernie.geckolib3.core.manager.AnimationData
+import software.bernie.geckolib.core.animation.AnimatableManager
 
 class GauntletEntity(entityType: EntityType<out PathAwareEntity>, world: World, mobConfig: GauntletConfig) :
     BaseEntity(entityType, world),
@@ -32,9 +37,22 @@ class GauntletEntity(entityType: EntityType<out PathAwareEntity>, world: World, 
     val laserHandler = GauntletClientLaserHandler(this, postTickEvents)
     val energyShieldHandler = GauntletClientEnergyShieldHandler(this, postTickEvents)
     val clientBlindnessHandler = GauntletBlindnessIndicatorParticles(this, preTickEvents)
+    val damageMemory = DamageMemory(5, this)
     private val gauntletGoalHandler = GauntletGoalHandler(this, goalSelector, targetSelector, postTickEvents, mobConfig)
-    private val animationHandler = GauntletAnimations(this)
-    override val damageHandler = CompositeDamageHandler(hitboxHelper, gauntletGoalHandler)
+    private val animationHandler = AnimationHolder(
+        this, mapOf(
+            Pair(GauntletAttacks.punchAttack, AnimationHolder.Animation("punch_start", "punch_loop")),
+            Pair(GauntletAttacks.stopPunchAnimation, AnimationHolder.Animation("punch_stop", "idle")),
+            Pair(GauntletAttacks.stopPoundAnimation, AnimationHolder.Animation("pound_stop", "idle")),
+            Pair(GauntletAttacks.laserAttack, AnimationHolder.Animation("laser_eye_start", "laser_eye_loop")),
+            Pair(GauntletAttacks.laserAttackStop, AnimationHolder.Animation("laser_eye_stop", "idle")),
+            Pair(GauntletAttacks.swirlPunchAttack, AnimationHolder.Animation("swirl_punch", "idle")),
+            Pair(GauntletAttacks.blindnessAttack, AnimationHolder.Animation("cast", "idle")),
+            Pair(3, AnimationHolder.Animation("death", "idle"))
+        ),
+        GauntletAttacks.stopAttackAnimation
+    )
+    override val damageHandler = CompositeDamageHandler(hitboxHelper, gauntletGoalHandler, damageMemory)
     override val statusHandler = CompositeStatusHandler(animationHandler, laserHandler, clientBlindnessHandler)
     override val trackedDataHandler = CompositeTrackedDataHandler(laserHandler, energyShieldHandler)
     override val clientTick = laserHandler
@@ -52,9 +70,8 @@ class GauntletEntity(entityType: EntityType<out PathAwareEntity>, world: World, 
         energyShieldHandler.initDataTracker()
     }
 
-    override fun registerControllers(data: AnimationData) {
-        data.shouldPlayWhilePaused = true
-        animationHandler.registerControllers(data)
+    override fun registerControllers(p0: AnimatableManager.ControllerRegistrar) {
+        animationHandler.registerControllers(p0)
     }
 
     override fun fall(
@@ -73,15 +90,14 @@ class GauntletEntity(entityType: EntityType<out PathAwareEntity>, world: World, 
         hitboxHelper.setNextDamagedPart(part)
     }
 
-    override fun setPos(x: Double, y: Double, z: Double) {
-        super.setPos(x, y, z)
+    override fun onSetPos(x: Double, y: Double, z: Double) {
         if (hitboxHelper != null) hitboxHelper.updatePosition()
     }
 
     override fun isClimbing(): Boolean = false
-    override fun handleFallDamage(fallDistance: Float, damageMultiplier: Float): Boolean = false
-    override fun getLookPitchSpeed(): Int = 90
-    override fun getBoundingBox(): CompoundOrientedBox = hitboxHelper.getHitbox().getBox(super.getBoundingBox())
+    override fun handleFallDamage(fallDistance: Float, damageMultiplier: Float, damageSource: DamageSource?) = false
+    override fun getMaxLookPitchChange(): Int = 90
+    override fun getCompoundBoundingBox(box: Box): CompoundOrientedBox = hitboxHelper.getHitbox().getBox(box)
     override fun getBounds(): EntityBounds = hitboxHelper.getHitbox()
     override fun getActiveEyeHeight(pose: EntityPose, dimensions: EntityDimensions) = dimensions.height * 0.4f
     override fun isInsideWall(): Boolean = false
@@ -91,4 +107,11 @@ class GauntletEntity(entityType: EntityType<out PathAwareEntity>, world: World, 
     override fun getDeathSound() = Mod.sounds.gauntletDeath
     override fun getSoundVolume() = 2.0f
     override fun checkDespawn() = ModUtils.preventDespawnExceptPeaceful(this, world)
+
+    companion object {
+        val laserTarget: TrackedData<Int> =
+            DataTracker.registerData(GauntletEntity::class.java, TrackedDataHandlerRegistry.INTEGER)
+        val isEnergized: TrackedData<Boolean> =
+            DataTracker.registerData(GauntletEntity::class.java, TrackedDataHandlerRegistry.BOOLEAN)
+    }
 }

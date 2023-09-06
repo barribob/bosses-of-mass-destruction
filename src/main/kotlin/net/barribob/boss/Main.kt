@@ -3,7 +3,7 @@ package net.barribob.boss
 import me.shedaniel.autoconfig.AutoConfig
 import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer
 import net.barribob.boss.Mod.networkUtils
-import net.barribob.boss.animation.PauseAnimationTimer
+import net.barribob.boss.Mod.vec3dNetwork
 import net.barribob.boss.block.ModBlocks
 import net.barribob.boss.config.ModConfig
 import net.barribob.boss.item.ModItems
@@ -13,25 +13,26 @@ import net.barribob.boss.sound.ModSounds
 import net.barribob.boss.utils.InGameTests
 import net.barribob.boss.utils.ModStructures
 import net.barribob.boss.utils.NetworkUtils
+import net.barribob.boss.utils.Vec3dNetworkHandler
 import net.barribob.maelstrom.MaelstromMod
 import net.barribob.maelstrom.general.io.ConsoleLogger
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
-import net.minecraft.client.MinecraftClient
-import net.minecraft.client.util.GlfwUtil
 import net.minecraft.util.Identifier
 import org.apache.logging.log4j.LogManager
-import software.bernie.geckolib3.GeckoLib
+import software.bernie.geckolib.GeckoLib
 
 object Mod {
     const val MODID = "bosses_of_mass_destruction"
 
     val LOGGER = ConsoleLogger(LogManager.getLogger())
 
+    val structures: ModStructures = ModStructures()
     val sounds: ModSounds = ModSounds()
     val items: ModItems = ModItems()
 
     val networkUtils = NetworkUtils()
+    val vec3dNetwork = Vec3dNetworkHandler()
 
     fun identifier(path: String) = Identifier(MODID, path)
 }
@@ -46,7 +47,6 @@ fun init() {
 
     ModBlocks.init()
     Entities.init()
-    ModStructures.init()
 
     Mod.items.init()
     Mod.sounds.init()
@@ -59,11 +59,11 @@ fun init() {
 fun clientInit() {
     networkUtils.registerClientHandlers()
 
-    val animationTimer = PauseAnimationTimer({ GlfwUtil.getTime() * 20 }, { MinecraftClient.getInstance().isPaused })
-
-    Entities.clientInit(animationTimer)
+    Entities.clientInit()
     Particles.clientInit()
-    ModBlocks.clientInit(animationTimer)
+    ModBlocks.clientInit()
+    Mod.items.clientInit()
+    vec3dNetwork.clientInit()
 
     if(MaelstromMod.isDevelopmentEnvironment) initClientDev()
 }
@@ -83,6 +83,9 @@ private fun initDev() {
     MaelstromMod.testCommand.addId(inGameTests::lichSpawn.name, inGameTests::lichSpawn)
     MaelstromMod.testCommand.addId(inGameTests::verifySpawnPosition.name, inGameTests::verifySpawnPosition)
     MaelstromMod.testCommand.addId(inGameTests::levitationPerformance.name, inGameTests::levitationPerformance)
+    MaelstromMod.testCommand.addId(inGameTests::wallTeleport.name, inGameTests::wallTeleport)
+    MaelstromMod.testCommand.addId(inGameTests::attackRepeatedly.name, inGameTests::attackRepeatedly)
+    MaelstromMod.testCommand.addId(inGameTests::buildBlockCircle.name, inGameTests::buildBlockCircle)
 }
 
 @Environment(EnvType.CLIENT)

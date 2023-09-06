@@ -1,0 +1,41 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:end_highlands",
+    "minecraft:end_midlands",
+    "minecraft:small_end_islands",
+    "minecraft:end_barrens",
+    {
+      "id": "byg:ivis_fields",
+      "required": false
+    },
+    {
+      "id": "byg:nightshade_forest",
+      "required": false
+    },
+    {
+      "id": "byg:ethereal_islands",
+      "required": false
+    },
+    {
+      "id": "byg:viscal_isles",
+      "required": false
+    },
+    {
+      "id": "byg:bulbis_gardens",
+      "required": false
+    },
+    {
+      "id": "byg:shulkren_forest",
+      "required": false
+    },
+    {
+      "id": "byg:cryptic_wastes",
+      "required": false
+    },
+    {
+      "id": "byg:imparius_grove",
+      "required": false
+    }
+  ]
+}

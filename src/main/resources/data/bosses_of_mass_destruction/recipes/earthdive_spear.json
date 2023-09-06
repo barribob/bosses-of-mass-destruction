@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "H",
+    "V",
+    "S"
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:stick"
+    },
+    "V": {
+      "item": "bosses_of_mass_destruction:void_thorn"
+    },
+    "H": {
+      "item": "bosses_of_mass_destruction:obsidian_heart"
+    }
+  },
+  "result": {
+    "item": "bosses_of_mass_destruction:earthdive_spear"
+  }
+}

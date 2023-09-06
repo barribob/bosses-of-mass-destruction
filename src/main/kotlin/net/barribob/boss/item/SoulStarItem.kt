@@ -6,7 +6,6 @@ import net.barribob.boss.block.ModBlocks
 import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.mob.Entities
 import net.barribob.boss.mob.spawn.*
-import net.barribob.boss.utils.ModStructures
 import net.barribob.boss.utils.ModUtils.randomPitch
 import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.general.random.ModRandom
@@ -28,7 +27,6 @@ import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvents
 import net.minecraft.stat.Stats
 import net.minecraft.text.Text
-import net.minecraft.text.TranslatableText
 import net.minecraft.util.*
 import net.minecraft.util.hit.BlockHitResult
 import net.minecraft.util.hit.HitResult
@@ -36,7 +34,6 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.RaycastContext
 import net.minecraft.world.World
-import java.util.*
 
 class SoulStarItem(settings: Settings?) : Item(settings) {
     override fun appendTooltip(
@@ -45,7 +42,7 @@ class SoulStarItem(settings: Settings?) : Item(settings) {
         tooltip: MutableList<Text>,
         context: TooltipContext?
     ) {
-        tooltip.add(TranslatableText("item.bosses_of_mass_destruction.soul_star.tooltip").formatted(Formatting.DARK_GRAY))
+        tooltip.add(Text.translatable("item.bosses_of_mass_destruction.soul_star.tooltip").formatted(Formatting.DARK_GRAY))
     }
 
     override fun useOnBlock(context: ItemUsageContext): ActionResult {
@@ -66,7 +63,7 @@ class SoulStarItem(settings: Settings?) : Item(settings) {
                     Mod.sounds.soulStar,
                     SoundCategory.NEUTRAL,
                     0.5f,
-                    Random().randomPitch()
+                    world.random.randomPitch()
                 )
                 ActionResult.PASS
             }
@@ -129,7 +126,7 @@ class SoulStarItem(settings: Settings?) : Item(settings) {
         } else {
             user.setCurrentHand(hand)
             if (world is ServerWorld) {
-                val blockPos = world.locateStructure(ModStructures.lichTowerStructure, user.blockPos,  100, false)
+                val blockPos = world.locateStructure(Mod.structures.soulStarStructureKey, user.blockPos,  100, false)
                 if (blockPos != null) {
                     val entity = SoulStarEntity(world, user.x, user.eyeY, user.z)
                     entity.setItem(itemStack)
@@ -143,7 +140,7 @@ class SoulStarItem(settings: Settings?) : Item(settings) {
                         SoundEvents.ENTITY_ENDER_EYE_LAUNCH,
                         SoundCategory.NEUTRAL,
                         0.5f,
-                        0.4f / (RANDOM.nextFloat() * 0.4f + 0.8f)
+                        0.4f / (world.random.nextFloat() * 0.4f + 0.8f)
                     )
                     if (!user.abilities.creativeMode) {
                         itemStack.decrement(1)
@@ -175,7 +172,7 @@ class SoulStarItem(settings: Settings?) : Item(settings) {
                 val entity = Entities.LICH.create(world)
                 if (entity != null) {
                     val defaultSpawnPos = spawnPos.add(VecUtils.xAxis.multiply(5.0))
-                    entity.updateTrackedPosition(defaultSpawnPos)
+                    entity.updateTrackedPosition(defaultSpawnPos.x, defaultSpawnPos.y, defaultSpawnPos.z)
                     entity.updatePosition(defaultSpawnPos.x, defaultSpawnPos.y, defaultSpawnPos.z)
                     world.spawnEntity(entity)
                 }

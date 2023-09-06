@@ -12,8 +12,6 @@ import net.barribob.maelstrom.static_utilities.VecUtils
 import net.barribob.maelstrom.static_utilities.rotateVector
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
-import net.fabricmc.api.EnvironmentInterface
-import net.fabricmc.api.EnvironmentInterfaces
 import net.minecraft.entity.*
 import net.minecraft.entity.data.DataTracker
 import net.minecraft.entity.data.TrackedData
@@ -22,7 +20,8 @@ import net.minecraft.entity.projectile.ProjectileEntity
 import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
 import net.minecraft.nbt.NbtCompound
-import net.minecraft.network.Packet
+import net.minecraft.network.listener.ClientPlayPacketListener
+import net.minecraft.network.packet.Packet
 import net.minecraft.particle.ParticleTypes
 import net.minecraft.util.Util
 import net.minecraft.util.math.BlockPos
@@ -36,7 +35,6 @@ import kotlin.math.sqrt
 /**
  * Sourced from [EyeOfEnderEntity]
  */
-@EnvironmentInterfaces(EnvironmentInterface(value = EnvType.CLIENT, itf = FlyingItemEntity::class))
 class SoulStarEntity(entityType: EntityType<out SoulStarEntity?>?, world: World?) :
     Entity(entityType, world), FlyingItemEntity {
     private var targetX = 0.0
@@ -48,18 +46,18 @@ class SoulStarEntity(entityType: EntityType<out SoulStarEntity?>?, world: World?
     }
 
     fun setItem(stack: ItemStack) {
-        if (stack.item !== Items.ENDER_EYE || stack.hasTag()) {
+        if (stack.item !== Items.ENDER_EYE || stack.hasNbt()) {
             getDataTracker().set(
-                ITEM, Util.make(stack.copy(), { it.count = 1 })
+                ITEM, Util.make(stack.copy()) { it.count = 1 }
             )
         }
     }
 
-    private fun trackedItem(): ItemStack = getDataTracker().get(ITEM) as ItemStack
+    private fun getTrackedItem(): ItemStack = getDataTracker().get(ITEM) as ItemStack
 
     override fun getStack(): ItemStack {
-        val itemStack = trackedItem()
-        return if (itemStack.isEmpty) ItemStack(Items.ENDER_EYE) else itemStack
+        val itemStack = getTrackedItem()
+        return if (itemStack.isEmpty) ItemStack(Mod.items.soulStar) else itemStack
     }
 
     override fun initDataTracker() {
@@ -84,9 +82,9 @@ class SoulStarEntity(entityType: EntityType<out SoulStarEntity?>?, world: World?
         val e = pos.z.toDouble()
         val f = d - this.x
         val g = e - this.z
-        val h = MathHelper.sqrt(f * f + g * g)
-        targetX = this.x + f / h.toDouble() * 12.0
-        targetZ = this.z + g / h.toDouble() * 12.0
+        val h = sqrt(f * f + g * g)
+        targetX = this.x + f / h * 12.0
+        targetZ = this.z + g / h * 12.0
         targetY = this.y + 8.0
     }
 
@@ -94,9 +92,9 @@ class SoulStarEntity(entityType: EntityType<out SoulStarEntity?>?, world: World?
     override fun setVelocityClient(x: Double, y: Double, z: Double) {
         this.setVelocity(x, y, z)
         if (prevPitch == 0.0f && prevYaw == 0.0f) {
-            val f = MathHelper.sqrt(x * x + z * z)
+            val f = sqrt(x * x + z * z)
             yaw = (MathHelper.atan2(x, z) * 57.2957763671875).toFloat()
-            pitch = (MathHelper.atan2(y, f.toDouble()) * 57.2957763671875).toFloat()
+            pitch = (MathHelper.atan2(y, f) * 57.2957763671875).toFloat()
             prevYaw = yaw
             prevPitch = pitch
         }
@@ -106,7 +104,7 @@ class SoulStarEntity(entityType: EntityType<out SoulStarEntity?>?, world: World?
         if(world.isClient && age == 1) {
             val rotationOffset = random.nextDouble() * 360
             ModComponents.getWorldEventScheduler(world)
-                .addEvent(Event({ true }, { spawnTrailParticles(rotationOffset) }, { removed }))
+                .addEvent(Event({ true }, { spawnTrailParticles(rotationOffset) }, { isRemoved }))
         }
 
         super.tick()
@@ -114,11 +112,11 @@ class SoulStarEntity(entityType: EntityType<out SoulStarEntity?>?, world: World?
         val d = this.x + vec3d.x
         val e = this.y + vec3d.y
         val f = this.z + vec3d.z
-        val g = MathHelper.sqrt(squaredHorizontalLength(vec3d))
+        val g = vec3d.horizontalLength()
         pitch = updateRotation(
             prevPitch, (MathHelper.atan2(
                 vec3d.y,
-                g.toDouble()
+                g
             ) * 57.2957763671875).toFloat()
         )
         yaw = updateRotation(
@@ -130,14 +128,14 @@ class SoulStarEntity(entityType: EntityType<out SoulStarEntity?>?, world: World?
             val zd = targetZ - f
             val distance = sqrt(xd * xd + zd * zd).toFloat()
             val k = MathHelper.atan2(zd, xd).toFloat()
-            var l = MathHelper.lerp(0.0025, g.toDouble(), distance.toDouble())
+            var l = MathHelper.lerp(0.0025, g, distance.toDouble())
             var m = vec3d.y
             if (distance < 1.0f) {
                 l *= 0.8
                 m *= 0.8
 
                 playSound(Mod.sounds.soulStar, 1.0f, 1.0f)
-                this.remove()
+                discard()
                 world.spawnEntity(ItemEntity(world, this.x, this.y, this.z, this.stack))
             }
             val n = if (this.y < targetY) 1 else -1
@@ -187,21 +185,21 @@ class SoulStarEntity(entityType: EntityType<out SoulStarEntity?>?, world: World?
         }
     }
 
-    public override fun writeCustomDataToNbt(tag: NbtCompound) {
-        val itemStack = trackedItem()
+    override fun writeCustomDataToNbt(nbt: NbtCompound) {
+        val itemStack: ItemStack = this.getTrackedItem()
         if (!itemStack.isEmpty) {
-            tag.put("Item", itemStack.writeNbt(NbtCompound()))
+            nbt.put("Item", itemStack.writeNbt(NbtCompound()))
         }
     }
 
-    public override fun readCustomDataFromNbt(tag: NbtCompound) {
-        val itemStack = ItemStack.fromNbt(tag.getCompound("Item"))
+    override fun readCustomDataFromNbt(nbt: NbtCompound) {
+        val itemStack = ItemStack.fromNbt(nbt.getCompound("Item"))
         setItem(itemStack)
     }
 
     override fun getBrightnessAtEyes(): Float = 1.0f
     override fun isAttackable(): Boolean = false
-    override fun createSpawnPacket(): Packet<*> =  Mod.networkUtils.createClientEntityPacket(this)
+    override fun createSpawnPacket(): Packet<ClientPlayPacketListener>? =  Mod.networkUtils.createClientEntityPacket(this)
 
     /**
      * [ProjectileEntity.updateRotation]

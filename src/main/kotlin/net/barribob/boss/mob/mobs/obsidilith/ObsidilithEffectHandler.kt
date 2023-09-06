@@ -7,6 +7,7 @@ import net.barribob.maelstrom.general.event.EventScheduler
 import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.static_utilities.*
 import net.minecraft.entity.LivingEntity
+import net.minecraft.util.math.Vec3d
 import kotlin.math.sin
 
 class ObsidilithEffectHandler(val entity: LivingEntity, val eventScheduler: EventScheduler) {
@@ -31,13 +32,6 @@ class ObsidilithEffectHandler(val entity: LivingEntity, val eventScheduler: Even
         .brightness(Particles.FULL_BRIGHT)
         .age { RandomUtils.range(25, 30) }
         .colorVariation(0.2)
-
-    private val deathParticleFactory = ClientParticleBuilder(Particles.DOWNSPARKLE)
-        .color { age -> MathUtils.lerpVec(age, ModColors.ENDER_PURPLE, ModColors.WHITE) }
-        .colorVariation(0.2)
-        .brightness(Particles.FULL_BRIGHT)
-        .age { RandomUtils.range(35, 40) }
-        .scale { (sin(it.toDouble() * Math.PI * 0.5) + 1f).toFloat() * 0.1f }
 
     fun handleStatus(status: Byte) {
         when (status) {
@@ -123,12 +117,25 @@ class ObsidilithEffectHandler(val entity: LivingEntity, val eventScheduler: Even
 
     private fun deathEffect() {
         val entityPos = entity.blockPos.asVec3d().add(0.5, 0.5, 0.5)
-        for (i in 0..ObsidilithUtils.deathPillarHeight) {
-            eventScheduler.addEvent(TimedEvent({
-                MathUtils.circleCallback(3.0, 30, VecUtils.yAxis) {
-                    deathParticleFactory.build(entityPos.add(it).add(VecUtils.yAxis.multiply(i.toDouble())))
-                }
-            }, i * ObsidilithUtils.ticksBetweenPillarLayer))
+        spawnPillarParticles(entityPos, eventScheduler)
+    }
+
+    companion object {
+        private val deathParticleFactory = ClientParticleBuilder(Particles.DOWNSPARKLE)
+            .color { age -> MathUtils.lerpVec(age, ModColors.ENDER_PURPLE, ModColors.WHITE) }
+            .colorVariation(0.2)
+            .brightness(Particles.FULL_BRIGHT)
+            .age { RandomUtils.range(35, 40) }
+            .scale { (sin(it.toDouble() * Math.PI * 0.5) + 1f).toFloat() * 0.1f }
+
+        fun spawnPillarParticles(entityPos: Vec3d, eventScheduler: EventScheduler) {
+            for (i in 0..ObsidilithUtils.deathPillarHeight) {
+                eventScheduler.addEvent(TimedEvent({
+                    MathUtils.circleCallback(3.0, 30, VecUtils.yAxis) {
+                        deathParticleFactory.build(entityPos.add(it).add(VecUtils.yAxis.multiply(i.toDouble())))
+                    }
+                }, i * ObsidilithUtils.ticksBetweenPillarLayer))
+            }
         }
     }
 }

@@ -7,9 +7,11 @@ import net.barribob.boss.utils.ModUtils.randomPitch
 import net.barribob.boss.utils.NetworkUtils.Companion.changeHitbox
 import net.barribob.maelstrom.static_utilities.MathUtils
 import net.barribob.maelstrom.static_utilities.eyePos
+import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.damage.DamageSource
+import net.minecraft.registry.tag.DamageTypeTags
 import net.minecraft.util.math.Box
 import net.minecraft.util.math.Vec3d
 
@@ -27,7 +29,7 @@ class GauntletHitboxes(val entity: GauntletEntity) : IDamageHandler {
     private val hitboxes: EntityBounds = EntityBounds.builder()
         .add(rootBoxYaw).setBounds(0.0, 0.0, 0.0).build()
         .add(rootBoxPitch).setBounds(2.0, 2.6, 0.6).setOffset(0.0, 1.3, 0.0).setPivot(0.0, -0.2, 0.0).setParent(rootBoxYaw).build()
-        .add(eyeBox).setBounds(0.9, 1.0, 0.2).setOffset(-0.025, 0.35, 0.4).setParent(rootBoxPitch).build()
+        .add(eyeBox).setBounds(1.1, 1.2, 0.2).setOffset(-0.025, 0.35, 0.4).setParent(rootBoxPitch).build()
         .add(fingersBox).setBounds(1.5, 2.0, 0.5).setOffset(0.0, 1.8, 0.5).setParent(rootBoxPitch).build()
         .add(thumbBox).setBounds(0.3, 1.6, 0.3).setOffset(1.0, 0.6, 0.7).setParent(rootBoxPitch).build()
         .add(pinkyBox).setBounds(0.25, 1.0, 0.25).setOffset(-0.9, 1.7, 0.5).setParent(rootBoxPitch).build()
@@ -92,14 +94,18 @@ class GauntletHitboxes(val entity: GauntletEntity) : IDamageHandler {
     fun setNextDamagedPart(part: String?) {
         nextDamagedPart = part
     }
+    
+    private val disableHitboxesForCompatibility: Boolean = FabricLoader.getInstance().isModLoaded("bettercombat")
 
     override fun shouldDamage(actor: LivingEntity, damageSource: DamageSource, amount: Float): Boolean {
         val part = nextDamagedPart
         nextDamagedPart = null
 
-        if (part == eyeBox || damageSource.isOutOfWorld) return true
+        if (disableHitboxesForCompatibility) return true
+        
+        if (part == eyeBox || damageSource.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)) return true
 
-        if (damageSource.isExplosive) {
+        if (damageSource.isIn(DamageTypeTags.IS_EXPLOSION)) {
             val pos = damageSource.position
             if (pos != null) {
                 val explosionDirection = MathUtils.unNormedDirection(pos, entity.eyePos())
@@ -109,13 +115,16 @@ class GauntletHitboxes(val entity: GauntletEntity) : IDamageHandler {
             }
         }
 
-        if (!damageSource.isProjectile) {
+        if (!damageSource.isIn(DamageTypeTags.IS_PROJECTILE)) {
             val entity: Entity? = damageSource.source
             if (entity is LivingEntity) {
-                entity.takeKnockback(0.5f, actor.x - entity.getX(), actor.z - entity.getZ())
+                entity.takeKnockback(0.5, actor.x - entity.getX(), actor.z - entity.getZ())
             }
         }
-        entity.playSound(Mod.sounds.gauntletClink, 1.0f, actor.random.randomPitch())
+
+        if (!damageSource.isIn(DamageTypeTags.IS_FIRE)) {
+            entity.playSound(Mod.sounds.gauntletClink, 1.0f, actor.random.randomPitch())
+        }
 
         return false
     }

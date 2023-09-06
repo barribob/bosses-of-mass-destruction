@@ -5,9 +5,9 @@ import net.barribob.boss.render.IRenderer
 import net.barribob.boss.utils.ModColors
 import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.client.util.math.MatrixStack
-import net.minecraft.util.math.Vector4f
 import net.minecraft.util.math.Vec3d
-import software.bernie.geckolib3.geo.render.built.GeoBone
+import org.joml.Vector4f
+import software.bernie.geckolib.cache.`object`.GeoBone
 
 class ObsidilithBoneLight : IBoneLight, IRenderer<ObsidilithEntity> {
     var entity: ObsidilithEntity? = null

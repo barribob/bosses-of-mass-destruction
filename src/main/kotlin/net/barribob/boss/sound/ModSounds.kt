@@ -1,9 +1,10 @@
 package net.barribob.boss.sound
 
 import net.barribob.boss.Mod
+import net.minecraft.registry.Registries
+import net.minecraft.registry.Registry
 import net.minecraft.sound.SoundEvent
 import net.minecraft.util.Identifier
-import net.minecraft.util.registry.Registry
 
 class ModSounds {
     private val soundIdMap = mutableMapOf<SoundEvent, Identifier>()
@@ -38,6 +39,19 @@ class ModSounds {
     val obsidilithHurt = newSound("obsidilith_hurt")
     val obsidilithWave = newSound("obsidilith_wave")
     val soulStar = newSound("soul_star")
+    val voidBlossomSpike = newSound("void_blossom_spike")
+    val sporeImpact = newSound("spore_impact")
+    val petalBlade = newSound("petal_blade")
+    val voidBlossomBurrow = newSound("void_blossom_burrow")
+    val sporePrepare = newSound("spore_prepare")
+    val spikeWaveIndicator = newSound("spike_wave_indicator")
+    val sporeBallLand = newSound("spore_ball_land")
+    val voidSpikeIndicator = newSound("void_spike_indicator")
+    val voidBlossomHurt = newSound("void_blossom_hurt")
+    val voidBlossomFall = newSound("void_blossom_fall")
+    val earthdiveSpearThrow = newSound("earthdive_spear_throw")
+    val chargedEnderPearl = newSound("charged_ender_pearl")
+    val brimstone = newSound("brimstone")
 
     fun init() {
         registerSound(cometShoot)
@@ -70,15 +84,28 @@ class ModSounds {
         registerSound(obsidilithHurt)
         registerSound(obsidilithWave)
         registerSound(soulStar)
+        registerSound(voidBlossomSpike)
+        registerSound(sporeImpact)
+        registerSound(petalBlade)
+        registerSound(voidBlossomBurrow)
+        registerSound(sporePrepare)
+        registerSound(spikeWaveIndicator)
+        registerSound(sporeBallLand)
+        registerSound(voidSpikeIndicator)
+        registerSound(voidBlossomHurt)
+        registerSound(voidBlossomFall)
+        registerSound(earthdiveSpearThrow)
+        registerSound(chargedEnderPearl)
+        registerSound(brimstone)
     }
 
     private fun registerSound(event: SoundEvent) {
-        Registry.register(Registry.SOUND_EVENT, soundIdMap[event], event)
+        Registry.register(Registries.SOUND_EVENT, soundIdMap[event], event)
     }
 
     private fun newSound(id: String): SoundEvent {
         val identifier = Mod.identifier(id)
-        val soundEvent = SoundEvent(identifier)
+        val soundEvent = SoundEvent.of(identifier)
         soundIdMap[soundEvent] = identifier
         return soundEvent
     }

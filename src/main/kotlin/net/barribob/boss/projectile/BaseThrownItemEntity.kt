@@ -6,29 +6,21 @@ import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity
 import net.minecraft.item.Item
 import net.minecraft.item.Items
-import net.minecraft.network.Packet
+import net.minecraft.network.listener.ClientPlayPacketListener
+import net.minecraft.network.packet.Packet
 import net.minecraft.util.hit.EntityHitResult
 import net.minecraft.util.hit.HitResult
 import net.minecraft.world.World
 import java.util.function.Predicate
 
 abstract class BaseThrownItemEntity : ThrownItemEntity {
-    private val collisionPredicate: Predicate<EntityHitResult>
-
-    constructor(
-        entityType: EntityType<out ThrownItemEntity>,
-        d: Double,
-        e: Double,
-        f: Double,
-        world: World
-    ) : super(entityType, d, e, f, world) {
-        collisionPredicate = Predicate { true }
-    }
+    protected val entityCollisionPredicate: Predicate<EntityHitResult>
+    protected open val collisionPredicate: Predicate<HitResult> = Predicate<HitResult> { !world.isClient }
 
     constructor(
         entityType: EntityType<out ThrownItemEntity>, world: World?
     ) : super(entityType, world) {
-        collisionPredicate = Predicate { true }
+        entityCollisionPredicate = Predicate { true }
     }
 
     constructor(
@@ -41,7 +33,7 @@ abstract class BaseThrownItemEntity : ThrownItemEntity {
         livingEntity,
         world,
     ) {
-        this.collisionPredicate = collisionPredicate
+        this.entityCollisionPredicate = collisionPredicate
     }
 
     final override fun tick() {
@@ -51,18 +43,18 @@ abstract class BaseThrownItemEntity : ThrownItemEntity {
         }
     }
 
-    override fun createSpawnPacket(): Packet<*> {
+    override fun createSpawnPacket(): Packet<ClientPlayPacketListener>? {
         return Mod.networkUtils.createClientEntityPacket(this)
     }
 
     override fun onCollision(hitResult: HitResult) {
-        if(!world.isClient) {
+        if(collisionPredicate.test(hitResult)) {
             super.onCollision(hitResult)
         }
     }
 
     final override fun onEntityHit(entityHitResult: EntityHitResult) {
-        if(collisionPredicate.test(entityHitResult)) {
+        if(entityCollisionPredicate.test(entityHitResult)) {
             entityHit(entityHitResult)
         }
     }

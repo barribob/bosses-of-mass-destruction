@@ -5,13 +5,16 @@ import net.barribob.boss.Mod
 import net.barribob.boss.block.MonolithBlock
 import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.item.SoulStarItem
+import net.barribob.boss.item.WallTeleport
+import net.barribob.boss.mob.Entities
 import net.barribob.boss.mob.mobs.obsidilith.BurstAction
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithUtils
 import net.barribob.boss.mob.mobs.obsidilith.PillarAction
 import net.barribob.boss.mob.spawn.*
 import net.barribob.boss.particle.ClientParticleBuilder
 import net.barribob.boss.particle.Particles
-import net.barribob.boss.projectile.MagicMissileProjectile
+import net.barribob.boss.projectile.SporeBallProjectile
+import net.barribob.boss.projectile.util.ExemptEntities
 import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.general.random.ModRandom
 import net.barribob.maelstrom.static_utilities.DebugPointsNetworkHandler
@@ -27,23 +30,22 @@ import net.minecraft.client.MinecraftClient
 import net.minecraft.enchantment.Enchantments
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.LivingEntity
-import net.minecraft.entity.damage.DamageSource
 import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
 import net.minecraft.nbt.NbtCompound
 import net.minecraft.network.PacketByteBuf
+import net.minecraft.registry.Registries
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
-import net.minecraft.util.registry.Registry
 import kotlin.random.Random
 
 class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
     private val clientTestPacketId = Mod.identifier("client_test")
 
     fun provideGear(source: ServerCommandSource) {
-        val entity = source.player
+        val entity = source.playerOrThrow
         val armor = listOf(ItemStack(Items.NETHERITE_HELMET), ItemStack(Items.NETHERITE_CHESTPLATE), ItemStack(Items.NETHERITE_LEGGINGS), ItemStack(Items.NETHERITE_BOOTS))
         armor.forEach {
             it.addEnchantment(Enchantments.PROTECTION, 3)
@@ -71,8 +73,8 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
     fun throwProjectile(source: ServerCommandSource) {
         val entity = source.entityOrThrow
         if (entity is LivingEntity) {
-            val projectile = MagicMissileProjectile(entity, entity.world, {}, listOf(EntityType.ZOMBIE))
-            projectile.setProperties(entity, entity.pitch, entity.yaw, 0f, 1.5f, 1.0f)
+            val projectile = SporeBallProjectile(entity, entity.world, ExemptEntities(listOf()))
+            projectile.setVelocity(entity, entity.pitch, entity.yaw, 0f, 1.5f, 1.0f)
             entity.world.spawnEntity(projectile)
         }
     }
@@ -94,7 +96,7 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
         val entity = source.entityOrThrow
         val serverWorld = entity.world as ServerWorld
         val compoundTag = NbtCompound()
-        compoundTag.putString("id", Registry.ENTITY_TYPE.getId(EntityType.PHANTOM).toString())
+        compoundTag.putString("id", Registries.ENTITY_TYPE.getId(EntityType.PHANTOM).toString())
 
         val spawner = MobPlacementLogic(
             RangedSpawnPosition(entity.pos, 3.0, 6.0, ModRandom()),
@@ -106,14 +108,14 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
     }
 
     fun burstAction(source: ServerCommandSource) {
-        BurstAction(source.player).perform()
+        BurstAction(source.playerOrThrow).perform()
     }
 
     fun playerPosition(source: ServerCommandSource) {
-        val points = ModComponents.getPlayerPositions(source.player)
+        val points = ModComponents.getPlayerPositions(source.playerOrThrow)
         debugPoints.drawDebugPoints(points, 1, source.position, source.world)
         debugPoints.drawDebugPoints(
-            listOf(ObsidilithUtils.approximatePlayerNextPosition(points, source.player.pos)),
+            listOf(ObsidilithUtils.approximatePlayerNextPosition(points, source.playerOrThrow.pos)),
             1,
             source.position,
             source.world,
@@ -122,12 +124,12 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
     }
 
     fun placePillars(source: ServerCommandSource) {
-        val entity = source.player
+        val entity = source.playerOrThrow
         PillarAction(entity).perform()
     }
 
     fun obsidilithDeath(source: ServerCommandSource){
-        val entity = source.player
+        val entity = source.playerOrThrow
         ObsidilithUtils.onDeath(entity, 100)
     }
 
@@ -158,16 +160,16 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
 
     fun killZombies(source: ServerCommandSource) {
         val zombie = EntityType.ZOMBIE.create(source.world) ?: return
-        val pos = source.player.pos.add(VecUtils.yAxis.multiply(-5.0))
+        val pos = source.playerOrThrow.pos.add(VecUtils.yAxis.multiply(-5.0))
         zombie.setPos(pos)
         source.world.spawnEntity(zombie)
         ModComponents.getWorldEventScheduler(source.world).addEvent(TimedEvent({
-            zombie.damage(DamageSource.player(source.player), 30f)
+            zombie.damage(source.world.damageSources.playerAttack(source.playerOrThrow), 30f)
         }, 2))
     }
 
     fun lichSpawn(source: ServerCommandSource){
-        SoulStarItem.spawnLich(BlockPos(source.position), source.world)
+        SoulStarItem.spawnLich(BlockPos.ofFloored(source.position), source.world)
     }
 
     fun verifySpawnPosition(source: ServerCommandSource) {
@@ -176,7 +178,24 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
     }
 
     fun levitationPerformance(source: ServerCommandSource){
-//        LevitationBlockEntity.tickFlight(source.player)
-        MonolithBlock.getExplosionPower(source.world, BlockPos(source.position), 2.0f)
+//        LevitationBlockEntity.tickFlight(source.playerOrThrow)
+        MonolithBlock.getExplosionPower(source.world, BlockPos.ofFloored(source.position), 2.0f)
+    }
+
+    fun wallTeleport(source: ServerCommandSource) {
+        WallTeleport(source.world, source.playerOrThrow).tryTeleport(source.playerOrThrow.rotationVector, source.playerOrThrow.eyePos)
+    }
+
+    fun attackRepeatedly(source: ServerCommandSource) {
+        val target = source.world.getEntitiesByType(Entities.GAUNTLET) { true }.firstOrNull()
+        for(i in 0..240 step 80) {
+            ModComponents.getWorldEventScheduler(source.world).addEvent(TimedEvent({
+               target?.damage(source.world.damageSources.playerAttack(source.playerOrThrow), 9.0f)
+            }, i))
+        }
+    }
+
+    fun buildBlockCircle(source: ServerCommandSource) {
+        debugPoints.drawDebugPoints(MathUtils.buildBlockCircle(4.2).map{ it.add(source.position) }, 100, source.position, source.world)
     }
 }

@@ -10,7 +10,7 @@ import net.minecraft.entity.Entity
 class BillboardRenderer<T : Entity>(
     private val dispatcher: EntityRenderDispatcher,
     private val renderLayer: RenderLayer,
-    private val scale: () -> Float,
+    private val scale: (T) -> Float,
 ) : IRenderer<T> {
     override fun render(
         entity: T,
@@ -20,7 +20,7 @@ class BillboardRenderer<T : Entity>(
         vertexConsumers: VertexConsumerProvider,
         light: Int,
     ) {
-        val scale = scale()
+        val scale = scale(entity)
         matrices.push()
         matrices.scale(scale, scale, scale)
         VanillaCopies.renderBillboard(matrices, vertexConsumers, light, dispatcher, renderLayer)

@@ -18,14 +18,15 @@ import net.minecraft.text.Text
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import org.jetbrains.annotations.Nullable
-import software.bernie.geckolib3.core.IAnimatable
-import software.bernie.geckolib3.core.manager.AnimationFactory
+import software.bernie.geckolib.animatable.GeoEntity
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
+import software.bernie.geckolib.util.GeckoLibUtil
 
 abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: World) :
-    PathAwareEntity(entityType, world), IAnimatable {
-    private val animationFactory: AnimationFactory by lazy { AnimationFactory(this) }
-    override fun getFactory(): AnimationFactory = animationFactory
-    var idlePosition: Vec3d = Vec3d.ZERO // TODO: I don't actually know if this implementation works
+    PathAwareEntity(entityType, world), GeoEntity {
+    private val animationFactory: AnimatableInstanceCache by lazy { GeckoLibUtil.createInstanceCache(this) }
+    override fun getAnimatableInstanceCache(): AnimatableInstanceCache = animationFactory
+    var idlePosition: Vec3d = Vec3d.ZERO
     protected open val bossBar: ServerBossBar? = null
     protected open val damageHandler: IDamageHandler? = null
     protected open val statusHandler: IStatusHandler? = null
@@ -59,11 +60,9 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
         val sidedWorld = world
         if (sidedWorld.isClient && sidedWorld is ClientWorld && deathClientTick != null) {
             deathClientTick?.tick(sidedWorld)
-        }
-        else if(sidedWorld is ServerWorld && deathServerTick != null) {
+        } else if (sidedWorld is ServerWorld && deathServerTick != null) {
             deathServerTick?.tick(sidedWorld)
-        }
-        else {
+        } else {
             super.updatePostDeath()
         }
     }
@@ -86,7 +85,7 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
         if (hasCustomName()) {
             bossBar?.name = this.displayName
         }
-        nbtHandler?.fromNbt(nbt)
+        nbtHandler?.fromTag(nbt)
     }
 
     final override fun setCustomName(@Nullable name: Text?) {
@@ -104,8 +103,8 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
         bossBar?.removePlayer(player)
     }
 
-    final override fun readCustomDataFromNbt(tag: NbtCompound?) {
-        super.readCustomDataFromNbt(tag)
+    final override fun readCustomDataFromNbt(nbt: NbtCompound?) {
+        super.readCustomDataFromNbt(nbt)
     }
 
     // Todo: Make handler hooks final [handleStatus, onTrackedDataSet, move, fromTag, toTag]
@@ -121,7 +120,7 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
 
     final override fun canHaveStatusEffect(effect: StatusEffectInstance): Boolean {
         val statusEffectHandler = statusEffectHandler
-        if(statusEffectHandler != null) return statusEffectHandler.canHaveStatusEffect(effect)
+        if (statusEffectHandler != null) return statusEffectHandler.canHaveStatusEffect(effect)
         return super.canHaveStatusEffect(effect)
     }
 
@@ -149,11 +148,16 @@ abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: Wo
 
     override fun move(type: MovementType, movement: Vec3d) {
         val shouldDoDefault = moveHandler?.canMove(type, movement) == true
-        if(moveHandler == null || shouldDoDefault) super.move(type, movement)
+        if (moveHandler == null || shouldDoDefault) super.move(type, movement)
     }
 
-    override fun writeNbt(tag: NbtCompound): NbtCompound {
-        val superTag = super.writeNbt(tag)
-        return nbtHandler?.writeNbt(superTag) ?: superTag
+    override fun writeNbt(nbt: NbtCompound?): NbtCompound {
+        val superTag = super.writeNbt(nbt)
+        return nbtHandler?.toTag(superTag) ?: superTag
+    }
+
+    fun safeGetTargetPos(): Vec3d {
+        val target = target
+        return if (target == null) Vec3d.ZERO else target.pos
     }
 }

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "bosses_of_mass_destruction:block/vine_wall"
+  }
+}

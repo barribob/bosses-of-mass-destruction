@@ -1,0 +1,13 @@
+{
+  "type": "bosses_of_mass_destruction:void_blossom",
+
+  "step": "surface_structures",
+  "biomes": "#bosses_of_mass_destruction:has_structure/void_blossom",
+  
+  "spawn_overrides": {
+    "monster" : {
+      "bounding_box": "full",
+      "spawns": []
+    }
+  }
+}

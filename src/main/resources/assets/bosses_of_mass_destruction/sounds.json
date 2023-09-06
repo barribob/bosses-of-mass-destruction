@@ -211,5 +211,98 @@
     "sounds": [
       "bosses_of_mass_destruction:soul_star"
     ]
+  },
+  "void_blossom_spike": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.void_blossom_spike",
+    "category": "hostile",
+    "sounds": [
+      "bosses_of_mass_destruction:void_blossom_spike"
+    ]
+  },
+  "spore_impact": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.spore_impact",
+    "category": "hostile",
+    "sounds": [
+      "bosses_of_mass_destruction:spore_impact"
+    ]
+  },
+  "petal_blade": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.petal_blade",
+    "category": "hostile",
+    "sounds": [
+      "bosses_of_mass_destruction:petal_blade"
+    ]
+  },
+  "void_blossom_burrow": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.void_blossom_burrow",
+    "category": "hostile",
+    "sounds": [
+      "bosses_of_mass_destruction:void_blossom_burrow"
+    ]
+  },
+  "spore_prepare": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.spore_prepare",
+    "category": "hostile",
+    "sounds": [
+      "bosses_of_mass_destruction:spore_prepare"
+    ]
+  },
+  "spike_wave_indicator": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.spike_wave_indicator",
+    "sounds": [
+      "bosses_of_mass_destruction:wave_indicator"
+    ]
+  },
+  "spore_ball_land": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.spore_ball_land",
+    "category": "hostile",
+    "sounds": [
+      "mob/slime/big1",
+      "mob/slime/big2",
+      "mob/slime/big3",
+      "mob/slime/big4"
+    ]
+  },
+  "void_spike_indicator": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.void_spike_indicator",
+    "sounds": [
+      "bosses_of_mass_destruction:spike_indicator"
+    ]
+  },
+  "void_blossom_hurt": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.void_blossom_hurt",
+    "sounds": [
+      "block/vine/climb1",
+      "block/vine/climb2",
+      "block/vine/climb3",
+      "block/vine/climb4",
+      "block/vine/climb5"
+    ]
+  },
+  "void_blossom_fall": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.void_blossom_hurt",
+    "sounds": [
+      "bosses_of_mass_destruction:void_blossom_fall"
+    ]
+  },
+  "earthdive_spear_throw": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.earthdive_spear_throw",
+    "sounds": [
+      "bosses_of_mass_destruction:earthdive_spear_throw",
+      "bosses_of_mass_destruction:earthdive_spear_throw2"
+    ]
+  },
+  "charged_ender_pearl": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.charged_ender_pearl",
+    "sounds": [
+      "mob/endermen/portal",
+      "mob/endermen/portal2"
+    ]
+  },
+  "brimstone": {
+    "subtitle": "subtitles.bosses_of_mass_destruction.brimstone",
+    "sounds": [
+      "bosses_of_mass_destruction:brimstone"
+    ]
   }
 }

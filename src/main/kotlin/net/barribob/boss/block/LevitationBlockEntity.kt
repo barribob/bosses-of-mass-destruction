@@ -8,67 +8,71 @@ import net.barribob.boss.utils.ModColors
 import net.barribob.maelstrom.static_utilities.RandomUtils
 import net.barribob.maelstrom.static_utilities.asVec3d
 import net.minecraft.block.Block
+import net.minecraft.block.BlockState
 import net.minecraft.block.entity.BlockEntityType
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.network.packet.s2c.play.PlayerAbilitiesS2CPacket
 import net.minecraft.server.network.ServerPlayerEntity
-import net.minecraft.util.Tickable
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Box
 import net.minecraft.util.math.ChunkPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
-import software.bernie.geckolib3.core.IAnimatable
-import software.bernie.geckolib3.core.controller.AnimationController
-import software.bernie.geckolib3.core.manager.AnimationData
-import software.bernie.geckolib3.core.manager.AnimationFactory
+import software.bernie.geckolib.animatable.GeoBlockEntity
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
+import software.bernie.geckolib.core.animation.AnimatableManager
+import software.bernie.geckolib.core.animation.AnimationController
+import software.bernie.geckolib.util.GeckoLibUtil
 
-class LevitationBlockEntity(block: Block, type: BlockEntityType<*>?) : ChunkCacheBlockEntity(block, type), IAnimatable,
-    Tickable {
-    private val particlesFactory = ClientParticleBuilder(Particles.LINE)
-        .color(ModColors.COMET_BLUE)
-        .brightness(Particles.FULL_BRIGHT)
-        .colorVariation(0.5)
-        .scale(0.075f)
 
-    override fun registerControllers(data: AnimationData) {
-        data.addAnimationController(
+class LevitationBlockEntity(
+    block: Block, type: BlockEntityType<*>?,
+    pos: BlockPos?, state: BlockState?
+) : ChunkCacheBlockEntity(block, type, pos, state), GeoBlockEntity {
+    override fun registerControllers(data: AnimatableManager.ControllerRegistrar) {
+        data.add(
             AnimationController(
                 this,
-                "idle",
-                0f,
+                0,
                 AnimationUtils.createIdlePredicate("rotate")
             )
         )
     }
 
-    private val animationFactory = AnimationFactory(this)
-    override fun getFactory(): AnimationFactory = animationFactory
-
-    override fun tick() {
-        super.tick()
-        val world = world ?: return
-        if (world.isClient) {
-            val box = getAffectingBox(world, pos.asVec3d())
-            val playersInBox = world.getNonSpectatingEntities(PlayerEntity::class.java, box)
-            for (player in playersInBox) {
-                for (x in listOf(box.minX, box.maxX)) {
-                    val zRand = box.center.z + box.zLength * RandomUtils.double(0.5)
-                    particlesFactory.build(randYPos(x, player, zRand))
-                }
-
-                for (z in listOf(box.minZ, box.maxZ)) {
-                    val xRand = box.center.x + box.xLength * RandomUtils.double(0.5)
-                    particlesFactory.build(randYPos(xRand, player, z))
-                }
-            }
-        }
-    }
-
-    private fun randYPos(x: Double, player: PlayerEntity, z: Double) = Vec3d(x, player.y + RandomUtils.double(0.5) + 1, z)
+    var animationAge = 0
+    private val animationFactory = GeckoLibUtil.createInstanceCache(this)
+    override fun getAnimatableInstanceCache(): AnimatableInstanceCache = animationFactory
 
     companion object {
         private val flight = HashSet<ServerPlayerEntity>()
+        private val particlesFactory = ClientParticleBuilder(Particles.LINE)
+            .color(ModColors.COMET_BLUE)
+            .brightness(Particles.FULL_BRIGHT)
+            .colorVariation(0.5)
+            .scale(0.075f)
+
+        fun tick(world: World, pos: BlockPos, state: BlockState, entity: LevitationBlockEntity) {
+            ChunkCacheBlockEntity.tick(world, pos, state, entity)
+            if (world.isClient) {
+                entity.animationAge++
+                val box = getAffectingBox(world, pos.asVec3d())
+                val playersInBox = world.getNonSpectatingEntities(PlayerEntity::class.java, box)
+                for (player in playersInBox) {
+                    for (x in listOf(box.minX, box.maxX)) {
+                        val zRand = box.center.z + box.zLength * RandomUtils.double(0.5)
+                        particlesFactory.build(randYPos(x, player, zRand))
+                    }
+
+                    for (z in listOf(box.minZ, box.maxZ)) {
+                        val xRand = box.center.x + box.xLength * RandomUtils.double(0.5)
+                        particlesFactory.build(randYPos(xRand, player, z))
+                    }
+                }
+            }
+        }
+
+        private fun randYPos(x: Double, player: PlayerEntity, z: Double) =
+            Vec3d(x, player.y + RandomUtils.double(0.5) + 1, z)
 
         fun tickFlight(player: ServerPlayerEntity) {
             val blockToCheck = mutableListOf<BlockPos>()
@@ -116,6 +120,6 @@ class LevitationBlockEntity(block: Block, type: BlockEntityType<*>?) : ChunkCach
         }
 
         private fun getAffectingBox(world: World, pos: Vec3d) =
-            Box(pos.x, 0.0, pos.z, (pos.x + 1), world.height.toDouble(), (pos.z + 1)).expand(3.0, 0.0, 3.0)
+            Box(pos.x, world.bottomY.toDouble(), pos.z, (pos.x + 1), world.height.toDouble(), (pos.z + 1)).expand(3.0, 0.0, 3.0)
     }
 }

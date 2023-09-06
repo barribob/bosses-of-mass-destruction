@@ -1,0 +1,47 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "bosses_of_mass_destruction:blast_amplifier"
+    ]
+  },
+  "criteria": {
+    "has_obsidian_heart": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "bosses_of_mass_destruction:obsidian_heart"
+            ]
+          }
+        ]
+      }
+    },
+    "has_blazing_eye": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "bosses_of_mass_destruction:blazing_eye"
+            ]
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "bosses_of_mass_destruction:blast_amplifier"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_obsidian_heart",
+      "has_blazing_eye",
+      "has_the_recipe"
+    ]
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "name": "bosses_of_mass_destruction:gauntlet_arena/start_pool",
+  "fallback": "minecraft:empty",
+  "elements": [
+    {
+      "weight": 1,
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "projection": "rigid",
+        "location": "bosses_of_mass_destruction:gauntlet_arena/base",
+        "processors": "minecraft:empty"
+      }
+    }
+  ]
+}

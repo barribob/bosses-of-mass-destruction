@@ -13,8 +13,9 @@ class TestStagedDamageHandler {
         val afterStats = StubEntityStats(1f, 0.7f)
         val damageHandler = StagedDamageHandler(listOf(0.0f, 0.75f, 1.0f)) { called = true }
 
-        damageHandler.beforeDamage(beforeStats, DamageSource.ANVIL, 0f)
-        damageHandler.afterDamage(afterStats, DamageSource.ANVIL, 0f, true)
+        val damageSource = DamageSource(null)
+        damageHandler.beforeDamage(beforeStats, damageSource, 0f)
+        damageHandler.afterDamage(afterStats, damageSource, 0f, true)
 
         Assertions.assertTrue(called)
     }
@@ -26,8 +27,9 @@ class TestStagedDamageHandler {
         val afterStats = StubEntityStats(1f, 0.7f)
         val damageHandler = StagedDamageHandler(listOf(0.0f, 0.6f, 1.0f)) { called = true }
 
-        damageHandler.beforeDamage(beforeStats, DamageSource.ANVIL, 0f)
-        damageHandler.afterDamage(afterStats, DamageSource.ANVIL, 0f, true)
+        val damageSource = DamageSource(null)
+        damageHandler.beforeDamage(beforeStats, damageSource, 0f)
+        damageHandler.afterDamage(afterStats, damageSource, 0f, true)
 
         Assertions.assertFalse(called)
     }

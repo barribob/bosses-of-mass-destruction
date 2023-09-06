@@ -1,6 +1,5 @@
 pluginManagement {
     repositories {
-        jcenter()
         maven {
             name = 'Fabric'
             url = 'https://maven.fabricmc.net/'
@@ -13,9 +12,4 @@ pluginManagement {
         id "org.jetbrains.kotlin.jvm" version kotlin_version
     }
 
-}
-
-if(!doBuild.toBoolean()) {
-    includeBuild("../maelstrom-library")
-    includeBuild("../MultipartEntities")
 }

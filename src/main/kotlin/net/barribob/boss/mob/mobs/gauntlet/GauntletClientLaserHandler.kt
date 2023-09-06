@@ -1,5 +1,6 @@
 package net.barribob.boss.mob.mobs.gauntlet
 
+import net.barribob.boss.mob.mobs.gauntlet.GauntletEntity.Companion.laserTarget
 import net.barribob.boss.mob.utils.IEntityTick
 import net.barribob.boss.mob.utils.IStatusHandler
 import net.barribob.boss.mob.utils.ITrackedDataHandler
@@ -79,7 +80,7 @@ class GauntletClientLaserHandler(val entity: GauntletEntity, val eventScheduler:
         return Pair(colNewPos, colPrevPos)
     }
 
-    private fun hasBeamTarget(): Boolean = entity.dataTracker.get(LaserAction.laserTarget) as Int != 0
+    private fun hasBeamTarget(): Boolean = entity.dataTracker.get(laserTarget) as Int != 0
 
     private fun getBeamTarget(): LivingEntity? {
         return if (!hasBeamTarget()) {
@@ -88,7 +89,7 @@ class GauntletClientLaserHandler(val entity: GauntletEntity, val eventScheduler:
             if (this.cachedBeamTarget != null) {
                 this.cachedBeamTarget
             } else {
-                val entity = entity.world.getEntityById((entity.dataTracker.get(LaserAction.laserTarget) as Int))
+                val entity = entity.world.getEntityById((entity.dataTracker.get(laserTarget) as Int))
                 if (entity is LivingEntity) {
                     this.cachedBeamTarget = entity
                     this.cachedBeamTarget
@@ -102,13 +103,13 @@ class GauntletClientLaserHandler(val entity: GauntletEntity, val eventScheduler:
     }
 
     override fun onTrackedDataSet(data: TrackedData<*>) {
-        if (LaserAction.laserTarget == data) {
+        if (laserTarget == data) {
             this.cachedBeamTarget = null
         }
     }
 
     fun initDataTracker() {
-        entity.dataTracker.startTracking(LaserAction.laserTarget, 0)
+        entity.dataTracker.startTracking(laserTarget, 0)
     }
 
     override fun handleClientStatus(status: Byte) {

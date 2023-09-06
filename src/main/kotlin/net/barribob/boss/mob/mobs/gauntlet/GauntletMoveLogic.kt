@@ -1,13 +1,16 @@
 package net.barribob.boss.mob.mobs.gauntlet
 
+import net.barribob.boss.mob.ai.TargetSwitcher
 import net.barribob.boss.mob.ai.action.IActionWithCooldown
+import net.barribob.boss.mob.damage.DamageMemory
 import net.barribob.maelstrom.general.data.HistoricalData
 import net.barribob.maelstrom.general.random.WeightedRandom
 import net.minecraft.entity.LivingEntity
 
-class GauntletMoveLogic(private val actions: Map<Byte, IActionWithCooldown>, val entity: GauntletEntity) :
+class GauntletMoveLogic(private val actions: Map<Byte, IActionWithCooldown>, val entity: GauntletEntity, damageMemory: DamageMemory) :
     IActionWithCooldown {
     private val moveHistory = HistoricalData<Byte>(0, 4)
+    private val targetSwitcher = TargetSwitcher(entity, damageMemory)
 
     private fun chooseMove(): Byte {
         val target = entity.target
@@ -33,6 +36,7 @@ class GauntletMoveLogic(private val actions: Map<Byte, IActionWithCooldown>, val
     }
 
     override fun perform(): Int {
+        targetSwitcher.trySwitchTarget()
         val moveByte = chooseMove()
         val action = actions[moveByte] ?: error("$moveByte action not registered as an attack")
         entity.world.sendEntityStatus(entity, moveByte)

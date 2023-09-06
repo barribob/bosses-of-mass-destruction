@@ -1,16 +1,18 @@
 {
   "required": true,
   "package": "net.barribob.boss.mixin",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_16",
   "mixins": [
-    "BossBarHudMixin",
+    "DataFixMixin",
     "EnderEyeUseMixin",
     "ExplosionMixin",
-    "StructuresConfigAccessor",
     "IceBlockMixin",
     "ServerPlayerEntityMixin",
-    "SpawnEntryMixin",
-    "SpawnHelperMixin"
+    "SpawnHelperMixin",
+    "StructuresConfigAccessor"
+  ],
+  "client": [
+    "BossBarHudMixin"
   ],
   "injectors": {
     "defaultRequire": 1

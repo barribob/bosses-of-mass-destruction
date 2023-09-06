@@ -53,8 +53,8 @@
             {
               "function": "minecraft:set_count",
               "count": {
-                "min": 4,
-                "max": 6
+                "min": 5,
+                "max": 7
               }
             }
           ]
@@ -67,7 +67,7 @@
       ]
     },
     {
-      "rolls": 3,
+      "rolls": 5,
       "entries": [
         {
           "type": "minecraft:item",

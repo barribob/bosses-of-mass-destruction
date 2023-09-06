@@ -20,6 +20,10 @@ class ModConfig : ConfigData {
     @TransitiveObject
     val gauntletConfig = GauntletConfig()
 
+    @ConfigEntry.Category("VoidBlossom")
+    @TransitiveObject
+    val voidBlossomConfig = VoidBlossomConfig()
+
     fun postInit() {
         val entitiesThatCountToSummonCounter = lichConfig.summonMechanic.entitiesThatCountToSummonCounter
         if (entitiesThatCountToSummonCounter == null) {

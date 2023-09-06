@@ -8,13 +8,15 @@ import net.minecraft.client.particle.ParticleTextureSheet
 import net.minecraft.client.particle.SpriteBillboardParticle
 import net.minecraft.client.render.Camera
 import net.minecraft.client.render.VertexConsumer
+import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
 
 class SimpleParticle(
     private val particleContext: ParticleContext,
     particleAge: Int,
     private val particleGeometry: IParticleGeometry,
-    private val cycleSprites: Boolean = true
+    private val cycleSprites: Boolean = true,
+    doCollision: Boolean = true
 ) :
     SpriteBillboardParticle(
         particleContext.world,
@@ -29,6 +31,12 @@ class SimpleParticle(
     private var colorVariation: Vec3d = Vec3d.ZERO
     private var velocityOverride: ((SimpleParticle) -> Vec3d)? = null
     private var positionOverride: ((SimpleParticle) -> Vec3d)? = null
+    private var rotationOverride: ((SimpleParticle) -> Float)? = null
+
+    private var rotation = 0f
+    private var prevRotation = 0f
+    var ageRatio = 1f
+        private set
 
     override fun getType(): ParticleTextureSheet = ParticleTextureSheet.PARTICLE_SHEET_OPAQUE
 
@@ -42,11 +50,20 @@ class SimpleParticle(
         super.tick()
         if (isAlive) {
             if (cycleSprites) setSpriteForAge(particleContext.spriteProvider)
-            val ageRatio = age / maxAge.toFloat()
+            ageRatio = age / maxAge.toFloat()
             setColorFromOverride(colorOverride, ageRatio)
             setScaleFromOverride(scaleOverride, ageRatio)
             setVelocityFromOverride(velocityOverride)
             setPositionFromOverride(positionOverride)
+            setRotationFromOverride(rotationOverride)
+        }
+    }
+
+    private fun setRotationFromOverride(rotationOverride: ((SimpleParticle) -> Float)?) {
+        if (rotationOverride != null) {
+            val rot = rotationOverride(this)
+            prevRotation = rotation
+            rotation = rot
         }
     }
 
@@ -108,8 +125,16 @@ class SimpleParticle(
         positionOverride = override
     }
 
+    fun setRotationOverride(override: ((SimpleParticle) -> Float)?) {
+        rotationOverride = override
+        rotationOverride?.let {
+            rotation = it(this)
+            prevRotation = it(this)
+        }
+    }
+
     override fun getBrightness(tint: Float): Int =
-        brightnessOverride?.invoke(age / maxAge.toFloat()) ?: super.getBrightness(tint)
+        brightnessOverride?.invoke(ageRatio) ?: super.getBrightness(tint)
 
     override fun buildGeometry(vertexConsumer: VertexConsumer?, camera: Camera, tickDelta: Float) {
         val vector3fs = particleGeometry.getGeometry(
@@ -117,7 +142,8 @@ class SimpleParticle(
             tickDelta,
             prevPosX, prevPosY, prevPosZ,
             x, y, z,
-            getSize(tickDelta)
+            getSize(tickDelta),
+            MathHelper.lerp(tickDelta, prevRotation, rotation)
         )
 
         val l = this.minU
@@ -128,19 +154,19 @@ class SimpleParticle(
         vertexConsumer!!.vertex(
             vector3fs[0].x.toDouble(), vector3fs[0].y.toDouble(),
             vector3fs[0].z.toDouble()
-        ).texture(m, o).color(colorRed, colorGreen, colorBlue, colorAlpha).light(p).next()
+        ).texture(m, o).color(red, green, blue, alpha).light(p).next()
         vertexConsumer.vertex(
             vector3fs[1].x.toDouble(), vector3fs[1].y.toDouble(),
             vector3fs[1].z.toDouble()
-        ).texture(m, n).color(colorRed, colorGreen, colorBlue, colorAlpha).light(p).next()
+        ).texture(m, n).color(red, green, blue, alpha).light(p).next()
         vertexConsumer.vertex(
             vector3fs[2].x.toDouble(), vector3fs[2].y.toDouble(),
             vector3fs[2].z.toDouble()
-        ).texture(l, n).color(colorRed, colorGreen, colorBlue, colorAlpha).light(p).next()
+        ).texture(l, n).color(red, green, blue, alpha).light(p).next()
         vertexConsumer.vertex(
             vector3fs[3].x.toDouble(), vector3fs[3].y.toDouble(),
             vector3fs[3].z.toDouble()
-        ).texture(l, o).color(colorRed, colorGreen, colorBlue, colorAlpha).light(p).next()
+        ).texture(l, o).color(red, green, blue, alpha).light(p).next()
     }
 
     init {
@@ -149,5 +175,6 @@ class SimpleParticle(
         velocityX = particleContext.vel.x
         velocityY = particleContext.vel.y
         velocityZ = particleContext.vel.z
+        collidesWithWorld = doCollision
     }
 }

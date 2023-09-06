@@ -1,15 +1,15 @@
 package net.barribob.boss.render
 
 import net.minecraft.client.render.VertexConsumerProvider
-import net.minecraft.client.render.entity.EntityRenderDispatcher
 import net.minecraft.client.render.entity.EntityRenderer
+import net.minecraft.client.render.entity.EntityRendererFactory
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.entity.Entity
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
 
 class SimpleEntityRenderer<T : Entity>(
-    renderManager: EntityRenderDispatcher,
+    renderManager: EntityRendererFactory.Context,
     private val renderer: IRenderer<T>,
     private val textureProvider: ITextureProvider<T>,
     private val brightness: IRenderLight<T>? = null,

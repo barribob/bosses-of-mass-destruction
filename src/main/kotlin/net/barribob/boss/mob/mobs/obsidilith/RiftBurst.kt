@@ -24,14 +24,14 @@ class RiftBurst(
     private val columnParticle: ParticleEffect,
     private val riftTime: Int,
     val eventScheduler: EventScheduler,
-    val onImpact: (LivingEntity) -> Unit
+    val onImpact: (LivingEntity) -> Unit,
+    val isOpenBlock: (BlockPos) -> Boolean = isOpenBlock(world),
+    val posFinder: (Vec3d) -> BlockPos? = defaultPosFinder(world, isOpenBlock)
 ) {
     fun tryPlaceRift(pos: Vec3d){
-        val above = BlockPos(pos.add(VecUtils.yAxis.multiply(14.0)))
-        val groundPos = world.findGroundBelow(above)
-        val up = groundPos.up()
-        if (up.y + 28 >= above.y && isOpenBlock(up)) {
-            placeRift(up)
+        val placement = posFinder(pos)
+        if (placement != null) {
+            placeRift(placement)
         }
     }
 
@@ -55,7 +55,7 @@ class RiftBurst(
                 )
 
                 val box = Box(impactPos)
-                val entities = world.getEntitiesByClass(LivingEntity::class.java, box, null)
+                val entities = world.getEntitiesByClass(LivingEntity::class.java, box) { it != entity }
 
                 entities.forEach {
                     if (it != entity) {
@@ -67,11 +67,23 @@ class RiftBurst(
             }, 0, 7))
         }, riftTime, shouldCancel = { !isOpenBlock(pos) || !entity.isAlive }))
     }
+}
 
-    private fun isOpenBlock(up: BlockPos?) = world.getBlockState(up).canReplace(
+private fun defaultPosFinder(
+    world: ServerWorld,
+    isOpenBlock: (BlockPos) -> Boolean
+): (Vec3d) -> BlockPos? = {
+    val above = BlockPos.ofFloored(it.add(VecUtils.yAxis.multiply(14.0)))
+    val groundPos = world.findGroundBelow(above)
+    val up = groundPos.up()
+    if (up.y + 28 >= above.y && isOpenBlock(up)) up else null
+}
+
+private fun isOpenBlock(world: ServerWorld): (BlockPos) -> Boolean = {
+    world.getBlockState(it).canReplace(
         AutomaticItemPlacementContext(
             world,
-            up,
+            it,
             Direction.DOWN,
             ItemStack.EMPTY,
             Direction.UP

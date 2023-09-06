@@ -13,7 +13,13 @@ class ClientParticleBuilder(private val effect: ParticleEffect) {
     private var brightness: ((Float) -> Int)? = null
     private var scale: ((Float) -> Float)? = null
     private var age: (() -> Int)? = null
-    private var colorVariation: Double = 0.0
+    private var colorVariation: Double? = null
+    private var getRotation: ((SimpleParticle) -> Float)? = null
+
+    fun continuousRotation(rotation: (SimpleParticle) -> Float): ClientParticleBuilder {
+        this.getRotation = rotation
+        return this
+    }
 
     fun continuousVelocity(velocity: (SimpleParticle) -> Vec3d): ClientParticleBuilder {
         this.getVel = velocity
@@ -32,6 +38,11 @@ class ClientParticleBuilder(private val effect: ParticleEffect) {
 
     fun color(color: Vec3d): ClientParticleBuilder {
         this.color = { color }
+        return this
+    }
+
+    fun rotation(rotation: Float): ClientParticleBuilder {
+        this.getRotation = { rotation }
         return this
     }
 
@@ -89,8 +100,9 @@ class ClientParticleBuilder(private val effect: ParticleEffect) {
                 color?.let { particle.setColorOverride(color) }
                 scale?.let { particle.setScaleOverride(scale) }
                 getVel?.let { particle.setVelocityOverride(it) }
-                particle.setPositionOverride(continuousPos)
-                particle.setColorVariation(colorVariation)
+                continuousPos?.let { particle.setPositionOverride(it) }
+                colorVariation?.let { particle.setColorVariation(it) }
+                getRotation?.let { particle.setRotationOverride(it) }
             }
         }
     }

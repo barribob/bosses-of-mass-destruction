@@ -2,14 +2,23 @@
   "entity.bosses_of_mass_destruction.comet": "坠星",
   "entity.bosses_of_mass_destruction.lich": "暗夜巫妖",
   "entity.bosses_of_mass_destruction.blue_fireball": "蓝色火球",
+  "entity.bosses_of_mass_destruction.soul_star": "灵魂之星",
   "entity.bosses_of_mass_destruction.obsidilith" : "黑曜巨石柱",
   "entity.bosses_of_mass_destruction.gauntlet" : "下界铁掌",
+  "entity.bosses_of_mass_destruction.void_blossom" : "虚空之花",
+  "entity.bosses_of_mass_destruction.spore_ball" : "孢子",
+  "entity.bosses_of_mass_destruction.petal_blade" : "花瓣锋刃",
 
   "block.bosses_of_mass_destruction.obsidilith_end_frame" : "黑曜石祭坛",
   "block.bosses_of_mass_destruction.obsidilith_rune" : "黑曜石符文",
   "block.bosses_of_mass_destruction.sealed_blackstone" : "尘封黑石砖",
   "block.bosses_of_mass_destruction.gauntlet_blackstone" : "远古雕纹黑石",
   "block.bosses_of_mass_destruction.chiseled_stone_altar" : "錾制石头祭坛",
+  "block.bosses_of_mass_destruction.void_blossom_block" : "虚空之花刷怪笼",
+  "block.bosses_of_mass_destruction.void_lily" : "虚空百合",
+  "block.bosses_of_mass_destruction.void_lily.tooltip" : "花粉指引的尽头究竟有些什么？",
+  "block.bosses_of_mass_destruction.void_blossom" : "虚空之花",
+  "block.bosses_of_mass_destruction.vine_wall" : "灌木禁壁",
 
   "itemGroup.bosses_of_mass_destruction.items" : "Bosses of Mass Destruction",
 
@@ -18,6 +27,15 @@
   "item.bosses_of_mass_destruction.ancient_anima" : "古代灵魂",
   "item.bosses_of_mass_destruction.blazing_eye" : "烈焰之眼",
   "item.bosses_of_mass_destruction.obsidian_heart" : "黑曜石之心",
+  "item.bosses_of_mass_destruction.void_thorn" : "虚空荆棘",
+  "item.bosses_of_mass_destruction.crystal_fruit" : "水晶果实",
+  "item.bosses_of_mass_destruction.crystal_fruit.tooltip" : "获得短暂的生命恢复和抗性提升效果",
+  "item.bosses_of_mass_destruction.charged_ender_pearl" : "充能末影珍珠",
+  "item.bosses_of_mass_destruction.charged_ender_pearl.tooltip" : "可重复使用",
+  "item.bosses_of_mass_destruction.charged_ender_pearl.tooltip2" : "传送后给予瞬间的抗性提升效果",
+  "item.bosses_of_mass_destruction.crafting_material.tooltip" : "合成材料",
+  "item.bosses_of_mass_destruction.brimstone_nectar" : "硫磺花蜜",
+  "item.bosses_of_mass_destruction.brimstone_nectar.tooltip" : "使用后重置附近的BOSS生成结构",
 
   "block.bosses_of_mass_destruction.mob_ward" : "镇压之杖",
   "item.bosses_of_mass_destruction.mob_ward.tooltip" : "放置后，64格范围内将不再生成怪物",
@@ -28,6 +46,9 @@
 
   "block.bosses_of_mass_destruction.levitation_block" : "升腾台座",
   "item.bosses_of_mass_destruction.levitation_block.tooltip" : "使7x7范围内的玩家能够进行创造模式飞行",
+  
+  "item.bosses_of_mass_destruction.earthdive_spear.tooltip" : "获得可穿过固体方块的短距离传送能力",
+  "item.bosses_of_mass_destruction.earthdive_spear" : "遁地尖矛",
 
   "advancements.nether.gauntlet_defeat.title": "击穿掌心",
   "advancements.nether.gauntlet_defeat.description" : "击败下界铁掌",
@@ -37,6 +58,9 @@
 
   "advancements.adventure.night_lich_defeat.title": "降伏黑暗",
   "advancements.adventure.night_lich_defeat.description" : "击败暗夜巫妖",
+  
+  "advancements.adventure.void_blossom_defeat.title": "快刀斩乱麻",
+  "advancements.adventure.void_blossom_defeat.description" : "击败虚空之花",
 
   "subtitles.bosses_of_mass_destruction.gauntlet_idle" : "下界铁掌：呼吸",
   "subtitles.bosses_of_mass_destruction.gauntlet_hurt" : "下界铁掌：受伤",
@@ -70,6 +94,20 @@
   "subtitles.bosses_of_mass_destruction.comet_prepare" : "暗夜巫妖：准备发射坠星",
   "subtitles.bosses_of_mass_destruction.comet_shoot" : "暗夜巫妖：发射坠星",
   "subtitles.bosses_of_mass_destruction.blue_fireball_land" : "霜星：着地",
+  
+  "subtitles.bosses_of_mass_destruction.void_blossom_burrow" : "虚空之花：钻洞",
+  "subtitles.bosses_of_mass_destruction.void_blossom_spike" : "突刺伸出",
+  "subtitles.bosses_of_mass_destruction.spore_impact" : "毒素爆裂",
+  "subtitles.bosses_of_mass_destruction.petal_blade" : "花瓣锋刃：出击",
+  "subtitles.bosses_of_mass_destruction.spore_prepare" : "毒素酝酿",
+  "subtitles.bosses_of_mass_destruction.spike_wave_indicator" : "大地震颤",
+  "subtitles.bosses_of_mass_destruction.spore_ball_land" : "毒素着落",
+  "subtitles.bosses_of_mass_destruction.void_spike_indicator" : "突刺集聚",
+  "subtitles.bosses_of_mass_destruction.void_blossom_hurt" : "虚空之花：受伤",
+  "subtitles.bosses_of_mass_destruction.void_blossom_fall" : "虚空之花：凋落",
+  "subtitles.bosses_of_mass_destruction.earthdive_spear_throw" : "遁地尖矛：掷出",
+  "subtitles.bosses_of_mass_destruction.charged_ender_pearl" : "充能末影珍珠：着落",
+  "subtitles.bosses_of_mass_destruction.brimstone" : "硫磺喷出",
   
   "text.autoconfig.bosses_of_mass_destruction.title" : "所有变更均需重启游戏方可生效",
 
@@ -118,5 +156,16 @@
   "text.autoconfig.bosses_of_mass_destruction.option.gauntletConfig.arenaGeneration" : "斗技场生成",
   "text.autoconfig.bosses_of_mass_destruction.option.gauntletConfig.arenaGeneration.generationSpacing" : "异种结构间隔",
   "text.autoconfig.bosses_of_mass_destruction.option.gauntletConfig.arenaGeneration.generationSeparation" : "同种结构间隔",
-  "text.autoconfig.bosses_of_mass_destruction.option.gauntletConfig.arenaGeneration.generationEnabled" : "允许生成"
+  "text.autoconfig.bosses_of_mass_destruction.option.gauntletConfig.arenaGeneration.generationEnabled" : "允许生成",
+  
+  "text.autoconfig.bosses_of_mass_destruction.category.VoidBlossom" : "虚空之花",
+  "text.autoconfig.bosses_of_mass_destruction.option.voidBlossomConfig.health" : "生命值",
+  "text.autoconfig.bosses_of_mass_destruction.option.voidBlossomConfig.armor" : "护甲值",
+  "text.autoconfig.bosses_of_mass_destruction.option.voidBlossomConfig.attack" : "攻击力",
+  "text.autoconfig.bosses_of_mass_destruction.option.voidBlossomConfig.idleHealingPerTick" : "脱战状态每刻的自愈量",
+  "text.autoconfig.bosses_of_mass_destruction.option.voidBlossomConfig.experienceDrop" : "经验掉落量",
+  "text.autoconfig.bosses_of_mass_destruction.option.voidBlossomConfig.arenaGeneration" : "斗技场生成",
+  "text.autoconfig.bosses_of_mass_destruction.option.voidBlossomConfig.arenaGeneration.generationSpacing" : "异种结构间隔",
+  "text.autoconfig.bosses_of_mass_destruction.option.voidBlossomConfig.arenaGeneration.generationSeparation" : "同种结构间隔",
+  "text.autoconfig.bosses_of_mass_destruction.option.voidBlossomConfig.arenaGeneration.generationEnabled" : "允许生成"
 }

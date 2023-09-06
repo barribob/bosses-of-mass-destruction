@@ -1,7 +1,7 @@
 package net.barribob.boss.mob.mobs.lich
 
 import net.barribob.boss.render.IBoneLight
-import software.bernie.geckolib3.geo.render.built.GeoBone
+import software.bernie.geckolib.cache.`object`.GeoBone
 
 class LichBoneLight : IBoneLight {
     override fun getLightForBone(bone: GeoBone, packedLight: Int): Int {

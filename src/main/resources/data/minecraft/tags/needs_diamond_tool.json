@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "bosses_of_mass_destruction:obsidilith_rune",
+    "bosses_of_mass_destruction:gauntlet_blackstone",
+    "bosses_of_mass_destruction:mob_ward",
+    "bosses_of_mass_destruction:monolith_block",
+    "bosses_of_mass_destruction:levitation_block"
+  ]
+}

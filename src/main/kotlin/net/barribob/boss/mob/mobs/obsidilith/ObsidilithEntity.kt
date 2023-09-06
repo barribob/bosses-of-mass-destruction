@@ -8,12 +8,10 @@ import net.barribob.boss.mob.ai.action.CooldownAction
 import net.barribob.boss.mob.ai.goals.ActionGoal
 import net.barribob.boss.mob.ai.goals.FindTargetGoal
 import net.barribob.boss.mob.damage.CompositeDamageHandler
-import net.barribob.boss.mob.mobs.lich.LichUtils
+import net.barribob.boss.mob.damage.DamageMemory
+import net.barribob.boss.mob.mobs.void_blossom.CappedHeal
 import net.barribob.boss.mob.utils.BaseEntity
-import net.barribob.boss.mob.utils.EntityAdapter
-import net.barribob.boss.mob.utils.EntityStats
 import net.barribob.boss.mob.utils.StatusImmunity
-import net.barribob.boss.mob.utils.animation.AnimationPredicate
 import net.barribob.boss.particle.Particles
 import net.barribob.boss.utils.ModUtils
 import net.barribob.boss.utils.ModUtils.playSound
@@ -37,10 +35,10 @@ import net.minecraft.sound.SoundEvent
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
-import software.bernie.geckolib3.core.PlayState
-import software.bernie.geckolib3.core.builder.AnimationBuilder
-import software.bernie.geckolib3.core.controller.AnimationController
-import software.bernie.geckolib3.core.manager.AnimationData
+import software.bernie.geckolib.core.animation.AnimatableManager
+import software.bernie.geckolib.core.animation.AnimationController
+import software.bernie.geckolib.core.animation.RawAnimation
+import software.bernie.geckolib.core.`object`.PlayState
 
 class ObsidilithEntity(
     entityType: EntityType<out ObsidilithEntity>,
@@ -56,12 +54,13 @@ class ObsidilithEntity(
         Pair(ObsidilithUtils.anvilAttackStatus, AnvilAction(this, mobConfig.anvilAttackExplosionStrength)),
         Pair(ObsidilithUtils.pillarDefenseStatus, PillarAction(this))
     )
-    private val moveLogic = ObsidilithMoveLogic(statusRegistry, this)
+    private val damageMemory = DamageMemory(10, this)
+    private val moveLogic = ObsidilithMoveLogic(statusRegistry, this, damageMemory)
     private val effectHandler = ObsidilithEffectHandler(this, ModComponents.getWorldEventScheduler(world))
-    override val damageHandler = CompositeDamageHandler(moveLogic, ShieldDamageHandler(::isShielded))
+    override val damageHandler = CompositeDamageHandler(moveLogic, ShieldDamageHandler(::isShielded), damageMemory)
     private val activePillars = mutableSetOf<BlockPos>()
-    private val iEntity = EntityAdapter(this)
     override val statusEffectHandler = StatusImmunity(StatusEffects.WITHER, StatusEffects.POISON)
+    override val serverTick = CappedHeal(this, ObsidilithUtils.hpPillarShieldMilestones, mobConfig.idleHealingPerTick)
 
     init {
         ignoreCameraFrustum = true
@@ -75,6 +74,8 @@ class ObsidilithEntity(
                 world.playSound(pos, Mod.sounds.waveIndicator, SoundCategory.HOSTILE, 1.5f, 0.7f)
             }, 1))
         }
+
+        dataTracker.startTracking(ObsidilithUtils.isShielded, false)
     }
 
     private fun buildAttackGoal(): ActionGoal {
@@ -88,14 +89,6 @@ class ObsidilithEntity(
 
     override fun serverTick(serverWorld: ServerWorld) {
         super.serverTick(serverWorld)
-
-        LichUtils.cappedHeal(
-            iEntity,
-            EntityStats(this),
-            ObsidilithUtils.hpPillarShieldMilestones,
-            mobConfig.idleHealingPerTick,
-            ::heal
-        )
 
         activePillars.removeIf {
             world.getBlockState(it).block != ModBlocks.obsidilithRune || !it.isWithinDistance(
@@ -124,7 +117,7 @@ class ObsidilithEntity(
     override fun onDeath(source: DamageSource?) {
         if (mobConfig.spawnPillarOnDeath) {
             ObsidilithUtils.onDeath(this, mobConfig.experienceDrop)
-            if(world.isClient) effectHandler.handleStatus(ObsidilithUtils.deathStatus)
+            if (world.isClient) effectHandler.handleStatus(ObsidilithUtils.deathStatus)
         }
 
         super.onDeath(source)
@@ -142,22 +135,16 @@ class ObsidilithEntity(
         super.handleStatus(status)
     }
 
-    override fun initDataTracker() {
-        super.initDataTracker()
-        dataTracker.startTracking(ObsidilithUtils.isShielded, false)
-    }
-
     override fun getHurtSound(source: DamageSource?) = Mod.sounds.obsidilithHurt
     override fun getDeathSound(): SoundEvent = Mod.sounds.obsidilithDeath
 
-    override fun registerControllers(data: AnimationData) {
-        data.shouldPlayWhilePaused = true
-        data.addAnimationController(AnimationController(this, "summon", 0f, AnimationPredicate<ObsidilithEntity> {
-                it.controller.setAnimation(
-                    AnimationBuilder().addAnimation("summon", false)
-                )
-                PlayState.CONTINUE
-        }))
+    override fun registerControllers(data: AnimatableManager.ControllerRegistrar) {
+        data.add(AnimationController(this, "summon", 0) {
+            it.controller.setAnimation(
+                RawAnimation.begin().thenPlay("summon")
+            )
+            PlayState.CONTINUE
+        })
     }
 
     override fun move(type: MovementType, movement: Vec3d) {
@@ -172,9 +159,7 @@ class ObsidilithEntity(
 
     override fun checkDespawn() = ModUtils.preventDespawnExceptPeaceful(this, world)
 
-    override fun handleFallDamage(fallDistance: Float, damageMultiplier: Float): Boolean {
-        return false
-    }
+    override fun handleFallDamage(fallDistance: Float, damageMultiplier: Float, damageSource: DamageSource?) = false
 
     fun isShielded(): Boolean = getDataTracker().get(ObsidilithUtils.isShielded)
 
@@ -182,9 +167,9 @@ class ObsidilithEntity(
         activePillars.add(pos)
     }
 
-    override fun writeNbt(tag: NbtCompound): NbtCompound {
-        tag.putIntArray(::activePillars.name, activePillars.flatMap { listOf(it.x, it.y, it.z) })
-        return super.writeNbt(tag)
+    override fun writeNbt(nbt: NbtCompound?): NbtCompound {
+        nbt?.putIntArray(::activePillars.name, activePillars.flatMap { listOf(it.x, it.y, it.z) })
+        return super.writeNbt(nbt)
     }
 
     override fun readNbt(nbt: NbtCompound) {

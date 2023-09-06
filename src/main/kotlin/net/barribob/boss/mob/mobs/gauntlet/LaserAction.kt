@@ -2,6 +2,7 @@ package net.barribob.boss.mob.mobs.gauntlet
 
 import net.barribob.boss.Mod
 import net.barribob.boss.mob.ai.action.IActionWithCooldown
+import net.barribob.boss.mob.mobs.gauntlet.GauntletEntity.Companion.laserTarget
 import net.barribob.boss.utils.ModUtils.findEntitiesInLine
 import net.barribob.boss.utils.ModUtils.playSound
 import net.barribob.boss.utils.VanillaCopies.destroyBlocks
@@ -14,9 +15,6 @@ import net.barribob.maelstrom.static_utilities.eyePos
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.attribute.EntityAttributes
-import net.minecraft.entity.data.DataTracker
-import net.minecraft.entity.data.TrackedData
-import net.minecraft.entity.data.TrackedDataHandlerRegistry
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
 import net.minecraft.util.hit.HitResult
@@ -38,7 +36,7 @@ class LaserAction(
         serverWorld.playSound(entity.pos, Mod.sounds.gauntletLaserCharge, SoundCategory.HOSTILE, 3.0f, 1.0f, 64.0)
 
         val sendStartToClient = TimedEvent({
-            entity.dataTracker.set(laserTarget, target.entityId)
+            entity.dataTracker.set(laserTarget, target.id)
         }, 25, shouldCancel = cancelAction)
 
         val applyLaser = TimedEvent({
@@ -94,8 +92,6 @@ class LaserAction(
     }
 
     companion object {
-        val laserTarget: TrackedData<Int> =
-            DataTracker.registerData(GauntletEntity::class.java, TrackedDataHandlerRegistry.INTEGER)
         const val laserLagTicks = 8
         fun extendLaser(entity: Entity, laserTargetPos: Vec3d): Vec3d =
             MathUtils.unNormedDirection(entity.eyePos(), laserTargetPos).normalize().multiply(30.0).add(entity.eyePos())

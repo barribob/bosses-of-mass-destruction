@@ -1,17 +1,15 @@
 package net.barribob.boss.render
 
-import net.minecraft.client.render.RenderLayer
 import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.client.util.math.MatrixStack
-import software.bernie.geckolib3.geo.render.built.GeoModel
+import software.bernie.geckolib.cache.`object`.BakedGeoModel
 
 interface IRendererWithModel {
     fun render(
-        model: GeoModel,
+        model: BakedGeoModel,
         partialTicks: Float,
-        type: RenderLayer,
         matrixStackIn: MatrixStack,
-        renderTypeBuffer: VertexConsumerProvider,
+        renderTypeBuffer: VertexConsumerProvider?,
         packedLightIn: Int,
         packedOverlayIn: Int,
         red: Float,

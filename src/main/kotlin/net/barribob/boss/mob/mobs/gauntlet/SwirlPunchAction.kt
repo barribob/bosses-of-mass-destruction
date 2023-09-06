@@ -3,21 +3,18 @@ package net.barribob.boss.mob.mobs.gauntlet
 import net.barribob.boss.Mod
 import net.barribob.boss.config.GauntletConfig
 import net.barribob.boss.mob.ai.action.IActionWithCooldown
+import net.barribob.boss.mob.mobs.gauntlet.GauntletEntity.Companion.isEnergized
 import net.barribob.boss.mob.mobs.gauntlet.PunchAction.Companion.accelerateTowardsTarget
 import net.barribob.boss.utils.ModUtils.playSound
-import net.barribob.boss.utils.VanillaCopies
 import net.barribob.maelstrom.general.event.EventScheduler
 import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.static_utilities.MathUtils
-import net.barribob.maelstrom.static_utilities.addVelocity
 import net.barribob.maelstrom.static_utilities.eyePos
 import net.minecraft.entity.LivingEntity
-import net.minecraft.entity.data.DataTracker
-import net.minecraft.entity.data.TrackedData
-import net.minecraft.entity.data.TrackedDataHandlerRegistry
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
 import net.minecraft.util.math.Vec3d
+import net.minecraft.world.World
 
 class SwirlPunchAction(
     val entity: GauntletEntity,
@@ -78,7 +75,6 @@ class SwirlPunchAction(
     private fun testBlockPhysicalImpact() {
         if ((entity.horizontalCollision || entity.verticalCollision) && previousSpeed > 0.55f) {
             val pos: Vec3d = entity.pos
-            val flag = VanillaCopies.getEntityDestructionType(entity.world)
             if (entity.dataTracker.get(isEnergized)) {
                 entity.world.createExplosion(
                     entity,
@@ -87,7 +83,7 @@ class SwirlPunchAction(
                     pos.z,
                     mobConfig.energizedPunchExplosionSize.toFloat(),
                     true,
-                    flag
+                    World.ExplosionSourceType.MOB
                 )
                 entity.dataTracker.set(isEnergized, false)
             } else {
@@ -97,7 +93,7 @@ class SwirlPunchAction(
                     pos.y,
                     pos.z,
                     (previousSpeed * mobConfig.normalPunchExplosionMultiplier).toFloat(),
-                    flag
+                    World.ExplosionSourceType.MOB
                 )
             }
         }
@@ -109,10 +105,5 @@ class SwirlPunchAction(
             entity.tryAttack(target)
             target.addVelocity(entity.velocity.multiply(0.5))
         }
-    }
-
-    companion object {
-        val isEnergized: TrackedData<Boolean> =
-            DataTracker.registerData(GauntletEntity::class.java, TrackedDataHandlerRegistry.BOOLEAN)
     }
 }

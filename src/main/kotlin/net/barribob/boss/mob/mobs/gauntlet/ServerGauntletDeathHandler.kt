@@ -12,9 +12,11 @@ import net.barribob.maelstrom.static_utilities.VecUtils
 import net.barribob.maelstrom.static_utilities.planeProject
 import net.minecraft.block.Blocks
 import net.minecraft.block.entity.LootableContainerBlockEntity
+import net.minecraft.entity.Entity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
+import net.minecraft.world.World
 
 class ServerGauntletDeathHandler(
     val entity: GauntletEntity,
@@ -24,11 +26,10 @@ class ServerGauntletDeathHandler(
     override fun tick(world: ServerWorld) {
         ++entity.deathTime
         if (entity.deathTime == deathAnimationTime) {
-            val destructionType = VanillaCopies.getEntityDestructionType(entity.world)
-            world.createExplosion(null, entity.pos.x, entity.pos.y, entity.pos.z, 4.0f, destructionType)
+            world.createExplosion(null, entity.pos.x, entity.pos.y, entity.pos.z, 4.0f, World.ExplosionSourceType.MOB)
             if (mobConfig.spawnAncientDebrisOnDeath) createLoot(world)
             dropExp()
-            entity.remove()
+            entity.remove(Entity.RemovalReason.KILLED)
         }
     }
 
@@ -40,7 +41,7 @@ class ServerGauntletDeathHandler(
             val end = entity.pos.add(randomDir.multiply(length.toDouble()))
             val points = length * 2
             MathUtils.lineCallback(start, end, points) { vec3d: Vec3d, point: Int ->
-                val blockPos = BlockPos(vec3d)
+                val blockPos = BlockPos.ofFloored(vec3d)
                 if (point == points - 1) world.setBlockState(blockPos, Blocks.ANCIENT_DEBRIS.defaultState)
                 else world.setBlockState(blockPos, Blocks.NETHERRACK.defaultState)
             }

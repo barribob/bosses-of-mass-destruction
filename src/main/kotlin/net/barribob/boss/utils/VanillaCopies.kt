@@ -1,5 +1,7 @@
 package net.barribob.boss.utils
 
+import net.barribob.boss.utils.ModUtils.model
+import net.barribob.boss.utils.ModUtils.normal
 import net.barribob.maelstrom.static_utilities.MathUtils
 import net.minecraft.block.*
 import net.minecraft.block.enums.DoubleBlockHalf
@@ -17,26 +19,33 @@ import net.minecraft.entity.ExperienceOrbEntity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.MovementType
 import net.minecraft.entity.boss.dragon.EnderDragonEntity
-import net.minecraft.entity.mob.CreeperEntity
+import net.minecraft.entity.damage.DamageSource
+import net.minecraft.entity.damage.DamageType
 import net.minecraft.entity.mob.FlyingEntity
 import net.minecraft.entity.mob.MobEntity
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket
-import net.minecraft.tag.BlockTags
+import net.minecraft.registry.RegistryKey
+import net.minecraft.registry.RegistryKeys
+import net.minecraft.registry.tag.BlockTags
 import net.minecraft.util.hit.HitResult
 import net.minecraft.util.math.*
 import net.minecraft.world.*
 import net.minecraft.world.RaycastContext.FluidHandling
-import net.minecraft.world.biome.Biome
-import net.minecraft.world.biome.source.BiomeSource
-import net.minecraft.world.explosion.Explosion.DestructionType
-import net.minecraft.world.gen.chunk.ChunkGenerator
-import net.minecraft.world.gen.feature.StructureFeature
-import net.minecraft.world.gen.feature.WoodlandMansionFeature
+import org.joml.Matrix3f
+import org.joml.Matrix4f
+import org.joml.Quaternionf
+import org.joml.Vector3f
 import kotlin.math.acos
 import kotlin.math.atan2
+import kotlin.math.sqrt
 
 object VanillaCopies {
+
+    fun create(world: World, key: RegistryKey<DamageType>, attacker: Entity?): DamageSource {
+        return DamageSource(world.registryManager.get(RegistryKeys.DAMAGE_TYPE).getEntry(key).get(), attacker)
+    }
+
     /**
      * [FlyingEntity.travel]
      */
@@ -54,7 +63,7 @@ object VanillaCopies {
             }
             else -> {
                 val friction = if (entity.isOnGround) {
-                    entity.world.getBlockState(BlockPos(entity.x, entity.y - 1.0, entity.z)).block
+                    entity.world.getBlockState(BlockPos.ofFloored(entity.x, entity.y - 1.0, entity.z)).block
                         .slipperiness * baseFrictionCoefficient
                 } else {
                     baseFrictionCoefficient
@@ -66,7 +75,7 @@ object VanillaCopies {
                 entity.velocity = entity.velocity.multiply(friction.toDouble())
             }
         }
-        entity.method_29242(entity, false)
+        entity.updateLimbs(false)
     }
 
     /**
@@ -77,7 +86,7 @@ object VanillaCopies {
         val e: Double = target.z - this.z
         val g: Double = target.y - this.eyeY
 
-        val h = MathHelper.sqrt(d * d + e * e).toDouble()
+        val h = sqrt(d * d + e * e)
         val i = (MathHelper.atan2(e, d) * 57.2957763671875).toFloat() - 90.0f
         val j = (-(MathHelper.atan2(g, h) * 57.2957763671875)).toFloat()
         this.pitch = changeAngle(this.pitch, j, maxPitchChange)
@@ -105,7 +114,7 @@ object VanillaCopies {
         val d: Double = packet.x
         val e: Double = packet.y
         val f: Double = packet.z
-        val entityType = packet.entityTypeId
+        val entityType = packet.entityType
         val world = client.world ?: return
 
         val entity15 = entityType.create(world)
@@ -114,9 +123,9 @@ object VanillaCopies {
             val i: Int = packet.id
             entity15.updateTrackedPosition(d, e, f)
             entity15.refreshPositionAfterTeleport(d, e, f)
-            entity15.pitch = (packet.pitch * 360).toFloat() / 256.0f
-            entity15.yaw = (packet.yaw * 360).toFloat() / 256.0f
-            entity15.entityId = i
+            entity15.pitch = (packet.pitch * 360) / 256.0f
+            entity15.yaw = (packet.yaw * 360) / 256.0f
+            entity15.id = i
             entity15.uuid = packet.uuid
             world.addEntity(i, entity15 as Entity?)
         }
@@ -131,10 +140,12 @@ object VanillaCopies {
         i: Int,
         dispatcher: EntityRenderDispatcher,
         layer: RenderLayer,
+        rotation: Quaternionf = Quaternionf()
     ) {
         matrixStack.push()
         matrixStack.multiply(dispatcher.rotation)
-        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0f))
+        matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0f))
+        matrixStack.multiply(rotation)
         val entry = matrixStack.peek()
         val matrix4f = entry.model
         val matrix3f = entry.normal
@@ -190,14 +201,9 @@ object VanillaCopies {
     }
 
     /**
-     * [CreeperEntity.explode]
-     */
-    fun getEntityDestructionType(world: World): DestructionType {
-        return if (world.gameRules.getBoolean(GameRules.DO_MOB_GRIEFING)) DestructionType.DESTROY else DestructionType.NONE
-    }
-
-    /**
      * Adapted from [EnderDragonEntity.awardExperience]
+     *
+     * No longer is present perhaps changed to [EnderDragonEntity.updatePostDeath]?
      */
     fun awardExperience(amount: Int, pos: Vec3d, world: World) {
         var amt = amount
@@ -219,23 +225,25 @@ object VanillaCopies {
         x: Double,
         y: Double,
         z: Double,
-        scale: Float
-    ): Array<Vec3f> {
+        scale: Float,
+        rotation: Float
+    ): Array<Vector3f> {
         val vec3d = camera.pos
         val f = (MathHelper.lerp(tickDelta.toDouble(), prevPosX, x) - vec3d.getX()).toFloat()
         val g = (MathHelper.lerp(tickDelta.toDouble(), prevPosY, y) - vec3d.getY()).toFloat()
         val h = (MathHelper.lerp(tickDelta.toDouble(), prevPosZ, z) - vec3d.getZ()).toFloat()
 
         val vector3fs = arrayOf(
-            Vec3f(-1.0f, 0.0f, -1.0f),
-            Vec3f(-1.0f, 0.0f, 1.0f),
-            Vec3f(1.0f, 0.0f, 1.0f),
-            Vec3f(1.0f, 0.0f, -1.0f)
+            Vector3f(-1.0f, 0.0f, -1.0f),
+            Vector3f(-1.0f, 0.0f, 1.0f),
+            Vector3f(1.0f, 0.0f, 1.0f),
+            Vector3f(1.0f, 0.0f, -1.0f)
         )
 
         for (k in 0..3) {
             val vector3f2 = vector3fs[k]
-            vector3f2.scale(scale)
+            vector3f2.rotate(RotationAxis.POSITIVE_Y.rotationDegrees(rotation))
+            vector3f2.mul(scale)
             vector3f2.add(f, g, h)
         }
 
@@ -253,28 +261,27 @@ object VanillaCopies {
         x: Double,
         y: Double,
         z: Double,
-        scale: Float
-    ): Array<Vec3f> {
+        scale: Float,
+        rotation: Float
+    ): Array<Vector3f> {
         val vec3d = camera.pos
         val f = (MathHelper.lerp(tickDelta.toDouble(), prevPosX, x) - vec3d.getX()).toFloat()
         val g = (MathHelper.lerp(tickDelta.toDouble(), prevPosY, y) - vec3d.getY()).toFloat()
         val h = (MathHelper.lerp(tickDelta.toDouble(), prevPosZ, z) - vec3d.getZ()).toFloat()
-        val quaternion2: Quaternion = camera.rotation
+        val quaternion2: Quaternionf = camera.rotation
 
-        val vector3f = Vec3f(-1.0f, -1.0f, 0.0f)
-        vector3f.rotate(quaternion2)
         val vector3fs = arrayOf(
-            Vec3f(-1.0f, -1.0f, 0.0f),
-            Vec3f(-1.0f, 1.0f, 0.0f),
-            Vec3f(1.0f, 1.0f, 0.0f),
-            Vec3f(1.0f, -1.0f, 0.0f)
+            Vector3f(-1.0f, -1.0f, 0.0f),
+            Vector3f(-1.0f, 1.0f, 0.0f),
+            Vector3f(1.0f, 1.0f, 0.0f),
+            Vector3f(1.0f, -1.0f, 0.0f)
         )
-        val j: Float = scale
 
         for (k in 0..3) {
             val vector3f2 = vector3fs[k]
+            vector3f2.rotate(RotationAxis.POSITIVE_Z.rotationDegrees(rotation))
             vector3f2.rotate(quaternion2)
-            vector3f2.scale(j)
+            vector3f2.mul(scale)
             vector3f2.add(f, g, h)
         }
 
@@ -298,10 +305,9 @@ object VanillaCopies {
                 for (q in k..n) {
                     val blockPos = BlockPos(o, p, q)
                     val blockState: BlockState = this.world.getBlockState(blockPos)
-                    val block = blockState.block
-                    if (!blockState.isAir && blockState.material != Material.FIRE) {
+                    if (!blockState.isAir && blockState.block == Blocks.FIRE) {
                         if (this.world.gameRules.getBoolean(GameRules.DO_MOB_GRIEFING)
-                            && !BlockTags.WITHER_IMMUNE.contains(block)
+                            && !blockState.isIn(BlockTags.WITHER_IMMUNE)
                         ) {
                             bl2 = this.world.breakBlock(blockPos, false) || bl2
                         } else {
@@ -330,8 +336,8 @@ object VanillaCopies {
             vec3d3 = vec3d3.normalize()
             val n = acos(vec3d3.y).toFloat()
             val o = atan2(vec3d3.z, vec3d3.x).toFloat()
-            matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion((1.5707964f - o) * 57.295776f))
-            matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(n * 57.295776f))
+            matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((1.5707964f - o) * 57.295776f))
+            matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(n * 57.295776f))
             val q = j * 0.05f * -1.5f
             val red = (color.x * 255).toInt()
             val green = (color.y * 255).toInt()
@@ -392,7 +398,7 @@ object VanillaCopies {
     /**
      * [GuardianEntityRenderer.method_23173]
      */
-    private fun method_23173(
+    fun method_23173(
         vertexConsumer: VertexConsumer,
         matrix4f: Matrix4f,
         matrix3f: Matrix3f,
@@ -417,33 +423,11 @@ object VanillaCopies {
     /**
      * [GuardianEntityRenderer.fromLerpedPosition]
      */
-    private fun fromLerpedPosition(entity: LivingEntity, yOffset: Double, delta: Float): Vec3d {
+    fun fromLerpedPosition(entity: LivingEntity, yOffset: Double, delta: Float): Vec3d {
         val d = MathHelper.lerp(delta.toDouble(), entity.lastRenderX, entity.x)
         val e = MathHelper.lerp(delta.toDouble(), entity.lastRenderY, entity.y) + yOffset
         val f = MathHelper.lerp(delta.toDouble(), entity.lastRenderZ, entity.z)
         return Vec3d(d, e, f)
-    }
-
-    /**
-     * [WoodlandMansionFeature.shouldStartAt]
-     */
-    fun shouldStartAt(
-        structureFeature: StructureFeature<*>,
-        chunkGenerator: ChunkGenerator,
-        biomeSource: BiomeSource,
-        i: Int,
-        j: Int,
-    ): Boolean {
-        val set = biomeSource.getBiomesInArea(i * 16 + 9, chunkGenerator.seaLevel, j * 16 + 9, 32)
-        val var12: Iterator<*> = set.iterator()
-        var biome2: Biome
-        do {
-            if (!var12.hasNext()) {
-                return true
-            }
-            biome2 = var12.next() as Biome
-        } while (biome2.generationSettings.hasStructureFeature(structureFeature))
-        return false
     }
 
     /**

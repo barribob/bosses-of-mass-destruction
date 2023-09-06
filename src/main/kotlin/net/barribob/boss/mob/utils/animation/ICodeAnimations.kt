@@ -1,9 +1,9 @@
 package net.barribob.boss.mob.utils.animation
 
 import net.barribob.boss.mob.GeoModel
-import software.bernie.geckolib3.core.IAnimatable
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent
+import software.bernie.geckolib.core.animatable.GeoAnimatable
+import software.bernie.geckolib.core.animation.AnimationState
 
-fun interface ICodeAnimations<T>  where T : IAnimatable  {
-    fun animate(animatable: T, data: AnimationEvent<*>, geoModel: GeoModel<T>)
+fun interface ICodeAnimations<T>  where T : GeoAnimatable {
+    fun animate(animatable: T, data: AnimationState<*>, geoModel: GeoModel<T>)
 }
