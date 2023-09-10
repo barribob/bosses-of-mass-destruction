@@ -199,7 +199,7 @@ class SoulStarEntity(entityType: EntityType<out SoulStarEntity?>?, world: World?
 
     override fun getBrightnessAtEyes(): Float = 1.0f
     override fun isAttackable(): Boolean = false
-    override fun createSpawnPacket(): Packet<ClientPlayPacketListener>? =  Mod.networkUtils.createClientEntityPacket(this)
+    override fun createSpawnPacket(): Packet<ClientPlayPacketListener> =  Mod.networkUtils.createClientEntityPacket(this)
 
     /**
      * [ProjectileEntity.updateRotation]

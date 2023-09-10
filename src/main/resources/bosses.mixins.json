@@ -3,13 +3,11 @@
   "package": "net.barribob.boss.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
-    "DataFixMixin",
     "EnderEyeUseMixin",
     "ExplosionMixin",
     "IceBlockMixin",
     "ServerPlayerEntityMixin",
     "SpawnHelperMixin",
-    "StructuresConfigAccessor"
   ],
   "client": [
     "BossBarHudMixin"
