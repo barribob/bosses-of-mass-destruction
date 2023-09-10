@@ -167,5 +167,8 @@
   "text.autoconfig.bosses_of_mass_destruction.option.voidBlossomConfig.arenaGeneration" : "Arena Generation",
   "text.autoconfig.bosses_of_mass_destruction.option.voidBlossomConfig.arenaGeneration.generationSpacing" : "Generation Spacing",
   "text.autoconfig.bosses_of_mass_destruction.option.voidBlossomConfig.arenaGeneration.generationSeparation" : "Generation Separation",
-  "text.autoconfig.bosses_of_mass_destruction.option.voidBlossomConfig.arenaGeneration.generationEnabled" : "Generation Enabled"
+  "text.autoconfig.bosses_of_mass_destruction.option.voidBlossomConfig.arenaGeneration.generationEnabled" : "Generation Enabled",
+  
+  "text.autoconfig.bosses_of_mass_destruction.category.General" : "General",
+  "text.autoconfig.bosses_of_mass_destruction.option.generalConfig.tableOfElevationRadius" : "Table of Elevation radius"
 }

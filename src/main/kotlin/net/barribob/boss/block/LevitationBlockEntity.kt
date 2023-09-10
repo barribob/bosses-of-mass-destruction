@@ -1,6 +1,8 @@
 package net.barribob.boss.block
 
+import me.shedaniel.autoconfig.AutoConfig
 import net.barribob.boss.cardinalComponents.ModComponents
+import net.barribob.boss.config.ModConfig
 import net.barribob.boss.particle.ClientParticleBuilder
 import net.barribob.boss.particle.Particles
 import net.barribob.boss.utils.AnimationUtils
@@ -50,7 +52,8 @@ class LevitationBlockEntity(
             .brightness(Particles.FULL_BRIGHT)
             .colorVariation(0.5)
             .scale(0.075f)
-
+        private val tableOfElevationRadius = AutoConfig.getConfigHolder(ModConfig::class.java).config.generalConfig.tableOfElevationRadius.toDouble()
+        
         fun tick(world: World, pos: BlockPos, state: BlockState, entity: LevitationBlockEntity) {
             ChunkCacheBlockEntity.tick(world, pos, state, entity)
             if (world.isClient) {
@@ -119,7 +122,9 @@ class LevitationBlockEntity(
             }
         }
 
-        private fun getAffectingBox(world: World, pos: Vec3d) =
-            Box(pos.x, world.bottomY.toDouble(), pos.z, (pos.x + 1), world.height.toDouble(), (pos.z + 1)).expand(3.0, 0.0, 3.0)
+        private fun getAffectingBox(world: World, pos: Vec3d) : Box {
+            return Box(pos.x, world.bottomY.toDouble(), pos.z, (pos.x + 1), world.height.toDouble(), (pos.z + 1))
+                .expand(tableOfElevationRadius, 0.0, tableOfElevationRadius)
+        }
     }
 }

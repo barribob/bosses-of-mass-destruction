@@ -24,6 +24,10 @@ class ModConfig : ConfigData {
     @TransitiveObject
     val voidBlossomConfig = VoidBlossomConfig()
 
+    @ConfigEntry.Category("General")
+    @TransitiveObject
+    val generalConfig = GeneralConfig()
+
     fun postInit() {
         val entitiesThatCountToSummonCounter = lichConfig.summonMechanic.entitiesThatCountToSummonCounter
         if (entitiesThatCountToSummonCounter == null) {
