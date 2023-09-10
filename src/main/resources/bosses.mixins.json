@@ -7,7 +7,7 @@
     "ExplosionMixin",
     "IceBlockMixin",
     "ServerPlayerEntityMixin",
-    "SpawnHelperMixin",
+    "SpawnHelperMixin"
   ],
   "client": [
     "BossBarHudMixin"
