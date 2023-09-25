@@ -81,7 +81,7 @@ class LevitationBlockEntity(
             val blockToCheck = mutableListOf<BlockPos>()
             for (x in -1..1) {
                 for (z in -1..1) {
-                    blockToCheck.add(BlockPos(x * 3, 0, z * 3))
+                    blockToCheck.add(BlockPos(x * tableOfElevationRadius.toInt(), 0, z * tableOfElevationRadius.toInt()))
                 }
             }
             val chunksToCheck = blockToCheck.map { ChunkPos(it.add(player.blockPos)) }.toSet()
