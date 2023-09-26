@@ -16,6 +16,6 @@ class VoidBlossomSummonBlock(private val factory: (FabricBlockEntityTypeBuilder.
         state: BlockState?,
         type: BlockEntityType<T>?
     ): BlockEntityTicker<T>? {
-        return checkType(type, ModBlocks.voidBlossomSummonBlockEntityType, VoidBlossomSummonBlockEntity::tick)
+        return validateTicker(type, ModBlocks.voidBlossomSummonBlockEntityType, VoidBlossomSummonBlockEntity::tick)
     }
 }

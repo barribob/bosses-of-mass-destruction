@@ -10,8 +10,6 @@ import net.barribob.boss.item.ChargedEnderPearlEntity
 import net.barribob.boss.mob.mobs.gauntlet.GauntletEntity
 import net.barribob.boss.mob.mobs.void_blossom.VoidBlossomEntity
 import net.barribob.maelstrom.static_utilities.asVec3d
-import net.barribob.maelstrom.static_utilities.readVec3d
-import net.barribob.maelstrom.static_utilities.writeVec3d
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking
@@ -194,7 +192,7 @@ class NetworkUtils {
             spawnEntityPacketId, packSpawnClientEntity(
                 EntitySpawnS2CPacket(entity)
             )
-        )
+        ) as Packet<ClientPlayPacketListener>
     }
 
     @Environment(EnvType.CLIENT)

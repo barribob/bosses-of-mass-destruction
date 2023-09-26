@@ -42,6 +42,6 @@ class LevitationBlock(private val factory: (FabricBlockEntityTypeBuilder.Factory
         state: BlockState?,
         type: BlockEntityType<T>?
     ): BlockEntityTicker<T>? {
-        return checkType(type, ModBlocks.levitationBlockEntityType, LevitationBlockEntity::tick)
+        return validateTicker(type, ModBlocks.levitationBlockEntityType, LevitationBlockEntity::tick)
     }
 }

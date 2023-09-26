@@ -55,7 +55,7 @@ class MobWardBlock(private val factory: (FabricBlockEntityTypeBuilder.Factory<Ch
         state: BlockState?,
         type: BlockEntityType<T>?
     ): BlockEntityTicker<T>? {
-        return checkType(type, ModBlocks.mobWardEntityType, ChunkCacheBlockEntity::tick)
+        return validateTicker(type, ModBlocks.mobWardEntityType, ChunkCacheBlockEntity::tick)
     }
 
     override fun appendTooltip(

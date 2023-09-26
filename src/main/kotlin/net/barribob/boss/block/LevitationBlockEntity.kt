@@ -62,12 +62,12 @@ class LevitationBlockEntity(
                 val playersInBox = world.getNonSpectatingEntities(PlayerEntity::class.java, box)
                 for (player in playersInBox) {
                     for (x in listOf(box.minX, box.maxX)) {
-                        val zRand = box.center.z + box.zLength * RandomUtils.double(0.5)
+                        val zRand = box.center.z + box.lengthZ * RandomUtils.double(0.5)
                         particlesFactory.build(randYPos(x, player, zRand))
                     }
 
                     for (z in listOf(box.minZ, box.maxZ)) {
-                        val xRand = box.center.x + box.xLength * RandomUtils.double(0.5)
+                        val xRand = box.center.x + box.lengthX * RandomUtils.double(0.5)
                         particlesFactory.build(randYPos(xRand, player, z))
                     }
                 }

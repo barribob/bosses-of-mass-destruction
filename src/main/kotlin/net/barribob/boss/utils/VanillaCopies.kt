@@ -127,7 +127,7 @@ object VanillaCopies {
             entity15.yaw = (packet.yaw * 360) / 256.0f
             entity15.id = i
             entity15.uuid = packet.uuid
-            world.addEntity(i, entity15 as Entity?)
+            world.addEntity(entity15 as Entity?)
         }
     }
 

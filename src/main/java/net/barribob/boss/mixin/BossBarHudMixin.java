@@ -13,6 +13,7 @@ import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -22,12 +23,16 @@ public abstract class BossBarHudMixin {
 
     @Shadow
     @Final
-    private static Identifier BARS_TEXTURE;
+    private static Identifier[] BACKGROUND_TEXTURES;
+    @Shadow
+    @Final
+    private static Identifier[] PROGRESS_TEXTURES;
     private static final NodeBossBarRenderer lichBossBarRenderer =
             new NodeBossBarRenderer(Entities.INSTANCE.getLICH().getTranslationKey(),
             LichUtils.INSTANCE.getHpPercentRageModes(),
                     Mod.INSTANCE.identifier("textures/gui/lich_boss_bar_dividers.png"),
                     LichUtils.textureSize);
+    @Unique
     private static final NodeBossBarRenderer voidBlossomBarRenderer =
             new NodeBossBarRenderer(Entities.INSTANCE.getVOID_BLOSSOM().getTranslationKey(),
                     VoidBlossomEntity.Companion.getHpMilestones(),
@@ -40,8 +45,8 @@ public abstract class BossBarHudMixin {
             cancellable = true
     )
     private void renderCustomBossBar(DrawContext drawContext, int x, int y, BossBar bossBar, CallbackInfo ci) {
-        lichBossBarRenderer.renderBossBar(BARS_TEXTURE, drawContext, x, y, bossBar, ci);
-        voidBlossomBarRenderer.renderBossBar(BARS_TEXTURE, drawContext, x, y, bossBar, ci);
-        ObsidilithUtils.INSTANCE.getObsidilithBossBarRenderer().renderBossBar(BARS_TEXTURE, drawContext, x, y, bossBar, ci);
+        lichBossBarRenderer.renderBossBar(BACKGROUND_TEXTURES, PROGRESS_TEXTURES, drawContext, x, y, bossBar, ci);
+        voidBlossomBarRenderer.renderBossBar(BACKGROUND_TEXTURES, PROGRESS_TEXTURES, drawContext, x, y, bossBar, ci);
+        ObsidilithUtils.INSTANCE.getObsidilithBossBarRenderer().renderBossBar(BACKGROUND_TEXTURES, PROGRESS_TEXTURES, drawContext, x, y, bossBar, ci);
     }
 }

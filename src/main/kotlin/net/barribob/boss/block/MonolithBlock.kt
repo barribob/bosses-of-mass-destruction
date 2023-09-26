@@ -56,7 +56,7 @@ class MonolithBlock(private val factory: (FabricBlockEntityTypeBuilder.Factory<C
         state: BlockState?,
         type: BlockEntityType<T>?
     ): BlockEntityTicker<T>? {
-        return checkType(type, ModBlocks.monolithEntityType, ChunkCacheBlockEntity::tick)
+        return validateTicker(type, ModBlocks.monolithEntityType, ChunkCacheBlockEntity::tick)
     }
 
     override fun getOutlineShape(
