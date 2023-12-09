@@ -140,7 +140,7 @@ class MobWardBlock(private val factory: (FabricBlockEntityTypeBuilder.Factory<Ch
 
     override fun getPlacementState(ctx: ItemPlacementContext): BlockState? {
         val blockPos = ctx.blockPos
-        return if (blockPos.y < 254 &&
+        return if (blockPos.y < ctx.world.topY - 2 &&
             ctx.world.getBlockState(blockPos.up()).canReplace(ctx) &&
             ctx.world.getBlockState(blockPos.up(2)).canReplace(ctx)
         ) {
