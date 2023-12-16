@@ -17,6 +17,7 @@ import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.data.DataTracker
 import net.minecraft.entity.data.TrackedData
 import net.minecraft.entity.data.TrackedDataHandlerRegistry
+import net.minecraft.inventory.LootableInventory
 import net.minecraft.sound.SoundEvents
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
@@ -71,7 +72,7 @@ object ObsidilithUtils {
             eventScheduler.addEvent(TimedEvent({
                 val chestPos = blockPos.up(deathPillarHeight + 1)
                 world.setBlockState(chestPos, Blocks.SHULKER_BOX.defaultState, 2)
-                LootableContainerBlockEntity.setLootTable(world, actor.random, chestPos, Mod.identifier("chests/obsidilith"))
+                LootableInventory.setLootTable(world, actor.random, chestPos, Mod.identifier("chests/obsidilith"))
             }, deathPillarHeight * ticksBetweenPillarLayer))
 
             val expTicks = 20

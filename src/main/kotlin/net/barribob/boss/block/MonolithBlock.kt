@@ -1,5 +1,6 @@
 package net.barribob.boss.block
 
+import com.mojang.serialization.MapCodec
 import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.utils.VanillaCopies
 import net.fabricmc.fabric.api.`object`.builder.v1.block.entity.FabricBlockEntityTypeBuilder
@@ -68,6 +69,10 @@ class MonolithBlock(private val factory: (FabricBlockEntityTypeBuilder.Factory<C
         return if (state.get(HorizontalFacingBlock.FACING).axis === Direction.Axis.X) xAxisShape else zAxisShape
     }
 
+    override fun getCodec(): MapCodec<out BlockWithEntity> {
+        throw UnsupportedOperationException()
+    }
+
     override fun getStateForNeighborUpdate(
         state: BlockState,
         direction: Direction,
@@ -96,11 +101,11 @@ class MonolithBlock(private val factory: (FabricBlockEntityTypeBuilder.Factory<C
         }
     }
 
-    override fun onBreak(world: World, pos: BlockPos, state: BlockState, player: PlayerEntity) {
+    override fun onBreak(world: World, pos: BlockPos, state: BlockState, player: PlayerEntity): BlockState? {
         if (!world.isClient && player.isCreative) {
             VanillaCopies.onBreakInCreative(world, pos, state, player)
         }
-        super.onBreak(world, pos, state, player)
+        return super.onBreak(world, pos, state, player)
     }
 
     override fun getPlacementState(ctx: ItemPlacementContext): BlockState? {
