@@ -20,10 +20,12 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.barribob.boss.MainKt::init"
+      "net.barribob.boss.MainKt::init",
+      "net.barribob.maelstrom.MaelstromModKt::init"
     ],
     "client": [
-      "net.barribob.boss.MainKt::clientInit"
+      "net.barribob.boss.MainKt::clientInit",
+      "net.barribob.maelstrom.MaelstromModClientKt::clientInit"
     ],
     "cardinal-components-world": [
       "net.barribob.boss.cardinalComponents.ModComponents"
@@ -36,7 +38,8 @@
     ]
   },
   "mixins": [
-    "bosses.mixins.json"
+    "bosses.mixins.json",
+    "maelstrom.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.14.17",

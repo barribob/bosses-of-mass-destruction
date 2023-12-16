@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "net.barribob.maelstrom.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "mixins": [
+    "ArgumentTypeAccessor"
+  ],
+  "client": [
+    "RenderMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
