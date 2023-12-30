@@ -69,12 +69,10 @@ class VoidLilyBlockEntity(type: BlockEntityType<*>?, pos: BlockPos?, state: Bloc
             }
         }
 
-        @Environment(EnvType.CLIENT)
         private val pollenParticles = ClientParticleBuilder(Particles.POLLEN)
             .scale { age -> sin(age * Math.PI.toFloat()) * 0.04f }
             .age(30)
 
-        @Environment(EnvType.CLIENT)
         fun spawnVoidLilyParticles(world: World, pos: Vec3d, dir: Vec3d) {
             val streakPos = pos.add(Vec3d(0.5, 0.7, 0.5)).add(RandomUtils.randVec().multiply(0.5))
             val right = dir.crossProduct(VecUtils.yAxis).normalize()
