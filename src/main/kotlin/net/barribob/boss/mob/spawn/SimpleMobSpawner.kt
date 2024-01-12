@@ -6,7 +6,6 @@ import net.minecraft.entity.SpawnReason
 import net.minecraft.entity.mob.MobEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.Vec3d
-import net.minecraft.world.MobSpawnerLogic
 
 /**
  * Logic sourced from [MobSpawnerLogic.update]

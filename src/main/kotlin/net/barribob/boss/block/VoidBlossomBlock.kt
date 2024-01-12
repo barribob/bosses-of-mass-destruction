@@ -107,7 +107,7 @@ class VoidBlossomBlock(settings: Settings?) : Block(settings) {
         context: ShapeContext?
     ): VoxelShape = shape
 
-    override fun onBreak(world: World, pos: BlockPos, state: BlockState?, player: PlayerEntity) {
+    override fun onBreak(world: World, pos: BlockPos, state: BlockState?, player: PlayerEntity): BlockState? {
         if (world.isClient) {
             for (i in 0 until 12) {
                 val vel = VecUtils.yAxis.multiply(RandomUtils.range(0.1, 0.2))
@@ -116,7 +116,7 @@ class VoidBlossomBlock(settings: Settings?) : Block(settings) {
                 spikeParticleFactory.build(spawnPos, vel)
             }
         }
-        super.onBreak(world, pos, state, player)
+        return super.onBreak(world, pos, state, player)
     }
 
     companion object {

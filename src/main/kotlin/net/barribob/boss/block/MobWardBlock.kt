@@ -1,5 +1,6 @@
 package net.barribob.boss.block
 
+import com.mojang.serialization.MapCodec
 import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.mob.mobs.lich.LichUtils
 import net.barribob.boss.particle.ClientParticleBuilder
@@ -67,6 +68,10 @@ class MobWardBlock(private val factory: (FabricBlockEntityTypeBuilder.Factory<Ch
         tooltip.add(Text.translatable("item.bosses_of_mass_destruction.mob_ward.tooltip").formatted(Formatting.DARK_GRAY))
     }
 
+    override fun getCodec(): MapCodec<out BlockWithEntity> {
+        throw UnsupportedOperationException()
+    }
+
     override fun getStateForNeighborUpdate(
         state: BlockState,
         direction: Direction,
@@ -109,7 +114,7 @@ class MobWardBlock(private val factory: (FabricBlockEntityTypeBuilder.Factory<Ch
         }
     }
 
-    override fun onBreak(world: World, pos: BlockPos, state: BlockState, player: PlayerEntity) {
+    override fun onBreak(world: World, pos: BlockPos, state: BlockState, player: PlayerEntity): BlockState? {
         if (!world.isClient && player.isCreative) {
             val part = state.get(tripleBlockPart)
             if (part == TripleBlockPart.MIDDLE) {
@@ -121,7 +126,7 @@ class MobWardBlock(private val factory: (FabricBlockEntityTypeBuilder.Factory<Ch
             }
         }
 
-        super.onBreak(world, pos, state, player)
+        return super.onBreak(world, pos, state, player)
     }
 
     private fun checkBreakPart(

@@ -1,5 +1,6 @@
 package net.barribob.boss.block
 
+import com.mojang.serialization.MapCodec
 import net.fabricmc.fabric.api.`object`.builder.v1.block.entity.FabricBlockEntityTypeBuilder
 import net.minecraft.block.*
 import net.minecraft.block.entity.BlockEntity
@@ -35,6 +36,10 @@ class LevitationBlock(private val factory: (FabricBlockEntityTypeBuilder.Factory
     private val bottomShape = createCuboidShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0)
     private val tableShape = createCuboidShape(2.0, 2.0, 2.0, 14.0, 14.0, 14.0)
     override fun createBlockEntity(pos: BlockPos?, state: BlockState?): BlockEntity? = factory?.create(pos, state)
+    override fun getCodec(): MapCodec<out BlockWithEntity> {
+        throw UnsupportedOperationException()
+    }
+
     override fun getRenderType(state: BlockState?): BlockRenderType = BlockRenderType.MODEL
 
     override fun <T : BlockEntity?> getTicker(

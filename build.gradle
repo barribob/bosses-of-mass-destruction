@@ -48,10 +48,8 @@ dependencies {
     )
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${project.junit_version}")
 
-    modImplementation "com.github.miyo6032:maelstrom-lib:${project.maelstrom_commit_hash}"
     modImplementation "com.github.miyo6032:MultipartEntities:${project.multipart_commit_hash}"
 
-    include "com.github.miyo6032:maelstrom-lib:${project.maelstrom_commit_hash}"
     include "com.github.miyo6032:MultipartEntities:${project.multipart_commit_hash}"
 
     modImplementation "software.bernie.geckolib:geckolib-${project.geckolib_minecraft_version}:${project.geckolib_version}"

@@ -36,7 +36,7 @@ class PunchAction(
         val unclenchTime = 56
 
         val breakBoundCenter = BlockPos.ofFloored(entity.pos.add(entity.rotationVector))
-        val breakBounds = Box(breakBoundCenter.subtract(BlockPos(1, 1, 1)), breakBoundCenter.add(1, 2, 1))
+        val breakBounds = Box.enclosing(breakBoundCenter.subtract(BlockPos(1, 1, 1)), breakBoundCenter.add(1, 2, 1))
         entity.destroyBlocks(breakBounds)
         entity.addVelocity(0.0, 0.7, 0.0)
         eventScheduler.addEvent(TimedEvent({

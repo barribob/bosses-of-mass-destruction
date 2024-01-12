@@ -25,9 +25,9 @@ class GauntletBlackstoneBlock(settings: Settings) : Block(settings) {
         .color(ModColors.LASER_RED)
         .colorVariation(0.2)
 
-    override fun onBreak(world: World, pos: BlockPos, state: BlockState, player: PlayerEntity) {
+    override fun onBreak(world: World, pos: BlockPos, state: BlockState, player: PlayerEntity): BlockState? {
 
-        if(world.isClient) return
+        if(world.isClient) return state
 
         for (dir in listOf(Direction.EAST, Direction.WEST, Direction.NORTH, Direction.SOUTH)) {
             val centerPos = pos.add(dir.vector)
@@ -37,7 +37,7 @@ class GauntletBlackstoneBlock(settings: Settings) : Block(settings) {
                 break
             }
         }
-        super.onBreak(world, pos, state, player)
+        return super.onBreak(world, pos, state, player)
     }
 
     private fun spawnGauntlet(centerPos: BlockPos, world: World) {
