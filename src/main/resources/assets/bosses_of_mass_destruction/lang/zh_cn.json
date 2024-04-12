@@ -140,8 +140,8 @@
   "text.autoconfig.bosses_of_mass_destruction.option.obsidilithConfig.anvilAttackExplosionStrength" : "铁砧攻击爆炸强度",
   "text.autoconfig.bosses_of_mass_destruction.option.obsidilithConfig.arenaGeneration" : "斗技场生成",
   "text.autoconfig.bosses_of_mass_destruction.option.obsidilithConfig.arenaGeneration.generationHeight" : "生成高度",
-  "text.autoconfig.bosses_of_mass_destruction.option.obsidilithConfig.arenaGeneration.generationSpacing" : "异种结构间隔",
-  "text.autoconfig.bosses_of_mass_destruction.option.obsidilithConfig.arenaGeneration.generationSeparation" : "同种结构间隔",
+  "text.autoconfig.bosses_of_mass_destruction.option.obsidilithConfig.arenaGeneration.generationSpacing" : "平均结构间隔",
+  "text.autoconfig.bosses_of_mass_destruction.option.obsidilithConfig.arenaGeneration.generationSeparation" : "最小结构间隔",
   "text.autoconfig.bosses_of_mass_destruction.option.obsidilithConfig.arenaGeneration.generationEnabled" : "允许生成",
 
   "text.autoconfig.bosses_of_mass_destruction.category.Gauntlet" : "下界铁掌",
@@ -154,8 +154,8 @@
   "text.autoconfig.bosses_of_mass_destruction.option.gauntletConfig.energizedPunchExplosionSize" : "充能攻击爆炸强度",
   "text.autoconfig.bosses_of_mass_destruction.option.gauntletConfig.normalPunchExplosionMultiplier" : "普通攻击爆炸倍率",
   "text.autoconfig.bosses_of_mass_destruction.option.gauntletConfig.arenaGeneration" : "斗技场生成",
-  "text.autoconfig.bosses_of_mass_destruction.option.gauntletConfig.arenaGeneration.generationSpacing" : "异种结构间隔",
-  "text.autoconfig.bosses_of_mass_destruction.option.gauntletConfig.arenaGeneration.generationSeparation" : "同种结构间隔",
+  "text.autoconfig.bosses_of_mass_destruction.option.gauntletConfig.arenaGeneration.generationSpacing" : "平均结构间隔",
+  "text.autoconfig.bosses_of_mass_destruction.option.gauntletConfig.arenaGeneration.generationSeparation" : "最小结构间隔",
   "text.autoconfig.bosses_of_mass_destruction.option.gauntletConfig.arenaGeneration.generationEnabled" : "允许生成",
   
   "text.autoconfig.bosses_of_mass_destruction.category.VoidBlossom" : "虚空之花",
@@ -165,8 +165,8 @@
   "text.autoconfig.bosses_of_mass_destruction.option.voidBlossomConfig.idleHealingPerTick" : "脱战状态下每刻的生命值回复量",
   "text.autoconfig.bosses_of_mass_destruction.option.voidBlossomConfig.experienceDrop" : "经验掉落量",
   "text.autoconfig.bosses_of_mass_destruction.option.voidBlossomConfig.arenaGeneration" : "斗技场生成",
-  "text.autoconfig.bosses_of_mass_destruction.option.voidBlossomConfig.arenaGeneration.generationSpacing" : "异种结构间隔",
-  "text.autoconfig.bosses_of_mass_destruction.option.voidBlossomConfig.arenaGeneration.generationSeparation" : "同种结构间隔",
+  "text.autoconfig.bosses_of_mass_destruction.option.voidBlossomConfig.arenaGeneration.generationSpacing" : "平均结构间隔",
+  "text.autoconfig.bosses_of_mass_destruction.option.voidBlossomConfig.arenaGeneration.generationSeparation" : "最小结构间隔",
   "text.autoconfig.bosses_of_mass_destruction.option.voidBlossomConfig.arenaGeneration.generationEnabled" : "允许生成"
 
   "text.autoconfig.bosses_of_mass_destruction.category.General" : "通用",
