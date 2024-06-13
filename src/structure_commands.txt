@@ -1,0 +1,4 @@
+/setblock ~ ~ ~ minecraft:chest{LootTable:"bosses_of_mass_destruction:chests/lich_tower"}
+/setblock ~ ~ ~ minecraft:chest[facing=east]{LootTable:"bosses_of_mass_destruction:chests/lich_tower"}
+/setblock ~ ~ ~ minecraft:chest[facing=south]{LootTable:"bosses_of_mass_destruction:chests/lich_tower"}
+/setblock ~ ~1 ~ spawner{SpawnData:{entity:{id:skeleton,HandItems:[{Count:1,id:stone_sword,tag:{Enchantments:[{id:sharpness,lvl:1}]}},{}],ArmorItems:[{Count:1,id:chainmail_boots,tag:{Enchantments:[{id:protection,lvl:1},{id:feather_falling,lvl:2}]}},{Count:1,id:chainmail_leggings,tag:{Enchantments:[{id:protection,lvl:1}]}},{Count:1,id:chainmail_chestplate,tag:{Enchantments:[{id:protection,lvl:1}]}},{Count:1,id:chainmail_helmet,tag:{Enchantments:[{id:protection,lvl:1}]}}]}},Delay:117,MinSpawnDelay:600} replace
