@@ -13,11 +13,6 @@
             }
           ]
         }
-      ],
-      "conditions": [
-        {
-          "condition": "minecraft:killed_by_player"
-        }
       ]
     },
     {
@@ -35,11 +30,6 @@
               }
             }
           ]
-        }
-      ],
-      "conditions": [
-        {
-          "condition": "minecraft:killed_by_player"
         }
       ]
     },
@@ -59,11 +49,6 @@
             }
           ]
         }
-      ],
-      "conditions": [
-        {
-          "condition": "minecraft:killed_by_player"
-        }
       ]
     },
     {
@@ -79,11 +64,6 @@
               "treasure": true
             }
           ]
-        }
-      ],
-      "conditions": [
-        {
-          "condition": "minecraft:killed_by_player"
         }
       ]
     }
