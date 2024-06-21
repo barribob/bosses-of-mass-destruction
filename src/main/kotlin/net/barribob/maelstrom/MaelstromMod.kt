@@ -4,17 +4,10 @@ import net.barribob.boss.Mod
 import net.barribob.maelstrom.MaelstromMod.isDevelopmentEnvironment
 import net.barribob.maelstrom.general.command.TestArgumentType
 import net.barribob.maelstrom.general.command.TestCommand
-import net.barribob.maelstrom.general.event.EventScheduler
 import net.barribob.maelstrom.general.io.ConsoleLogger
 import net.barribob.maelstrom.general.io.ILogger
 import net.barribob.maelstrom.mixin.ArgumentTypeAccessor
-import net.barribob.maelstrom.render.RenderMap
-import net.barribob.maelstrom.static_utilities.DebugPointsNetworkHandler
-import net.barribob.maelstrom.static_utilities.InGameTests
-import net.fabricmc.api.EnvType
-import net.fabricmc.api.Environment
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.command.argument.serialize.ConstantArgumentSerializer
 import net.minecraft.registry.Registries
@@ -25,14 +18,8 @@ object MaelstromMod {
     internal const val MODID = Mod.MODID
     internal val DRAW_POINTS_PACKET_ID = Identifier(MODID, "draw_points")
 
-    val renderMap = RenderMap()
-
-    @Deprecated("Causes unknown behavior across worlds")
-    internal val clientEventScheduler = EventScheduler()
-
     val LOGGER: ILogger = ConsoleLogger(LogManager.getLogger())
-    val debugPoints = DebugPointsNetworkHandler()
-    val testCommand = TestCommand(InGameTests(debugPoints))
+    val testCommand = TestCommand()
 
     val isDevelopmentEnvironment = FabricLoader.getInstance().isDevelopmentEnvironment
 }

@@ -3,7 +3,7 @@ package net.barribob.boss.projectile.comet
 import net.barribob.boss.mob.GeoModel
 import net.barribob.boss.mob.utils.animation.ICodeAnimations
 import net.minecraft.util.math.MathHelper
-import software.bernie.geckolib.core.animation.AnimationState
+import software.bernie.geckolib.animation.AnimationState
 
 class CometCodeAnimations : ICodeAnimations<CometProjectile> {
     override fun animate(

@@ -15,7 +15,7 @@ import net.barribob.maelstrom.static_utilities.asVec3d
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.minecraft.block.BlockState
-import net.minecraft.client.item.TooltipContext
+import net.minecraft.client.item.TooltipType
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.EnderEyeItem
 import net.minecraft.item.Item
@@ -38,9 +38,9 @@ import net.minecraft.world.World
 class SoulStarItem(settings: Settings?) : Item(settings) {
     override fun appendTooltip(
         stack: ItemStack?,
-        world: World?,
+        context: TooltipContext?,
         tooltip: MutableList<Text>,
-        context: TooltipContext?
+        type: TooltipType?
     ) {
         tooltip.add(Text.translatable("item.bosses_of_mass_destruction.soul_star.tooltip").formatted(Formatting.DARK_GRAY))
     }

@@ -4,8 +4,8 @@ import net.barribob.boss.mob.utils.animation.ICodeAnimations
 import net.barribob.boss.render.ITextureProvider
 import net.minecraft.client.render.RenderLayer
 import net.minecraft.util.Identifier
-import software.bernie.geckolib.core.animatable.GeoAnimatable
-import software.bernie.geckolib.core.animation.AnimationState
+import software.bernie.geckolib.animatable.GeoAnimatable
+import software.bernie.geckolib.animation.AnimationState
 import software.bernie.geckolib.model.GeoModel
 
 class GeoModel<T>(

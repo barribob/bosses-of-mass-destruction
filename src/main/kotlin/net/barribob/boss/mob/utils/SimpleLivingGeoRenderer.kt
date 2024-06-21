@@ -9,9 +9,9 @@ import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.entity.Entity
 import net.minecraft.util.math.BlockPos
 import org.joml.Vector4f
+import software.bernie.geckolib.animatable.GeoAnimatable
 import software.bernie.geckolib.cache.`object`.BakedGeoModel
 import software.bernie.geckolib.cache.`object`.GeoBone
-import software.bernie.geckolib.core.animatable.GeoAnimatable
 import software.bernie.geckolib.model.GeoModel
 import software.bernie.geckolib.renderer.GeoEntityRenderer
 
@@ -117,8 +117,8 @@ class SimpleLivingGeoRenderer<T>(
         renderWithModel?.render(model, partialTick, poseStack, bufferSource, packedLight, packetOverlay, red, green, blue, alpha)
     }
 
-    override fun getPackedOverlay(animatable: T, u: Float): Int {
-        return overlayOverride?.getOverlay() ?: super.getPackedOverlay(animatable, u)
+    override fun getPackedOverlay(animatable: T, u: Float, partialTick: Float): Int {
+        return overlayOverride?.getOverlay() ?: super.getPackedOverlay(animatable, u, partialTick)
     }
 
     override fun getDeathMaxRotation(entityLivingBaseIn: T): Float = if(deathRotation) 90f else 0f

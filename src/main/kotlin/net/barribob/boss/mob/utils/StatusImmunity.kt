@@ -7,6 +7,6 @@ class StatusImmunity(vararg statusEffects: StatusEffect): IStatusEffectFilter {
     private val statusEffectList = statusEffects.toList()
 
     override fun canHaveStatusEffect(effect: StatusEffectInstance): Boolean {
-        return !statusEffectList.contains(effect.effectType)
+        return !statusEffectList.contains(effect.effectType.value())
     }
 }

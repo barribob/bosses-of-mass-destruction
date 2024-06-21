@@ -1,7 +1,6 @@
 package net.barribob.boss.projectile
 
 import net.barribob.boss.mob.Entities
-import net.barribob.boss.mob.mobs.gauntlet.GauntletEntity
 import net.barribob.boss.projectile.util.ExemptEntities
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.LivingEntity
@@ -18,9 +17,12 @@ class PetalBladeProjectile : BaseThrownItemEntity {
     private var entityHit: ((LivingEntity) -> Unit)? = null
 
     constructor(entityType: EntityType<out ThrownItemEntity>, world: World?) : super(entityType, world) {
-        dataTracker.startTracking(renderRotation, 0f)
     }
 
+    override fun initDataTracker(builder: DataTracker.Builder) {
+        super.initDataTracker(builder)
+        builder.add(renderRotation, 0f)
+    }
 
     constructor(livingEntity: LivingEntity, world: World, entityHit: (LivingEntity) -> Unit, exemptEntities: List<EntityType<*>>, rotation: Float) : super(
         Entities.PETAL_BLADE,
@@ -28,7 +30,6 @@ class PetalBladeProjectile : BaseThrownItemEntity {
         world,
         ExemptEntities(exemptEntities)
     ) {
-        dataTracker.startTracking(renderRotation, rotation)
         this.entityHit = entityHit
     }
 
@@ -53,6 +54,6 @@ class PetalBladeProjectile : BaseThrownItemEntity {
     }
 
     companion object {
-        val renderRotation: TrackedData<Float> = DataTracker.registerData(GauntletEntity::class.java, TrackedDataHandlerRegistry.FLOAT)
+        val renderRotation: TrackedData<Float> = DataTracker.registerData(PetalBladeProjectile::class.java, TrackedDataHandlerRegistry.FLOAT)
     }
 }

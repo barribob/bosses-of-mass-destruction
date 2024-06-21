@@ -17,7 +17,6 @@ class SimpleMobSpawner(private val serverWorld: ServerWorld) : IMobSpawner {
             entity.initialize(serverWorld,
                 serverWorld.getLocalDifficulty(entity.getBlockPos()),
                 SpawnReason.MOB_SUMMONED,
-                null,
                 null)
         }
 

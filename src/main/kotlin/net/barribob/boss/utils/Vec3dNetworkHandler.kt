@@ -1,30 +1,32 @@
 package net.barribob.boss.utils
 
 import net.barribob.boss.Mod
-import net.barribob.maelstrom.static_utilities.readVec3d
-import net.barribob.maelstrom.static_utilities.writeVec3d
+import net.barribob.boss.packets.Vec3dPacket
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking
 import net.minecraft.client.MinecraftClient
-import net.minecraft.network.PacketByteBuf
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 
 class Vec3dNetworkHandler {
-    private val clientVec3dId = Mod.identifier("client_vec3d")
 
     fun clientInit() {
-        ClientPlayNetworking.registerGlobalReceiver(clientVec3dId) { client, _, buf, _ ->
-            handleVec3dPacket(client, buf)
+        ClientPlayNetworking.registerGlobalReceiver(Vec3dPacket.ID) { packet, context ->
+            handleVec3dPacket(context.client(), packet)
         }
     }
 
-    private fun handleVec3dPacket(client: MinecraftClient, buf: PacketByteBuf) {
-        val id = buf.readInt()
-        val pos = buf.readVec3d()
+
+    fun registerHandlers() {
+        PayloadTypeRegistry.playS2C().register(Vec3dPacket.ID, Vec3dPacket.CODEC);
+    }
+
+    private fun handleVec3dPacket(client: MinecraftClient, packet: Vec3dPacket) {
+        val id = packet.id
+        val pos = packet.pos
 
         client.execute {
             val world = client.world
@@ -36,11 +38,9 @@ class Vec3dNetworkHandler {
     }
 
     fun sendVec3dPacket(world: ServerWorld, pos: Vec3d, id: VecId) {
-        val buf: PacketByteBuf = PacketByteBufs.create()
-        buf.writeInt(id.ordinal)
-        buf.writeVec3d(pos)
+        val packet = Vec3dPacket(id.ordinal, pos)
         for (player in PlayerLookup.tracking(world, BlockPos.ofFloored(pos))) {
-            ServerPlayNetworking.send(player, clientVec3dId, buf)
+            ServerPlayNetworking.send(player, packet)
         }
     }
 

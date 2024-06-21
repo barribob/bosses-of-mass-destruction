@@ -6,8 +6,6 @@ import net.barribob.boss.render.IBoneLight
 import net.barribob.boss.render.ModBlockEntityRenderer
 import net.barribob.boss.utils.ModUtils
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap
-import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings
 import net.fabricmc.fabric.api.`object`.builder.v1.block.FabricBlockSettings
 import net.fabricmc.fabric.api.`object`.builder.v1.block.entity.FabricBlockEntityTypeBuilder
 import net.minecraft.block.Block
@@ -16,7 +14,9 @@ import net.minecraft.block.MapColor
 import net.minecraft.block.entity.BlockEntity
 import net.minecraft.block.entity.BlockEntityType
 import net.minecraft.client.render.RenderLayer
+import net.minecraft.client.render.block.entity.BlockEntityRendererFactories
 import net.minecraft.item.BlockItem
+import net.minecraft.item.Item
 import net.minecraft.registry.Registries
 import net.minecraft.registry.Registry
 import net.minecraft.sound.BlockSoundGroup
@@ -109,7 +109,7 @@ object ModBlocks {
         BlockRenderLayerMap.INSTANCE.putBlock(vineWall, RenderLayer.getCutout())
         BlockRenderLayerMap.INSTANCE.putBlock(voidLilyBlock, RenderLayer.getCutout())
 
-        BlockEntityRendererRegistry.register(levitationBlockEntityType) {
+        BlockEntityRendererFactories.register(levitationBlockEntityType) {
             ModBlockEntityRenderer(
                 GeoModel<LevitationBlockEntity>(
                     { Mod.identifier("geo/levitation_block.geo.json") },
@@ -130,7 +130,7 @@ object ModBlocks {
 
     private fun registerBlockAndItem(identifier: Identifier, block: Block, addToItemGroup: Boolean = false) {
         Registry.register(Registries.BLOCK, identifier, block)
-        val blockItem = BlockItem(block, FabricItemSettings())
+        val blockItem = BlockItem(block, Item.Settings())
         Registry.register(Registries.ITEM, identifier, blockItem)
         if (addToItemGroup)
             ModUtils.addItemToGroup(blockItem)   

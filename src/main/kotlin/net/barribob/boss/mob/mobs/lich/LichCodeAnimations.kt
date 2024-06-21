@@ -4,7 +4,7 @@ import net.barribob.boss.mob.GeoModel
 import net.barribob.boss.mob.utils.animation.ICodeAnimations
 import net.barribob.maelstrom.static_utilities.MathUtils
 import net.minecraft.util.math.MathHelper
-import software.bernie.geckolib.core.animation.AnimationState
+import software.bernie.geckolib.animation.AnimationState
 
 class LichCodeAnimations : ICodeAnimations<LichEntity> {
     override fun animate(animatable: LichEntity, data: AnimationState<*>, geoModel: GeoModel<LichEntity>) {

@@ -5,7 +5,6 @@ import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.boss.config.ModConfig
 import net.barribob.boss.particle.ClientParticleBuilder
 import net.barribob.boss.particle.Particles
-import net.barribob.boss.utils.AnimationUtils
 import net.barribob.boss.utils.ModColors
 import net.barribob.maelstrom.static_utilities.RandomUtils
 import net.barribob.maelstrom.static_utilities.asVec3d
@@ -21,9 +20,10 @@ import net.minecraft.util.math.ChunkPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import software.bernie.geckolib.animatable.GeoBlockEntity
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
-import software.bernie.geckolib.core.animation.AnimatableManager
-import software.bernie.geckolib.core.animation.AnimationController
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache
+import software.bernie.geckolib.animation.AnimatableManager
+import software.bernie.geckolib.animation.AnimationController
+import software.bernie.geckolib.animation.RawAnimation
 import software.bernie.geckolib.util.GeckoLibUtil
 
 
@@ -33,11 +33,7 @@ class LevitationBlockEntity(
 ) : ChunkCacheBlockEntity(block, type, pos, state), GeoBlockEntity {
     override fun registerControllers(data: AnimatableManager.ControllerRegistrar) {
         data.add(
-            AnimationController(
-                this,
-                0,
-                AnimationUtils.createIdlePredicate("rotate")
-            )
+            AnimationController(this) { it.setAndContinue(rotate) }
         )
     }
 
@@ -46,6 +42,7 @@ class LevitationBlockEntity(
     override fun getAnimatableInstanceCache(): AnimatableInstanceCache = animationFactory
 
     companion object {
+        val rotate: RawAnimation = RawAnimation.begin().thenLoop("rotate")
         private val flight = HashSet<ServerPlayerEntity>()
         private val particlesFactory = ClientParticleBuilder(Particles.LINE)
             .color(ModColors.COMET_BLUE)

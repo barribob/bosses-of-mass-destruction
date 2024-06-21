@@ -4,15 +4,15 @@ import net.minecraft.client.particle.Particle
 import net.minecraft.client.particle.ParticleFactory
 import net.minecraft.client.particle.SpriteProvider
 import net.minecraft.client.world.ClientWorld
-import net.minecraft.particle.DefaultParticleType
+import net.minecraft.particle.SimpleParticleType
 import net.minecraft.util.math.Vec3d
 
 class SimpleParticleFactory(
     private val spriteProvider: SpriteProvider,
     private val particleFactory: (ParticleContext) -> Particle
-) : ParticleFactory<DefaultParticleType> {
+) : ParticleFactory<SimpleParticleType> {
     override fun createParticle(
-        parameters: DefaultParticleType?,
+        parameters: SimpleParticleType?,
         world: ClientWorld,
         x: Double,
         y: Double,

@@ -11,10 +11,9 @@ import net.barribob.maelstrom.general.event.EventScheduler
 import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.static_utilities.*
 import net.minecraft.entity.effect.StatusEffectInstance
-import net.minecraft.registry.Registries
+import net.minecraft.entity.effect.StatusEffects
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.sound.SoundCategory
-import net.minecraft.util.Identifier
 import net.minecraft.util.math.Vec3d
 
 class VolleyRageAction(
@@ -23,19 +22,16 @@ class VolleyRageAction(
     private val eventScheduler: EventScheduler,
     private val shouldCancel: () -> Boolean
 ) : IActionWithCooldown {
-    private val missileStatusEffect = Registries.STATUS_EFFECT.getOrEmpty(Identifier(mobConfig.missile.statusEffectId))
     private val missileStatusDuration = mobConfig.missile.statusEffectDuration
     private val missileStatusPotency = mobConfig.missile.statusEffectPotency
     private val missileThrower = { offset: Vec3d ->
         ProjectileThrower {
             val projectile = MagicMissileProjectile(entity, entity.world, {
-                missileStatusEffect.ifPresent { effect ->
-                    it.addStatusEffect(
-                        StatusEffectInstance(effect,
-                            missileStatusDuration,
-                            missileStatusPotency)
-                    )
-                }
+                it.addStatusEffect(
+                    StatusEffectInstance(StatusEffects.SLOWNESS,
+                        missileStatusDuration,
+                        missileStatusPotency)
+                )
             }, listOf(MinionAction.summonEntityType))
             projectile.setPos(entity.eyePos().add(offset))
             ProjectileData(projectile, 1.6f, 0f)

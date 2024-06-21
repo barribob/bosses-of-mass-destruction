@@ -9,9 +9,10 @@ import net.minecraft.block.entity.BlockEntity
 import net.minecraft.block.entity.BlockEntityTicker
 import net.minecraft.block.entity.BlockEntityType
 import net.minecraft.block.enums.DoubleBlockHalf
-import net.minecraft.client.item.TooltipContext
+import net.minecraft.client.item.TooltipType
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.item.Item
 import net.minecraft.item.ItemPlacementContext
 import net.minecraft.item.ItemStack
 import net.minecraft.state.StateManager
@@ -41,12 +42,12 @@ class MonolithBlock(private val factory: (FabricBlockEntityTypeBuilder.Factory<C
 
     override fun appendTooltip(
         stack: ItemStack?,
-        world: BlockView?,
-        tooltip: MutableList<Text>,
-        options: TooltipContext?
+        context: Item.TooltipContext?,
+        tooltip: MutableList<Text>?,
+        options: TooltipType?
     ) {
-        tooltip.add(Text.translatable("item.bosses_of_mass_destruction.monolith_block.tooltip_0").formatted(Formatting.DARK_GRAY))
-        tooltip.add(Text.translatable("item.bosses_of_mass_destruction.monolith_block.tooltip_1").formatted(Formatting.DARK_GRAY))
+        tooltip?.add(Text.translatable("item.bosses_of_mass_destruction.monolith_block.tooltip_0").formatted(Formatting.DARK_GRAY))
+        tooltip?.add(Text.translatable("item.bosses_of_mass_destruction.monolith_block.tooltip_1").formatted(Formatting.DARK_GRAY))
     }
 
     override fun createBlockEntity(pos: BlockPos?, state: BlockState?): BlockEntity? = factory?.create(pos, state)

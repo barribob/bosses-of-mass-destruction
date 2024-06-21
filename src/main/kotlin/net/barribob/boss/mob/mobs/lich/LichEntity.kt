@@ -24,7 +24,6 @@ import net.barribob.maelstrom.static_utilities.MathUtils
 import net.barribob.maelstrom.static_utilities.eyePos
 import net.minecraft.block.BlockState
 import net.minecraft.entity.Entity
-import net.minecraft.entity.EntityGroup
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.ai.goal.SwimGoal
 import net.minecraft.entity.boss.BossBar
@@ -39,8 +38,8 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Box
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
-import software.bernie.geckolib.core.animation.AnimatableManager
-import software.bernie.geckolib.core.animation.AnimationController
+import software.bernie.geckolib.animation.AnimatableManager
+import software.bernie.geckolib.animation.AnimationController
 
 class LichEntity(entityType: EntityType<out LichEntity>, world: World, private val mobConfig: LichConfig) : BaseEntity(
     entityType,
@@ -131,7 +130,6 @@ class LichEntity(entityType: EntityType<out LichEntity>, world: World, private v
 
     override fun collidesWith(other: Entity?): Boolean = collides
     override fun handleFallDamage(fallDistance: Float, damageMultiplier: Float, damageSource: DamageSource?) = false
-    override fun getGroup(): EntityGroup = EntityGroup.UNDEAD
     override fun checkDespawn() = ModUtils.preventDespawnExceptPeaceful(this, world)
     override fun getHurtSound(source: DamageSource) = Mod.sounds.lichHurt
     override fun getDeathSound(): SoundEvent = Mod.sounds.lichDeath

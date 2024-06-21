@@ -20,8 +20,6 @@ class LichConfig {
     val summonMechanic = SummonMechanic()
 
     data class Missile(
-        val statusEffectId: String = "minecraft:slowness",
-
         @ConfigEntry.BoundedDiscrete(min = 0, max = 1000)
         val statusEffectDuration: Int = 100,
 

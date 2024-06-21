@@ -9,7 +9,8 @@
       "translate": "advancements.adventure.night_lich_defeat.description"
     },
     "icon": {
-      "item": "minecraft:bone_block"
+      "count" : 1,
+      "id": "bosses_of_mass_destruction:soul_star"
     },
     "frame": "challenge",
     "show_toast": true,

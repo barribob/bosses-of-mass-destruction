@@ -4,7 +4,7 @@ import net.barribob.boss.mob.GeoModel
 import net.barribob.boss.mob.utils.animation.ICodeAnimations
 import net.barribob.boss.projectile.SporeBallProjectile
 import net.minecraft.util.math.MathHelper
-import software.bernie.geckolib.core.animation.AnimationState
+import software.bernie.geckolib.animation.AnimationState
 
 class SporeCodeAnimations : ICodeAnimations<SporeBallProjectile> {
     override fun animate(animatable: SporeBallProjectile, data: AnimationState<*>, geoModel: GeoModel<SporeBallProjectile>) {

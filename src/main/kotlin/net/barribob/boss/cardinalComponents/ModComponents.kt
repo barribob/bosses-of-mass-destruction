@@ -1,15 +1,15 @@
 package net.barribob.boss.cardinalComponents
 
-import dev.onyxstudios.cca.api.v3.component.ComponentKey
-import dev.onyxstudios.cca.api.v3.component.ComponentRegistryV3
-import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry
-import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer
-import dev.onyxstudios.cca.api.v3.world.WorldComponentFactoryRegistry
-import dev.onyxstudios.cca.api.v3.world.WorldComponentInitializer
 import net.barribob.boss.Mod
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
+import org.ladysnake.cca.api.v3.component.ComponentKey
+import org.ladysnake.cca.api.v3.component.ComponentRegistryV3
+import org.ladysnake.cca.api.v3.entity.EntityComponentFactoryRegistry
+import org.ladysnake.cca.api.v3.entity.EntityComponentInitializer
+import org.ladysnake.cca.api.v3.world.WorldComponentFactoryRegistry
+import org.ladysnake.cca.api.v3.world.WorldComponentInitializer
 import java.util.*
 
 class ModComponents : WorldComponentInitializer, EntityComponentInitializer {

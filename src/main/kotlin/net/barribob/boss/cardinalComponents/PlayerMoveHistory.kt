@@ -3,6 +3,7 @@ package net.barribob.boss.cardinalComponents
 import net.barribob.maelstrom.general.data.HistoricalData
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.nbt.NbtCompound
+import net.minecraft.registry.RegistryWrapper
 import net.minecraft.util.math.Vec3d
 
 class PlayerMoveHistory(val player: PlayerEntity) : IPlayerMoveHistoryComponent {
@@ -21,10 +22,9 @@ class PlayerMoveHistory(val player: PlayerEntity) : IPlayerMoveHistoryComponent 
     }
 
     override fun getHistoricalPositions(): List<Vec3d> = positionalHistory.getAll()
-
-    override fun readFromNbt(p0: NbtCompound) {
+    override fun readFromNbt(tag: NbtCompound, registryLookup: RegistryWrapper.WrapperLookup) {
     }
 
-    override fun writeToNbt(p0: NbtCompound) {
+    override fun writeToNbt(tag: NbtCompound, registryLookup: RegistryWrapper.WrapperLookup) {
     }
 }

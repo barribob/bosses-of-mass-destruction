@@ -12,8 +12,6 @@ import net.barribob.boss.mob.utils.*
 import net.barribob.boss.utils.ModUtils
 import net.barribob.boss.utils.VanillaCopies
 import net.minecraft.block.BlockState
-import net.minecraft.entity.EntityDimensions
-import net.minecraft.entity.EntityPose
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.boss.BossBar
 import net.minecraft.entity.boss.ServerBossBar
@@ -28,7 +26,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Box
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
-import software.bernie.geckolib.core.animation.AnimatableManager
+import software.bernie.geckolib.animation.AnimatableManager
 
 class GauntletEntity(entityType: EntityType<out PathAwareEntity>, world: World, mobConfig: GauntletConfig) :
     BaseEntity(entityType, world),
@@ -50,7 +48,8 @@ class GauntletEntity(entityType: EntityType<out PathAwareEntity>, world: World, 
             Pair(GauntletAttacks.blindnessAttack, AnimationHolder.Animation("cast", "idle")),
             Pair(3, AnimationHolder.Animation("death", "idle"))
         ),
-        GauntletAttacks.stopAttackAnimation
+        GauntletAttacks.stopAttackAnimation,
+        0
     )
     override val damageHandler = CompositeDamageHandler(hitboxHelper, gauntletGoalHandler, damageMemory)
     override val statusHandler = CompositeStatusHandler(animationHandler, laserHandler, clientBlindnessHandler)
@@ -58,7 +57,7 @@ class GauntletEntity(entityType: EntityType<out PathAwareEntity>, world: World, 
     override val clientTick = laserHandler
     override val serverTick = IEntityTick<ServerWorld> { if (target == null) heal(mobConfig.idleHealingPerTick) }
     override val bossBar: ServerBossBar = ServerBossBar(displayName, BossBar.Color.RED, BossBar.Style.NOTCHED_6)
-    override val statusEffectHandler = StatusImmunity(StatusEffects.WITHER, StatusEffects.POISON)
+    override val statusEffectHandler = StatusImmunity(StatusEffects.WITHER.value(), StatusEffects.POISON.value())
     override val moveHandler = gauntletGoalHandler
     override val nbtHandler = gauntletGoalHandler
     override val deathClientTick = ClientGauntletDeathHandler(this)
@@ -66,8 +65,12 @@ class GauntletEntity(entityType: EntityType<out PathAwareEntity>, world: World, 
 
     init {
         ignoreCameraFrustum = true
-        laserHandler.initDataTracker()
-        energyShieldHandler.initDataTracker()
+    }
+    
+    override fun initDataTracker(builder: DataTracker.Builder) {
+        super.initDataTracker(builder)
+        builder.add(laserTarget, 0)
+        builder.add(isEnergized, false)
     }
 
     override fun registerControllers(p0: AnimatableManager.ControllerRegistrar) {
@@ -99,7 +102,6 @@ class GauntletEntity(entityType: EntityType<out PathAwareEntity>, world: World, 
     override fun getMaxLookPitchChange(): Int = 90
     override fun getCompoundBoundingBox(box: Box): CompoundOrientedBox = hitboxHelper.getHitbox().getBox(box)
     override fun getBounds(): EntityBounds = hitboxHelper.getHitbox()
-    override fun getActiveEyeHeight(pose: EntityPose, dimensions: EntityDimensions) = dimensions.height * 0.4f
     override fun isInsideWall(): Boolean = false
     override fun getArmor(): Int = if (target != null) super.getArmor() else 24
     override fun getAmbientSound() = Mod.sounds.gauntletIdle

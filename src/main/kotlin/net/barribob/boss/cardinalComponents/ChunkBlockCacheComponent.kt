@@ -2,6 +2,7 @@ package net.barribob.boss.cardinalComponents
 
 import net.minecraft.block.Block
 import net.minecraft.nbt.NbtCompound
+import net.minecraft.registry.RegistryWrapper
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.ChunkPos
 import net.minecraft.world.World
@@ -23,9 +24,9 @@ class ChunkBlockCacheComponent(val world: World) : IChunkBlockCacheComponent {
         map[chunkPos]?.get(block)?.remove(pos)
     }
 
-    override fun readFromNbt(p0: NbtCompound) {
+    override fun readFromNbt(tag: NbtCompound, registryLookup: RegistryWrapper.WrapperLookup) {
     }
 
-    override fun writeToNbt(p0: NbtCompound) {
+    override fun writeToNbt(tag: NbtCompound, registryLookup: RegistryWrapper.WrapperLookup) {
     }
 }

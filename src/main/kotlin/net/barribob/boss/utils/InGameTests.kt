@@ -1,6 +1,5 @@
 package net.barribob.boss.utils
 
-import io.netty.buffer.Unpooled
 import net.barribob.boss.Mod
 import net.barribob.boss.block.MonolithBlock
 import net.barribob.boss.cardinalComponents.ModComponents
@@ -11,19 +10,19 @@ import net.barribob.boss.mob.mobs.obsidilith.BurstAction
 import net.barribob.boss.mob.mobs.obsidilith.ObsidilithUtils
 import net.barribob.boss.mob.mobs.obsidilith.PillarAction
 import net.barribob.boss.mob.spawn.*
+import net.barribob.boss.packets.TestPacket
 import net.barribob.boss.particle.ClientParticleBuilder
 import net.barribob.boss.particle.Particles
 import net.barribob.boss.projectile.SporeBallProjectile
 import net.barribob.boss.projectile.util.ExemptEntities
 import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.general.random.ModRandom
-import net.barribob.maelstrom.static_utilities.DebugPointsNetworkHandler
-import net.barribob.maelstrom.static_utilities.MathUtils
 import net.barribob.maelstrom.static_utilities.VecUtils
 import net.barribob.maelstrom.static_utilities.setPos
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking
 import net.minecraft.client.MinecraftClient
@@ -33,17 +32,14 @@ import net.minecraft.entity.LivingEntity
 import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
 import net.minecraft.nbt.NbtCompound
-import net.minecraft.network.PacketByteBuf
 import net.minecraft.registry.Registries
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Vec3d
+import java.util.*
 import kotlin.random.Random
 
-class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
-    private val clientTestPacketId = Mod.identifier("client_test")
-
+class InGameTests() {
     fun provideGear(source: ServerCommandSource) {
         val entity = source.playerOrThrow
         val armor = listOf(ItemStack(Items.NETHERITE_HELMET), ItemStack(Items.NETHERITE_CHESTPLATE), ItemStack(Items.NETHERITE_LEGGINGS), ItemStack(Items.NETHERITE_BOOTS))
@@ -79,19 +75,6 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
         }
     }
 
-    fun axisOffset(source: ServerCommandSource) {
-        val entity = source.entityOrThrow
-        if (entity is LivingEntity) {
-            val points = mutableListOf<Vec3d>()
-            for (vec in listOf(VecUtils.xAxis, VecUtils.yAxis, VecUtils.zAxis)) {
-                val offset = MathUtils.axisOffset(entity.rotationVector, vec)
-                val pos = entity.getCameraPosVec(0f)
-                MathUtils.lineCallback(pos, offset.add(pos), 30) { v, _ -> points.add(v) }
-            }
-            debugPoints.drawDebugPoints(points, 1, entity.pos, source.world)
-        }
-    }
-
     fun spawnEntity(source: ServerCommandSource) {
         val entity = source.entityOrThrow
         val serverWorld = entity.world as ServerWorld
@@ -111,18 +94,6 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
         BurstAction(source.playerOrThrow).perform()
     }
 
-    fun playerPosition(source: ServerCommandSource) {
-        val points = ModComponents.getPlayerPositions(source.playerOrThrow)
-        debugPoints.drawDebugPoints(points, 1, source.position, source.world)
-        debugPoints.drawDebugPoints(
-            listOf(ObsidilithUtils.approximatePlayerNextPosition(points, source.playerOrThrow.pos)),
-            1,
-            source.position,
-            source.world,
-            listOf(1f, 0f, 1f, 1f)
-        )
-    }
-
     fun placePillars(source: ServerCommandSource) {
         val entity = source.playerOrThrow
         PillarAction(entity).perform()
@@ -135,15 +106,19 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
 
     @Environment(EnvType.CLIENT)
     fun registerClientHandlers(){
-        ClientPlayNetworking.registerGlobalReceiver(clientTestPacketId) { client, _, _, _ ->
-            testClientCallback(client)
+        ClientPlayNetworking.registerGlobalReceiver(TestPacket.ID) { packet: TestPacket, context: ClientPlayNetworking.Context -> 
+            testClientCallback(context.client())
         }
     }
 
+    fun registerHandlers(){
+        PayloadTypeRegistry.playS2C().register(TestPacket.ID, TestPacket.codec);
+    }
+
+
     fun testClient(source: ServerCommandSource) {
-        val packetData = PacketByteBuf(Unpooled.buffer())
         PlayerLookup.around(source.world, source.position, 100.0).forEach {
-            ServerPlayNetworking.send(it, clientTestPacketId, packetData)
+            ServerPlayNetworking.send(it, TestPacket())
         }
     }
 
@@ -172,11 +147,6 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
         SoulStarItem.spawnLich(BlockPos.ofFloored(source.position), source.world)
     }
 
-    fun verifySpawnPosition(source: ServerCommandSource) {
-        val spawnPosition = HorizontalRangedSpawnPosition(source.position, 5.0, 10.0, ModRandom())
-        debugPoints.drawDebugPoints((0..100).map { spawnPosition.getPos() }, 20, source.position, source.world)
-    }
-
     fun levitationPerformance(source: ServerCommandSource){
 //        LevitationBlockEntity.tickFlight(source.playerOrThrow)
         MonolithBlock.getExplosionPower(source.world, BlockPos.ofFloored(source.position), 2.0f)
@@ -193,9 +163,5 @@ class InGameTests(private val debugPoints: DebugPointsNetworkHandler) {
                target?.damage(source.world.damageSources.playerAttack(source.playerOrThrow), 9.0f)
             }, i))
         }
-    }
-
-    fun buildBlockCircle(source: ServerCommandSource) {
-        debugPoints.drawDebugPoints(MathUtils.buildBlockCircle(4.2).map{ it.add(source.position) }, 100, source.position, source.world)
     }
 }

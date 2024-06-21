@@ -26,6 +26,9 @@ import net.minecraft.entity.MovementType
 import net.minecraft.entity.boss.BossBar
 import net.minecraft.entity.boss.ServerBossBar
 import net.minecraft.entity.damage.DamageSource
+import net.minecraft.entity.data.DataTracker
+import net.minecraft.entity.data.TrackedData
+import net.minecraft.entity.data.TrackedDataHandlerRegistry
 import net.minecraft.entity.effect.StatusEffects
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.nbt.NbtCompound
@@ -35,10 +38,10 @@ import net.minecraft.sound.SoundEvent
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
-import software.bernie.geckolib.core.animation.AnimatableManager
-import software.bernie.geckolib.core.animation.AnimationController
-import software.bernie.geckolib.core.animation.RawAnimation
-import software.bernie.geckolib.core.`object`.PlayState
+import software.bernie.geckolib.animation.AnimatableManager
+import software.bernie.geckolib.animation.AnimationController
+import software.bernie.geckolib.animation.PlayState
+import software.bernie.geckolib.animation.RawAnimation
 
 class ObsidilithEntity(
     entityType: EntityType<out ObsidilithEntity>,
@@ -59,7 +62,7 @@ class ObsidilithEntity(
     private val effectHandler = ObsidilithEffectHandler(this, ModComponents.getWorldEventScheduler(world))
     override val damageHandler = CompositeDamageHandler(moveLogic, ShieldDamageHandler(::isShielded), damageMemory)
     private val activePillars = mutableSetOf<BlockPos>()
-    override val statusEffectHandler = StatusImmunity(StatusEffects.WITHER, StatusEffects.POISON)
+    override val statusEffectHandler = StatusImmunity(StatusEffects.WITHER.value(), StatusEffects.POISON.value())
     override val serverTick = CappedHeal(this, ObsidilithUtils.hpPillarShieldMilestones, mobConfig.idleHealingPerTick)
 
     init {
@@ -74,8 +77,16 @@ class ObsidilithEntity(
                 world.playSound(pos, Mod.sounds.waveIndicator, SoundCategory.HOSTILE, 1.5f, 0.7f)
             }, 1))
         }
+    }
+    
+    companion object {
+        val isShielded: TrackedData<Boolean> =
+            DataTracker.registerData(ObsidilithEntity::class.java, TrackedDataHandlerRegistry.BOOLEAN)
+    }
 
-        dataTracker.startTracking(ObsidilithUtils.isShielded, false)
+    override fun initDataTracker(builder: DataTracker.Builder) {
+        super.initDataTracker(builder)
+        builder.add(isShielded, false)
     }
 
     private fun buildAttackGoal(): ActionGoal {
@@ -96,7 +107,7 @@ class ObsidilithEntity(
                 64.0
             )
         }
-        getDataTracker().set(ObsidilithUtils.isShielded, activePillars.any())
+        getDataTracker().set(isShielded, activePillars.any())
 
         if (this.age % 40 == 0) {
             activePillars.randomOrNull()?.let {
@@ -161,7 +172,7 @@ class ObsidilithEntity(
 
     override fun handleFallDamage(fallDistance: Float, damageMultiplier: Float, damageSource: DamageSource?) = false
 
-    fun isShielded(): Boolean = getDataTracker().get(ObsidilithUtils.isShielded)
+    fun isShielded(): Boolean = getDataTracker().get(isShielded)
 
     fun addActivePillar(pos: BlockPos) {
         activePillars.add(pos)

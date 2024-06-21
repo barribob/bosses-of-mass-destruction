@@ -1,5 +1,5 @@
 package net.barribob.boss.particle
 
-import net.minecraft.particle.DefaultParticleType
+import net.minecraft.particle.SimpleParticleType
 
-class ModParticleType(alwaysShow: Boolean) : DefaultParticleType(alwaysShow)
+class ModParticleType(alwaysShow: Boolean) : SimpleParticleType(alwaysShow)

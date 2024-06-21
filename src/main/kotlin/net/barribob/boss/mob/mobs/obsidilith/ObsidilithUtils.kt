@@ -12,11 +12,7 @@ import net.barribob.maelstrom.static_utilities.RandomUtils
 import net.barribob.maelstrom.static_utilities.VecUtils
 import net.barribob.maelstrom.static_utilities.planeProject
 import net.minecraft.block.Blocks
-import net.minecraft.block.entity.LootableContainerBlockEntity
 import net.minecraft.entity.LivingEntity
-import net.minecraft.entity.data.DataTracker
-import net.minecraft.entity.data.TrackedData
-import net.minecraft.entity.data.TrackedDataHandlerRegistry
 import net.minecraft.inventory.LootableInventory
 import net.minecraft.sound.SoundEvents
 import net.minecraft.util.math.BlockPos
@@ -34,8 +30,6 @@ object ObsidilithUtils {
     const val anvilAttackStatus: Byte = 8
     const val pillarDefenseStatus: Byte = 9
     val hpPillarShieldMilestones = listOf(0.0f, 0.25f, 0.5f, 0.75f, 1.0f)
-    val isShielded: TrackedData<Boolean> =
-        DataTracker.registerData(ObsidilithEntity::class.java, TrackedDataHandlerRegistry.BOOLEAN)
     val obsidilithBossBarRenderer =
         NodeBossBarRenderer(OBSIDILITH.translationKey, hpPillarShieldMilestones, bossBarDividerTexture, textureSize)
     val circlePos = MathUtils.buildBlockCircle((2.0.pow(2) + 1.0.pow(2)).pow(0.5))
@@ -72,7 +66,7 @@ object ObsidilithUtils {
             eventScheduler.addEvent(TimedEvent({
                 val chestPos = blockPos.up(deathPillarHeight + 1)
                 world.setBlockState(chestPos, Blocks.SHULKER_BOX.defaultState, 2)
-                LootableInventory.setLootTable(world, actor.random, chestPos, Mod.identifier("chests/obsidilith"))
+                LootableInventory.setLootTable(world, actor.random, chestPos, Mod.loot.obsidilith)
             }, deathPillarHeight * ticksBetweenPillarLayer))
 
             val expTicks = 20

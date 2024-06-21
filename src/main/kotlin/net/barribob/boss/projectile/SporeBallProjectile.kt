@@ -32,8 +32,8 @@ import net.minecraft.util.math.Direction
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import software.bernie.geckolib.animatable.GeoEntity
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
-import software.bernie.geckolib.core.animation.AnimatableManager
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache
+import software.bernie.geckolib.animation.AnimatableManager
 import software.bernie.geckolib.util.GeckoLibUtil
 import java.util.function.Predicate
 
@@ -90,11 +90,12 @@ class SporeBallProjectile : BaseThrownItemEntity, GeoEntity {
         impactedPitch = pitch
         impacted = true
         val owner = owner
-        if (owner is LivingEntity) {
-            doExplosion(owner)
-        }
-        else if(!world.isClient) {
-            discard()
+        if (!world.isClient) {
+            if (owner is LivingEntity) {
+                doExplosion(owner)
+            } else {
+                discard()
+            }
         }
     }
 

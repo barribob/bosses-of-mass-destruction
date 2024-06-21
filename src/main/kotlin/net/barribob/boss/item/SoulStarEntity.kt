@@ -18,12 +18,9 @@ import net.minecraft.entity.data.TrackedData
 import net.minecraft.entity.data.TrackedDataHandlerRegistry
 import net.minecraft.entity.projectile.ProjectileEntity
 import net.minecraft.item.ItemStack
-import net.minecraft.item.Items
 import net.minecraft.nbt.NbtCompound
-import net.minecraft.network.listener.ClientPlayPacketListener
-import net.minecraft.network.packet.Packet
+import net.minecraft.nbt.NbtElement
 import net.minecraft.particle.ParticleTypes
-import net.minecraft.util.Util
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
@@ -46,10 +43,10 @@ class SoulStarEntity(entityType: EntityType<out SoulStarEntity?>?, world: World?
     }
 
     fun setItem(stack: ItemStack) {
-        if (stack.item !== Items.ENDER_EYE || stack.hasNbt()) {
-            getDataTracker().set(
-                ITEM, Util.make(stack.copy()) { it.count = 1 }
-            )
+        if (stack.isEmpty) {
+            this.getDataTracker().set(ITEM, ItemStack(Mod.items.soulStar));
+        } else {
+            this.getDataTracker().set(ITEM, stack.copyWithCount(1));
         }
     }
 
@@ -60,8 +57,8 @@ class SoulStarEntity(entityType: EntityType<out SoulStarEntity?>?, world: World?
         return if (itemStack.isEmpty) ItemStack(Mod.items.soulStar) else itemStack
     }
 
-    override fun initDataTracker() {
-        getDataTracker().startTracking(ITEM, ItemStack.EMPTY)
+    override fun initDataTracker(builder: DataTracker.Builder) {
+        builder.add(ITEM, ItemStack.EMPTY)
     }
 
     @Environment(EnvType.CLIENT)
@@ -186,20 +183,20 @@ class SoulStarEntity(entityType: EntityType<out SoulStarEntity?>?, world: World?
     }
 
     override fun writeCustomDataToNbt(nbt: NbtCompound) {
-        val itemStack: ItemStack = this.getTrackedItem()
-        if (!itemStack.isEmpty) {
-            nbt.put("Item", itemStack.writeNbt(NbtCompound()))
-        }
+        nbt.put("Item", stack.encode(registryManager))
     }
 
     override fun readCustomDataFromNbt(nbt: NbtCompound) {
-        val itemStack = ItemStack.fromNbt(nbt.getCompound("Item"))
-        setItem(itemStack)
+        if (nbt.contains("Item", NbtElement.COMPOUND_TYPE.toInt())) {
+            setItem(ItemStack.fromNbt(registryManager, nbt.getCompound("Item")).orElse(ItemStack(Mod.items.soulStar)))
+        }
+        else {
+            setItem(ItemStack(Mod.items.soulStar))
+        }
     }
 
     override fun getBrightnessAtEyes(): Float = 1.0f
     override fun isAttackable(): Boolean = false
-    override fun createSpawnPacket(): Packet<ClientPlayPacketListener> =  Mod.networkUtils.createClientEntityPacket(this)
 
     /**
      * [ProjectileEntity.updateRotation]

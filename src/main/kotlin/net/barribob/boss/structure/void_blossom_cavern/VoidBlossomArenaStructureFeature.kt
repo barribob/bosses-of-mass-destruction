@@ -1,6 +1,6 @@
 package net.barribob.boss.structure.void_blossom_cavern
 
-import com.mojang.serialization.Codec
+import com.mojang.serialization.MapCodec
 import net.barribob.boss.Mod
 import net.barribob.boss.structure.util.CodeStructurePiece
 import net.minecraft.structure.StructurePiecesCollector
@@ -27,7 +27,7 @@ class VoidBlossomArenaStructureFeature(codec: Config) : Structure(codec) {
             )
         }
         
-        val CODEC: Codec<VoidBlossomArenaStructureFeature> = createCodec(::VoidBlossomArenaStructureFeature)
+        val CODEC: MapCodec<VoidBlossomArenaStructureFeature> = createCodec(::VoidBlossomArenaStructureFeature)
     }
 
     override fun getStructurePosition(context: Context): Optional<StructurePosition> {

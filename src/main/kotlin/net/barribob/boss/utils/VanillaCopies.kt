@@ -32,7 +32,6 @@ import net.minecraft.util.hit.HitResult
 import net.minecraft.util.math.*
 import net.minecraft.world.*
 import net.minecraft.world.RaycastContext.FluidHandling
-import org.joml.Matrix3f
 import org.joml.Matrix4f
 import org.joml.Quaternionf
 import org.joml.Vector3f
@@ -150,10 +149,10 @@ object VanillaCopies {
         val matrix4f = entry.model
         val matrix3f = entry.normal
         val vertexConsumer = vertexConsumerProvider.getBuffer(layer)
-        produceVertex(vertexConsumer, matrix4f, matrix3f, i, 0.0f, 0, 0, 1)
-        produceVertex(vertexConsumer, matrix4f, matrix3f, i, 1.0f, 0, 1, 1)
-        produceVertex(vertexConsumer, matrix4f, matrix3f, i, 1.0f, 1, 1, 0)
-        produceVertex(vertexConsumer, matrix4f, matrix3f, i, 0.0f, 1, 0, 0)
+        produceVertex(vertexConsumer, matrix4f, entry, i, 0.0f, 0, 0, 1)
+        produceVertex(vertexConsumer, matrix4f, entry, i, 1.0f, 0, 1, 1)
+        produceVertex(vertexConsumer, matrix4f, entry, i, 1.0f, 1, 1, 0)
+        produceVertex(vertexConsumer, matrix4f, entry, i, 0.0f, 1, 0, 0)
         matrixStack.pop()
     }
 
@@ -163,7 +162,7 @@ object VanillaCopies {
     private fun produceVertex(
         vertexConsumer: VertexConsumer,
         modelMatrix: Matrix4f,
-        normalMatrix: Matrix3f,
+        normalMatrix: MatrixStack.Entry,
         light: Int,
         x: Float,
         y: Int,
@@ -305,7 +304,7 @@ object VanillaCopies {
                 for (q in k..n) {
                     val blockPos = BlockPos(o, p, q)
                     val blockState: BlockState = this.world.getBlockState(blockPos)
-                    if (!blockState.isAir && blockState.block == Blocks.FIRE) {
+                    if (!blockState.isAir && blockState.block != Blocks.FIRE) {
                         if (this.world.gameRules.getBoolean(GameRules.DO_MOB_GRIEFING)
                             && !blockState.isIn(BlockTags.WITHER_IMMUNE)
                         ) {
@@ -364,23 +363,23 @@ object VanillaCopies {
             val entry: MatrixStack.Entry = matrixStack.peek()
             val matrix4f = entry.model
             val matrix3f = entry.normal
-            method_23173(vertexConsumer, matrix4f, matrix3f, af, m, ag, red, green, blue, 0.4999f, ar)
-            method_23173(vertexConsumer, matrix4f, matrix3f, af, 0.0f, ag, red, green, blue, 0.4999f, aq)
-            method_23173(vertexConsumer, matrix4f, matrix3f, ah, 0.0f, ai, red, green, blue, 0.0f, aq)
-            method_23173(vertexConsumer, matrix4f, matrix3f, ah, m, ai, red, green, blue, 0.0f, ar)
-            method_23173(vertexConsumer, matrix4f, matrix3f, aj, m, ak, red, green, blue, 0.4999f, ar)
-            method_23173(vertexConsumer, matrix4f, matrix3f, aj, 0.0f, ak, red, green, blue, 0.4999f, aq)
-            method_23173(vertexConsumer, matrix4f, matrix3f, al, 0.0f, am, red, green, blue, 0.0f, aq)
-            method_23173(vertexConsumer, matrix4f, matrix3f, al, m, am, red, green, blue, 0.0f, ar)
+            method_23173(vertexConsumer, matrix4f, entry, af, m, ag, red, green, blue, 0.4999f, ar)
+            method_23173(vertexConsumer, matrix4f, entry, af, 0.0f, ag, red, green, blue, 0.4999f, aq)
+            method_23173(vertexConsumer, matrix4f, entry, ah, 0.0f, ai, red, green, blue, 0.0f, aq)
+            method_23173(vertexConsumer, matrix4f, entry, ah, m, ai, red, green, blue, 0.0f, ar)
+            method_23173(vertexConsumer, matrix4f, entry, aj, m, ak, red, green, blue, 0.4999f, ar)
+            method_23173(vertexConsumer, matrix4f, entry, aj, 0.0f, ak, red, green, blue, 0.4999f, aq)
+            method_23173(vertexConsumer, matrix4f, entry, al, 0.0f, am, red, green, blue, 0.0f, aq)
+            method_23173(vertexConsumer, matrix4f, entry, al, m, am, red, green, blue, 0.0f, ar)
             var `as` = 0.0f
             if (actor.age % 2 == 0) {
                 `as` = 0.5f
             }
-            method_23173(vertexConsumer, matrix4f, matrix3f, x, m, y, red, green, blue, 0.5f, `as` + 0.5f)
+            method_23173(vertexConsumer, matrix4f, entry, x, m, y, red, green, blue, 0.5f, `as` + 0.5f)
             method_23173(
                 vertexConsumer,
                 matrix4f,
-                matrix3f,
+                entry,
                 z,
                 m,
                 aa,
@@ -390,8 +389,8 @@ object VanillaCopies {
                 1.0f,
                 `as` + 0.5f
             )
-            method_23173(vertexConsumer, matrix4f, matrix3f, ad, m, ae, red, green, blue, 1.0f, `as`)
-            method_23173(vertexConsumer, matrix4f, matrix3f, ab, m, ac, red, green, blue, 0.5f, `as`)
+            method_23173(vertexConsumer, matrix4f, entry, ad, m, ae, red, green, blue, 1.0f, `as`)
+            method_23173(vertexConsumer, matrix4f, entry, ab, m, ac, red, green, blue, 0.5f, `as`)
             matrixStack.pop()
     }
 
@@ -401,7 +400,7 @@ object VanillaCopies {
     fun method_23173(
         vertexConsumer: VertexConsumer,
         matrix4f: Matrix4f,
-        matrix3f: Matrix3f,
+        matrix3f: MatrixStack.Entry,
         f: Float,
         g: Float,
         h: Float,

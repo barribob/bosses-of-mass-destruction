@@ -49,8 +49,4 @@ class GauntletClientEnergyShieldHandler(
         val particleVel = rotatedOffset.rotateVector(look, 90.0).multiply(0.1)
         energizedParticles.build(particlePos, particleVel)
     }
-
-    fun initDataTracker() {
-        entity.dataTracker.startTracking(isEnergized, false)
-    }
 }

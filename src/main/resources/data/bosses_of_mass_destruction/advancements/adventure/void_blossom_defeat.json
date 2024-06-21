@@ -9,7 +9,8 @@
       "translate": "advancements.adventure.void_blossom_defeat.description"
     },
     "icon": {
-      "item": "bosses_of_mass_destruction:void_lily"
+      "count": 1,
+      "id": "bosses_of_mass_destruction:void_lily"
     },
     "frame": "task",
     "show_toast": true,

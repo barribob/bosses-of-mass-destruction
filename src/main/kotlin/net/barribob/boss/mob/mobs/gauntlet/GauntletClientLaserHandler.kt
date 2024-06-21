@@ -108,10 +108,6 @@ class GauntletClientLaserHandler(val entity: GauntletEntity, val eventScheduler:
         }
     }
 
-    fun initDataTracker() {
-        entity.dataTracker.startTracking(laserTarget, 0)
-    }
-
     override fun handleClientStatus(status: Byte) {
         if (status == GauntletAttacks.laserAttack) {
             eventScheduler.addEvent(TimedEvent({

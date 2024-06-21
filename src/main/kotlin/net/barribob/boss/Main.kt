@@ -7,6 +7,7 @@ import net.barribob.boss.Mod.vec3dNetwork
 import net.barribob.boss.block.ModBlocks
 import net.barribob.boss.config.ModConfig
 import net.barribob.boss.item.ModItems
+import net.barribob.boss.loot.ModLoot
 import net.barribob.boss.mob.Entities
 import net.barribob.boss.particle.Particles
 import net.barribob.boss.sound.ModSounds
@@ -20,7 +21,6 @@ import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.minecraft.util.Identifier
 import org.apache.logging.log4j.LogManager
-import software.bernie.geckolib.GeckoLib
 
 object Mod {
     const val MODID = "bosses_of_mass_destruction"
@@ -30,6 +30,7 @@ object Mod {
     val structures: ModStructures = ModStructures()
     val sounds: ModSounds = ModSounds()
     val items: ModItems = ModItems()
+    val loot: ModLoot = ModLoot()
 
     val networkUtils = NetworkUtils()
     val vec3dNetwork = Vec3dNetworkHandler()
@@ -39,11 +40,11 @@ object Mod {
 
 @Suppress("unused")
 fun init() {
+    networkUtils.registerHandlers()
+    vec3dNetwork.registerHandlers()
     AutoConfig.register(ModConfig::class.java, ::JanksonConfigSerializer)
     AutoConfig.getConfigHolder(ModConfig::class.java).config.postInit()
     AutoConfig.getConfigHolder(ModConfig::class.java).save()
-
-    GeckoLib.initialize()
 
     ModBlocks.init()
     Entities.init()
@@ -69,27 +70,24 @@ fun clientInit() {
 }
 
 private fun initDev() {
-    val inGameTests = InGameTests(MaelstromMod.debugPoints)
+    val inGameTests = InGameTests()
     MaelstromMod.testCommand.addId(inGameTests::throwProjectile.name, inGameTests::throwProjectile)
-    MaelstromMod.testCommand.addId(inGameTests::axisOffset.name, inGameTests::axisOffset)
     MaelstromMod.testCommand.addId(inGameTests::spawnEntity.name, inGameTests::spawnEntity)
     MaelstromMod.testCommand.addId(inGameTests::testClient.name, inGameTests::testClient)
     MaelstromMod.testCommand.addId(inGameTests::burstAction.name, inGameTests::burstAction)
-    MaelstromMod.testCommand.addId(inGameTests::playerPosition.name, inGameTests::playerPosition)
     MaelstromMod.testCommand.addId(inGameTests::placePillars.name, inGameTests::placePillars)
     MaelstromMod.testCommand.addId(inGameTests::obsidilithDeath.name, inGameTests::obsidilithDeath)
     MaelstromMod.testCommand.addId(inGameTests::provideGear.name, inGameTests::provideGear)
     MaelstromMod.testCommand.addId(inGameTests::killZombies.name, inGameTests::killZombies)
     MaelstromMod.testCommand.addId(inGameTests::lichSpawn.name, inGameTests::lichSpawn)
-    MaelstromMod.testCommand.addId(inGameTests::verifySpawnPosition.name, inGameTests::verifySpawnPosition)
     MaelstromMod.testCommand.addId(inGameTests::levitationPerformance.name, inGameTests::levitationPerformance)
     MaelstromMod.testCommand.addId(inGameTests::wallTeleport.name, inGameTests::wallTeleport)
     MaelstromMod.testCommand.addId(inGameTests::attackRepeatedly.name, inGameTests::attackRepeatedly)
-    MaelstromMod.testCommand.addId(inGameTests::buildBlockCircle.name, inGameTests::buildBlockCircle)
+    inGameTests.registerHandlers()
 }
 
 @Environment(EnvType.CLIENT)
 private fun initClientDev() {
-    val inGameTests = InGameTests(MaelstromMod.debugPoints)
+    val inGameTests = InGameTests()
     inGameTests.registerClientHandlers()
 }

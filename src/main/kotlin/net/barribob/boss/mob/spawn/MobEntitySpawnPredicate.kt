@@ -18,7 +18,7 @@ class MobEntitySpawnPredicate(private val worldView: WorldView) : ISpawnPredicat
 
         val blockState = worldView.getBlockState(blockPos)
         val fluidState = worldView.getFluidState(blockPos)
-        val prospectiveBoundingBox = entity.type.createSimpleBoundingBox(pos.x, pos.y, pos.z)
+        val prospectiveBoundingBox = entity.type.getSpawnBox(pos.x, pos.y, pos.z)
 
         return (!worldView.containsFluid(prospectiveBoundingBox)
                 && worldView.isSpaceEmpty(prospectiveBoundingBox)

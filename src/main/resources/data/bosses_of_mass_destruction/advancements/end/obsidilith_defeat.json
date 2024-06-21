@@ -9,7 +9,8 @@
       "translate": "advancements.end.obsidilith_defeat.description"
     },
     "icon": {
-      "item": "bosses_of_mass_destruction:obsidilith_rune"
+      "count": 1,
+      "id": "bosses_of_mass_destruction:obsidilith_rune"
     },
     "frame": "task",
     "show_toast": true,

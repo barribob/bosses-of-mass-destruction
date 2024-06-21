@@ -47,7 +47,7 @@ object Entities {
 
     val LICH: EntityType<LichEntity> = registerConfiguredMob("lich",
         { type, world -> LichEntity(type, world, mobConfig.lichConfig) })
-    { it.dimensions(EntityDimensions.fixed(1.8f, 3.0f)).trackedUpdateRate(1) }
+    { it.dimensions(1.8f, 3.0f).trackingTickInterval(1) }
 
     val MAGIC_MISSILE: EntityType<MagicMissileProjectile> = Registry.register(
         Registries.ENTITY_TYPE,
@@ -79,15 +79,15 @@ object Entities {
 
     val OBSIDILITH: EntityType<ObsidilithEntity> = registerConfiguredMob("obsidilith",
         { type, world -> ObsidilithEntity(type, world, mobConfig.obsidilithConfig) },
-        { it.fireImmune().dimensions(EntityDimensions.fixed(2.0f, 4.4f)) })
+        { it.makeFireImmune().dimensions(2.0f, 4.4f) })
 
     val GAUNTLET: EntityType<GauntletEntity> = registerConfiguredMob("gauntlet",
         { type, world -> GauntletEntity(type, world, mobConfig.gauntletConfig) },
-        { it.fireImmune().dimensions(EntityDimensions.fixed(5.0f, 4.0f)) })
+        { it.makeFireImmune().dimensions(5.0f, 4.0f).eyeHeight(4.0f * 0.4f) })
 
     val VOID_BLOSSOM: EntityType<VoidBlossomEntity> = registerConfiguredMob("void_blossom",
         { type, world -> VoidBlossomEntity(type, world, mobConfig.voidBlossomConfig) },
-        { it.fireImmune().dimensions(EntityDimensions.fixed(8.0f, 10.0f)).trackRangeChunks(3) })
+        { it.makeFireImmune().dimensions(8.0f, 10.0f).maxTrackingRange(3) })
 
     val SPORE_BALL: EntityType<SporeBallProjectile> = Registry.register(
         Registries.ENTITY_TYPE,
@@ -109,10 +109,9 @@ object Entities {
     private fun <T : Entity> registerConfiguredMob(
         name: String,
         factory: (EntityType<T>, World) -> T,
-        augment: (FabricEntityTypeBuilder<T>) -> FabricEntityTypeBuilder<T>,
+        augment: (EntityType.Builder<T>) -> EntityType.Builder<T>,
     ): EntityType<T> {
-        val builder = FabricEntityTypeBuilder.create(SpawnGroup.MONSTER)
-        { type: EntityType<T>, world -> factory(type, world) }
+        val builder = EntityType.Builder.create(factory, SpawnGroup.MONSTER)
         return Registry.register(Registries.ENTITY_TYPE,  Mod.identifier(name), augment(builder).build())
     }
 

@@ -9,12 +9,11 @@ import net.barribob.boss.block.structure_repair.VoidBlossomStructureRepair
 import net.barribob.boss.utils.ModUtils
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup
 import net.fabricmc.fabric.api.`object`.builder.v1.client.model.FabricModelPredicateProviderRegistry
+import net.minecraft.component.type.FoodComponent
 import net.minecraft.entity.effect.StatusEffectInstance
 import net.minecraft.entity.effect.StatusEffects
-import net.minecraft.item.FoodComponent
 import net.minecraft.item.Item
 import net.minecraft.item.ItemGroup
 import net.minecraft.item.ItemStack
@@ -28,21 +27,21 @@ import net.minecraft.util.Rarity
 
 class ModItems {
     var itemGroup: RegistryKey<ItemGroup> = RegistryKey.of(RegistryKeys.ITEM_GROUP, Mod.identifier("items"))
-    val soulStar = SoulStarItem(FabricItemSettings())
-    private val ancientAnima = MaterialItem(FabricItemSettings().rarity(Rarity.RARE))
-    private val blazingEye = MaterialItem(FabricItemSettings().rarity(Rarity.RARE).fireproof())
-    private val obsidianHeart = MaterialItem(FabricItemSettings().rarity(Rarity.RARE).fireproof())
-    private val earthdiveSpear = EarthdiveSpear(FabricItemSettings().fireproof().maxDamage(250))
-    private val voidThorn = MaterialItem(FabricItemSettings().rarity(Rarity.RARE).fireproof())
-    private val crystalFruitFoodComponent = FoodComponent.Builder().hunger(4).saturationModifier(1.2f)
+    val soulStar = SoulStarItem(Item.Settings())
+    private val ancientAnima = MaterialItem(Item.Settings().rarity(Rarity.RARE))
+    private val blazingEye = MaterialItem(Item.Settings().rarity(Rarity.RARE).fireproof())
+    private val obsidianHeart = MaterialItem(Item.Settings().rarity(Rarity.RARE).fireproof())
+    private val earthdiveSpear = EarthdiveSpear(Item.Settings().fireproof().maxDamage(250)) // createAttributeModifiers()
+    private val voidThorn = MaterialItem(Item.Settings().rarity(Rarity.RARE).fireproof())
+    private val crystalFruitFoodComponent = FoodComponent.Builder().nutrition(4).saturationModifier(1.2f)
         .statusEffect(StatusEffectInstance(StatusEffects.REGENERATION, 300, 1), 1.0f)
         .statusEffect(StatusEffectInstance(StatusEffects.INSTANT_HEALTH, 1), 1.0f)
         .statusEffect(StatusEffectInstance(StatusEffects.RESISTANCE, 600, 0), 1.0f)
         .alwaysEdible().build()
-    private val crystalFruit = CrystalFruitItem(FabricItemSettings().rarity(Rarity.RARE).fireproof().food(crystalFruitFoodComponent))
-    val chargedEnderPearl = ChargedEnderPearlItem(FabricItemSettings().fireproof().maxCount(1))
+    private val crystalFruit = CrystalFruitItem(Item.Settings().rarity(Rarity.RARE).fireproof().food(crystalFruitFoodComponent))
+    val chargedEnderPearl = ChargedEnderPearlItem(Item.Settings().fireproof().maxCount(1))
     private val brimstoneNectar = BrimstoneNectarItem(
-        FabricItemSettings().rarity(Rarity.RARE).fireproof(), listOf(
+        Item.Settings().rarity(Rarity.RARE).fireproof(), listOf(
         VoidBlossomStructureRepair(), GauntletStructureRepair(), ObsidilithStructureRepair(), LichStructureRepair()
     ))
 

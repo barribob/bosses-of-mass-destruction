@@ -19,7 +19,7 @@ import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import org.jetbrains.annotations.Nullable
 import software.bernie.geckolib.animatable.GeoEntity
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.util.GeckoLibUtil
 
 abstract class BaseEntity(entityType: EntityType<out PathAwareEntity>, world: World) :

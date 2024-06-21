@@ -20,8 +20,6 @@ import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.entity.projectile.thrown.EnderPearlEntity
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity
 import net.minecraft.item.Item
-import net.minecraft.network.listener.ClientPlayPacketListener
-import net.minecraft.network.packet.Packet
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.hit.EntityHitResult
@@ -125,8 +123,6 @@ class ChargedEnderPearlEntity : ThrownItemEntity {
         }
         return super.moveToWorld(destination)
     }
-
-    override fun createSpawnPacket(): Packet<ClientPlayPacketListener> = Mod.networkUtils.createClientEntityPacket(this)
 
     companion object {
         private const val radius = 3.0

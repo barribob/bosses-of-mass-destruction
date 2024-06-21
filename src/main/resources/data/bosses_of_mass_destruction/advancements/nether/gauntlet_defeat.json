@@ -9,7 +9,8 @@
       "translate": "advancements.nether.gauntlet_defeat.description"
     },
     "icon": {
-      "item": "bosses_of_mass_destruction:gauntlet_blackstone"
+      "count": 1,
+      "id": "bosses_of_mass_destruction:gauntlet_blackstone"
     },
     "frame": "task",
     "show_toast": true,

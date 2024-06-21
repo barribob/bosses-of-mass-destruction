@@ -13,6 +13,7 @@ import net.barribob.boss.mob.damage.CompositeDamageHandler
 import net.barribob.boss.mob.damage.DamageMemory
 import net.barribob.boss.mob.damage.StagedDamageHandler
 import net.barribob.boss.mob.mobs.gauntlet.AnimationHolder
+import net.barribob.boss.mob.mobs.void_blossom.hitbox.HitboxId
 import net.barribob.boss.mob.mobs.void_blossom.hitbox.NetworkedHitboxManager
 import net.barribob.boss.mob.mobs.void_blossom.hitbox.VoidBlossomHitboxes
 import net.barribob.boss.mob.utils.BaseEntity
@@ -27,6 +28,9 @@ import net.minecraft.entity.MovementType
 import net.minecraft.entity.boss.BossBar
 import net.minecraft.entity.boss.ServerBossBar
 import net.minecraft.entity.damage.DamageSource
+import net.minecraft.entity.data.DataTracker
+import net.minecraft.entity.data.TrackedData
+import net.minecraft.entity.data.TrackedDataHandlerRegistry
 import net.minecraft.entity.mob.PathAwareEntity
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.server.world.ServerWorld
@@ -34,7 +38,7 @@ import net.minecraft.sound.SoundEvent
 import net.minecraft.util.math.Box
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
-import software.bernie.geckolib.core.animation.AnimatableManager
+import software.bernie.geckolib.animation.AnimatableManager
 
 class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: World, config: VoidBlossomConfig) : BaseEntity(entityType, world),
     MultipartAwareEntity {
@@ -52,7 +56,7 @@ class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: Worl
         0
     )
     private val hitboxes = VoidBlossomHitboxes(this)
-    private val hitboxHelper = NetworkedHitboxManager(this, hitboxes.getMap())
+    private val hitboxHelper = NetworkedHitboxManager(this, hitboxes.getMap(), hitboxTrackedData)
     override val statusHandler = CompositeStatusHandler(
         animationHolder,
         ClientSporeEffectHandler(this, preTickEvents),
@@ -93,6 +97,11 @@ class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: Worl
         }
     }
 
+    override fun initDataTracker(builder: DataTracker.Builder) {
+        super.initDataTracker(builder)
+        builder.add(hitboxTrackedData, HitboxId.Idle.id)
+    }
+
     private fun lookAtTarget() {
         val target = target
         if (target != null) {
@@ -130,5 +139,6 @@ class VoidBlossomEntity(entityType: EntityType<out PathAwareEntity>, world: Worl
 
     companion object {
         val hpMilestones = listOf(0.0f, 0.25f, 0.5f, 0.75f, 1.0f)
+        val hitboxTrackedData: TrackedData<Byte> = DataTracker.registerData(VoidBlossomEntity::class.java, TrackedDataHandlerRegistry.BYTE)
     }
 }

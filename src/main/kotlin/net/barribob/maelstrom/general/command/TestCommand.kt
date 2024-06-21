@@ -8,7 +8,6 @@ import com.mojang.brigadier.suggestion.SuggestionProvider
 import net.barribob.boss.cardinalComponents.ModComponents
 import net.barribob.maelstrom.MaelstromMod
 import net.barribob.maelstrom.general.event.TimedEvent
-import net.barribob.maelstrom.static_utilities.InGameTests
 import net.barribob.maelstrom.static_utilities.format
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
 import net.minecraft.command.CommandRegistryAccess
@@ -21,7 +20,7 @@ import net.minecraft.util.Identifier
 import java.util.*
 import kotlin.system.measureNanoTime
 
-class TestCommand(inGameTests: InGameTests) : CommandRegistrationCallback {
+class TestCommand() : CommandRegistrationCallback {
     private val notFoundException = DynamicCommandExceptionType { Text.literal("Test name not found") }
 
     private val tests = mutableMapOf<Identifier, (ServerCommandSource) -> Unit>()
@@ -29,11 +28,6 @@ class TestCommand(inGameTests: InGameTests) : CommandRegistrationCallback {
     private val nameArgumentName = "name"
 
     init {
-        addId(inGameTests::lineCallback.name, inGameTests::lineCallback)
-        addId(inGameTests::boxCorners.name, inGameTests::boxCorners)
-        addId(inGameTests::willBoxFit.name, inGameTests::willBoxFit)
-        addId(inGameTests::raycast.name, inGameTests::raycast)
-        addId(inGameTests::circleCallback.name, inGameTests::circleCallback)
     }
 
     private val suggestions: SuggestionProvider<ServerCommandSource> =
@@ -73,10 +67,11 @@ class TestCommand(inGameTests: InGameTests) : CommandRegistrationCallback {
         val identifier = context.getArgument(nameArgumentName, Identifier::class.java)
         validate(identifier)
         var time = 0L
-
+        val invoke = tests[identifier]
+        
         val runTest: () -> Unit = {
             try {
-                time += measureNanoTime { tests[identifier]?.invoke(context.source) }
+                time += measureNanoTime { invoke?.invoke(context.source) }
             } catch (e: Exception) {
                 context.source.sendFeedback({Text.literal(e.message)}, false)
                 e.printStackTrace()

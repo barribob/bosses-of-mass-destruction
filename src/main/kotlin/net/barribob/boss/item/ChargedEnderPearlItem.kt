@@ -1,6 +1,6 @@
 package net.barribob.boss.item
 
-import net.minecraft.client.item.TooltipContext
+import net.minecraft.client.item.TooltipType
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
@@ -43,9 +43,9 @@ class ChargedEnderPearlItem(settings: Settings?) : Item(settings) {
 
     override fun appendTooltip(
         stack: ItemStack?,
-        world: World?,
+        context: TooltipContext?,
         tooltip: MutableList<Text>,
-        context: TooltipContext?
+        type: TooltipType?
     ) {
         tooltip.add(Text.translatable("item.bosses_of_mass_destruction.charged_ender_pearl.tooltip").formatted(Formatting.DARK_GRAY))
         tooltip.add(Text.translatable("item.bosses_of_mass_destruction.charged_ender_pearl.tooltip2").formatted(Formatting.DARK_GRAY))

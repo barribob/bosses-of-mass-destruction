@@ -11,7 +11,6 @@ import net.barribob.maelstrom.static_utilities.RandomUtils
 import net.barribob.maelstrom.static_utilities.VecUtils
 import net.barribob.maelstrom.static_utilities.planeProject
 import net.minecraft.block.Blocks
-import net.minecraft.block.entity.LootableContainerBlockEntity
 import net.minecraft.entity.Entity
 import net.minecraft.inventory.LootableInventory
 import net.minecraft.server.world.ServerWorld
@@ -49,7 +48,7 @@ class ServerGauntletDeathHandler(
         }
         val chestPos = entity.blockPos.up()
         world.setBlockState(chestPos, Blocks.CHEST.defaultState, 2)
-        LootableInventory.setLootTable(world, entity.random, chestPos, Mod.identifier("chests/gauntlet"))
+        LootableInventory.setLootTable(world, entity.random, chestPos, Mod.loot.gauntlet)
     }
 
     private fun dropExp() {

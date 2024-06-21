@@ -13,9 +13,10 @@ import net.minecraft.block.*
 import net.minecraft.block.entity.BlockEntity
 import net.minecraft.block.entity.BlockEntityTicker
 import net.minecraft.block.entity.BlockEntityType
-import net.minecraft.client.item.TooltipContext
+import net.minecraft.client.item.TooltipType
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.item.Item
 import net.minecraft.item.ItemPlacementContext
 import net.minecraft.item.ItemStack
 import net.minecraft.server.world.ServerWorld
@@ -61,11 +62,11 @@ class MobWardBlock(private val factory: (FabricBlockEntityTypeBuilder.Factory<Ch
 
     override fun appendTooltip(
         stack: ItemStack?,
-        world: BlockView?,
-        tooltip: MutableList<Text>,
-        options: TooltipContext?
+        context: Item.TooltipContext?,
+        tooltip: MutableList<Text>?,
+        options: TooltipType?
     ) {
-        tooltip.add(Text.translatable("item.bosses_of_mass_destruction.mob_ward.tooltip").formatted(Formatting.DARK_GRAY))
+        tooltip?.add(Text.translatable("item.bosses_of_mass_destruction.mob_ward.tooltip").formatted(Formatting.DARK_GRAY))
     }
 
     override fun getCodec(): MapCodec<out BlockWithEntity> {

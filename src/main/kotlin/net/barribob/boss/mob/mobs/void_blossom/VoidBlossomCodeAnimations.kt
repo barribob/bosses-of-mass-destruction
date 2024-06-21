@@ -3,7 +3,7 @@ package net.barribob.boss.mob.mobs.void_blossom
 import net.barribob.boss.mob.GeoModel
 import net.barribob.boss.mob.utils.animation.ICodeAnimations
 import net.minecraft.util.math.MathHelper
-import software.bernie.geckolib.core.animation.AnimationState
+import software.bernie.geckolib.animation.AnimationState
 
 class VoidBlossomCodeAnimations : ICodeAnimations<VoidBlossomEntity> {
     override fun animate(animatable: VoidBlossomEntity, data: AnimationState<*>, geoModel: GeoModel<VoidBlossomEntity>) {

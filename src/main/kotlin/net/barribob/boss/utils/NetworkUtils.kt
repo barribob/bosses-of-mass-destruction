@@ -1,7 +1,5 @@
 package net.barribob.boss.utils
 
-import io.netty.buffer.Unpooled
-import net.barribob.boss.Mod
 import net.barribob.boss.block.VoidBlossomBlock
 import net.barribob.boss.block.VoidLilyBlockEntity
 import net.barribob.boss.block.structure_repair.ObsidilithStructureRepair
@@ -9,203 +7,155 @@ import net.barribob.boss.block.structure_repair.VoidBlossomStructureRepair
 import net.barribob.boss.item.ChargedEnderPearlEntity
 import net.barribob.boss.mob.mobs.gauntlet.GauntletEntity
 import net.barribob.boss.mob.mobs.void_blossom.VoidBlossomEntity
+import net.barribob.boss.packets.*
 import net.barribob.maelstrom.static_utilities.asVec3d
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking
 import net.minecraft.client.MinecraftClient
-import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.network.PacketByteBuf
-import net.minecraft.network.listener.ClientPlayPacketListener
-import net.minecraft.network.packet.Packet
-import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 
 class NetworkUtils {
-
     companion object {
-        private val spawnEntityPacketId = Mod.identifier("spawn_entity")
-        private val changeHitboxPacketId = Mod.identifier("change_hitbox")
-        private val gauntletBlindnessPacketId = Mod.identifier("gauntlet_blindness")
-        private val playerVelocityPacketId = Mod.identifier("player_velocity")
-        private val voidBlossomSpikePacketId = Mod.identifier("void_blossom_spikes")
-        private val voidBlossomHealId = Mod.identifier("void_blossom_head")
-        private val voidBlossomPlaceId = Mod.identifier("void_blossom_place")
-        private val voidLilyParticleId = Mod.identifier("void_lily_pollen")
-        private val chargedEnderPearlImpactId = Mod.identifier("charged_ender_pearl_impact")
-        private val voidBlossomReviveId = Mod.identifier("void_blossom_revive")
-        private val obsidilithReviveId = Mod.identifier("obsidilith_revive")
-
         fun LivingEntity.sendVelocity(velocity: Vec3d) {
             this.velocity = velocity
             if (this is ServerPlayerEntity) {
-                val packet = PacketByteBuf(Unpooled.buffer())
-                packet.writeVec3d(velocity)
-                ServerPlayNetworking.send(this, playerVelocityPacketId, packet)
+                ServerPlayNetworking.send(this, PlayerVelocityPacket(velocity))
             }
         }
 
         fun GauntletEntity.changeHitbox(open: Boolean) {
-            val packet = PacketByteBuf(Unpooled.buffer())
-            packet.writeInt(this.id)
-            packet.writeBoolean(open)
+            val gauntletChangeHitboxPacket = GauntletChangeHitboxPacket(this.id, open)
             PlayerLookup.tracking(this).forEach {
-                ServerPlayNetworking.send(it, changeHitboxPacketId, packet)
+                ServerPlayNetworking.send(it, gauntletChangeHitboxPacket)
             }
         }
 
         fun GauntletEntity.sendBlindnessPacket(players: List<PlayerEntity>) {
-            val packet = PacketByteBuf(Unpooled.buffer())
-            packet.writeInt(this.id)
-            packet.writeIntArray(players.map { it.id }.toIntArray())
-            PlayerLookup.tracking(this).forEach {
-                ServerPlayNetworking.send(it, gauntletBlindnessPacketId, packet)
+            PlayerLookup.tracking(this).forEach { entity ->
+                ServerPlayNetworking.send(entity, GauntletBlindnessPacket(this.id, players.map { it.id }))
             }
         }
 
         fun VoidBlossomEntity.sendSpikePacket(spikesPositions: List<BlockPos>) {
             for (spikePos in spikesPositions) {
-                val buf: PacketByteBuf = PacketByteBufs.create()
-                buf.writeInt(this.id)
-                buf.writeInt(spikePos.x)
-                buf.writeInt(spikePos.y)
-                buf.writeInt(spikePos.z)
+                val packet = VoidBlossomSpikesPacket(this.id, spikePos)
                 for (player in PlayerLookup.tracking(this)) {
-                    ServerPlayNetworking.send(player, voidBlossomSpikePacketId, buf)
+                    ServerPlayNetworking.send(player, packet)
                 }
             }
         }
 
         fun VoidBlossomEntity.sendHealPacket(source: Vec3d, dest: Vec3d) {
-            val buf: PacketByteBuf = PacketByteBufs.create()
-            buf.writeVec3d(source)
-            buf.writeVec3d(dest)
+            val voidBlossomHealPacket = VoidBlossomHealPacket(source, dest)
             for (player in PlayerLookup.tracking(this)) {
-                ServerPlayNetworking.send(player, voidBlossomHealId, buf)
+                ServerPlayNetworking.send(player, voidBlossomHealPacket)
             }
         }
 
         fun VoidBlossomEntity.sendPlacePacket(pos: Vec3d) {
-            val buf: PacketByteBuf = PacketByteBufs.create()
-            buf.writeVec3d(pos)
+            val voidBlossomPlacePacket = VoidBlossomPlacePacket(pos)
             for (player in PlayerLookup.tracking(this)) {
-                ServerPlayNetworking.send(player, voidBlossomPlaceId, buf)
+                ServerPlayNetworking.send(player, voidBlossomPlacePacket)
             }
         }
 
         fun sendVoidBlossomRevivePacket(world: ServerWorld, pos: Vec3d) {
-            val buf: PacketByteBuf = PacketByteBufs.create()
-            buf.writeVec3d(pos)
+            val packet = VoidBlossomRevivePacket(pos)
             for (player in PlayerLookup.tracking(world, BlockPos.ofFloored(pos))) {
-                ServerPlayNetworking.send(player, voidBlossomReviveId, buf)
+                ServerPlayNetworking.send(player, packet)
             }
         }
 
         fun sendObsidilithRevivePacket(world: ServerWorld, pos: Vec3d) {
-            val buf: PacketByteBuf = PacketByteBufs.create()
-            buf.writeVec3d(pos)
+            val packet = ObsidilithRevivePacket(pos)
             for (player in PlayerLookup.tracking(world, BlockPos.ofFloored(pos))) {
-                ServerPlayNetworking.send(player, obsidilithReviveId, buf)
+                ServerPlayNetworking.send(player, packet)
             }
         }
 
 
         fun sendParticlePacket(world: ServerWorld, pos: BlockPos, dir: Vec3d) {
-            val buf: PacketByteBuf = PacketByteBufs.create()
-            buf.writeVec3d(pos.asVec3d())
-            buf.writeVec3d(dir)
+            val packet = VoidLilyParticlePacket(pos.asVec3d(), dir)
             for (player in PlayerLookup.tracking(world, pos)) {
-                ServerPlayNetworking.send(player, voidLilyParticleId, buf)
+                ServerPlayNetworking.send(player, packet)
             }
         }
 
         fun sendImpactPacket(world: ServerWorld, pos: Vec3d) {
-            val buf: PacketByteBuf = PacketByteBufs.create()
-            buf.writeVec3d(pos)
             for (player in PlayerLookup.tracking(world, BlockPos.ofFloored(pos))) {
-                ServerPlayNetworking.send(player, chargedEnderPearlImpactId, buf)
+                ServerPlayNetworking.send(player, ChargedEnderPearlImpactPacket(pos))
             }
         }
     }
 
     @Environment(EnvType.CLIENT)
     fun registerClientHandlers() {
-        ClientPlayNetworking.registerGlobalReceiver(spawnEntityPacketId) { client, _, buf, _ ->
-            handleSpawnClientEntity(client, buf)
+        ClientPlayNetworking.registerGlobalReceiver(PlayerVelocityPacket.ID) { packet, context ->
+            handlePlayerVelocity(context.client(), packet)
         }
-        ClientPlayNetworking.registerGlobalReceiver(playerVelocityPacketId) { client, _, buf, _ ->
-            handlePlayerVelocity(client, buf)
+        ClientPlayNetworking.registerGlobalReceiver(GauntletChangeHitboxPacket.ID) { packet, context ->
+            handleChangeHitbox(context.client(), packet)
         }
-        ClientPlayNetworking.registerGlobalReceiver(changeHitboxPacketId) { client, _, buf, _ ->
-            handleChangeHitbox(client, buf)
+        ClientPlayNetworking.registerGlobalReceiver(GauntletBlindnessPacket.ID) { packet, context ->
+            handleGauntletBlindness(context.client(), packet)
         }
-        ClientPlayNetworking.registerGlobalReceiver(gauntletBlindnessPacketId) { client, _, buf, _ ->
-            handleGauntletBlindness(client, buf)
+        ClientPlayNetworking.registerGlobalReceiver(VoidBlossomSpikesPacket.ID) { packet, context ->
+            handleVoidBlossomSpikes(context.client(), packet)
         }
-        ClientPlayNetworking.registerGlobalReceiver(voidBlossomSpikePacketId) { client, _, buf, _ ->
-            handleVoidBlossomSpikes(client, buf)
+        ClientPlayNetworking.registerGlobalReceiver(VoidBlossomHealPacket.ID) { packet, context ->
+            handleVoidBlossomHeal(context.client(), packet)
         }
-        ClientPlayNetworking.registerGlobalReceiver(voidBlossomHealId) { client, _, buf, _ ->
-            handleVoidBlossomHeal(client, buf)
+        ClientPlayNetworking.registerGlobalReceiver(VoidBlossomPlacePacket.ID) { packet, context ->
+            handleVoidBlossomPlace(context.client(), packet)
         }
-        ClientPlayNetworking.registerGlobalReceiver(voidBlossomPlaceId) { client, _, buf, _ ->
-            handleVoidBlossomPlace(client, buf)
+        ClientPlayNetworking.registerGlobalReceiver(VoidLilyParticlePacket.ID) { packet, context ->
+            handleVoidLilyParticles(context.client(), packet)
         }
-        ClientPlayNetworking.registerGlobalReceiver(voidLilyParticleId) { client, _, buf, _ ->
-            handleVoidLilyParticles(client, buf)
+        ClientPlayNetworking.registerGlobalReceiver(ChargedEnderPearlImpactPacket.ID) { packet, context -> 
+            handlePearlImpact(context.client(), packet)
         }
-        ClientPlayNetworking.registerGlobalReceiver(chargedEnderPearlImpactId) { client, _, buf, _ ->
-            handlePearlImpact(client, buf)
+        ClientPlayNetworking.registerGlobalReceiver(VoidBlossomRevivePacket.ID) { packet, context ->
+            handleVoidBlossomRevivePacket(context.client(), packet)
         }
-        ClientPlayNetworking.registerGlobalReceiver(voidBlossomReviveId) { client, _, buf, _ ->
-            handleVoidBlossomRevivePacket(client, buf)
-        }
-        ClientPlayNetworking.registerGlobalReceiver(obsidilithReviveId) { client, _, buf, _ ->
-            handleObsidilithRevivePacket(client, buf)
+        ClientPlayNetworking.registerGlobalReceiver(ObsidilithRevivePacket.ID) { packet, context ->
+            handleObsidilithRevivePacket(context.client(), packet)
         }
     }
 
+    fun registerHandlers(){
+        PayloadTypeRegistry.playS2C().register(ChargedEnderPearlImpactPacket.ID, ChargedEnderPearlImpactPacket.CODEC);
+        PayloadTypeRegistry.playS2C().register(PlayerVelocityPacket.ID, PlayerVelocityPacket.CODEC);
+        PayloadTypeRegistry.playS2C().register(GauntletChangeHitboxPacket.ID, GauntletChangeHitboxPacket.CODEC);
+        PayloadTypeRegistry.playS2C().register(GauntletBlindnessPacket.ID, GauntletBlindnessPacket.CODEC);
+        PayloadTypeRegistry.playS2C().register(VoidBlossomSpikesPacket.ID, VoidBlossomSpikesPacket.CODEC);
+        PayloadTypeRegistry.playS2C().register(VoidBlossomHealPacket.ID, VoidBlossomHealPacket.CODEC);
+        PayloadTypeRegistry.playS2C().register(VoidBlossomPlacePacket.ID, VoidBlossomPlacePacket.CODEC);
+        PayloadTypeRegistry.playS2C().register(VoidBlossomRevivePacket.ID, VoidBlossomRevivePacket.CODEC);
+        PayloadTypeRegistry.playS2C().register(ObsidilithRevivePacket.ID, ObsidilithRevivePacket.CODEC);
+        PayloadTypeRegistry.playS2C().register(VoidLilyParticlePacket.ID, VoidLilyParticlePacket.CODEC);
+    }
+
     @Environment(EnvType.CLIENT)
-    private fun handlePlayerVelocity(client: MinecraftClient, buf: PacketByteBuf) {
-        val velocity = buf.readVec3d()
+    private fun handlePlayerVelocity(client: MinecraftClient, packet: PlayerVelocityPacket) {
+        val velocity = packet.velocity
         client.execute {
             client.player?.velocity = velocity
         }
     }
 
-    private fun packSpawnClientEntity(packet: EntitySpawnS2CPacket): PacketByteBuf {
-        val packetData = PacketByteBuf(Unpooled.buffer())
-        packet.write(packetData)
-        return packetData
-    }
-
-    fun createClientEntityPacket(entity: Entity): Packet<ClientPlayPacketListener> {
-        return ServerPlayNetworking.createS2CPacket(
-            spawnEntityPacketId, packSpawnClientEntity(
-                EntitySpawnS2CPacket(entity)
-            )
-        ) as Packet<ClientPlayPacketListener>
-    }
-
     @Environment(EnvType.CLIENT)
-    private fun handleSpawnClientEntity(client: MinecraftClient, buf: PacketByteBuf) {
-        val packet = EntitySpawnS2CPacket(buf)
-
-        client.execute { VanillaCopies.handleClientSpawnEntity(client, packet) }
-    }
-
-    @Environment(EnvType.CLIENT)
-    private fun handleChangeHitbox(client: MinecraftClient, buf: PacketByteBuf) {
-        val entityId = buf.readInt()
-        val open = buf.readBoolean()
+    private fun handleChangeHitbox(client: MinecraftClient, packet: GauntletChangeHitboxPacket) {
+        val entityId = packet.entityId
+        val open = packet.open
 
         client.execute {
             val entity = client.world?.getEntityById(entityId)
@@ -216,9 +166,9 @@ class NetworkUtils {
     }
 
     @Environment(EnvType.CLIENT)
-    private fun handleGauntletBlindness(client: MinecraftClient, buf: PacketByteBuf) {
-        val entityId = buf.readInt()
-        val playerIds = buf.readIntArray()
+    private fun handleGauntletBlindness(client: MinecraftClient, packet: GauntletBlindnessPacket) {
+        val entityId = packet.id
+        val playerIds = packet.players
 
         client.execute {
             val entity = client.world?.getEntityById(entityId)
@@ -230,9 +180,9 @@ class NetworkUtils {
     }
 
     @Environment(EnvType.CLIENT)
-    private fun handleVoidBlossomSpikes(client: MinecraftClient, buf: PacketByteBuf) {
-        val entityId = buf.readInt()
-        val spikePos = BlockPos(buf.readInt(), buf.readInt(), buf.readInt())
+    private fun handleVoidBlossomSpikes(client: MinecraftClient, packet: VoidBlossomSpikesPacket) {
+        val entityId = packet.id
+        val spikePos = packet.pos
 
         client.execute {
             val entity = client.world?.getEntityById(entityId)
@@ -244,9 +194,9 @@ class NetworkUtils {
     }
 
     @Environment(EnvType.CLIENT)
-    private fun handleVoidBlossomHeal(client: MinecraftClient, buf: PacketByteBuf) {
-        val source = buf.readVec3d()
-        val dest = buf.readVec3d()
+    private fun handleVoidBlossomHeal(client: MinecraftClient, packet: VoidBlossomHealPacket) {
+        val source = packet.source
+        val dest = packet.dest
 
         client.execute {
             val world = client.world
@@ -257,8 +207,8 @@ class NetworkUtils {
     }
 
     @Environment(EnvType.CLIENT)
-    private fun handleVoidBlossomPlace(client: MinecraftClient, buf: PacketByteBuf) {
-        val pos = buf.readVec3d()
+    private fun handleVoidBlossomPlace(client: MinecraftClient, packet: VoidBlossomPlacePacket) {
+        val pos = packet.pos
 
         client.execute {
             VoidBlossomBlock.handleVoidBlossomPlace(pos)
@@ -266,9 +216,9 @@ class NetworkUtils {
     }
 
     @Environment(EnvType.CLIENT)
-    private fun handleVoidLilyParticles(client: MinecraftClient, buf: PacketByteBuf) {
-        val pos = buf.readVec3d()
-        val dir = buf.readVec3d()
+    private fun handleVoidLilyParticles(client: MinecraftClient, particlePacket: VoidLilyParticlePacket) {
+        val pos = particlePacket.pos
+        val dir = particlePacket.dir
 
         client.execute {
             val world = client.world
@@ -279,20 +229,18 @@ class NetworkUtils {
     }
 
     @Environment(EnvType.CLIENT)
-    private fun handlePearlImpact(client: MinecraftClient, buf: PacketByteBuf) {
-        val pos = buf.readVec3d()
-
+    private fun handlePearlImpact(client: MinecraftClient, packet: ChargedEnderPearlImpactPacket) {
         client.execute {
             val world = client.world
             if(world != null) {
-                ChargedEnderPearlEntity.handlePearlImpact(pos)
+                ChargedEnderPearlEntity.handlePearlImpact(packet.pos)
             }
         }
     }
 
     @Environment(EnvType.CLIENT)
-    private fun handleVoidBlossomRevivePacket(client: MinecraftClient, buf: PacketByteBuf) {
-        val pos = buf.readVec3d()
+    private fun handleVoidBlossomRevivePacket(client: MinecraftClient, packet: VoidBlossomRevivePacket) {
+        val pos = packet.pos
 
         client.execute {
             val world = client.world
@@ -303,8 +251,8 @@ class NetworkUtils {
     }
 
     @Environment(EnvType.CLIENT)
-    private fun handleObsidilithRevivePacket(client: MinecraftClient, buf: PacketByteBuf) {
-        val pos = buf.readVec3d()
+    private fun handleObsidilithRevivePacket(client: MinecraftClient, packet: ObsidilithRevivePacket) {
+        val pos = packet.pos
 
         client.execute {
             val world = client.world

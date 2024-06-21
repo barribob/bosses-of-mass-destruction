@@ -9,12 +9,11 @@ import net.barribob.maelstrom.general.event.TimedEvent
 import net.barribob.maelstrom.static_utilities.RandomUtils
 import net.barribob.maelstrom.static_utilities.VecUtils
 import net.barribob.maelstrom.static_utilities.asVec3d
-import net.fabricmc.api.EnvType
-import net.fabricmc.api.Environment
 import net.minecraft.block.BlockState
 import net.minecraft.block.entity.BlockEntity
 import net.minecraft.block.entity.BlockEntityType
 import net.minecraft.nbt.NbtCompound
+import net.minecraft.registry.RegistryWrapper
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
@@ -25,21 +24,21 @@ class VoidLilyBlockEntity(type: BlockEntityType<*>?, pos: BlockPos?, state: Bloc
     BlockEntity(type, pos, state) {
     private var structureDirection: Vec3d? = null
 
-    override fun readNbt(nbt: NbtCompound) {
+    override fun readNbt(nbt: NbtCompound, registryLookup: RegistryWrapper.WrapperLookup?) {
         if (nbt.contains("dirX")) {
             structureDirection = Vec3d(nbt.getDouble("dirX"), nbt.getDouble("dirY"), nbt.getDouble("dirZ"))
         }
-        super.readNbt(nbt)
+        super.readNbt(nbt, registryLookup)
     }
 
-    override fun writeNbt(nbt: NbtCompound) {
+    override fun writeNbt(nbt: NbtCompound, registryLookup: RegistryWrapper.WrapperLookup?) {
         val dir = structureDirection
         if (dir != null) {
             nbt.putDouble("dirX", dir.x)
             nbt.putDouble("dirY", dir.y)
             nbt.putDouble("dirZ", dir.z)
         }
-        super.writeNbt(nbt)
+        super.writeNbt(nbt, registryLookup)
     }
 
     companion object {

@@ -4,7 +4,6 @@ import net.barribob.boss.Mod
 import net.barribob.boss.block.ModBlocks
 import net.barribob.boss.mob.ai.action.IActionWithCooldown
 import net.barribob.boss.mob.mobs.void_blossom.hitbox.HitboxId
-import net.barribob.boss.mob.mobs.void_blossom.hitbox.NetworkedHitboxManager
 import net.barribob.boss.utils.ModUtils.playSound
 import net.barribob.boss.utils.ModUtils.randomPitch
 import net.barribob.boss.utils.NetworkUtils.Companion.sendPlacePacket
@@ -41,10 +40,10 @@ class BlossomAction(
         eventScheduler.addEvent(
             EventSeries(
                 TimedEvent({
-                    entity.dataTracker.set(NetworkedHitboxManager.hitbox, HitboxId.SpikeWave3.id)
+                    entity.dataTracker.set(VoidBlossomEntity.hitboxTrackedData, HitboxId.SpikeWave3.id)
                 }, 20, shouldCancel = shouldCancel),
                 TimedEvent({
-                    entity.dataTracker.set(NetworkedHitboxManager.hitbox, HitboxId.Idle.id)
+                    entity.dataTracker.set(VoidBlossomEntity.hitboxTrackedData, HitboxId.Idle.id)
                 }, 80)
             )
         )

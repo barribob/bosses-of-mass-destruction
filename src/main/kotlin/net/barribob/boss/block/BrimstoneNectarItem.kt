@@ -7,7 +7,7 @@ import net.barribob.boss.utils.ModUtils.randomPitch
 import net.barribob.boss.utils.Vec3dNetworkHandler.Companion.sendVec3dPacket
 import net.barribob.boss.utils.VecId
 import net.barribob.maelstrom.general.event.TimedEvent
-import net.minecraft.client.item.TooltipContext
+import net.minecraft.client.item.TooltipType
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
@@ -25,9 +25,9 @@ import net.minecraft.world.World
 class BrimstoneNectarItem(settings: Settings, private val structureRepairs: List<StructureRepair>) : Item(settings) {
     override fun appendTooltip(
         stack: ItemStack?,
-        world: World?,
+        context: TooltipContext?,
         tooltip: MutableList<Text>,
-        context: TooltipContext?
+        type: TooltipType?
     ) {
         tooltip.add(Text.translatable("item.bosses_of_mass_destruction.brimstone_nectar.tooltip").formatted(Formatting.DARK_GRAY))
     }
