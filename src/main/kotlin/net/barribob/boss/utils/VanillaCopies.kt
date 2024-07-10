@@ -174,7 +174,7 @@ object VanillaCopies {
                 textureU.toFloat(),
                 textureV.toFloat()
             ).overlay(OverlayTexture.DEFAULT_UV).light(light)
-            .normal(normalMatrix, 0.0f, 1.0f, 0.0f).next()
+            .normal(normalMatrix, 0.0f, 1.0f, 0.0f)
     }
 
     /**
@@ -270,10 +270,10 @@ object VanillaCopies {
         val quaternion2: Quaternionf = camera.rotation
 
         val vector3fs = arrayOf(
-            Vector3f(-1.0f, -1.0f, 0.0f),
-            Vector3f(-1.0f, 1.0f, 0.0f),
+            Vector3f(1.0f, -1.0f, 0.0f),
             Vector3f(1.0f, 1.0f, 0.0f),
-            Vector3f(1.0f, -1.0f, 0.0f)
+            Vector3f(-1.0f, 1.0f, 0.0f),
+            Vector3f(-1.0f, -1.0f, 0.0f),
         )
 
         for (k in 0..3) {
@@ -416,7 +416,7 @@ object VanillaCopies {
             .overlay(OverlayTexture.DEFAULT_UV)
             .light(15728800)
             .normal(matrix3f, 0.0f, 0.0f, -1.0f) // Changed from normal(0, 1, 0) because that brightened it for some reason that I cannot fathom with my pathetic opengl knowledge
-            .next()
+            
     }
 
     /**

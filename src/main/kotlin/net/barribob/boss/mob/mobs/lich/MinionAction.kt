@@ -69,6 +69,6 @@ class MinionAction(
         const val minionSummonCooldown = 80
         const val summonId = "minecraft:phantom"
         val summonNbt: NbtCompound = StringNbtReader.parse("{Health:14,Size:2,Attributes:[{Name:\"generic.max_health\",Base:14f}]}")
-        val summonEntityType = Registries.ENTITY_TYPE[Identifier(summonId)]
+        val summonEntityType = Registries.ENTITY_TYPE[Identifier.of(summonId)]
     }
 }

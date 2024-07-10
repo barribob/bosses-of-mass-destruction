@@ -32,7 +32,7 @@ class TestCommand() : CommandRegistrationCallback {
 
     private val suggestions: SuggestionProvider<ServerCommandSource> =
         SuggestionProviders.register(
-            Identifier(MaelstromMod.MODID, "test"),
+            Identifier.of(MaelstromMod.MODID, "test"),
             SuggestionProvider { _, builder ->
                 CommandSource.forEachMatching(
                     tests.keys,
@@ -45,7 +45,7 @@ class TestCommand() : CommandRegistrationCallback {
     fun addId(
         name: String,
         callback: (ServerCommandSource) -> Unit
-    ) = tests.put(Identifier(name.lowercase(Locale.ROOT)), callback)
+    ) = tests.put(Identifier.of(name.lowercase(Locale.ROOT)), callback)
 
     override fun register(dispatcher: CommandDispatcher<ServerCommandSource>, registryAccess: CommandRegistryAccess?, environment: CommandManager.RegistrationEnvironment?) {
         val commandName = "libtest"

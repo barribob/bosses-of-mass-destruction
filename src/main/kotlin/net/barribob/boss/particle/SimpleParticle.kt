@@ -152,21 +152,21 @@ class SimpleParticle(
         val o = this.maxV
         val p = getBrightness(tickDelta)
         vertexConsumer!!.vertex(
-            vector3fs[0].x.toDouble(), vector3fs[0].y.toDouble(),
-            vector3fs[0].z.toDouble()
-        ).texture(m, o).color(red, green, blue, alpha).light(p).next()
+            vector3fs[0].x, vector3fs[0].y,
+            vector3fs[0].z
+        ).texture(m, o).color(red, green, blue, alpha).light(p)
         vertexConsumer.vertex(
-            vector3fs[1].x.toDouble(), vector3fs[1].y.toDouble(),
-            vector3fs[1].z.toDouble()
-        ).texture(m, n).color(red, green, blue, alpha).light(p).next()
+            vector3fs[1].x, vector3fs[1].y,
+            vector3fs[1].z
+        ).texture(m, n).color(red, green, blue, alpha).light(p)
         vertexConsumer.vertex(
-            vector3fs[2].x.toDouble(), vector3fs[2].y.toDouble(),
-            vector3fs[2].z.toDouble()
-        ).texture(l, n).color(red, green, blue, alpha).light(p).next()
+            vector3fs[2].x, vector3fs[2].y,
+            vector3fs[2].z
+        ).texture(l, n).color(red, green, blue, alpha).light(p)
         vertexConsumer.vertex(
-            vector3fs[3].x.toDouble(), vector3fs[3].y.toDouble(),
-            vector3fs[3].z.toDouble()
-        ).texture(l, o).color(red, green, blue, alpha).light(p).next()
+            vector3fs[3].x, vector3fs[3].y,
+            vector3fs[3].z
+        ).texture(l, o).color(red, green, blue, alpha).light(p)
     }
 
     init {

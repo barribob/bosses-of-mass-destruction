@@ -72,7 +72,7 @@ class ModItems {
     fun clientInit() {
         FabricModelPredicateProviderRegistry.register(
             earthdiveSpear,
-            Identifier("throwing")
+            Identifier.of("throwing")
         ) { itemStack, _, livingEntity, _ ->
             if (livingEntity == null) {
                 return@register 0.0f

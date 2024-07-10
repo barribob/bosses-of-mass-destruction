@@ -8,6 +8,7 @@ import net.minecraft.client.render.entity.EntityRendererFactory
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.entity.Entity
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.ColorHelper
 import org.joml.Vector4f
 import software.bernie.geckolib.animatable.GeoAnimatable
 import software.bernie.geckolib.cache.`object`.BakedGeoModel
@@ -37,18 +38,19 @@ class SimpleLivingGeoRenderer<T>(
         renderType: RenderLayer?,
         bufferSource: VertexConsumerProvider?,
         buffer: VertexConsumer?,
-        skipGeoLayers: Boolean,
+        isReRender: Boolean,
         partialTick: Float,
         packedLightIn: Int,
         packedOverlay: Int,
-        red: Float,
-        green: Float,
-        blue: Float,
-        alpha: Float
+        colour: Int
     ) {
         val packedLight = iBoneLight?.getLightForBone(bone, packedLightIn) ?: packedLightIn
-        val color = Vector4f(red, green, blue, alpha)
-        val newColor = iBoneLight?.getColorForBone(bone, color) ?: color
+        val r = ColorHelper.Argb.getRed(colour)
+        val g = ColorHelper.Argb.getGreen(colour)
+        val b = ColorHelper.Argb.getBlue(colour)
+        val a = ColorHelper.Argb.getAlpha(colour)
+        val color = Vector4f(r.toFloat(), g.toFloat(), b.toFloat(), a.toFloat()).mul(1 / 255f)
+        val newColor = (iBoneLight?.getColorForBone(bone, color) ?: color).mul(255f)
         super.renderRecursively(
             poseStack,
             animatable,
@@ -56,14 +58,11 @@ class SimpleLivingGeoRenderer<T>(
             renderType,
             bufferSource,
             buffer,
-            skipGeoLayers,
+            isReRender,
             partialTick,
             packedLight,
             packedOverlay,
-            newColor.x,
-            newColor.y,
-            newColor.z,
-            newColor.w
+            ColorHelper.Argb.getArgb(newColor.w.toInt(), newColor.x.toInt(), newColor.y.toInt(), newColor.z.toInt())
         )
     }
 
@@ -92,10 +91,7 @@ class SimpleLivingGeoRenderer<T>(
         partialTick: Float,
         packedLight: Int,
         packedOverlay: Int,
-        red: Float,
-        green: Float,
-        blue: Float,
-        alpha: Float
+        colour: Int
     ) {
         super.actuallyRender(
             poseStack,
@@ -108,13 +104,10 @@ class SimpleLivingGeoRenderer<T>(
             partialTick,
             packedLight,
             packedOverlay,
-            red,
-            green,
-            blue,
-            alpha
+            colour
         )
         val packetOverlay = overlayOverride?.getOverlay() ?: packedOverlay
-        renderWithModel?.render(model, partialTick, poseStack, bufferSource, packedLight, packetOverlay, red, green, blue, alpha)
+        renderWithModel?.render(model, partialTick, poseStack, bufferSource, packedLight, packetOverlay, ColorHelper.Argb.getRed(colour).toFloat(), ColorHelper.Argb.getGreen(colour).toFloat(), ColorHelper.Argb.getBlue(colour).toFloat(), ColorHelper.Argb.getAlpha(colour).toFloat())
     }
 
     override fun getPackedOverlay(animatable: T, u: Float, partialTick: Float): Int {

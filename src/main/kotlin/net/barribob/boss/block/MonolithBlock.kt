@@ -9,7 +9,7 @@ import net.minecraft.block.entity.BlockEntity
 import net.minecraft.block.entity.BlockEntityTicker
 import net.minecraft.block.entity.BlockEntityType
 import net.minecraft.block.enums.DoubleBlockHalf
-import net.minecraft.client.item.TooltipType
+import net.minecraft.item.tooltip.TooltipType
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.Item

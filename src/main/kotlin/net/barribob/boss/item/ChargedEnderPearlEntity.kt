@@ -26,6 +26,7 @@ import net.minecraft.util.hit.EntityHitResult
 import net.minecraft.util.hit.HitResult
 import net.minecraft.util.math.Box
 import net.minecraft.util.math.Vec3d
+import net.minecraft.world.TeleportTarget
 import net.minecraft.world.World
 import kotlin.random.Random
 
@@ -116,12 +117,12 @@ class ChargedEnderPearlEntity : ThrownItemEntity {
         }
     }
 
-    override fun moveToWorld(destination: ServerWorld): Entity? {
+    override fun teleportTo(teleportTarget: TeleportTarget): Entity? {
         val entity = owner
-        if (entity != null && entity.world.registryKey !== destination.registryKey) {
+        if (entity != null && entity.world.registryKey !== teleportTarget.world.registryKey) {
             owner = null
         }
-        return super.moveToWorld(destination)
+        return super.teleportTo(teleportTarget)
     }
 
     companion object {

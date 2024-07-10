@@ -12,10 +12,12 @@ import net.minecraft.client.render.VertexConsumer
 import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.client.render.entity.EntityRendererFactory
 import net.minecraft.client.util.math.MatrixStack
+import net.minecraft.util.math.ColorHelper
 import software.bernie.geckolib.cache.`object`.BakedGeoModel
 import software.bernie.geckolib.cache.`object`.GeoCube
 import software.bernie.geckolib.model.GeoModel
 import software.bernie.geckolib.renderer.GeoEntityRenderer
+import java.awt.Color
 import kotlin.random.Random
 
 class ObsidilithArmorRenderer(val geoModel: GeoModel<ObsidilithEntity>, val context: EntityRendererFactory.Context) : IRendererWithModel, IRenderer<ObsidilithEntity> {
@@ -52,7 +54,7 @@ class ObsidilithArmorRenderer(val geoModel: GeoModel<ObsidilithEntity>, val cont
                 ObsidilithUtils.pillarDefenseStatus -> ModColors.WHITE
                 else -> ModColors.WHITE
             }.add(VecUtils.unit).normalize().multiply(0.6)
-
+            val c = ColorHelper.Argb.fromFloats(1.0f, color.x.toFloat(), color.y.toFloat(), color.z.toFloat())
             geoModelProvider?.actuallyRender(
                 matrixStackIn,
                 entity,
@@ -64,7 +66,7 @@ class ObsidilithArmorRenderer(val geoModel: GeoModel<ObsidilithEntity>, val cont
                 partialTicks,
                 packedLightIn,
                 OverlayTexture.DEFAULT_UV,
-                color.x.toFloat(), color.y.toFloat(), color.z.toFloat(), 1.0f
+                c
             )
         }
     }
@@ -86,20 +88,10 @@ class ObsidilithArmorRenderer(val geoModel: GeoModel<ObsidilithEntity>, val cont
     }
 
     private class RenderHelper(val entity: ObsidilithEntity, parentModel: GeoModel<ObsidilithEntity>, context: EntityRendererFactory.Context) : GeoEntityRenderer<ObsidilithEntity>(context, parentModel) {
-        override fun renderCube(
-            matrixStack: MatrixStack,
-            cube: GeoCube?,
-            buffer: VertexConsumer?,
-            packedLight: Int,
-            packedOverlay: Int,
-            red: Float,
-            green: Float,
-            blue: Float,
-            alpha: Float
-        ) {
+        override fun renderCube(matrixStack: MatrixStack, cube: GeoCube?, buffer: VertexConsumer?, packedLight: Int, packedOverlay: Int, colour: Int) {
             matrixStack.push()
             matrixStack.scale(1.08f, 1.05f, 1.08f)
-            super.renderCube(matrixStack, cube, buffer, IBoneLight.fullbright, packedOverlay, red, green, blue, alpha)
+            super.renderCube(matrixStack, cube, buffer, IBoneLight.fullbright, packedOverlay, colour)
             matrixStack.pop()
         }
         

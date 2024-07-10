@@ -45,13 +45,13 @@
     "fabricloader": ">=0.15.0",
     "fabric": "*",
     "fabric-language-kotlin": "*",
-    "minecraft": "1.20.6",
+    "minecraft": "1.21.x",
     "java": ">=21",
-    "cardinal-components-base": ">=6.0.0",
-    "cardinal-components-world": ">=6.0.0",
-    "cardinal-components-entity": ">=6.0.0",
+    "cardinal-components-base": ">=6.1.0",
+    "cardinal-components-world": ">=6.1.0",
+    "cardinal-components-entity": ">=6.1.0",
     "geckolib": ">=4.5",
-    "cloth-config": ">=14.0.0"
+    "cloth-config": ">=15.0.0"
   },
   "custom":  {
     "cardinal-components": [

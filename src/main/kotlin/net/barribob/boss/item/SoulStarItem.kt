@@ -15,7 +15,7 @@ import net.barribob.maelstrom.static_utilities.asVec3d
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.minecraft.block.BlockState
-import net.minecraft.client.item.TooltipType
+import net.minecraft.item.tooltip.TooltipType
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.EnderEyeItem
 import net.minecraft.item.Item

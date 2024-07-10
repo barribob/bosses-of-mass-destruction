@@ -65,7 +65,7 @@ class WaveAction(val entity: MobEntity) :
     private fun damageEntity(entity: LivingEntity) {
         val damage = this.entity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE).toFloat()
         entity.sendVelocity(Vec3d(entity.velocity.x, 0.8, entity.velocity.z))
-        entity.setOnFireFor(5)
+        entity.setOnFireFor(5.0f)
         entity.damage(entity.world.damageSources.shieldPiercing(entity.world, this.entity), damage)
     }
 

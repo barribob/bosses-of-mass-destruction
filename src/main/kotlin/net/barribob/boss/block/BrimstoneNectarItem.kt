@@ -7,10 +7,10 @@ import net.barribob.boss.utils.ModUtils.randomPitch
 import net.barribob.boss.utils.Vec3dNetworkHandler.Companion.sendVec3dPacket
 import net.barribob.boss.utils.VecId
 import net.barribob.maelstrom.general.event.TimedEvent
-import net.minecraft.client.item.TooltipType
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
+import net.minecraft.item.tooltip.TooltipType
 import net.minecraft.registry.RegistryKeys
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory

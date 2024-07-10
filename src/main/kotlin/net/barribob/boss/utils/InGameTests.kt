@@ -33,6 +33,8 @@ import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
 import net.minecraft.nbt.NbtCompound
 import net.minecraft.registry.Registries
+import net.minecraft.registry.RegistryEntryLookup.RegistryLookup
+import net.minecraft.registry.RegistryKeys
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
@@ -43,24 +45,25 @@ class InGameTests() {
     fun provideGear(source: ServerCommandSource) {
         val entity = source.playerOrThrow
         val armor = listOf(ItemStack(Items.NETHERITE_HELMET), ItemStack(Items.NETHERITE_CHESTPLATE), ItemStack(Items.NETHERITE_LEGGINGS), ItemStack(Items.NETHERITE_BOOTS))
+        val registry = source.world.registryManager.get(RegistryKeys.ENCHANTMENT)
         armor.forEach {
-            it.addEnchantment(Enchantments.PROTECTION, 3)
-            it.addEnchantment(Enchantments.UNBREAKING, 3)
+            it.addEnchantment(registry.entryOf(Enchantments.PROTECTION), 3)
+            it.addEnchantment(registry.entryOf(Enchantments.UNBREAKING), 3)
         }
         val sword = ItemStack(Items.NETHERITE_SWORD)
-        sword.addEnchantment(Enchantments.SHARPNESS, 4)
-        sword.addEnchantment(Enchantments.UNBREAKING, 3)
+        sword.addEnchantment(registry.entryOf(Enchantments.SHARPNESS), 4)
+        sword.addEnchantment(registry.entryOf(Enchantments.UNBREAKING), 3)
         val bow = ItemStack(Items.BOW)
-        bow.addEnchantment(Enchantments.POWER, 4)
-        bow.addEnchantment(Enchantments.INFINITY, 1)
-        bow.addEnchantment(Enchantments.UNBREAKING, 3)
+        bow.addEnchantment(registry.entryOf(Enchantments.POWER), 4)
+        bow.addEnchantment(registry.entryOf(Enchantments.INFINITY), 1)
+        bow.addEnchantment(registry.entryOf(Enchantments.UNBREAKING), 3)
         val arrow = ItemStack(Items.ARROW)
         val apples = ItemStack(Items.GOLDEN_APPLE, 8)
         val food = ItemStack(Items.COOKED_PORKCHOP, 64)
         val shield = ItemStack(Items.SHIELD)
-        shield.addEnchantment(Enchantments.UNBREAKING, 3)
+        shield.addEnchantment(registry.entryOf(Enchantments.UNBREAKING), 3)
         val pickaxe = ItemStack(Items.NETHERITE_PICKAXE)
-        pickaxe.addEnchantment(Enchantments.EFFICIENCY, 4)
+        pickaxe.addEnchantment(registry.entryOf(Enchantments.EFFICIENCY), 4)
         val blocks = ItemStack(Items.COBBLESTONE, 64)
         listOf(sword, bow, apples, food, blocks, shield, pickaxe, arrow).forEach { entity.giveItemStack(it) }
         armor.forEach { entity.giveItemStack(it) }

@@ -16,7 +16,6 @@ import org.apache.logging.log4j.LogManager
 
 object MaelstromMod {
     internal const val MODID = Mod.MODID
-    internal val DRAW_POINTS_PACKET_ID = Identifier(MODID, "draw_points")
 
     val LOGGER: ILogger = ConsoleLogger(LogManager.getLogger())
     val testCommand = TestCommand()

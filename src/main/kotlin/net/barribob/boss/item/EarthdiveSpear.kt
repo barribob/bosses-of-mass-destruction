@@ -6,7 +6,7 @@ import net.barribob.boss.utils.ModUtils.randomPitch
 import net.barribob.boss.utils.ModUtils.spawnParticle
 import net.barribob.maelstrom.static_utilities.RandomUtils
 import net.minecraft.block.BlockState
-import net.minecraft.client.item.TooltipType
+import net.minecraft.item.tooltip.TooltipType
 import net.minecraft.component.type.AttributeModifierSlot
 import net.minecraft.component.type.AttributeModifiersComponent
 import net.minecraft.entity.EquipmentSlot
@@ -32,21 +32,11 @@ class EarthdiveSpear(settings: Settings?) : Item(settings) {
         fun createAttributeModifiers(): AttributeModifiersComponent {
             return AttributeModifiersComponent.builder().add(
                 EntityAttributes.GENERIC_ATTACK_DAMAGE,
-                EntityAttributeModifier(
-                    ATTACK_DAMAGE_MODIFIER_ID,
-                    "Tool modifier",
-                    8.0,
-                    EntityAttributeModifier.Operation.ADD_VALUE
-                ), 
+                EntityAttributeModifier(BASE_ATTACK_DAMAGE_MODIFIER_ID, 8.0, EntityAttributeModifier.Operation.ADD_VALUE), 
                 AttributeModifierSlot.MAINHAND
             ).add(
                 EntityAttributes.GENERIC_ATTACK_SPEED,
-                EntityAttributeModifier(
-                    ATTACK_SPEED_MODIFIER_ID,
-                    "Tool modifier",
-                    -2.9000000953674316,
-                    EntityAttributeModifier.Operation.ADD_VALUE
-                ), 
+                EntityAttributeModifier(BASE_ATTACK_SPEED_MODIFIER_ID, -2.9000000953674316, EntityAttributeModifier.Operation.ADD_VALUE), 
                 AttributeModifierSlot.MAINHAND
             ).build()
         }
@@ -131,8 +121,8 @@ class EarthdiveSpear(settings: Settings?) : Item(settings) {
         world.spawnParticle(Particles.EARTHDIVE_INDICATOR, pos, vel, speed = 0.07)
     }
 
-    private fun isCharged(stack: ItemStack, remainingUseTicks: Int): Boolean = getMaxUseTime(stack) - remainingUseTicks >= 10
-    override fun getMaxUseTime(stack: ItemStack?) = 72000
+    private fun isCharged(stack: ItemStack, remainingUseTicks: Int): Boolean = 72000 - remainingUseTicks >= 10
+    override fun getMaxUseTime(stack: ItemStack?, user: LivingEntity?): Int = 72000
     override fun getUseAction(stack: ItemStack?) = UseAction.SPEAR
     override fun getEnchantability() = 1
 }

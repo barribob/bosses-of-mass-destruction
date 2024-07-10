@@ -6,6 +6,7 @@ import net.minecraft.client.render.VertexConsumer
 import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.util.Identifier
+import net.minecraft.util.math.ColorHelper
 import org.joml.Vector4f
 import software.bernie.geckolib.animatable.GeoAnimatable
 import software.bernie.geckolib.cache.`object`.GeoBone
@@ -29,17 +30,18 @@ class ModBlockEntityRenderer<T>(
         renderType: RenderLayer?,
         bufferSource: VertexConsumerProvider?,
         buffer: VertexConsumer?,
-        skipGeoLayers: Boolean,
+        isReRender: Boolean,
         partialTick: Float,
         packedLight: Int,
         packedOverlay: Int,
-        red: Float,
-        green: Float,
-        blue: Float,
-        alpha: Float
+        colour: Int
     ) {
         val packedLight = iBoneLight?.getLightForBone(bone, packedLight) ?: packedLight
-        val color = Vector4f(red, green, blue, alpha)
+        val r = ColorHelper.Argb.getRed(colour)
+        val g = ColorHelper.Argb.getGreen(colour)
+        val b = ColorHelper.Argb.getBlue(colour)
+        val a = ColorHelper.Argb.getAlpha(colour)
+        val color = Vector4f(r.toFloat(), g.toFloat(), b.toFloat(), a.toFloat())
         val newColor = iBoneLight?.getColorForBone(bone, color) ?: color
         super.renderRecursively(
             poseStack,
@@ -48,11 +50,11 @@ class ModBlockEntityRenderer<T>(
             renderType,
             bufferSource,
             buffer,
-            skipGeoLayers,
+            isReRender,
             partialTick,
             packedLight,
             packedOverlay,
-            newColor.x, newColor.y, newColor.z, newColor.w
+            ColorHelper.Argb.getArgb(newColor.w.toInt(), newColor.x.toInt(), newColor.y.toInt(), newColor.z.toInt())
         )
     }
 }

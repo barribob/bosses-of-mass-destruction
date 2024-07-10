@@ -10,6 +10,7 @@ import net.minecraft.client.render.VertexConsumer
 import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.client.render.entity.EntityRendererFactory
 import net.minecraft.client.util.math.MatrixStack
+import net.minecraft.util.math.ColorHelper
 import net.minecraft.util.math.MathHelper
 import software.bernie.geckolib.cache.`object`.BakedGeoModel
 import software.bernie.geckolib.cache.`object`.GeoCube
@@ -60,6 +61,11 @@ class GauntletEnergyRenderer(val geoModel: GeoModel<GauntletEntity>,  val contex
         val renderAlpha = entity.energyShieldHandler.getRenderAlpha()
         if(renderAlpha == 0f) return
         val lerpedAlpha = MathHelper.lerp(partialTicks, renderAlpha - 0.1f, renderAlpha)
+        val color = ColorHelper.Argb.fromFloats(
+            lerpedAlpha,
+            0.8f * lerpedAlpha,
+            0.2f * lerpedAlpha,
+            0.2f * lerpedAlpha)
         geoModelProvider?.actuallyRender(
             matrixStackIn,
             entity,
@@ -71,28 +77,15 @@ class GauntletEnergyRenderer(val geoModel: GeoModel<GauntletEntity>,  val contex
             partialTicks,
             packedLightIn,
             OverlayTexture.DEFAULT_UV,
-            0.8f * lerpedAlpha,
-            0.2f * lerpedAlpha,
-            0.2f * lerpedAlpha,
-            lerpedAlpha
+            color
         )
     }
 
     private class RenderHelper(val gauntletEntity: GauntletEntity, parentModel: GeoModel<GauntletEntity>, context: EntityRendererFactory.Context) : GeoEntityRenderer<GauntletEntity>(context, parentModel) {
-        override fun renderCube(
-            matrixStack: MatrixStack,
-            cube: GeoCube?,
-            buffer: VertexConsumer?,
-            packedLight: Int,
-            packedOverlay: Int,
-            red: Float,
-            green: Float,
-            blue: Float,
-            alpha: Float
-        ) {
+        override fun renderCube(matrixStack: MatrixStack, cube: GeoCube?, buffer: VertexConsumer?, packedLight: Int, packedOverlay: Int, colour: Int) {
             matrixStack.push()
             matrixStack.scale(1.1f, 1.05f, 1.1f)
-            super.renderCube(matrixStack, cube, buffer, IBoneLight.fullbright, packedOverlay, red, green, blue, alpha)
+            super.renderCube(matrixStack, cube, buffer, IBoneLight.fullbright, packedOverlay, colour)
             matrixStack.pop()
         }
 

@@ -35,7 +35,7 @@ object Mod {
     val networkUtils = NetworkUtils()
     val vec3dNetwork = Vec3dNetworkHandler()
 
-    fun identifier(path: String) = Identifier(MODID, path)
+    fun identifier(path: String) = Identifier.of(MODID, path)
 }
 
 @Suppress("unused")
