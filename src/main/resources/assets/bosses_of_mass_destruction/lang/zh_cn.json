@@ -167,7 +167,7 @@
   "text.autoconfig.bosses_of_mass_destruction.option.voidBlossomConfig.arenaGeneration" : "斗技场生成",
   "text.autoconfig.bosses_of_mass_destruction.option.voidBlossomConfig.arenaGeneration.generationSpacing" : "平均结构间隔",
   "text.autoconfig.bosses_of_mass_destruction.option.voidBlossomConfig.arenaGeneration.generationSeparation" : "最小结构间隔",
-  "text.autoconfig.bosses_of_mass_destruction.option.voidBlossomConfig.arenaGeneration.generationEnabled" : "允许生成"
+  "text.autoconfig.bosses_of_mass_destruction.option.voidBlossomConfig.arenaGeneration.generationEnabled" : "允许生成",
 
   "text.autoconfig.bosses_of_mass_destruction.category.General" : "通用",
   "text.autoconfig.bosses_of_mass_destruction.option.generalConfig.tableOfElevationRadius" : "升腾台座的生效范围"
