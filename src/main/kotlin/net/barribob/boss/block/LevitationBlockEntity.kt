@@ -75,13 +75,12 @@ class LevitationBlockEntity(
             Vec3d(x, player.y + RandomUtils.double(0.5) + 1, z)
 
         fun tickFlight(player: ServerPlayerEntity) {
-            val blockToCheck = mutableListOf<BlockPos>()
-            for (x in -1..1) {
-                for (z in -1..1) {
-                    blockToCheck.add(BlockPos(x * tableOfElevationRadius.toInt(), 0, z * tableOfElevationRadius.toInt()))
+            val chunksToCheck = mutableListOf<ChunkPos>()
+            for (x in -2..2) {
+                for (z in -2..2) {
+                    chunksToCheck.add(ChunkPos(player.blockPos.add(ChunkPos(x, z).getBlockPos(0, 0, 0))))
                 }
             }
-            val chunksToCheck = blockToCheck.map { ChunkPos(it.add(player.blockPos)) }.toSet()
             val hasLevitationBlock = chunksToCheck.any { it ->
                 val blockCache = ModComponents.getChunkBlockCache(player.world)
 
