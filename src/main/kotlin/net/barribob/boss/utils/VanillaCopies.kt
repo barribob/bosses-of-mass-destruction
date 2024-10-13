@@ -5,8 +5,6 @@ import net.barribob.boss.utils.ModUtils.normal
 import net.barribob.maelstrom.static_utilities.MathUtils
 import net.minecraft.block.*
 import net.minecraft.block.enums.DoubleBlockHalf
-import net.minecraft.client.MinecraftClient
-import net.minecraft.client.network.ClientPlayNetworkHandler
 import net.minecraft.client.particle.BillboardParticle
 import net.minecraft.client.render.*
 import net.minecraft.client.render.entity.DragonFireballEntityRenderer
@@ -24,7 +22,6 @@ import net.minecraft.entity.damage.DamageType
 import net.minecraft.entity.mob.FlyingEntity
 import net.minecraft.entity.mob.MobEntity
 import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket
 import net.minecraft.registry.RegistryKey
 import net.minecraft.registry.RegistryKeys
 import net.minecraft.registry.tag.BlockTags
@@ -104,30 +101,6 @@ object VanillaCopies {
             f = -maxChangeInAngle
         }
         return oldAngle + f
-    }
-
-    /**
-     * [ClientPlayNetworkHandler.onEntitySpawn]
-     */
-    fun handleClientSpawnEntity(client: MinecraftClient, packet: EntitySpawnS2CPacket) {
-        val d: Double = packet.x
-        val e: Double = packet.y
-        val f: Double = packet.z
-        val entityType = packet.entityType
-        val world = client.world ?: return
-
-        val entity15 = entityType.create(world)
-
-        if (entity15 != null) {
-            val i: Int = packet.id
-            entity15.updateTrackedPosition(d, e, f)
-            entity15.refreshPositionAfterTeleport(d, e, f)
-            entity15.pitch = (packet.pitch * 360) / 256.0f
-            entity15.yaw = (packet.yaw * 360) / 256.0f
-            entity15.id = i
-            entity15.uuid = packet.uuid
-            world.addEntity(entity15 as Entity?)
-        }
     }
 
     /**
