@@ -14,6 +14,7 @@ import net.barribob.maelstrom.static_utilities.MathUtils
 import net.barribob.maelstrom.static_utilities.eyePos
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
+import net.minecraft.entity.attribute.EntityAttributeModifier
 import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundCategory
@@ -84,10 +85,9 @@ class LaserAction(
         val entitiesHit = entity.world.findEntitiesInLine(entity.eyePos(), laserTargetPos, entity)
             .filterIsInstance<LivingEntity>()
         for (hitEntity in entitiesHit) {
-            val originalAttack = entity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)
-            entity.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE)?.baseValue = originalAttack * 0.75
+            entity.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE)?.addTemporaryModifier(EntityAttributeModifier(laserDamageModifier, -0.25, EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE))
             entity.tryAttack(hitEntity)
-            entity.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE)?.baseValue = originalAttack
+            entity.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE)?.removeModifier(laserDamageModifier)
         }
     }
 
@@ -95,5 +95,6 @@ class LaserAction(
         const val laserLagTicks = 8
         fun extendLaser(entity: Entity, laserTargetPos: Vec3d): Vec3d =
             MathUtils.unNormedDirection(entity.eyePos(), laserTargetPos).normalize().multiply(30.0).add(entity.eyePos())
+        val laserDamageModifier = Mod.identifier("laser")
     }
 }
